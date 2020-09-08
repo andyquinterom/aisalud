@@ -257,7 +257,8 @@ shinyUI(
 	    															 	column(width = 12,
 	    															 				 actionButton("aplicarFiltros", "Aplicar Filtros")
 	    															 	)
-	    															 )
+	    															 ),
+	    															 tags$style(HTML(".dropdown-menu {z-index:99999 !important;}"))
 	    															 )
 	    											),
 	    											br(),
