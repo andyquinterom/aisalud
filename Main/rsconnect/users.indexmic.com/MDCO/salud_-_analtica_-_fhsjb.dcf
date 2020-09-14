@@ -1,0 +1,12 @@
+name: salud_-_analtica_-_mdco
+title: Salud - Analítica - MDCO
+username: MDCO
+account: MDCO
+server: users.indexmic.com
+hostUrl: https://users.indexmic.com/__api__
+appId: 16
+bundleId: 16
+url: https://users.indexmic.com/content/9/
+when: 1591116684.58079
+asMultiple: FALSE
+asStatic: FALSE

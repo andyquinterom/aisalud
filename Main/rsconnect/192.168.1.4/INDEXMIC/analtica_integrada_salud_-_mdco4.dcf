@@ -1,12 +1,12 @@
 name: analtica_integrada_salud_-_mdco4
-title: Analítica Integrada Salud - MDCO
+title:
 username: INDEXMIC
 account: INDEXMIC
 server: 192.168.1.4
 hostUrl: http://192.168.1.4/__api__
 appId: 4
-bundleId: 20
+bundleId: 23
 url: http://192.168.1.4/content/4/
-when: 1599138112.01736
+when: 1600097911.08103
 asMultiple: FALSE
 asStatic: FALSE

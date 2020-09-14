@@ -1,0 +1,12 @@
+name: salud_-_analtica_-_50mb_-_1
+title: Salud - Analítica - 50MB - 1
+username: MDCO
+account: MDCO
+server: users.indexmic.com
+hostUrl: https://users.indexmic.com/__api__
+appId: 22
+bundleId: 109
+url: https://users.indexmic.com/content/22/
+when: 1597844735.05612
+asMultiple: FALSE
+asStatic: FALSE
