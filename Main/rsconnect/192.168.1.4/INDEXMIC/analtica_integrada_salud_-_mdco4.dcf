@@ -5,8 +5,8 @@ account: INDEXMIC
 server: 192.168.1.4
 hostUrl: http://192.168.1.4/__api__
 appId: 4
-bundleId: 23
+bundleId: 25
 url: http://192.168.1.4/content/4/
-when: 1600097911.08103
+when: 1600099161.11003
 asMultiple: FALSE
 asStatic: FALSE

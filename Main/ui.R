@@ -89,29 +89,36 @@ shinyUI(
 	    								, icon = icon("search-dollar", lib = "font-awesome")
 	    								, tabName = "notatecnica"
 	    							),
-	    							menuItem(
-	    								  text = "Paquetes - Episodio"
-	    								, icon = icon("chart-pie", lib = "font-awesome")
-	    								, tabName = "paquetes"
-	    								, radioButtons("DASHBOARD_valorcosto", "Graficar:", choices = c("VALOR", "COSTO"))
-	    								, actionButton("DASHBOARD_actualizar", "Actualizar")
-	    								, menuSubItem(  text = "Índice"
-	    															, tabName = "indicepaquete")
-	    								, menuSubItem(  text = "Dashboard"
-	    															, tabName = "dashboardpaquete")
-	    								, tags$br()
+	    							(
+	    								if (PAQUETES_INCLUIDO) {
+	    									menuItem(
+	    										text = "Paquetes - Episodio"
+	    										, icon = icon("chart-pie", lib = "font-awesome")
+	    										, tabName = "paquetes"
+	    										, radioButtons("DASHBOARD_valorcosto", "Graficar:", choices = c("VALOR", "COSTO"))
+	    										, actionButton("DASHBOARD_actualizar", "Actualizar")
+	    										, menuSubItem(  text = "Índice"
+	    																		, tabName = "indicepaquete")
+	    										, menuSubItem(  text = "Dashboard"
+	    																		, tabName = "dashboardpaquete")
+	    										, tags$br()
+	    									)
+	    								}
 	    							),
-	    							menuItem(
-	    							  	text = "Pricing"
-	    								, icon = icon("tags", lib = "font-awesome")
-	    								, tabName = "pricingOpciones"
-	    								, tags$br()
-	    								, actionButton("pricingActualizar", "Actualizar")
-	    								, menuSubItem(  text = "Informes"
-	    																, tabName = "pricing")
-	    								, tags$br()
-	    							),
-	    							bookmarkButton("Bookmark", width = "85%")
+	    							(
+	    								if (PRICING_INCLUIDO) {
+	    									menuItem(
+	    										text = "Pricing"
+	    										, icon = icon("tags", lib = "font-awesome")
+	    										, tabName = "pricingOpciones"
+	    										, tags$br()
+	    										, actionButton("pricingActualizar", "Actualizar")
+	    										, menuSubItem(  text = "Informes"
+	    																		, tabName = "pricing")
+	    										, tags$br()
+	    									)
+	    								}
+	    							)
 	    						)
 	    					),
 	    					dashboardBody(
