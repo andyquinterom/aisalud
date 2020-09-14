@@ -44,3 +44,8 @@ REF = as.data.table(read_feather("PAQUETES/REFERENTE.feather"))
 PAQUETE_PP = PAQUETES[`COMPONENTE` == "PAQUETE"]
 PAQUETES_CC = PAQUETES[`COMPONENTE` != "PAQUETE"]
 
+if (Sys.getenv("maxRequestSize") == "") {
+	maxRequestSize = 32212254720
+} else {
+	maxRequestSize = Sys.getenv("maxRequestSize")
+}

@@ -38,7 +38,7 @@ source("source/resumenComp.R")
 
 
 
-options(shiny.maxRequestSize=1000000*1024^2)
+options(shiny.maxRequestSize=maxRequestSize)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
     
