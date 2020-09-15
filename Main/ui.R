@@ -66,7 +66,7 @@ shinyUI(
 	    							menuItem(
 	    								  text = "Descriptiva"
 	    								, icon = icon("table", lib = "font-awesome")
-	    								, tabName = "descriptiva"
+	    								, tabName = "descriptivaEventos"
 	    							),
 	    							menuItem(
 	    								  text = "Pacientes Outliers"
@@ -291,7 +291,7 @@ shinyUI(
 	    												)
 	    											)
 	    							),
-	    							tabItem(tabName = "descriptiva",
+	    							tabItem(tabName = "descriptivaEventos",
 	    											fluidRow(
 	    												column(width = 3,
 	    													box(width = "100%",
@@ -321,6 +321,37 @@ shinyUI(
 	    												column(width = 9,
 	    															 box(width = "100%",
 	    															 	div(DT::dataTableOutput("descriptivaFinal"), style = "font-size:90%")
+	    															 )
+	    												)
+	    												
+	    											)
+	    							),
+	    							tabItem(tabName = "descriptivaEpisodios",
+	    											fluidRow(
+	    												column(width = 3,
+	    															 box(width = "100%",
+	    															 		pickerInput("descriptivaEpColumna", label = "Agrupar por:",choices = c("NA"),multiple = FALSE,
+	    															 								options = list(
+	    															 									`actions-box` = TRUE,
+	    															 									`live-search` = TRUE)
+	    															 		),
+	    															 		pickerInput("descriptivaEpColumnaSep", label = "Separar por:",choices = c("NA"),multiple = TRUE,
+	    															 								options = list(
+	    															 									`actions-box` = TRUE,
+	    															 									`live-search` = TRUE)
+	    															 		),
+	    															 		actionButton("exeOpcionesDescriptivaEp", "Confirmar"),
+	    															 		tags$br(),
+	    															 		tags$br(),
+	    															 		downloadButton("descargaDescriptivaEpCSV", "CSV", style = "width:100%;"),
+	    															 		tags$br(),
+	    															 		tags$br(),
+	    															 		downloadButton("descargaDescriptivaEpEXCEL", "Excel", style = "width:100%;")
+	    															 )
+	    												),
+	    												column(width = 9,
+	    															 box(width = "100%",
+	    															 		div(DT::dataTableOutput("descriptivaEpFinal"), style = "font-size:90%")
 	    															 )
 	    												)
 	    												
