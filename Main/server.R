@@ -25,16 +25,9 @@ library(googlesheets4)
 
 
 
-source("source/descriptiva.R")
-source("source/outliers.R")
-source("source/dependencies.R")
-source("source/agregaciones.R")
-source("source/notatecnica.R")
-source("source/formatAsCurrency.R")
-source("source/REFgrafico.R")
-source("source/REFPgrafico.R")
-source("source/PIEchart.R")
-source("source/resumenComp.R")
+for (i in paste0("source/", list.files("source/"))) {
+    source(i)
+}
 
 
 
