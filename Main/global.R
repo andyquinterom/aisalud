@@ -12,11 +12,14 @@ googlesheets4::sheets_auth(cache = "token", email = "operaciones@mdco.com.co")
 dir.create("PAQUETES")
 dir.create("PRICING")
 
-if (Sys.getenv("maxRequestSize") == "") {
-	maxRequestSize = 32212254720
+if (Sys.getenv("maxRequestSize") != "") {
+	maxRequestSize = as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
 } else {
-	maxRequestSize = Sys.getenv("maxRequestSize")
+	maxRequestSize = 30*1024^3
 }
+
+options(shiny.maxRequestSize=maxRequestSize)
+
 
 if (Sys.getenv("pricing_path") == "") {
 	pricing_path = "1qUG1yQpF5vPDGE4KUDOK5lx8S7ZoRiJP"

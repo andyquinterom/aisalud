@@ -5,8 +5,8 @@ account: INDEXMIC
 server: users.indexmic.com
 hostUrl: https://users.indexmic.com/__api__
 appId: 27
-bundleId: 151
+bundleId: 165
 url: https://users.indexmic.com/salud/analitica/asmetsalud/
-when: 1600098989.87185
+when: 1600181817.08064
 asMultiple: FALSE
 asStatic: FALSE
