@@ -69,6 +69,11 @@ shinyUI(
 	    								, tabName = "descriptivaEventos"
 	    							),
 	    							menuItem(
+	    								text = "Episodios"
+	    								, icon = icon("table", lib = "font-awesome")
+	    								, tabName = "descriptivaEpisodios"
+	    							),
+	    							menuItem(
 	    								  text = "Pacientes Outliers"
 	    								, icon = icon("search-minus", lib = "font-awesome")
 	    								, tabName = "outliers"
@@ -330,15 +335,22 @@ shinyUI(
 	    											fluidRow(
 	    												column(width = 3,
 	    															 box(width = "100%",
-	    															 		pickerInput("descriptivaEpColumna", label = "Agrupar por:",choices = c("NA"),multiple = FALSE,
+	    															 		pickerInput("descriptivaEpColumnaVal", label = "Sumar valor por:",choices = c("NA"), multiple = FALSE,
 	    															 								options = list(
 	    															 									`actions-box` = TRUE,
 	    															 									`live-search` = TRUE)
 	    															 		),
-	    															 		pickerInput("descriptivaEpColumnaSep", label = "Separar por:",choices = c("NA"),multiple = TRUE,
+	    															 		pickerInput("descriptivaEpColumna", label = "Agrupar por:",choices = c("NA"), multiple = FALSE,
 	    															 								options = list(
 	    															 									`actions-box` = TRUE,
 	    															 									`live-search` = TRUE)
+	    															 		),
+	    															 		pickerInput("descriptivaEpColumnaSep", label = "Separar por:",choices = c("NA"), multiple = TRUE,
+	    															 								options = list(
+	    															 									`actions-box` = TRUE,
+	    															 									`live-search` = TRUE,
+	    															 									`select-all-text` = "Seleccionar todos",
+	    															 									`deselect-all-text` = "Deseleccionar todos")
 	    															 		),
 	    															 		actionButton("exeOpcionesDescriptivaEp", "Confirmar"),
 	    															 		tags$br(),

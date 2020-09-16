@@ -1,7 +1,7 @@
 require(data.table)
 
 
-descriptvaEpisodio = function(data, columnas, columna_valor, columna_suma, columna_sep) {
+descriptivaEpisodio = function(data, columnas, columna_valor, columna_suma, columna_sep) {
 	data = as.data.frame(data)
 	data = data[, unique(c('NRO_IDENTIFICACION', columnas, columna_valor, columna_suma, columna_sep))]
 	colnames(data) = unique(c('NRO_IDENTIFICACION', columnas, "VALOR", columna_suma, columna_sep))

@@ -44,7 +44,7 @@ shinyServer(function(input, output, session) {
     ### Sección descriptiva
     
     opciones = reactiveValues(descriptivaColumna = NULL, valorCosto = "VALOR")
-    bd = reactiveValues(descriptiva = data.frame(), original = data.frame())
+    bd = reactiveValues(descriptiva = data.frame(), original = data.frame(), descriptivaEp = data.frame())
     uniques = reactiveValues()
     minsmaxs = reactiveValues()
     filtro = reactiveValues(bd1 = "NA", bd2 = "NA", bd3 = "NA", bd4 = "NA")
@@ -138,6 +138,9 @@ shinyServer(function(input, output, session) {
                 bd$Colnames = colnames(bd$original)
                         incProgress(0.1)
                     updatePickerInput(session, inputId = "descriptivaColumna", choices = bd$Colnames, selected = opciones$descriptivaColumna)
+                    updatePickerInput(session, inputId = "descriptivaEpColumna", choices = bd$Colnames, selected = opciones$descriptivaEpColumna)
+                    updatePickerInput(session, inputId = "descriptivaEpColumnaVal", choices = bd$Colnames, selected = opciones$descriptivaEpColumnaVal)
+                    updatePickerInput(session, inputId = "descriptivaEpColumnaSep", choices = bd$Colnames, selected = opciones$descriptivaEpColumnaSep)
                     updatePickerInput(session, inputId = "outliersColumna", choices = bd$Colnames, selected = opciones$outliersColumna)
                     updatePickerInput(session, inputId = "bigotesColumna", choices = c("NA", bd$Colnames[!COLNUM]), selected = opciones$bigotesColumna)
                     updatePickerInput(session, inputId = "histogramaRelleno", choices = c("NA",bd$Colnames), selected = opciones$histogramaRelleno)
@@ -351,6 +354,31 @@ shinyServer(function(input, output, session) {
                                           language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
                                           pageLength = 50, autoWidth = FALSE, ordering=T, scrollX = TRUE, scrollY = "60vh"),
                                       rownames= FALSE
+                        ) %>%
+                            formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica')) %>%
+                            formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0)
+                    })   
+                })
+            }
+        }
+    })
+    
+    observeEvent(input$exeOpcionesDescriptivaEp, {
+        if(!is.null(input$file)) {
+            if(!is.null(input$descriptivaEpColumnaVal) && input$descriptivaEpColumna != "NA") {
+                opciones$descriptivaEpColumna = input$descriptivaEpColumna
+                opciones$descriptivaEpColumnaVal = input$descriptivaEpColumnaVal
+                opciones$descriptivaEpColumnaSep = input$descriptivaEpColumnaSep
+                withProgress(message = "Calculando descriptiva por episodio",{
+                    bd$descriptivaEp = descriptivaEpisodio(data = bd$original, opciones$descriptivaEpColumna, opciones$valorCosto, opciones$descriptivaEpColumnaVal, opciones$descriptivaEpColumnaSep)
+                    
+                    output$descriptivaEpFinal = DT::renderDataTable({
+                        DT::datatable(
+                                bd$descriptivaEp,
+                                options = list(
+                                    language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                                    pageLength = 50, autoWidth = FALSE, ordering=T, scrollX = TRUE, scrollY = "60vh"),
+                                rownames= FALSE
                         ) %>%
                             formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica')) %>%
                             formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0)
@@ -617,7 +645,7 @@ shinyServer(function(input, output, session) {
     
     output$descargaDescriptivaCSV = downloadHandler(
         filename = function() {
-            paste("descriptiva-por",input$valorCosto,".",input$fechamin,"-",input$fechamax,".csv", sep="")
+            paste("Descriptiva por ",input$valorCosto," ",input$fechamin," - ",input$fechamax,".csv", sep="")
         },
         content = function(file) {
             write.csv(bd$descriptiva, file, row.names = FALSE, na="")
@@ -626,10 +654,28 @@ shinyServer(function(input, output, session) {
     
     output$descargaDescriptivaEXCEL = downloadHandler(
         filename = function() {
-            paste("descriptiva-por",input$valorCosto,".",input$fechamin,"-",input$fechamax,".xlsx", sep="")
+            paste("Descriptiva por ",input$valorCosto," ",input$fechamin," - ",input$fechamax,".xlsx", sep="")
         },
         content = function(file) {
             write_xlsx(bd$descriptiva, path = file)
+        }, contentType = "xlsx"
+    )
+    
+    output$descargaDescriptivaEpCSV = downloadHandler(
+        filename = function() {
+            paste("Episodios por ",input$valorCosto," ",input$fechamin," - ",input$fechamax,".csv", sep="")
+        },
+        content = function(file) {
+            write.csv(bd$descriptivaEp, file, row.names = FALSE, na="")
+        }, contentType = "text/csv"
+    )
+    
+    output$descargaDescriptivaEpEXCEL = downloadHandler(
+        filename = function() {
+            paste("Episodios por ",input$valorCosto," ",input$fechamin," - ",input$fechamax,".xlsx", sep="")
+        },
+        content = function(file) {
+            write_xlsx(bd$descriptivaEp, path = file)
         }, contentType = "xlsx"
     )
     
