@@ -1,12 +1,12 @@
-name: analtica_integrada_salud_-_mdco4
-title:
+name: test_fciclubnoel
+title: TEST FCICLUBNOEL
 username: INDEXMIC
 account: INDEXMIC
 server: 192.168.1.4
 hostUrl: http://192.168.1.4/__api__
-appId: 4
-bundleId: 30
-url: http://192.168.1.4/content/4/
-when: 1600264305.67874
+appId: 7
+bundleId: 32
+url: http://192.168.1.4/content/7/
+when: 1600285619.22476
 asMultiple: FALSE
 asStatic: FALSE

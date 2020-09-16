@@ -1078,18 +1078,22 @@ shinyServer(function(input, output, session) {
     observeEvent(input$paquete, {
         if(!is.null(PAQUETES)) {
             selectedDash$paquete = input$paquete
-            selectedDash$servicio = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]$SERVICIO
-            selectedDash$especialidad = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]$ESPECIALIDAD
-            selectedDash$descripcion = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]$`DESCRIPCION`
-            selectedDash$inclusiones = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]$`INCLUSIONES`
-            selectedDash$exclusiones = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]$`EXCLUSIONES`
+            
+            selectedDash$PAQUETE_PP = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]
+            selectedDash$PAQUETES_CC = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete]
+            
+            selectedDash$servicio = selectedDash$PAQUETE_PP$SERVICIO
+            selectedDash$especialidad = selectedDash$PAQUETE_PP$ESPECIALIDAD
+            selectedDash$descripcion = selectedDash$PAQUETE_PP$`DESCRIPCION`
+            selectedDash$inclusiones = selectedDash$PAQUETE_PP$`INCLUSIONES`
+            selectedDash$exclusiones = selectedDash$PAQUETE_PP$`EXCLUSIONES`
         }
     })
     
     output$TABLA_paquete = DT::renderDataTable({
         if(!is.null(PAQUETES)) {
             datatable(
-                PAQUETES_CC[, c("CUMS/CUPS", "PRESTACION", "COMPONENTE", "TIPO DE COSTO", "VALOR", "COSTO")]
+                selectedDash$PAQUETES_CC[, c("CUMS/CUPS", "PRESTACION", "COMPONENTE", "TIPO DE COSTO", "VALOR", "COSTO")]
                 , rownames = F
                 , selection = 'single'
                 , options = list(
@@ -1122,7 +1126,7 @@ shinyServer(function(input, output, session) {
     output$BOX_valortotal = renderValueBox({
         if(!is.null(PAQUETES)) {
             valueBox(
-                value = formatAsCurrency(PAQUETES[`CODIGO PAQUETE` == selectedDash$paquete & `COMPONENTE` == "PAQUETE"]$VALOR)
+                value = formatAsCurrency(selectedDash$PAQUETE_PP$VALOR)
                 , subtitle = "Valor del paquete"
                 , icon = icon("tags", lib = "font-awesome")
                 , color = "green"
@@ -1133,7 +1137,7 @@ shinyServer(function(input, output, session) {
     output$BOX_costototal = renderValueBox({
         if(!is.null(PAQUETES)) {
             valueBox(
-                value = formatAsCurrency(PAQUETES[`CODIGO PAQUETE` == selectedDash$paquete & `COMPONENTE` == "PAQUETE"]$COSTO)
+                value = formatAsCurrency(selectedDash$PAQUETE_PP$COSTO)
                 , subtitle = "Costo del paquete"
                 , icon = icon("money-check", lib = "font-awesome")
                 , color = "red"
@@ -1180,23 +1184,23 @@ shinyServer(function(input, output, session) {
     
     output$PLOT_ref_paquete = renderggiraph({
         if(!is.null(PAQUETES)) 
-            REFPgrafico(paquetes = PAQUETES[`CODIGO PAQUETE` == selectedDash$paquete & `COMPONENTE` == "PAQUETE"], referente = REF_PAQUETES, CUMSCUPS = selectedDash$paquete, valorcosto = input$DASHBOARD_valorcosto)
+            REFPgrafico(paquetes = selectedDash$PAQUETE_PP, referente = REF_PAQUETES, CUMSCUPS = selectedDash$paquete, valorcosto = input$DASHBOARD_valorcosto)
     })
     
     output$PLOT_ref_cumscups = renderggiraph({
         if(!is.null(input$TABLA_paquete_rows_selected))
-            REFgrafico(paquetes = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete], referente = REF[`CODIGO PAQUETE` == selectedDash$paquete], CUMSCUPS = PAQUETES_CC[input$TABLA_paquete_rows_selected, list(`CUMS/CUPS`)], valorcosto = input$DASHBOARD_valorcosto)
+            REFgrafico(paquetes = selectedDash$PAQUETES_CC, referente = REF[`CODIGO PAQUETE` == selectedDash$paquete], CUMSCUPS = selectedDash$PAQUETES_CC[input$TABLA_paquete_rows_selected, list(`CUMS/CUPS`)], valorcosto = input$DASHBOARD_valorcosto)
     })
     
     output$PLOT_pie_paquete = renderggiraph({
         if(!is.null(PAQUETES)) 
-            PIEchart(paquetes = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete], columna = input$COL_pie_paquete, valorcosto = input$DASHBOARD_valorcosto)
+            PIEchart(paquetes = selectedDash$PAQUETES_CC, columna = input$COL_pie_paquete, valorcosto = input$DASHBOARD_valorcosto)
     })
     
     output$TABLA_pie_paquete_resumen = DT::renderDataTable({
         if(!is.null(PAQUETES)) {
             datatable(
-                resumenComp(tabla = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete], columna = input$COL_pie_paquete, colsum = input$DASHBOARD_valorcosto)
+                resumenComp(tabla = selectedDash$PAQUETES_CC, columna = input$COL_pie_paquete, colsum = input$DASHBOARD_valorcosto)
                 , rownames = F
                 , selection = 'none'
                 , options = list(
@@ -1214,13 +1218,13 @@ shinyServer(function(input, output, session) {
     
     output$PLOT_pie_componente = renderggiraph({
         if(!is.null(input$COL_pie_componente))
-            PIEchart(paquetes = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete & COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, valorcosto = input$DASHBOARD_valorcosto)
+            PIEchart(paquetes = selectedDash$PAQUETES_CC[COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, valorcosto = input$DASHBOARD_valorcosto)
     })
     
     output$TABLA_pie_componente = DT::renderDataTable({
         if(!is.null(input$COL_pie_componente)) {
             datatable(
-                resumenComp(tabla = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete & COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, colsum = input$DASHBOARD_valorcosto)
+                resumenComp(tabla = selectedDash$PAQUETES_CC[COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, colsum = input$DASHBOARD_valorcosto)
                 , rownames = F
                 , selection = 'none'
                 , options = list(
@@ -1238,13 +1242,13 @@ shinyServer(function(input, output, session) {
     
     output$PLOT_pie_tipocosto = renderggiraph({
         if(!is.null(input$COL_pie_tipocosto))
-            PIEchart(paquetes = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete & `TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, valorcosto = input$DASHBOARD_valorcosto)
+            PIEchart(paquetes = selectedDash$PAQUETES_CC[`TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, valorcosto = input$DASHBOARD_valorcosto)
     })
     
     output$TABLA_pie_tipocosto = DT::renderDataTable({
         if(!is.null(input$COL_pie_tipocosto)) {
             datatable(
-                resumenComp(tabla = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete & `TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, colsum = input$DASHBOARD_valorcosto)
+                resumenComp(tabla = selectedDash$PAQUETES_CC[`TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, colsum = input$DASHBOARD_valorcosto)
                 , rownames = F
                 , selection = 'none'
                 , options = list(

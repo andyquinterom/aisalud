@@ -97,7 +97,7 @@ shinyUI(
 	    							(
 	    								if (PAQUETES_INCLUIDO) {
 	    									menuItem(
-	    										text = "Paquetes - Episodio"
+	    										text = "Paquetes"
 	    										, icon = icon("chart-pie", lib = "font-awesome")
 	    										, tabName = "paquetes"
 	    										, radioButtons("DASHBOARD_valorcosto", "Graficar:", choices = c("VALOR", "COSTO"))

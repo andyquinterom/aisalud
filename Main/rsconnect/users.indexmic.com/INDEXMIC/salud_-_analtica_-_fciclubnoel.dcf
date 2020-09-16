@@ -1,0 +1,12 @@
+name: salud_-_analtica_-_fciclubnoel
+title: Salud - Analítica - FCICLUBNOEL
+username: MDCO
+account: MDCO
+server: users.indexmic.com
+hostUrl: https://users.indexmic.com/__api__
+appId: 7
+bundleId: 7
+url: https://users.indexmic.com/content/7/
+when: 1591116276.5147
+asMultiple: FALSE
+asStatic: FALSE
