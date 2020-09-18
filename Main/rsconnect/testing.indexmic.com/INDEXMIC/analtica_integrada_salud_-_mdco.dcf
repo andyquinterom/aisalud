@@ -1,0 +1,12 @@
+name: analtica_integrada_salud_-_mdco
+title: Analítica Integrada Salud - MDCO
+username: INDEXMIC
+account: INDEXMIC
+server: testing.indexmic.com
+hostUrl: http://testing.indexmic.com/__api__
+appId: 15
+bundleId: 40
+url: http://testing.indexmic.com/content/15/
+when: 1600443531.32847
+asMultiple: FALSE
+asStatic: FALSE

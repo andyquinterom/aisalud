@@ -1,0 +1,12 @@
+name: analtica_integrada_salud_-_dev2
+title: Analítica Integrada Salud - Dev
+username: INDEXMIC
+account: INDEXMIC
+server: users.indexmic.com
+hostUrl: https://users.indexmic.com/__api__
+appId: 23
+bundleId: 97
+url: https://users.indexmic.com/content/23/
+when: 1601395547.5073
+asMultiple: FALSE
+asStatic: FALSE
