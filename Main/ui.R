@@ -51,8 +51,7 @@ shinyUI(
 				# tags$style(make_css(list('.btn', 'white-space', 'pre-wrap')))
 				),
 	    dashboardPage(skin = "black",
-	    					dashboardHeader(title = "Salud - Analítica"
-	    													, tags$li(class = "dropdown", actionLink("home", label = "", icon = icon("home", lib="font-awesome"), onclick ="location.href='https://users.indexmic.com/menu';"))),
+	    					dashboardHeader(title = "Salud - Analítica"),
 	    					dashboardSidebar(
 	    						sidebarMenu(
 	    							HTML('
