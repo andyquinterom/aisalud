@@ -1,5 +1,6 @@
 enableBookmarking(store = "server")
 
+require(colmaps2)
 require(googlesheets4)
 require(googledrive)
 require(data.table)
@@ -33,6 +34,12 @@ if (Sys.getenv("paquete_path") == "") {
 	paquete_path = Sys.getenv("paquete_path")
 }
 
+if (Sys.getenv("nts_path") == "") {
+	nts_path = "1zTmNGV5mgFqvNJK-g68D9sBTOTmhYBTvz8ECuDuSjmU"
+} else {
+	nts_path = Sys.getenv("nts_path")
+}
+
 ###Paquetes
 
 if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
@@ -64,9 +71,9 @@ if (Sys.getenv("PRICING_INCLUIDO") == "") {
 } else {
 	PRICING_INCLUIDO = TRUE
 	
-	pricingList = drive_ls(path = as_id(pricing_path))
 	
 	if (length(dir(path = "PRICING" ,all.files=TRUE)[-which(dir(path = "PRICING" ,all.files=TRUE) %in% c(".", "..", ".DS_Store"))]) == 0) {
+		pricingList = drive_ls(path = as_id(pricing_path))
 		i = 1
 		while (i <= length(pricingList$id)) {
 			drive_download(file = as_id(pricingList$id[i]), path = paste0("PRICING/", pricingList$name[i]), overwrite = T)
@@ -77,4 +84,29 @@ if (Sys.getenv("PRICING_INCLUIDO") == "") {
 	
 }
 
+###Notas tecnicas
+
+if (Sys.getenv("NT_INCLUIDO") == "") {
+	NT_INCLUIDO = FALSE
+} else {
+	NT_INCLUIDO = TRUE
+	
+	if (!(all(c("NTs.feather", "INDICE.feather", "NTmapa.rds", "INCLUSIONES.feather") %in% dir(path = "NTs" ,all.files=TRUE)))) {
+		write_feather(sheets_read(nts_path, sheet = "NTs", col_types = "ccddd") 
+									,"NTs/NTs.feather")
+		write_feather(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd") 
+									,"NTs/INDICE.feather")
+		write_feather(sheets_read(nts_path, sheet = "INCLUSIONES", col_types = "ccdc") 
+									,"NTs/INCLUSIONES.feather")
+		saveRDS(mapaValoresNT(as.data.table(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd"))) %>% layout(autosize = TRUE), "NTs/NTmapa.rds")
+	}
+	
+}
+
+MAPA_NT = readRDS("NTs/NTmapa.rds")
+NTs_INDICE = as.data.table(read_feather("NTs/INDICE.feather"))
+NTs_INCLUSIONES = as.data.table(read_feather("NTs/INCLUSIONES.feather"))
+NTs_NT = as.data.table(read_feather("NTs/NTs.feather"))
+
+NTs_UniqueCod = unique(NTs_INDICE$COD_NT)
 

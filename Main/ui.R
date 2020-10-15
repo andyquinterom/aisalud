@@ -19,14 +19,6 @@ library(plotly)
 library(markdown)
 library(tableHTML)
 
-if ("PAQUETES.feather" %in% dir(path = "PAQUETES" ,all.files=TRUE) && "REFERENTE-PAQUETES.feather" %in% dir(path = "PAQUETES" ,all.files=TRUE) && "REFERENTE.feather" %in% dir(path = "PAQUETES" ,all.files=TRUE)) {
-	PAQUETES = as.data.table(read_feather("PAQUETES/PAQUETES.feather"))
-	REF_PAQUETES = as.data.table(read_feather("PAQUETES/REFERENTE-PAQUETES.feather"))
-	REF = as.data.table(read_feather("PAQUETES/REFERENTE.feather"))
-	PAQUETE_PP = PAQUETES[`COMPONENTE` == "PAQUETE"]
-	PAQUETES_CC = PAQUETES[`COMPONENTE` != "PAQUETE"]
-}
-
 shinyUI(
 	function(request) {
 	tagList(
@@ -92,6 +84,23 @@ shinyUI(
 	    								  text = "Nota técnica"
 	    								, icon = icon("search-dollar", lib = "font-awesome")
 	    								, tabName = "notatecnica"
+	    							),
+	    							(
+	    								if (NT_INCLUIDO) {
+	    									menuItem(
+	    										text = "Notas técnicas"
+	    										, icon = icon("dollar-sign", lib = "font-awesome")
+	    										, tabName = "NTs"
+	    										, tags$br()
+	    										, actionButton("dashNT_actualizar", "Actualizar")
+	    										, menuSubItem(  text = "Índice"
+	    																		, tabName = "indiceNT")
+	    										, menuSubItem(  text = "Dashboard"
+	    																		, tabName = "dashboardNT")
+	    										, menuSubItem(  text = "Comparar"
+	    																		, tabName = "compararNT")
+	    									)
+	    								}
 	    							),
 	    							(
 	    								if (PAQUETES_INCLUIDO) {
@@ -531,6 +540,124 @@ shinyUI(
 	    												)
 	    											)
 	    											),
+	    							tabItem(tabName = "indiceNT",
+	    											fluidRow(
+	    												box(width = 7,
+	    														DT::dataTableOutput("indiceNT", height = "80vh")
+	    														),
+	    												box(width = 5,
+	    														plotlyOutput("indiceNT_Mapa", height = "80vh")
+	    														)
+	    											)
+	    											),
+	    							tabItem(tabName = "dashboardNT",
+	    											fluidRow(
+	    												column(12,
+	    															 valueBoxOutput("dashNTNombreEntidad", width = 12)
+	    															 )
+	    											),
+	    											fluidRow(
+	    												column(12,
+	    															 valueBoxOutput("dashNT_ValorMes", width = 4),
+	    															 valueBoxOutput("dashNT_Poblacion", width = 4),
+	    															 valueBoxOutput("dashNT_Departamento", width = 4)
+	    															 )
+	    											),
+	    											fluidRow(
+	    												column(width = 12,
+	    															 box(width = 12,
+	    															 		pickerInput("dashNT_select", width = "100%"
+	    															 								, choices = NTs_UniqueCod
+	    															 								, label = "Nota técnica"
+	    															 		)
+	    															 		),
+	    															 box(width = 12,
+	    															 		title = "Nota técnica:",
+	    															 		fluidRow(
+	    															 			column(width = 5,
+	    															 						 DT::dataTableOutput("dashNT_NT")
+	    															 						 ),
+	    															 			column(width = 7,
+	    															 						 ggiraph::ggiraphOutput("dashNT_PLOT_Agrupadores", width = "100%", height = "100%")	 
+	    															 						 )
+	    															 		)
+	    															 ),
+															 			 box(
+																 			 	title = "Inclusiones:",
+																 			 	width = 6,
+																 			 	DT::dataTableOutput("dashNT_Inclusiones")
+															 			 ),
+															 			 box(
+																 			 	title = "Exclusiones:",
+																 			 	width = 6,
+																 			 	DT::dataTableOutput("dashNT_Exclusiones")
+															 			 )
+	    												)
+	    											)
+	    											
+	    											),
+	    							tabItem(tabName = "compararNT",
+	    											fluidRow(
+	    												column(width = 12,
+	    															 box(width = 4,
+	    															 		pickerInput("compararNT_select", width = "100%"
+	    															 								, choices = NTs_UniqueCod
+	    															 								, label = "Nota técnica"
+	    															 								),
+	    															 		pickerInput("compararNTcolumna", width = "100%"
+	    															 								, choices = c("NA")
+	    															 								, label = "Columna de agrupador"
+	    															 								),
+	    															 		actionButton("compararNT_ejecutar", "Ejecutar", width = "100%")
+	    															 		),
+	    															 box(width = 8,
+	    															 		DT::dataTableOutput("compararNT_totales", width = "100%", height = "100%")
+	    															 		)
+	    															 )
+	    											),
+	    											fluidRow(
+	    												column(width = 12,
+	    															 box(width = 12, title = "Resultados a mes",
+	    															 		fluidRow(
+	    															 			column(width = 6,
+	    															 						 tags$h3("Totales RIPS"),
+	    															 						 DT::dataTableOutput("compararNT_totalMesRIPS", width = "100%")
+	    															 						 ),
+	    															 			column(width = 6,
+	    															 						 tags$h3("Totales CME"),
+	    															 						 DT::dataTableOutput("compararNT_totalMesCME", width = "100%")
+	    															 						 )
+	    															 		)
+	    															 		),
+	    															 box(width = 12, title = "Resultados por agrupador",
+	    															 		fluidRow(
+	    															 			column(width = 6,
+	    															 						 tags$h3("Totales RIPS"),
+	    															 						 DT::dataTableOutput("compararNT_totalAgrupadorRIPS", width = "100%")
+	    															 						 ),
+	    															 			column(width = 6,
+	    															 						 tags$h3("Totales CME"),
+	    															 						 DT::dataTableOutput("compararNT_totalAgrupadorCME", width = "100%")
+	    															 						 )
+	    															 		)
+	    															 		),
+	    															 box(width = 12, title = "Suma de valor a mes",
+	    															 		DT::dataTableOutput("compararNT_descBSumas", width = "100%")
+	    															 		),
+	    															 box(width = 12, title = "Frecuencias a mes",
+	    															 		DT::dataTableOutput("compararNT_descBFrecs", width = "100%")
+	    																	),
+	    															 box(width = 12, title = "Diferencias de valor con RIPS",
+	    															 		DT::dataTableOutput("compararNT_difsValorRIPS", width = "100%"),
+	    															 		DT::dataTableOutput("compararNT_difsValorRIPSperc", width = "100%")
+	    															 		),
+	    															 box(width = 12, title = "Diferencias de valor con CME",
+	    															 		DT::dataTableOutput("compararNT_difsValorCME", width = "100%"),
+	    															 		DT::dataTableOutput("compararNT_difsValorCMEperc", width = "100%")
+	    															 )
+	    															 )
+	    											)
+	    											),
 	    							tabItem(tabName = "indicepaquete",
 	    											fluidRow(
 	    												box(width = 12,
@@ -562,7 +689,7 @@ shinyUI(
 	    											),
 	    											fluidRow(
 	    												column(width = 9,
-	    															 box(width = "100%", height = "100%",
+	    															 box(width = 12, height = "100%",
 	    															 		selectInput("paquete", label = "Paquete:", choices = na.omit(unique(PAQUETES$`CODIGO PAQUETE`))),
 	    															 		ggiraph::ggiraphOutput("PLOT_ref_paquete", width = "100%", height = "100%"),
 	    															 		tags$p(style = "text-align: justify;",
