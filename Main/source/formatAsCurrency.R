@@ -6,6 +6,6 @@ formatAsCurrency = function(x) {
 formatAsPerc = function(x) {
 	x = as.numeric(as.character(x))
 	return(
-		paste0(format(x*100, digits = 2, scientific = F), "%")
+		paste0(format(x*100, digits = 2, scientific = F, big.mark = "."), "%")
 	)
 }

@@ -146,6 +146,7 @@ shinyServer(function(input, output, session) {
                     updatePickerInput(session, inputId = "histogramaRelleno", choices = c("NA",bd$Colnames), selected = opciones$histogramaRelleno)
                     updatePickerInput(session, inputId = "histogramaColumna", choices = bd$Colnames, selected = opciones$histogramaColumna)
                     updatePickerInput(session, inputId = "agregacionesColumnas", choices = bd$Colnames, selected = opciones$agregacionesColumnas)
+                    updatePickerInput(session, inputId = "compararNTcolumna", choices = bd$Colnames, selected = opciones$compararNTcolumna)
                     for (i in c(1:5)) {
                         updatePickerInput(session, paste("bdFiltro", i, sep = ""), choices = c("NA", bd$Colnames[!COLNUM]))
                     }
@@ -355,8 +356,8 @@ shinyServer(function(input, output, session) {
                                           pageLength = 50, autoWidth = FALSE, ordering=T, scrollX = TRUE, scrollY = "60vh"),
                                       rownames= FALSE
                         ) %>%
-                            formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica')) %>%
-                            formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0)
+                            formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica'), mark = ".", dec.mark = ",") %>%
+                            formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0, mark = ".", dec.mark = ",")
                     })   
                 })
             }
@@ -380,8 +381,8 @@ shinyServer(function(input, output, session) {
                                     pageLength = 50, autoWidth = FALSE, ordering=T, scrollX = TRUE, scrollY = "60vh"),
                                 rownames= FALSE
                         ) %>%
-                            formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica')) %>%
-                            formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0)
+                            formatCurrency(c('P50','P75','P90','Media','Media truncada 10%','Media truncada 5%','Desv.tipica'), mark = ".", dec.mark = ",") %>%
+                            formatCurrency(c('Suma','Min.','Max.','Rango'), digits=0, mark = ".", dec.mark = ",")
                     })   
                 })
             }
@@ -400,7 +401,7 @@ shinyServer(function(input, output, session) {
                         pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE),
                     rownames= FALSE
                     ) %>%
-                        formatCurrency(c('VALOR'))
+                        formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
                 })   
             }
         }
@@ -418,7 +419,7 @@ shinyServer(function(input, output, session) {
                                       pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE),
                                   rownames= FALSE
                     ) %>%
-                        formatCurrency(c('VALOR'))
+                        formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
                 })   
             }
         }
@@ -454,7 +455,7 @@ shinyServer(function(input, output, session) {
                                                  'Escenario por variabilidad y frecuencia'),
                                                         'a mes', sep = " "),
                                          'Valor episodio',
-                                         'CME'))
+                                         'CME'), mark = ".", dec.mark = ",")
                     )
             }
         }
@@ -728,7 +729,7 @@ shinyServer(function(input, output, session) {
         if (!is.null(input$file)) {
             paste("Total registros:", 
                   formatC(
-                      length(bd$original$NRO_IDENTIFICACION), big.mark = ",", format = "f", digits = 0
+                      length(bd$original$NRO_IDENTIFICACION), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
                   ),
                   sep = " "
                   )
@@ -738,7 +739,7 @@ shinyServer(function(input, output, session) {
         if (!is.null(input$file)) {
             paste("Total pacientes:", 
                   formatC(
-                      length(unique(bd$original$NRO_IDENTIFICACION)), big.mark = ",", format = "f", digits = 0
+                      length(unique(bd$original$NRO_IDENTIFICACION)), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
                   ),
                   sep = " "
             )
@@ -749,7 +750,7 @@ shinyServer(function(input, output, session) {
             if(nrow(bd$descriptiva) >= 1) {
                 paste("Total", paste0(tolower(opciones$valorCosto), ":"), 
                       formatC(
-                          sum(bd$descriptiva$Suma, na.rm = TRUE), big.mark = ",", format = "f", digits = 0
+                          sum(bd$descriptiva$Suma, na.rm = TRUE), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
                       ),
                       sep = " "
                 )
@@ -761,7 +762,7 @@ shinyServer(function(input, output, session) {
             if("CODIGO_CUPS" %in% names(bd$original)) {
                 paste("Total prestaciones:", 
                       formatC(
-                          length(unique(bd$original$CODIGO_CUPS)), big.mark = ",", format = "f", digits = 0
+                          length(unique(bd$original$CODIGO_CUPS)), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
                       ),
                       sep = " "
                 )
@@ -777,7 +778,8 @@ shinyServer(function(input, output, session) {
                       paste0("$",
                             formatC(
                                 sum(bd$notatecnica$'Primer escenario P75', na.rm = TRUE),
-                                big.mark = ",",
+                                big.mark = ".",
+                                decimal.mark = ",",
                                 format = "f",
                                 digits = 0
                             )
@@ -791,7 +793,8 @@ shinyServer(function(input, output, session) {
                       paste0("$",
                              formatC(
                                  sum(bd$notatecnica$'Primer escenario P75', na.rm = TRUE)/opciones$meses,
-                                 big.mark = ",",
+                                 big.mark = ".",
+                                 decimal.mark = ",",
                                  format = "f",
                                  digits = 0
                              )
@@ -818,7 +821,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Segundo escenario media', na.rm = TRUE),
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -832,7 +836,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Segundo escenario media', na.rm = TRUE)/opciones$meses,
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -859,7 +864,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Tercer escenario media truncada 10%', na.rm = TRUE),
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -873,7 +879,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Tercer escenario media truncada 10%', na.rm = TRUE)/opciones$meses,
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -900,7 +907,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Cuarto escenario media truncada 5%', na.rm = TRUE),
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -914,7 +922,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Cuarto escenario media truncada 5%', na.rm = TRUE)/opciones$meses,
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -941,7 +950,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Escenario combinado mayor', na.rm = TRUE),
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -955,7 +965,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Escenario combinado mayor', na.rm = TRUE)/opciones$meses,
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -982,7 +993,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Escenario por variabilidad y frecuencia', na.rm = TRUE),
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -996,7 +1008,8 @@ shinyServer(function(input, output, session) {
                           paste0("$",
                                  formatC(
                                      sum(bd$notatecnica$'Escenario por variabilidad y frecuencia', na.rm = TRUE)/opciones$meses,
-                                     big.mark = ",",
+                                     big.mark = ".",
+                                     decimal.mark = ",",
                                      format = "f",
                                      digits = 0
                                  )
@@ -1042,7 +1055,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$DASHBOARD_actualizar, {
         confirmSweetAlert(session, inputId = "DASHBOARD_actualizar_conf", 
                           title = "Confirmar", 
-                          text = "¿Seguro que quieres actualizar los paquetes? Alfinal, deberá reiniciar la aplicación."
+                          text = "¿Seguro que quieres actualizar los paquetes? Al final, deberá reiniciar la aplicación."
                           , showCloseButton = TRUE
                           , btn_labels = c("Cancelar", "Confirmar"))
     })
@@ -1063,6 +1076,7 @@ shinyServer(function(input, output, session) {
                         incProgress(0.3)
                 })
                 sendSweetAlert(session, title = "¡Paquete actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
+                stopApp()
             }
         })
     
@@ -1108,6 +1122,7 @@ shinyServer(function(input, output, session) {
                 DT::formatCurrency(
                     columns = c("VALOR", "COSTO")
                     , digits = 0
+                    , mark = ".", dec.mark = ","
                 )
         }
     })
@@ -1269,7 +1284,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$pricingActualizar, {
         confirmSweetAlert(session, inputId = "pricingActualizar_conf", 
                           title = "Confirmar", 
-                          text = "¿Seguro que quieres actualizar el pricing? Alfinal, deberá reiniciar la aplicación."
+                          text = "¿Seguro que quieres actualizar el pricing? Al final, deberá reiniciar la aplicación."
                           , showCloseButton = TRUE
                           , btn_labels = c("Cancelar", "Confirmar"))
     })
@@ -1291,6 +1306,7 @@ shinyServer(function(input, output, session) {
 
             })
             sendSweetAlert(session, title = "¡Pricing actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
+            stopApp()
         }
     })
     
@@ -1382,7 +1398,7 @@ shinyServer(function(input, output, session) {
                       , rownames = FALSE
                       , options = list(language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
                                        ordering=T)) %>%
-                formatCurrency(c("MIN", "MEDIA", "MAX", "MEDIA MERCADO"))
+                formatCurrency(c("MIN", "MEDIA", "MAX", "MEDIA MERCADO"), mark = ".", dec.mark = ",")
         })
     })
     
@@ -1415,6 +1431,524 @@ shinyServer(function(input, output, session) {
                 )
             })
     })
-
+    
+    ###Dashboard NT
+    
+    observeEvent(input$dashNT_actualizar, {
+        confirmSweetAlert(session, inputId = "dashNT_actualizar_conf", 
+                          title = "Confirmar", 
+                          text = "¿Seguro que quieres actualizar las notas técnicas? Al final, deberá reiniciar la aplicación."
+                          , showCloseButton = TRUE
+                          , btn_labels = c("Cancelar", "Confirmar"))
+    })
+    
+    observeEvent(input$dashNT_actualizar_conf, {
+        if (isTRUE(input$dashNT_actualizar_conf)) {
+            unlink("NTs/", recursive = TRUE)
+            dir.create("NTs")
+            withProgress(value = 0, message = "Actualizando notas técnicas...", {
+                write_feather(sheets_read(nts_path, sheet = "NTs", col_types = "ccddd") 
+                              ,"NTs/NTs.feather")
+                incProgress(0.3)
+                write_feather(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd") 
+                              ,"NTs/INDICE.feather")
+                incProgress(0.3)
+                write_feather(sheets_read(nts_path, sheet = "INCLUSIONES", col_types = "ccdc") 
+                              ,"NTs/INCLUSIONES.feather")
+                incProgress(0.3)
+                saveRDS(mapaValoresNT(as.data.table(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd"))) %>% layout(autosize = TRUE), "NTs/NTmapa.rds")
+            })
+            sendSweetAlert(session, title = "¡Notas técnicas actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
+            stopApp()
+        }
+    })
+    
+    NT_TEMP = reactiveValues("INDICE" = NTs_INDICE, "NT" = NTs_NT, "INCLUSIONES" = NTs_INCLUSIONES)
+    
+    observeEvent(input$dashNT_select, {
+        NT_TEMP$NT = NTs_NT[COD_NT == input$dashNT_select]
+        NT_TEMP$INDICE = NTs_INDICE[COD_NT == input$dashNT_select]
+        NT_TEMP$INCLUSIONES = NTs_INCLUSIONES[COD_NT == input$dashNT_select]
+    })
+    
+    output$dashNTNombreEntidad = renderValueBox({
+        if(!is.null(NT_TEMP$INDICE)) {
+            valueBox(
+                value = NT_TEMP$INDICE$NOM_PRESTADOR
+                , subtitle = "Prestador"
+                , icon = icon("stethoscope", lib = "font-awesome")
+                , color = "yellow"
+            )
+        }
+    })
+    
+    output$dashNT_ValorMes = renderValueBox({
+        if(!is.null(NT_TEMP$INDICE)) {
+            valueBox(
+                value = formatAsCurrency(NT_TEMP$INDICE$VALOR_MES)
+                , subtitle = "Valor total a mes"
+                , icon = icon("dollar-sign", lib = "font-awesome")
+                , color = "green"
+            )
+        }
+    })
+    
+    output$dashNT_Poblacion = renderValueBox({
+        if(!is.null(NT_TEMP$INDICE)) {
+            valueBox(
+                value = format(NT_TEMP$INDICE$POBLACION, scientific = F, big.mark = ".", small.mark = ",")
+                , subtitle = "Pobalción"
+                , icon = icon("users", lib = "font-awesome")
+                , color = "blue"
+            )
+        }
+    })
+    
+    output$dashNT_Departamento = renderValueBox({
+        if(!is.null(NT_TEMP$INDICE)) {
+            valueBox(
+                value = NT_TEMP$INDICE$DEPARTAMENTO
+                , subtitle = NT_TEMP$INDICE$CIUDADES
+                , icon = icon("city", lib = "font-awesome")
+                , color = "aqua"
+            )
+        }
+    })
+    
+    output$dashNT_Inclusiones = DT::renderDataTable({
+        if(!is.null(NT_TEMP$INCLUSIONES)) {
+            datatable(
+                NT_TEMP$INCLUSIONES[INCLUIDO == 1, c("OBJETO", "NOTAS")]
+                , rownames = F
+                , selection = 'none'
+                , colnames = c("Observación", "Notas")
+                , options = list(
+                    dom='ft'
+                    , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+                    , pageLength = nrow(PAQUETES)
+                    , ordering = FALSE
+                    , scrollX = TRUE
+                    , scrollY = "60vh"
+                )
+            ) %>%
+                DT::formatStyle(columns = 1:4, valueColumns = 1, backgroundColor = "white")
+        }
+    })
+    
+    output$dashNT_Exclusiones = DT::renderDataTable({
+        if(!is.null(NT_TEMP$INCLUSIONES)) {
+            datatable(
+                NT_TEMP$INCLUSIONES[INCLUIDO == 0, c("OBJETO", "NOTAS")]
+                , rownames = F
+                , selection = 'none'
+                , colnames = c("Observación", "Notas")
+                , options = list(
+                    dom='ft'
+                    , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+                    , pageLength = nrow(PAQUETES)
+                    , ordering = FALSE
+                    , scrollX = TRUE
+                    , scrollY = "60vh"
+                )
+            ) %>%
+                DT::formatStyle(columns = 1:4, valueColumns = 1, backgroundColor = "white")
+        }
+    })
+    
+    output$dashNT_PLOT_Agrupadores = renderGirafe({
+        PIEchart(as.data.table(NT_TEMP$NT), "AGRUPADOR", valorcosto = "VALOR_MES")
+    })
+    
+    output$dashNT_NT = DT::renderDataTable({
+        if(!is.null(NT_TEMP$NT)) {
+            datatable(
+                NT_TEMP$NT[, c("AGRUPADOR", "FREC_MES", "CME", "VALOR_MES")]
+                , rownames = F
+                , selection = 'none'
+                , colnames = c("Agrupador", "Frecuencia a mes", "CME", "Valor a mes")
+                , options = list(
+                    dom='ft'
+                    , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+                    , pageLength = nrow(PAQUETES)
+                    , ordering = FALSE
+                    , scrollX = TRUE
+                    , scrollY = "60vh"
+                )
+            ) %>%
+                DT::formatCurrency(
+                    columns = c("CME", "VALOR_MES")
+                    , digits = 0, mark = ".", dec.mark = ","
+                ) %>%
+                DT::formatStyle(columns = 1:4, valueColumns = 1, backgroundColor = "white")
+        }
+    })
+    
+    ###INDICE
+    
+    output$indiceNT = DT::renderDataTable({
+        if(!is.null(NTs_INDICE)) {
+            datatable(
+                NTs_INDICE[, -c("COD_DEPARTAMENTO")]
+                , rownames = F
+                , selection = 'none'
+                , colnames = c("Nombre NT", "Prestador", "Población", "Departamento", "Ciudades", "Valor a mes")
+                , options = list(
+                    dom='ft'
+                    , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+                    , pageLength = nrow(PAQUETES)
+                    , ordering = FALSE
+                    , scrollX = TRUE
+                    , scrollY = "60vh"
+                )
+            ) %>%
+                DT::formatCurrency(
+                    columns = c("VALOR_MES")
+                    , digits = 0, mark = ".", dec.mark = ","
+                ) %>%
+                DT::formatRound( columns = "POBLACION", mark = ".")
+        }
+    })
+    
+    output$indiceNT_Mapa = renderPlotly(
+        MAPA_NT
+    )
+    
+    ###Comprar NT con BD
+    
+    compararNT_TEMP = reactiveValues(
+        NT = data.table()
+    )
+    
+    observeEvent(input$compararNT_ejecutar, {
+        if(!is.null(input$file)) {
+            if(input$compararNTcolumna != "NA") {
+                
+                opciones$compararNTcolumna = input$compararNTcolumna
+                
+                tryCatch(
+                    expr = {
+                        compararNT_TEMP$NT = NTs_NT[COD_NT == input$compararNT_select]
+                        
+                        compararNT_TEMP$descBSumas = descriptivaBasicaTrans(data = descriptivaBasica(data = bd$original
+                                                                                                     , agrupador = opciones$compararNTcolumna
+                                                                                                     , columna_valor = opciones$valorCosto
+                                                                                                     , prestaciones = opciones$pacientesPrestaciones
+                                                                                                     , columna_fecha = "FECHA_PRESTACION")
+                                                                             , agrupador = opciones$compararNTcolumna
+                                                                             , frec = FALSE
+                                                                             )
+                        compararNT_TEMP$descBFrecs = descriptivaBasicaTrans(data = descriptivaBasica(data = bd$original
+                                                                                                     , agrupador = opciones$compararNTcolumna
+                                                                                                     , columna_valor = opciones$valorCosto
+                                                                                                     , prestaciones = opciones$pacientesPrestaciones
+                                                                                                     , columna_fecha = "FECHA_PRESTACION")
+                                                                             , agrupador = opciones$compararNTcolumna
+                                                                             , suma = FALSE
+                                                                             )
+                        
+                        compararNT_TEMP$difsValorRIPS = diferenciaValorRIPS(sumas = compararNT_TEMP$descBSumas
+                                                                            , NT = compararNT_TEMP$NT
+                                                                            , porcentaje = FALSE)
+                        
+                        compararNT_TEMP$difsValorRIPSperc = diferenciaValorRIPS(sumas = compararNT_TEMP$descBSumas
+                                                                            , NT = compararNT_TEMP$NT
+                                                                            , porcentaje = TRUE)
+                        
+                        compararNT_TEMP$difsValorCME = diferenciaValorCME(frecs = compararNT_TEMP$descBFrecs
+                                                                            , NT = compararNT_TEMP$NT
+                                                                            , porcentaje = FALSE)
+                        
+                        compararNT_TEMP$difsValorCMEperc = diferenciaValorCME(frecs = compararNT_TEMP$descBFrecs
+                                                                                , NT = compararNT_TEMP$NT
+                                                                                , porcentaje = TRUE)
+                        
+                        compararNT_TEMP$totales = diferenciasTotales(frecs = compararNT_TEMP$descBFrecs, sumas = compararNT_TEMP$descBSumas, NT = compararNT_TEMP$NT)
+                    },
+                    error = function(e) {
+                        sendSweetAlert(
+                            session = session,
+                            title = "Error",
+                            text = e[1],
+                            type = "error"
+                        )
+                    }
+                )
+                    
+                
+            }
+        }
+    })
+    
+    output$compararNT_totales = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$totales)) {
+            DT::datatable(compararNT_TEMP$totales[["totales"]], 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=F, scrollX = TRUE, colReorder = TRUE,
+                              dom = 't'
+                              )) %>%
+                DT::formatStyle(3, backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatStyle(4, backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                formatCurrency(c(2,3), mark = ".", dec.mark = ",", digits = 0) %>%
+                formatPercentage(4, digits = 0, mark = ".", dec.mark = ",")
+        }
+    })
+    
+    output$compararNT_totalMesRIPS = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$totales)) {
+            DT::datatable(compararNT_TEMP$totales[["totalMesRIPS"]], 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=F, scrollX = TRUE, colReorder = TRUE,
+                              dom = 't', scrollY = "50vh", scrollCollapse = TRUE
+                          )) %>%
+                DT::formatStyle(3, backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatStyle(4, backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                formatCurrency(c(2,3), mark = ".", dec.mark = ",", digits = 0) %>%
+                formatPercentage(4, digits = 0, mark = ".", dec.mark = ",")
+        }
+    })
+    
+    output$compararNT_totalAgrupadorRIPS = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$totales)) {
+            DT::datatable(compararNT_TEMP$totales[["totalAgrupadorRIPS"]], 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=F, scrollX = TRUE, colReorder = TRUE,
+                              dom = 't', scrollY = "50vh", scrollCollapse = TRUE
+                          )) %>%
+                DT::formatStyle(3, backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatStyle(4, backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                formatCurrency(c(2,3), mark = ".", dec.mark = ",", digits = 0) %>%
+                formatPercentage(4, digits = 0, mark = ".", dec.mark = ",")
+        }
+    })
+    
+    output$compararNT_totalMesCME = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$totales)) {
+            DT::datatable(compararNT_TEMP$totales[["totalMesCME"]], 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          selection = 'none',
+                          extensions = 'ColReorder',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=F, scrollX = TRUE, colReorder = TRUE,
+                              dom = 't', scrollY = "50vh", scrollCollapse = TRUE
+                          )) %>%
+                DT::formatStyle(3, backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatStyle(4, backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                formatCurrency(c(2,3), mark = ".", dec.mark = ",", digits = 0) %>%
+                formatPercentage(4, digits = 0, mark = ".", dec.mark = ",")
+        }
+    })
+    
+    output$compararNT_totalAgrupadorCME = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$totales)) {
+            DT::datatable(compararNT_TEMP$totales[["totalAgrupadorCME"]], 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=F, scrollX = TRUE, colReorder = TRUE,
+                              dom = 't', scrollY = "50vh", scrollCollapse = TRUE
+                          )) %>%
+                DT::formatStyle(3, backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatStyle(4, backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                formatCurrency(c(2,3), mark = ".", dec.mark = ",", digits = 0) %>%
+                formatPercentage(4, digits = 0, mark = ".", dec.mark = ",")
+        }
+    })
+    
+    output$compararNT_descBSumas = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$descBSumas)) {
+            DT::datatable(compararNT_TEMP$descBSumas, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                formatCurrency(-c(1), mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
+    
+    output$compararNT_descBFrecs = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$descBFrecs)) {
+            DT::datatable(compararNT_TEMP$descBFrecs, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                DT::formatRound(-c(1),mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
+    
+    output$compararNT_difsValorRIPS = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$difsValorRIPS)) {
+            DT::datatable(compararNT_TEMP$difsValorRIPS, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                DT::formatStyle(-c(1), backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatCurrency(-c(1),mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
+    
+    output$compararNT_difsValorRIPSperc = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$difsValorRIPSperc)) {
+            DT::datatable(compararNT_TEMP$difsValorRIPSperc, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                DT::formatStyle(-c(1), backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatPercentage(-c(1),mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
+    
+    output$compararNT_difsValorCME = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$difsValorCME)) {
+            DT::datatable(compararNT_TEMP$difsValorCME, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                DT::formatStyle(-c(1), backgroundColor = styleInterval(
+                    cuts = c(0)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatCurrency(-c(1),mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
+    
+    output$compararNT_difsValorCMEperc = DT::renderDataTable({
+        if (!is.null(compararNT_TEMP$difsValorCMEperc)) {
+            DT::datatable(compararNT_TEMP$difsValorCMEperc, 
+                          class = 'cell-border stripe', 
+                          rownames = FALSE, 
+                          extensions = 'ColReorder',
+                          selection = 'none',
+                          options = list(
+                              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                              pageLength = 15, autoWidth = FALSE, ordering=T, scrollX = TRUE, colReorder = TRUE,
+                              scrollY = "50vh", scrollCollapse = TRUE)) %>%
+                DT::formatStyle(-c(1), backgroundColor = styleInterval(
+                    cuts = c(1)
+                    , values = c(
+                        "rgb(255, 145, 145)",
+                        "rgb(145, 255, 145)"
+                    )
+                )) %>%
+                DT::formatPercentage(-c(1),mark = ".", dec.mark = ",", digits = 0)
+        }
+    })
 
 })
