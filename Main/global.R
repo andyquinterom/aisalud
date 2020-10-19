@@ -7,8 +7,8 @@ require(data.table)
 require(feather)
 source("config.R")
 
-googledrive::drive_auth(cache = "token", email = "operaciones@mdco.com.co")
-googlesheets4::sheets_auth(cache = "token", email = "operaciones@mdco.com.co")
+googledrive::drive_auth(path = "secrets/serviceAccount.json")
+googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
 
 dir.create("PAQUETES")
 dir.create("PRICING")
