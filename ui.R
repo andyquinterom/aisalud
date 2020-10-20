@@ -1,29 +1,8 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-library(shiny)
-library(DT)
-library(shinydashboard)
-library(shinyWidgets)
-library(shinythemes)
-library(stringr)
-library(data.table)
-library(ggiraph)
-library(plotly)
-library(markdown)
-library(tableHTML)
-
 shinyUI(
 	function(request) {
 	tagList(
 			tags$head(
-				tags$script(type="text/javascript", src = "code.js"),
+				tags$script(type = "text/javascript", src = "code.js"),
 				tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
 				includeHTML("googleanalytics.html"),
 				tags$script(HTML(
