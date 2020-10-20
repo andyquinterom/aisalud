@@ -1,0 +1,12 @@
+name: analtica_integrada_salud_-_asmetsalud
+title:
+username: INDEXMIC
+account: INDEXMIC
+server: users.indexmic.com
+hostUrl: https://users.indexmic.com/__api__
+appId: 16
+bundleId: 107
+url: https://users.indexmic.com/salud/analitica/ASMET/
+when: 1603206350.18904
+asMultiple: FALSE
+asStatic: FALSE

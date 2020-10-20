@@ -758,7 +758,7 @@ shinyUI(
 	    											)
 	    							),
 	    							tabItem(tabName = "pricing",
-	    											selectInput("pricingSelect", label = "Informe:", choices = str_replace(list.files("PRICING/"), ".csv", "")),
+	    											selectInput("pricingSelect", label = "Informe:", choices = str_replace(list.files("datos/PRICING/"), ".csv", "")),
 	    											fluidRow(
 	    												column(width = 3,
 		    												box(width = "100%",
