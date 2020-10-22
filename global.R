@@ -20,7 +20,7 @@ library(googlesheets4)
 library(DT)
 library(markdown)
 library(tableHTML)
-library(colmaps2)
+#library(colmaps2)
 library(maps)
 library(withr)
 
@@ -154,7 +154,7 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
   
   REF <-
     as.data.table(read_feather("datos/PAQUETES/REFERENTE.feather"))
-  
+
   PAQUETE_PP <- PAQUETES[`COMPONENTE` == "PAQUETE"]
   PAQUETES_CC <- PAQUETES[`COMPONENTE` != "PAQUETE"]
 }
@@ -230,7 +230,7 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
         )
       ) %>% 
         layout(autosize = TRUE),
-      "NTs/NTmapa.rds")
+      "datos/NTmapa.rds")
   }
   
 }

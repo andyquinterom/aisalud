@@ -990,11 +990,11 @@ shinyServer(function(input, output, session) {
     
     ### Sección dashboard
                 
-    # PAQUETES = as.data.table(readr::read_csv("PAQUETES/PAQUETES.csv"))
+    # PAQUETES = as.data.table(readr::read_csv("datos/PAQUETES.csv"))
     # PAQUETE_PP = PAQUETES[`COMPONENTE` == "PAQUETE"]
     # PAQUETES_CC = PAQUETES[`COMPONENTE` != "PAQUETE"]
-    # REF_PAQUETES = as.data.table(readr::read_csv("PAQUETES/REFERENTE-PAQUETES.csv"))
-    # REF = as.data.table(readr::read_csv("PAQUETES/REFERENTE.csv"))
+    # REF_PAQUETES = as.data.table(readr::read_csv("datos/REFERENTE-PAQUETES.csv"))
+    # REF = as.data.table(readr::read_csv("datos/REFERENTE.csv"))
                 
     output$paqueteIndexTable = DT::renderDataTable(
         datatable(unique(PAQUETES[, list(`CODIGO PAQUETE` ,ESPECIALIDAD, SERVICIO, DESCRIPCION, INCLUSIONES, EXCLUSIONES)])

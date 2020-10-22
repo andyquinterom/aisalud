@@ -6,3 +6,5 @@
 .Renviron
 secrets/
 datos/
+.Rapp.history
+rsconnect/
