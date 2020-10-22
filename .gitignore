@@ -4,4 +4,7 @@
 .Ruserdata
 **/*.DS_Store
 .Renviron
-/secrets
+secrets/
+datos/
+.Rapp.history
+rsconnect/

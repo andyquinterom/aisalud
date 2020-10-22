@@ -990,11 +990,11 @@ shinyServer(function(input, output, session) {
     
     ### Sección dashboard
                 
-    # PAQUETES = as.data.table(readr::read_csv("PAQUETES/PAQUETES.csv"))
+    # PAQUETES = as.data.table(readr::read_csv("datos/PAQUETES.csv"))
     # PAQUETE_PP = PAQUETES[`COMPONENTE` == "PAQUETE"]
     # PAQUETES_CC = PAQUETES[`COMPONENTE` != "PAQUETE"]
-    # REF_PAQUETES = as.data.table(readr::read_csv("PAQUETES/REFERENTE-PAQUETES.csv"))
-    # REF = as.data.table(readr::read_csv("PAQUETES/REFERENTE.csv"))
+    # REF_PAQUETES = as.data.table(readr::read_csv("datos/REFERENTE-PAQUETES.csv"))
+    # REF = as.data.table(readr::read_csv("datos/REFERENTE.csv"))
                 
     output$paqueteIndexTable = DT::renderDataTable(
         datatable(unique(PAQUETES[, list(`CODIGO PAQUETE` ,ESPECIALIDAD, SERVICIO, DESCRIPCION, INCLUSIONES, EXCLUSIONES)])
@@ -1020,17 +1020,17 @@ shinyServer(function(input, output, session) {
 
         observeEvent(input$DASHBOARD_actualizar_conf, {
             if (isTRUE(input$DASHBOARD_actualizar_conf)) {
-                unlink("PAQUETES/", recursive = TRUE)
-                dir.create("PAQUETES")
+                unlink("datos/PAQUETES/", recursive = TRUE)
+                dir.create("datos/PAQUETES")
                 withProgress(value = 0, message = "Actualizando paquetes...", {
                     write_feather(sheets_read(paquete_path, sheet = "PAQUETES", col_types = "cccdcccccccdd") 
-                                  ,"PAQUETES/PAQUETES.feather")
+                                  ,"datos/PAQUETES/PAQUETES.feather")
                         incProgress(0.3)
                     write_feather(sheets_read(paquete_path, sheet = "REFERENTE-PAQUETES") 
-                                  ,"PAQUETES/REFERENTE-PAQUETES.feather")
+                                  ,"datos/PAQUETES/REFERENTE-PAQUETES.feather")
                         incProgress(0.3)
                     write_feather(sheets_read(paquete_path, sheet = "REFERENTE") 
-                                  ,"PAQUETES/REFERENTE.feather")
+                                  ,"datos/PAQUETES/REFERENTE.feather")
                         incProgress(0.3)
                 })
                 sendSweetAlert(session, title = "¡Paquete actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
@@ -1250,13 +1250,13 @@ shinyServer(function(input, output, session) {
     observeEvent(input$pricingActualizar_conf, {
         if (isTRUE(input$pricingActualizar_conf)) {
             withProgress(value = 0, message = "Actualizando pricing...", min = 0, max = 1.1, {
-                unlink("PRICING/", recursive = TRUE)
-                dir.create("PRICING")
+                unlink("datos/PRICING/", recursive = TRUE)
+                dir.create("datos/PRICING")
                 pricingList = drive_ls(path = as_id(drive_path))
                 incProgress(0.1, message = "¡Archivos leidos!")
                 i = 1
                 while (i <= length(pricingList$id)) {
-                    drive_download(file = as_id(pricingList$id[i]), path = paste0("PRICING/", pricingList$name[i]), overwrite = T)
+                    drive_download(file = as_id(pricingList$id[i]), path = paste0("datos/PRICING/", pricingList$name[i]), overwrite = T)
                     i = i + 1
                     incProgress(1/length(pricingList$id))
                 }
@@ -1271,7 +1271,7 @@ shinyServer(function(input, output, session) {
     pricing = reactiveValues()
     
     observeEvent(input$pricingSelect, {
-        pricing$bd = as.data.table(readr::read_csv(paste0("PRICING/", input$pricingSelect, ".csv"), na = c("-", "#N/A", "#DIV/0!", "NA")))
+        pricing$bd = as.data.table(readr::read_csv(paste0("datos/PRICING/", input$pricingSelect, ".csv"), na = c("-", "#N/A", "#DIV/0!", "NA")))
         
             pricing$bd$CODIGO_CUPS = as.character(pricing$bd$CODIGO_CUPS)
             pricing$bd$VALOR_UNITARIO = as.numeric(as.character(pricing$bd$VALOR_UNITARIO))
@@ -1402,19 +1402,19 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$dashNT_actualizar_conf, {
         if (isTRUE(input$dashNT_actualizar_conf)) {
-            unlink("NTs/", recursive = TRUE)
-            dir.create("NTs")
+            unlink("datos/NTs/", recursive = TRUE)
+            dir.create("datos/NTs")
             withProgress(value = 0, message = "Actualizando notas técnicas...", {
                 write_feather(sheets_read(nts_path, sheet = "NTs", col_types = "ccddd") 
-                              ,"NTs/NTs.feather")
+                              ,"datos/NTs/NTs.feather")
                 incProgress(0.3)
                 write_feather(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd") 
-                              ,"NTs/INDICE.feather")
+                              ,"datos/NTs/INDICE.feather")
                 incProgress(0.3)
                 write_feather(sheets_read(nts_path, sheet = "INCLUSIONES", col_types = "ccdc") 
-                              ,"NTs/INCLUSIONES.feather")
+                              ,"datos/NTs/INCLUSIONES.feather")
                 incProgress(0.3)
-                saveRDS(mapaValoresNT(as.data.table(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd"))) %>% layout(autosize = TRUE), "NTs/NTmapa.rds")
+                saveRDS(mapaValoresNT(as.data.table(sheets_read(nts_path, sheet = "INDICE", col_types = "ccdcccd"))) %>% layout(autosize = TRUE), "datos/NTs/NTmapa.rds")
             })
             sendSweetAlert(session, title = "¡Notas técnicas actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
             stopApp()
