@@ -48,7 +48,7 @@ shinyUI(
               icon = icon("chart-area", lib = "font-awesome"), 
               tabName = "graficos",
               menuSubItem(text = "Histogramas y barras",
-                          tabName = "histogramasbarras"), 
+                          tabName = "histogramas_barras"), 
               menuSubItem(text = "Caja de bigotes", 
                           tabName = "cajadebigotes"), 
               menuSubItem(text = "Linea de tiempo",
@@ -520,7 +520,7 @@ shinyUI(
                     div(DT::dataTableOutput("outliers_tabla"),
                         style = "font-size:90%"))))),
           tabItem(
-            tabName = "histogramasbarras",
+            tabName = "histogramas_barras",
             fluidRow(
               column(
                 width = 3,
@@ -540,20 +540,20 @@ shinyUI(
                       `actions-box` = TRUE,
                       `live-search` = TRUE)),
                   numericInput(
-                    inputId = "histogramaFiltroX1",
+                    inputId = "histograma_x_min",
                     label = "X Min",
                     value = 0),
                   numericInput(
-                    inputId = "histogramaFiltroX2",
+                    inputId = "histograma_x_max",
                     label = "X Max", 
                     value = 1),
                   numericInput(
-                    inputId = "histogramabinWidth",
+                    inputId = "histograma_width",
                     label = "Ancho del bin",
                     value = 1),
                   numericInput(
-                    inputId = "histogramaNumBins",
-                    label = "· de bins",
+                    inputId = "histograma_bins",
+                    label = "# de bins",
                     value = 10),
                   actionButton(
                     inputId = "exeOpcionesHistograma",
@@ -571,7 +571,7 @@ shinyUI(
                 box(
                   width = "12",
                   plotlyOutput(
-                    outputId = "histogramaFinal",
+                    outputId = "histograma_render",
                     height = "800px"))))),
           tabItem(
             tabName = "cajadebigotes",
@@ -652,7 +652,7 @@ shinyUI(
                     label = "Numero de meses:",
                     step = 1),
                   actionButton(
-                    inputId = "exeNTremoveRow",
+                    inputId = "crear_nt_remove",
                     label = "Remover filas seleccionadas",
                     width = "100%"),
                   br(),

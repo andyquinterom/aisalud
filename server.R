@@ -112,6 +112,7 @@ shinyServer(function(input, output, session) {
             NRO_IDENTIFICACION)]
           columnas_num <- unlist(lapply(datos$original[1,], is.numeric))
           datos$colnames <- colnames(datos$original)
+          datos$colnames_num <- datos$colnames[columnas_num]
           incProgress(0.1)
           updatePickerInput(session,
                             inputId = "descriptiva_cols",
@@ -648,54 +649,73 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$exeOpcionesHistograma, {
     if(!is.null(input$file)) {
-      if(!is.null(input$histogramaColumna) && input$histogramaColumna != "NA") {
-        withProgress(message = "Graficando", min = 0,{
-          totalcolumna = all(check.numeric(unlist(extractCol(datos$original, input$histogramaColumna))))
-          opciones$histogramaColumna = input$histogramaColumna
-          opciones$histogramaFiltroX = c(input$histogramaFiltroX1, input$histogramaFiltroX2)
-          opciones$histogramabinWidth = input$histogramabinWidth
-          opciones$histogramaNumBins = input$histogramaNumBins
-          opciones$histogramaRelleno = input$histogramaRelleno
-          colorRellenoNA = ""
-          if (input$histogramaRelleno == "NA" || input$histogramaRelleno == opciones$histogramaColumna)
-            opciones$histogramaRelleno = NULL
+      if(!is.null(input$histograma_col) && input$histograma_col != "NA") {
+        withProgress(message = "Graficando", min = 0, {
+          opciones$histograma_col <- input$histograma_col
+          opciones$histograma_x <- c(input$histograma_x_min, input$histograma_x_max)
+          opciones$histograma_width <- input$histograma_width
+          opciones$histograma_bins <- input$histograma_bins
+          opciones$histograma_fill <- input$histograma_fill
+          if (input$histograma_fill == "NA" ||
+              input$histograma_fill == opciones$histograma_col) {
+            opciones$histograma_fill <- NULL
+          }
+          
           incProgress(0.1)
-          if (isFALSE(opciones$pacientesPrestaciones)) {
-            bdPrestaciones = NULL
-            if (opciones$histogramaColumna == opciones$valor_costo)
-              bdPacientes = agregar(datos$original, columna_valor = opciones$valor_costo, columnas = c('NRO_IDENTIFICACION', opciones$histogramaRelleno), prestaciones = TRUE)
-            else
-              bdPacientes = agregar(datos$original, columna_valor = opciones$valor_costo, columnas = c('NRO_IDENTIFICACION', opciones$histogramaRelleno, opciones$histogramaColumna), prestaciones = TRUE)
-            
-            incProgress(0.3)
-            if(totalcolumna)
-              bdPacientes = bdPacientes[get(opciones$histogramaColumna) >= opciones$histogramaFiltroX[1] & get(opciones$histogramaColumna) <= opciones$histogramaFiltroX[2]]
-            histograma = ggplot(bdPacientes, aes(x=get(opciones$histogramaColumna)))
-            bdPacientes = NULL
+
+          if (!opciones$analisis_prestacion) {
+            histograma_datos <- ifelse(
+              test = opciones$histograma_col == opciones$valor_costo,
+              yes = agregar(
+                data = datos$original,
+                columna_valor = opciones$valor_costo,
+                columnas = c(opciones$histograma_fill),
+                prestaciones = FALSE),
+              no = agregar(
+                data = datos$original, 
+                columna_valor = opciones$valor_costo,
+                columnas = c(opciones$histograma_fill,
+                             opciones$histograma_col),
+                prestaciones = FALSE)
+            )
+          } else {
+            histograma_datos <- datos$original
           }
-          else {
-            incProgress(0.3)
-            bdPacientes = NULL
-            if(totalcolumna)
-              bdPrestaciones = datos$original[get(opciones$histogramaColumna) >= opciones$histogramaFiltroX[1] & get(opciones$histogramaColumna) <= opciones$histogramaFiltroX[2]]
-            else
-              bdPrestaciones = datos$original
-            histograma = ggplot(bdPrestaciones, aes(x=get(opciones$histogramaColumna)))
-            bdPrestaciones = NULL
-          }
+          
           incProgress(0.3)
-          output$histogramaFinal = renderPlotly({
-            if(is.null(opciones$histogramaRelleno) || opciones$histogramaRelleno %in% c(opciones$histogramaColumna, "VALOR", "COSTO")) {
-              if(totalcolumna) {
-                ggplotly(tooltip = FALSE, p = 
-                           histograma +
-                           geom_histogram(bins = opciones$histogramaNumBins, color="black", aes(y = ..density..)) +
-                           geom_density() +
-                           xlab(opciones$histogramaColumna) +
-                           ylab("Densidad") +
-                           scale_y_continuous(labels = scales::comma) +
-                           theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12), legend.title = element_blank())
-                ) %>% config(locale = "es") %>%
+          
+          if(opciones$histograma_col %in% datos$colnames_num) {
+            bdPacientes <- bdPacientes[
+              get(opciones$histograma_col) >= opciones$histograma_x[1] & 
+              get(opciones$histograma_col) <= opciones$histograma_x[2]]
+            histograma <- ggplot(histograma_datos, aes(x=get(opciones$histograma_col)))
+            histograma_datos <- NULL
+          }
+          
+          incProgress(0.3)
+          
+          output$histograma_render = renderPlotly({
+            if(is.null(opciones$histograma_fill) || 
+               opciones$histograma_fill %in% c(opciones$histograma_col,
+                                               "VALOR",
+                                               "COSTO")) {
+              if(opciones$histograma_col %in% datos$colnames_num) {
+                ggplotly(
+                  tooltip = FALSE,
+                  p = histograma +
+                    geom_histogram(
+                      bins = opciones$histograma_bins, 
+                      color="black",
+                      aes(y = ..density..)) +
+                    geom_density() +
+                    xlab(opciones$histograma_col) +
+                    ylab("Densidad") +
+                    scale_y_continuous(labels = scales::comma) +
+                    theme(axis.text.x = element_text(angle = 90,
+                                                     hjust = 1,
+                                                     size = 12),
+                          legend.title = element_blank())) %>% 
+                  config(locale = "es") %>%
                   layout(legend = list(x= 1, y = 0.5))
               }
               else {
