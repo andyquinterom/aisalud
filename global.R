@@ -20,7 +20,7 @@ library(googlesheets4)
 library(DT)
 library(markdown)
 library(tableHTML)
-#library(colmaps2)
+library(colmaps2)
 library(maps)
 library(withr)
 
@@ -231,6 +231,7 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
       ) %>% 
         layout(autosize = TRUE),
       "datos/NTmapa.rds")
+    
   }
   
 }
@@ -239,5 +240,4 @@ MAPA_NT <- readRDS("datos/NTs/NTmapa.rds")
 NTs_INDICE <- as.data.table(read_feather("datos/NTs/INDICE.feather"))
 NTs_INCLUSIONES <- as.data.table(read_feather("datos/NTs/INCLUSIONES.feather"))
 NTs_NT <- as.data.table(read_feather("datos/NTs/NTs.feather"))
-
 NTs_UniqueCod <- unique(NTs_INDICE$COD_NT)

@@ -5,12 +5,10 @@ conversion_tiposervicio <- function(tipo_servicio) {
   # Reemplazar valores númericos con sus correspondientes
   return(
     str_replace_all(tipo_servicio,
-                    c(
-                      "1" = "Materiales e insumos",
+                    c("1" = "Materiales e insumos",
                       "2" = "Traslados",
                       "3" = "Estancias",
-                      "4" = "Honorarios"
-                    )
+                      "4" = "Honorarios")
     )
   )
 }
@@ -22,10 +20,8 @@ conversion_tipomedicamento <- function(tipo_medicamento) {
   # Reemplazar valores númericos con sus correspondientes
   return(
     str_replace_all(tipo_medicamento,
-                    c(
-                      "1" = "Medicamentos PBS",
-                      "2" = "Medicamentos no PBS"
-                    )
+                    c("1" = "Medicamentos PBS",
+                      "2" = "Medicamentos no PBS")
     )
   )
 }
@@ -37,11 +33,9 @@ conversion_ambito <- function(ambito) {
   # Reemplazar valores númericos con sus correspondientes
   return(
     str_replace_all(ambito,
-                    c(
-                      "1" = "Ambulatorio",
+                    c("1" = "Ambulatorio",
                       "2" = "Hospitalario",
-                      "3" = "Urgencias"
-                    )
+                      "3" = "Urgencias")
     )
   )
 }
@@ -53,16 +47,14 @@ conversion_tipousuario <- function(tipo_usuario) {
   # Reemplazar valores númericos con sus correspondientes
   return(
     str_replace_all(tipo_usuario,
-                    c(
-                      "1" = "Contributivo",
+                    c("1" = "Contributivo",
                       "2" = "Subsidiado",
                       "3" = "Vinculado",
                       "4" = "Particular",
                       "5" = "Otro",
                       "6" = "Victima con afiliacion al Regimen Contributivo",
                       "7" = "Victima con afiliacion al Regimen Subsidiado",
-                      "8" = "Victima no asegurado"
-                    )
+                      "8" = "Victima no asegurado")
     )
   )
 }
