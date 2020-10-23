@@ -351,7 +351,7 @@ shinyServer(function(input, output, session) {
         if(!is.null(input$file)) {
             if(!is.null(input$outliersColumna) && input$outliersColumna != "NA") {
                 opciones$outliersColumna = input$outliersColumna
-                    bd$outliers = outlierspercentil(bd$original, opciones$outliersColumna, opciones$valorCosto, percentil = input$outliersPercentil, input$outliersFiltroFrecuencia, session = session)
+                    bd$outliers = outlierspercentil(bd$original, opciones$outliersColumna, opciones$valorCosto, percentil = input$outliersPercentil, input$outliersFiltroFrecuencia)
                 output$outliersFinal = DT::renderDataTable({
                     DT::datatable(bd$outliers,
                     options = list(
@@ -369,7 +369,7 @@ shinyServer(function(input, output, session) {
         if(!is.null(input$file)) {
             if(!is.null(input$outliersColumna) && input$outliersColumna != "NA") {
                 opciones$outliersColumna = input$outliersColumna
-                bd$outliers = outliersIQR(bd$original, opciones$outliersColumna, opciones$valorCosto, multiplicativo = numerize(input$outliersIQR), frecuencia = input$outliersFiltroFrecuencia,session = session)
+                bd$outliers = outliersIQR(bd$original, opciones$outliersColumna, opciones$valorCosto, multiplicativo = numerize(input$outliersIQR), frecuencia = input$outliersFiltroFrecuencia)
                 output$outliersFinal = DT::renderDataTable({
                     DT::datatable(bd$outliers,
                                   options = list(
@@ -1252,7 +1252,7 @@ shinyServer(function(input, output, session) {
             withProgress(value = 0, message = "Actualizando pricing...", min = 0, max = 1.1, {
                 unlink("datos/PRICING/", recursive = TRUE)
                 dir.create("datos/PRICING")
-                pricingList = drive_ls(path = as_id(drive_path))
+                pricingList = drive_ls(path = as_id(pricing_path))
                 incProgress(0.1, message = "¡Archivos leidos!")
                 i = 1
                 while (i <= length(pricingList$id)) {
