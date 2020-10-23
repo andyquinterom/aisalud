@@ -1,7 +1,3 @@
-require(data.table)
-require(lubridate)
-require(dplyr)
-
 cbind.fill <- function(nm, agrupador){
   if (length(nm) == 1) {
     return(nm)

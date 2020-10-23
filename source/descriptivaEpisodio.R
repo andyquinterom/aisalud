@@ -1,4 +1,4 @@
-descriptivaEpisodio <- function(data, columnas, columna_valor, columna_suma,
+episodios <- function(data, columnas, columna_valor, columna_suma,
                                columna_sep) {
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
@@ -8,8 +8,8 @@ descriptivaEpisodio <- function(data, columnas, columna_valor, columna_suma,
                      by = c(columna_suma, "NRO_IDENTIFICACION", columna_sep)]
   setnames(data, "VAR_PLACEHOLDER", columnas)
   data <- descriptiva(data,
-                     columnas = c(columnas, columna_sep),
-                     columna_valor = "Suma", prestaciones = FALSE)
+                      columnas = c(columnas, columna_sep),
+                      columna_valor = "Suma", prestaciones = FALSE)
   return(data)
   data <- NULL
 }

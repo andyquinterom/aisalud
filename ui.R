@@ -34,11 +34,11 @@ shinyUI(
           menuItem(
               text = "Descriptiva",
               icon = icon("table", lib = "font-awesome"),
-              tabName = "descriptivaEventos"),
+              tabName = "descriptiva_eventos"),
           menuItem(
             text = "Episodios", 
             icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptivaEpisodios"),
+            tabName = "episodios"),
           menuItem(
               text = "Pacientes Outliers",
               icon = icon("search-minus", lib = "font-awesome"),
@@ -119,7 +119,7 @@ shinyUI(
                 column(
                   width = 2,
                   dateInput(
-                    inputId = "fechamin",
+                    inputId = "fecha_min",
                     label = "Fecha Inicial:",
                     value = NULL, 
                     min = NULL, 
@@ -127,7 +127,7 @@ shinyUI(
                     format = "dd-mm-yyyy",
                     language = "es"),
                   dateInput(
-                    inputId = "fechamax",
+                    inputId = "fecha_max",
                     label = "Fecha Final:",
                     value = NULL,
                     min = NULL,
@@ -136,23 +136,22 @@ shinyUI(
                     language = "es"),
                   tags$style(HTML(".datepicker {z-index:99999 !important;}")),
                   textInput(
-                    inputId = "formatoFecha",
+                    inputId = "formato_fecha",
                     label = "Formato de Fecha",
                     value = "%d/%m/%Y"),
-                  actionButton(inputId = "exeOpciones", label = "Aplicar")),
+                  actionButton(inputId = "ejecutar_opciones", label = "Aplicar")),
                 column(
                   width = 3,
                   radioButtons(
-                    inputId = "valorCosto", 
+                    inputId = "valor_costo", 
                     label = "Calcular estadísticas por:",
                     choiceNames = list("VALOR","COSTO"),
                     choiceValues = list("VALOR", "COSTO"),
                     inline = TRUE, width='75%'),
                   radioButtons(
-                    inputId = "pacientesPrestaciones",
+                    inputId = "analisis_prestacion",
                     label = "Calcular estadísticas por:",
-                    choiceNames = list("PACIENTE","PRESTACIÓN"),
-                    choiceValues = list("FALSE", "TRUE"),
+                    choices = list("PACIENTE","PRESTACIÓN"),
                     inline = TRUE, width='75%')),
                 column(
                   width = 6,
@@ -161,13 +160,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltro1",
+                        inputId = "filtro_1",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroVAL1", 
+                        inputId = "filtro_1_val", 
                         choices = c("NA"), 
                         multiple = TRUE, 
                         width = "100%",
@@ -180,13 +179,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltro2", 
+                        inputId = "filtro_2", 
                         choices = c("NA"), 
                         width = "100%")),
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroVAL2", 
+                        inputId = "filtro_2_val", 
                         choices = c("NA"), 
                         multiple = TRUE,
                         width = "100%",
@@ -199,13 +198,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltro3",
+                        inputId = "filtro_3",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroVAL3",
+                        inputId = "filtro_3_val",
                         choices = c("NA"),
                         multiple = TRUE, 
                         width = "100%",
@@ -218,13 +217,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltro4",
+                        inputId = "filtro_4",
                         choices = c("NA"), 
                         width = "100%")),
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroVAL4",
+                        inputId = "filtro_4_val",
                         choices = c("NA"), 
                         multiple = TRUE, 
                         width = "100%",
@@ -237,13 +236,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltro5",
+                        inputId = "filtro_5",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroVAL5",
+                        inputId = "filtro_5_val",
                         choices = c("NA"),
                         multiple = TRUE,
                         width = "100%",
@@ -256,13 +255,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroNum1",
+                        inputId = "filtro_num_1",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 3,
                       numericInput(
-                        inputId = "bdFiltroNum1VAL1",
+                        inputId = "filtro_num_1_min",
                         label = NULL,
                         value = 0,
                         min = 0,
@@ -271,7 +270,7 @@ shinyUI(
                     column(
                       width = 3,
                       numericInput(
-                        inputId = "bdFiltroNum1VAL2",
+                        inputId = "filtro_num_1_max",
                         label = NULL, 
                         value = 0,
                         min = 0,
@@ -281,13 +280,13 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroNum2",
+                        inputId = "filtro_num_2",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 3,
                       numericInput(
-                        inputId = "bdFiltroNum2VAL1",
+                        inputId = "filtro_num_2_min",
                         label = NULL,
                         value = 0,
                         min = 0,
@@ -296,7 +295,7 @@ shinyUI(
                     column(
                       width = 3,
                       numericInput(
-                        inputId = "bdFiltroNum2VAL2",
+                        inputId = "filtro_num_2_max",
                         label = NULL, 
                         value = 0, 
                         min = 0, 
@@ -306,43 +305,43 @@ shinyUI(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroLong1",
+                        inputId = "filtro_largo_1",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 5,
                       textInput(
-                        inputId = "bdFiltroLongVAL1",
+                        inputId = "filtro_largo_1_val",
                         width = "100%",
                         label = NULL)),
                     column(
                       width = 1,
                       checkboxInput(
-                        inputId = "bdFiltroLongEx1",
+                        inputId = "filtro_largo_1_excluir",
                         label = NULL))),
                   fluidRow(
                     column(
                       width = 6,
                       pickerInput(
-                        inputId = "bdFiltroLong2",
+                        inputId = "filtro_largo_2",
                         choices = c("NA"),
                         width = "100%")),
                     column(
                       width = 5,
                       textInput(
-                        inputId = "bdFiltroLongVAL2",
+                        inputId = "filtro_largo_2_val",
                         width = "100%",
                         label = NULL)),
                     column(
                       width = 1,
                       checkboxInput(
-                        inputId = "bdFiltroLongEx2",
+                        inputId = "filtro_largo_2_excluir",
                         label = NULL))),
                   fluidRow(
                     column(
                       width = 12,
                       actionButton(
-                        inputId = "aplicarFiltros",
+                        inputId = "filtro_aplicar",
                         label = "Aplicar Filtros"))),
                   tags$style(HTML(".dropdown-menu {z-index:99999 !important;}")))),
             br(),
@@ -368,13 +367,13 @@ shinyUI(
                     outputId = "preview",
                     width = "100%"))))),
           tabItem(
-            tabName = "descriptivaEventos",
+            tabName = "descriptiva_eventos",
             fluidRow(
               column(
                 width = 3,
                 box(width = "100%",
                     pickerInput(
-                      inputId = "descriptivaColumna",
+                      inputId = "descriptiva_cols",
                       label = "Agrupar por:",
                       choices = c("NA"),
                       multiple = TRUE,
@@ -383,35 +382,25 @@ shinyUI(
                         `deselect-all-text` = "Deseleccionar todos",
                         `select-all-text` = "Seleccionar todos",
                         `live-search` = TRUE)),
-                    sliderInput(
-                      inputId = "filtroCoeficiente",
-                      label = "Coeficiente de variacion:",
-                      min = 0, 
-                      max = 10,
-                      value = c(0,1)),
-                    checkboxInput(
-                      inputId = "filtroNULL",
-                      label = "Mostrar todos los valores",
-                      value = FALSE),
                     actionButton(
-                      inputId = "exeOpcionesDescriptiva",
+                      inputId = "descriptiva_exe",
                       label = "Confirmar"),
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaDescriptivaCSV",
+                      outputId = "descriptiva_descargar_csv",
                       label = "CSV",
                       style = "width:100%;"),
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaDescriptivaEXCEL", 
+                      outputId = "descriptiva_descargar_xlsx", 
                       label = "Excel",
                       style = "width:100%;"),
                     br(),
                     br(),
                     textOutput(outputId = "sumasDescriptivaRegistros"),
-                     textOutput(outputId = "sumasDescriptivaPacientes"),
+                    textOutput(outputId = "sumasDescriptivaPacientes"),
                     textOutput(outputId = "sumasDescriptivaValorCosto"),
                     textOutput(outputId = "sumasDescriptivaCUPS"))),
               column(
@@ -419,16 +408,16 @@ shinyUI(
                 box(
                   width = "100%",
                   div(
-                    DT::dataTableOutput(outputId = "descriptivaFinal"),
+                    DT::dataTableOutput(outputId = "descriptiva_tabla"),
                     style = "font-size:90%"))))),
           tabItem(
-            tabName = "descriptivaEpisodios",
+            tabName = "episodios",
             fluidRow(
               column(
                 width = 3,
                 box(width = "100%",
                     pickerInput(
-                      inputId = "descriptivaEpColumnaVal",
+                      inputId = "episodios_col_valor",
                       label = "Sumar valor por:",
                       choices = c("NA"),
                       multiple = FALSE,
@@ -436,7 +425,7 @@ shinyUI(
                         `actions-box` = TRUE,
                         `live-search` = TRUE)),
                     pickerInput(
-                      inputId = "descriptivaEpColumna",
+                      inputId = "episodios_cols",
                       label = "Agrupar por:",
                       choices = c("NA"),
                       multiple = FALSE,
@@ -444,7 +433,7 @@ shinyUI(
                         `actions-box` = TRUE,
                         `live-search` = TRUE)),
                     pickerInput(
-                      inputId = "descriptivaEpColumnaSep",
+                      inputId = "episodios_cols_sep",
                       label = "Separar por:",
                       choices = c("NA"),
                       multiple = TRUE,
@@ -453,7 +442,7 @@ shinyUI(
                         `live-search` = TRUE,
                         `select-all-text` = "Seleccionar todos",
                         `deselect-all-text` = "Deseleccionar todos")),
-                    actionButton("exeOpcionesDescriptivaEp", "Confirmar"),
+                    actionButton("episodios_exe", "Confirmar"),
                     tags$br(),
                     tags$br(),
                     downloadButton(
@@ -471,7 +460,7 @@ shinyUI(
                 box(
                   width = "100%",
                   div(
-                    DT::dataTableOutput(outputId = "descriptivaEpFinal"),
+                    DT::dataTableOutput(outputId = "episodios_tabla"),
                     style = "font-size:90%"))))),
           tabItem(
             tabName = "outliers",
@@ -480,37 +469,37 @@ shinyUI(
                 width = 3,
                 box(width = "12",
                     pickerInput(
-                      inputId = "outliersColumna",
+                      inputId = "outliers_cols",
                       label = "Agrupar por:",
                       choices = c("NA"),
                       options = list(
                         `actions-box` = TRUE,
                         `live-search` = TRUE)),
                     sliderInput(
-                      inputId = "outliersPercentil",
+                      inputId = "outliers_percentil",
                       label = "Outliers por percentil:",
                       min = 0.75, 
                       max = 0.99, 
                       value = c(0.9)),
                     radioButtons(
-                      inputId = "outliersIQR",
+                      inputId = "outliers_iqr",
                       "Outliers por IQR",
                       choiceNames = list("1.5","3.0"),
-                      choiceValues = list("1.5", "3.0"),
+                      choiceValues = list(1.5, 3.0),
                       inline = TRUE,
                       width='75%'),
                     numericInput(
-                      inputId = "outliersFiltroFrecuencia",
+                      inputId = "outliers_frecuencia",
                       label = "Frecuencia Mínima",
                       min = 0,
                       step = 1, 
                       value = 0),
                     actionButton(
-                      inputId = "exeOpcionesOutliersPercentil",
+                      inputId = "outliers_percentil_exe",
                       label = "Calcular por percentil",
                       width = "100%"),
                     actionButton(
-                      inputId = "exeOpcionesOutliersIQR",
+                      inputId = "outliers_iqr_exe",
                       label = "Calcular por IQR",
                       width = "100%"),
                     tags$br(),
@@ -528,7 +517,7 @@ shinyUI(
               column(
                 width = 9,
                 box(width = "100%",
-                    div(DT::dataTableOutput("outliersFinal"),
+                    div(DT::dataTableOutput("outliers_tabla"),
                         style = "font-size:90%"))))),
           tabItem(
             tabName = "histogramasbarras",
@@ -537,14 +526,14 @@ shinyUI(
                 width = 3,
                 box(width = "100%",
                   pickerInput(
-                    inputId = "histogramaColumna",
+                    inputId = "histograma_col",
                     label = "Columna:",
                     choices = "NA",
                     options = list(
                       `actions-box` = TRUE,
                       `live-search` = TRUE)),
                   pickerInput(
-                    inputId = "histogramaRelleno",
+                    inputId = "histograma_fill",
                     label = "Relleno:",
                     choices = "NA",
                     options = list(
@@ -592,7 +581,7 @@ shinyUI(
                 box(
                   width = "12",
                   pickerInput(
-                    inputId = "bigotesColumna",
+                    inputId = "bigotes_col",
                     label = "Columna:",
                     choices = c("NA"),
                     options = list(
@@ -651,13 +640,13 @@ shinyUI(
                 box(
                   width = "100%",
                   numericInput(
-                    inputId = "NTpoblacion",
+                    inputId = "crear_nt_poblacion",
                     min = 1,
                     value = 1,
                     label = "Población:", 
                     step = 1),
                   numericInput(
-                    inputId = "NTmeses", 
+                    inputId = "crear_nt_meses", 
                     min = 1,
                     value = 1,
                     label = "Numero de meses:",
@@ -669,7 +658,7 @@ shinyUI(
                   br(),
                   br(),
                   actionButton(
-                    inputId = "exeNT",
+                    inputId = "crear_nt_exe",
                     label = "Crear nota técnica",
                     width = "100%"),
                   br(),
@@ -716,7 +705,7 @@ shinyUI(
               column(
                 width = 9,
                 box(width = "100%",
-                    DT::dataTableOutput(outputId = "NTtabla"))))),
+                    DT::dataTableOutput(outputId = "crear_nt_tabla"))))),
           tabItem(
             tabName = "indiceNT",
             fluidRow(
@@ -787,7 +776,7 @@ shinyUI(
                     choices = NTs_UniqueCod, 
                     label = "Nota técnica"),
                   pickerInput(
-                    inputId = "compararNTcolumna",
+                    inputId = "comparar_nt_col",
                     width = "100%",
                     choices = c("NA"), 
                     label = "Columna de agrupador"),

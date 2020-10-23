@@ -1,4 +1,4 @@
-outlierspercentil <- function(data, columna, columna_valor, percentil,
+outliers_percentil <- function(data, columna, columna_valor, percentil,
                              frecuencia = 1) {
   
   data <- as.data.frame(data)
@@ -27,9 +27,10 @@ outlierspercentil <- function(data, columna, columna_valor, percentil,
   
 }
 
-outliersIQR <- function(data, columna, columna_valor, multiplicativo,
+outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
                         frecuencia = 1) {
 
+  multiplicativo <- numerize(multiplicativo)
   data <- as.data.frame(data)
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
   colnames(data) <- c('NRO_IDENTIFICACION', columna, "VALOR")

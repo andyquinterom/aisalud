@@ -9,10 +9,7 @@ rango <- function(x) {
 }
 
 descriptiva <- function(data, columnas, columna_valor, prestaciones) {
-  # data = as.data.frame(data)
-  # data = data[, c('NRO_IDENTIFICACION',columnas, columna_valor)]
-  # colnames(data) = c('NRO_IDENTIFICACION', columnas, "VALOR")
-  # data$VALOR = numerize(data$VALOR)
+  setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   if (!prestaciones) {
     data <- data[, list("VALOR" = sum(VALOR)),
