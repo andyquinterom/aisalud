@@ -1,4 +1,4 @@
-REFPgrafico <- function(paquetes, referente, CUMSCUPS, valorcosto) {
+REFPgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
   
   referente.completo <- as.data.table(
     rbind(fill = TRUE,
@@ -34,7 +34,7 @@ REFPgrafico <- function(paquetes, referente, CUMSCUPS, valorcosto) {
     ),
     by = c("TIPO")]
   
-  if (valorcosto == "VALOR") {
+  if (valor_costo == "VALOR") {
     REF <-   "REF VALOR"
     MEDIA <- "VALORMEDIA"
     MAX <-   "VALORMAX"
@@ -43,7 +43,7 @@ REFPgrafico <- function(paquetes, referente, CUMSCUPS, valorcosto) {
     ymin <-  "valormin"
     ymax <-  "valormax"
   }
-  else if (valorcosto == "COSTO") {
+  else if (valor_costo == "COSTO") {
     REF <-   "REF COSTO"
     MEDIA <- "COSTOMEDIA"
     MAX <-   "COSTOMAX"
@@ -109,7 +109,7 @@ REFPgrafico <- function(paquetes, referente, CUMSCUPS, valorcosto) {
       linetype = "longdash",
       inherit.aes = F,
       width = 1) +
-    scale_y_continuous(labels = scales::comma, name = valorcosto) +
+    scale_y_continuous(labels = scales::comma, name = valor_costo) +
     scale_x_discrete(name = "") + 
     scale_fill_manual(breaks = c("INSTITUCIONAL", "REFERENTE"),
                       values = c("blue", "dark grey")) +

@@ -487,6 +487,85 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$descriptiva_sumas_registros <- renderText({
+    if (!is.null(input$file)) {
+      paste("Total registros:", 
+            formatC(
+              length(datos$original$NRO_IDENTIFICACION),
+              big.mark = ".", 
+              decimal.mark = ",", 
+              format = "f", 
+              digits = 0
+            ),
+            sep = " "
+      )
+    }
+  })
+  
+  output$descriptiva_sumas_registros <- renderText({
+    if (!is.null(input$file)) {
+      paste("Total registros:", 
+            formatC(
+              length(valores_unicos[["NRO_IDENTIFICACION"]]),
+              big.mark = ".", 
+              decimal.mark = ",", 
+              format = "f", 
+              digits = 0
+            ),
+            sep = " "
+      )
+    }
+  })
+  
+  output$descriptiva_sumas_valor <- renderText({
+    if (!is.null(input$file)) {
+      if(nrow(datos$descriptiva) >= 1) {
+        paste("Total",
+              paste0(tolower(opciones$valor_costo), ":"), 
+              formatC(
+                sum(
+                  datos$descriptiva$Suma,
+                  na.rm = TRUE), 
+                big.mark = ".", 
+                decimal.mark = ",", 
+                format = "f", 
+                digits = 0),
+              sep = " "
+        )
+      }
+    }
+  })
+  
+  output$descriptiva_descargar_csv = downloadHandler(
+    filename = function() {
+      paste("Descriptiva por ",
+            input$valor_costo,
+            ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = datos$descriptiva,
+        file = file, 
+        row.names = FALSE,
+        na="")
+    }, 
+    contentType = "text/csv"
+  )
+  
+  output$descriptiva_descargar_xlsx = downloadHandler(
+    filename = function() {
+      paste("Descriptiva por ",
+            input$valor_costo,
+            ".xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = datos$descriptiva,
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
+  
   # Episodios ----------------------------------------------------------------
   
   observeEvent(input$episodios_exe, {
@@ -503,7 +582,7 @@ shinyServer(function(input, output, session) {
             columna_sep =   opciones$episodios_cols_sep,
             columna_suma =  opciones$episodios_col_valor)
           
-          output$outliers_tabla <- DT::renderDataTable({
+          output$episodios_tabla <- DT::renderDataTable({
             DT::datatable(
               datos$episodios,
               options = list(
@@ -529,6 +608,36 @@ shinyServer(function(input, output, session) {
       }
     }
   })
+  
+  output$episodios_descargar_csv = downloadHandler(
+    filename = function() {
+      paste("Episodios por ",
+            input$valor_costo,
+            ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = datos$episodios,
+        file = file, 
+        row.names = FALSE,
+        na="")
+    }, 
+    contentType = "text/csv"
+  )
+  
+  output$episodios_descargar_xlsx = downloadHandler(
+    filename = function() {
+      paste("Episodios por ",
+            input$valor_costo,
+            ".xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = datos$episodios,
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
   
   # Outliers -----------------------------------------------------------------
   
@@ -588,11 +697,42 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$outliers_descargar_csv = downloadHandler(
+    filename = function() {
+      paste("Outliers por ",
+            opciones$outliers_cols,
+            ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = datos$outliers,
+        file = file, 
+        row.names = FALSE,
+        na="")
+    }, 
+    contentType = "text/csv"
+  )
+  
+  output$outliers_descargar_csv = downloadHandler(
+    filename = function() {
+      paste("Outliers por ",
+            opciones$outliers_cols,
+            ".xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = datos$outliers,
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
+  
   # Generar nota técnica ------------------------------------------------------
   
   observeEvent(input$crear_nt_exe, {
     if(!is.null(input$file)) {
       if (nrow(datos$descriptiva >= 1)) {
+        opciones$nt_meses <- input$crear_nt_meses
         datos$notatecnica <- crear_notatecnica(
           x = datos$descriptiva, 
           columnas = opciones$descriptiva_cols, 
@@ -645,337 +785,15 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # Histograma ----------------------------------------------------------------
-  
-  observeEvent(input$exeOpcionesHistograma, {
-    if(!is.null(input$file)) {
-      if(!is.null(input$histograma_col) && input$histograma_col != "NA") {
-        withProgress(message = "Graficando", min = 0, {
-          opciones$histograma_col <- input$histograma_col
-          opciones$histograma_x <- c(input$histograma_x_min, input$histograma_x_max)
-          opciones$histograma_width <- input$histograma_width
-          opciones$histograma_bins <- input$histograma_bins
-          opciones$histograma_fill <- input$histograma_fill
-          if (input$histograma_fill == "NA" ||
-              input$histograma_fill == opciones$histograma_col) {
-            opciones$histograma_fill <- NULL
-          }
-          
-          incProgress(0.1)
-
-          if (!opciones$analisis_prestacion) {
-            histograma_datos <- ifelse(
-              test = opciones$histograma_col == opciones$valor_costo,
-              yes = agregar(
-                data = datos$original,
-                columna_valor = opciones$valor_costo,
-                columnas = c(opciones$histograma_fill),
-                prestaciones = FALSE),
-              no = agregar(
-                data = datos$original, 
-                columna_valor = opciones$valor_costo,
-                columnas = c(opciones$histograma_fill,
-                             opciones$histograma_col),
-                prestaciones = FALSE)
-            )
-          } else {
-            histograma_datos <- datos$original
-          }
-          
-          incProgress(0.3)
-          
-          if(opciones$histograma_col %in% datos$colnames_num) {
-            bdPacientes <- bdPacientes[
-              get(opciones$histograma_col) >= opciones$histograma_x[1] & 
-              get(opciones$histograma_col) <= opciones$histograma_x[2]]
-            histograma <- ggplot(histograma_datos, aes(x=get(opciones$histograma_col)))
-            histograma_datos <- NULL
-          }
-          
-          incProgress(0.3)
-          
-          output$histograma_render = renderPlotly({
-            if(is.null(opciones$histograma_fill) || 
-               opciones$histograma_fill %in% c(opciones$histograma_col,
-                                               "VALOR",
-                                               "COSTO")) {
-              if(opciones$histograma_col %in% datos$colnames_num) {
-                ggplotly(
-                  tooltip = FALSE,
-                  p = histograma +
-                    geom_histogram(
-                      bins = opciones$histograma_bins, 
-                      color="black",
-                      aes(y = ..density..)) +
-                    geom_density() +
-                    xlab(opciones$histograma_col) +
-                    ylab("Densidad") +
-                    scale_y_continuous(labels = scales::comma) +
-                    theme(axis.text.x = element_text(angle = 90,
-                                                     hjust = 1,
-                                                     size = 12),
-                          legend.title = element_blank())) %>% 
-                  config(locale = "es") %>%
-                  layout(legend = list(x= 1, y = 0.5))
-              }
-              else {
-                ggplotly(tooltip = NULL, p =
-                           histograma +
-                           stat_count(width = opciones$histogramabinWidth, color="black") +
-                           xlab(opciones$histogramaColumna) +
-                           ylab("Frecuencia") +
-                           scale_y_continuous(labels = scales::comma) +
-                           theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12), legend.title = element_blank())
-                ) %>% config(locale = "es") %>%
-                  layout(legend = list(x= 1, y = 0.5))
-                
-              }
-            }
-            else {
-              if(totalcolumna) {
-                ggplotly(tooltip = NULL, p =
-                           histograma +
-                           geom_histogram(aes(y = ..density.., fill = as.character((get(opciones$histogramaRelleno)))), bins = opciones$histogramaNumBins, color="black") +
-                           geom_density() +
-                           xlab(opciones$histogramaColumna) +
-                           ylab("Densidad") +
-                           scale_y_continuous(labels = scales::comma) +
-                           guides(fill=guide_legend(title=opciones$histogramaRelleno)) +
-                           theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12), legend.title = element_blank())
-                ) %>% config(locale = "es") %>%
-                  layout(legend = list(x= 1, y = 0.5))
-                
-              }
-              else {
-                ggplotly(tooltip = NULL, p =
-                           histograma +
-                           stat_count(aes(fill = as.character(get(opciones$histogramaRelleno))), width = opciones$histogramabinWidth, color="black") +
-                           xlab(opciones$histogramaColumna) +
-                           ylab("Frecuencia") +
-                           scale_y_continuous(labels = scales::comma) +
-                           guides(fill=guide_legend(title=opciones$histogramaRelleno)) +
-                           theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12), legend.title = element_blank())
-                ) %>% config(locale = "es") %>%
-                  layout(legend = list(x= 1, y = 0.5))
-                
-              }
-            }
-          })
-          incProgress(0.3)
-        })
-      }
-    }
-  })
-  
-  observeEvent(input$bigotesColumna, {
-    if(!is.null(input$file)) {
-      if(!is.null(input$bigotesColumna) && input$bigotesColumna != "NA") {
-        choices = unique(datos$original[,get(input$bigotesColumna)])
-        updatePickerInput(session = session,inputId = "bigotesSeleccionar", choices = c(choices)
-                          , choicesOpt = list(content = stringr::str_replace_all(str_wrap(choices, width = 50), "\\n", "<br>")))
-      }
-    }
-  })
-  
-  observeEvent(input$exeOpcionesBigotes, {
-    if(!is.null(input$file)) {
-      if(!is.null(input$bigotesColumna) && input$bigotesColumna != "NA" && !is.null(input$bigotesSeleccionar)) {
-        withProgress(message = "Graficando", {
-          opciones$bigotesColumna = input$bigotesColumna
-          opciones$bigotesFiltroY1 = input$bigotesFiltroY1
-          opciones$bigotesFiltroY2 = input$bigotesFiltroY2
-          if (isFALSE(opciones$pacientesPrestaciones)) {
-            bdPacientes = agregar(datos$original[get(input$bigotesColumna) %in% input$bigotesSeleccionar], columna_valor = opciones$valor_costo, columnas = c('NRO_IDENTIFICACION', opciones$bigotesColumna), prestaciones = TRUE)
-            bigotes = ggplot(bdPacientes, 
-                             aes(x=get(opciones$bigotesColumna), 
-                                 y=get(opciones$valor_costo), 
-                                 group = get(opciones$bigotesColumna)
-                             )) +
-              geom_boxplot() +
-              scale_y_continuous(labels = scales::comma, name = opciones$valor_costo) +
-              coord_cartesian(ylim = c(opciones$bigotesFiltroY1, opciones$bigotesFiltroY2)) +
-              xlab(opciones$bigotesColumna) +
-              ylab(opciones$valor_costo) +
-              theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12))
-            bdPacientes = NULL
-          }
-          else {
-            bdPacientes = NULL
-            bigotes = ggplot(datos$original[get(input$bigotesColumna) %in% input$bigotesSeleccionar], 
-                             aes(x=get(opciones$bigotesColumna), 
-                                 y=get(opciones$valor_costo), 
-                                 group = get(opciones$bigotesColumna)
-                             )) +
-              geom_boxplot() +
-              scale_y_continuous(labels = scales::comma, name = opciones$valor_costo) +
-              coord_cartesian(ylim = c(opciones$bigotesFiltroY1, opciones$bigotesFiltroY2)) +
-              xlab(opciones$bigotesColumna) +
-              ylab(opciones$valor_costo) +
-              theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12))
-            
-          }
-          
-          output$bigotesFinal = plotly::renderPlotly({
-            ggplotly(bigotes) %>%
-              config(locale = "es")
-          })
-        })
-      }
-    }
-  })
-  
-  observeEvent(input$exeLineaDeTiempo, {
-    if(dim(datos$original)[1] != 0) {
-      bdLinea = agregar(datos$original, columna_valor = opciones$valor_costo, columnas = "FECHA_PRESTACION", prestaciones = opciones$pacientesPrestaciones)
-      LineaDeTiempo = ggplot(bdLinea, aes(x = FECHA_PRESTACION, y = get(opciones$valor_costo))) +
-        geom_line(linetype = "dashed")
-      bdLinea = NULL
-      output$lineadetiempoFinal = renderPlot({
-        LineaDeTiempo +
-          geom_point() +
-          xlab("FECHA") +
-          ylab(opciones$valor_costo) +
-          scale_y_continuous(labels = scales::comma) 
-      })
-    }
-  })
-  
-  
-  
-  output$descargaDescriptivaCSV = downloadHandler(
-    filename = function() {
-      paste("Descriptiva por ",input$valor_costo," ",input$fecha_min," - ",input$fecha_max,".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(datos$descriptiva, file, row.names = FALSE, na="")
-    }, contentType = "text/csv"
-  )
-  
-  output$descargaDescriptivaEXCEL = downloadHandler(
-    filename = function() {
-      paste("Descriptiva por ",input$valor_costo," ",input$fecha_min," - ",input$fecha_max,".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(datos$descriptiva, path = file)
-    }, contentType = "xlsx"
-  )
-  
-  output$descargaDescriptivaEpCSV = downloadHandler(
-    filename = function() {
-      paste("Episodios por ",input$valor_costo," ",input$fecha_min," - ",input$fecha_max,".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(datos$descriptivaEp, file, row.names = FALSE, na="")
-    }, contentType = "text/csv"
-  )
-  
-  output$descargaDescriptivaEpEXCEL = downloadHandler(
-    filename = function() {
-      paste("Episodios por ",input$valor_costo," ",input$fecha_min," - ",input$fecha_max,".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(datos$descriptivaEp, path = file)
-    }, contentType = "xlsx"
-  )
-  
-  output$descargaOutliersCSV = downloadHandler(
-    filename = function() {
-      paste("outliers por",input$valor_costo,"-",opciones$outliersColumna,".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(datos$outliers, file, row.names = FALSE, na="")
-    }, contentType = "text/csv"
-  )
-  
-  output$descargaOutliersEXCEL = downloadHandler(
-    filename = function() {
-      paste("outliers por",input$valor_costo,"-",opciones$outliersColumna,".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(datos$outliers, path = file)
-    }, contentType = "xlsx"
-  )
-  
-  output$descargaAgregacionesCSV = downloadHandler(
-    filename = function() {
-      paste("agregaciones",".xlsx", sep="")
-    },
-    content = function(file) {
-      write.csv(datos$agregaciones, file, row.names = FALSE, na="")
-    }, contentType = "text/csv"
-  )
-  
-  output$descargaAgregacionesEXCEL = downloadHandler(
-    filename = function() {
-      paste("agregaciones",".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(datos$agregaciones, path = file)
-    }, contentType = "xlsx"
-  )
-  
-  output$descargaNTExcel = downloadHandler(
-    filename = function() {
-      paste("notatécnica",".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(datos$notatecnica, path = file)
-    }, contentType = "xlsx"
-  )
-  
-  output$sumasDescriptivaRegistros <- renderText({
-    if (!is.null(input$file)) {
-      paste("Total registros:", 
-            formatC(
-              length(datos$original$NRO_IDENTIFICACION), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
-            ),
-            sep = " "
-      )
-    }
-  })
-  output$sumasDescriptivaPacientes <- renderText({
-    if (!is.null(input$file)) {
-      paste("Total pacientes:", 
-            formatC(
-              length(unique(datos$original$NRO_IDENTIFICACION)), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
-            ),
-            sep = " "
-      )
-    }
-  })
-  output$sumasDescriptivavalor_costo <- renderText({
-    if (!is.null(input$file)) {
-      if(nrow(datos$descriptiva) >= 1) {
-        paste("Total", paste0(tolower(opciones$valor_costo), ":"), 
-              formatC(
-                sum(datos$descriptiva$Suma, na.rm = TRUE), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
-              ),
-              sep = " "
-        )
-      }
-    }
-  })
-  output$sumasDescriptivaCUPS <- renderText({
-    if (!is.null(input$file)) {
-      if("CODIGO_CUPS" %in% names(datos$original)) {
-        paste("Total prestaciones:", 
-              formatC(
-                length(unique(datos$original$CODIGO_CUPS)), big.mark = ".", decimal.mark = ",", format = "f", digits = 0
-              ),
-              sep = " "
-        )
-      }
-    }
-  })
-  
-  ### Sumas de la nota técnica
+  # Escenarios y sumas 
   
   ### Escenario 1
   output$sumasNtEsc1 = renderText({
     paste("   Suma:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Primer escenario P75', na.rm = TRUE),
+                   sum(datos$notatecnica$'Primer escenario P75',
+                       na.rm = TRUE),
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -990,7 +808,8 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Primer escenario P75', na.rm = TRUE)/opciones$meses,
+                   sum(datos$notatecnica$'Primer escenario P75',
+                       na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1005,7 +824,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Primer escenario P75', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Primer escenario P75',
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1033,7 +854,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Segundo escenario media', na.rm = TRUE)/opciones$meses,
+                   sum(
+                     datos$notatecnica$'Segundo escenario media',
+                     na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1048,7 +871,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Segundo escenario media', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Segundo escenario media',
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1061,7 +886,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Tercer escenario media truncada 10%', na.rm = TRUE),
+                   sum(
+                     datos$notatecnica$'Tercer escenario media truncada 10%',
+                     na.rm = TRUE),
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1076,7 +903,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Tercer escenario media truncada 10%', na.rm = TRUE)/opciones$meses,
+                   sum(
+                     datos$notatecnica$'Tercer escenario media truncada 10%',
+                     na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1091,7 +920,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Tercer escenario media truncada 10%', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Tercer escenario media truncada 10%',
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1104,7 +935,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Cuarto escenario media truncada 5%', na.rm = TRUE),
+                   sum(
+                     datos$notatecnica$'Cuarto escenario media truncada 5%',
+                     na.rm = TRUE),
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1119,7 +952,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Cuarto escenario media truncada 5%', na.rm = TRUE)/opciones$meses,
+                   sum(
+                     datos$notatecnica$'Cuarto escenario media truncada 5%',
+                     na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1134,7 +969,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Cuarto escenario media truncada 5%', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Cuarto escenario media truncada 5%', 
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1147,7 +984,8 @@ shinyServer(function(input, output, session) {
     paste("   Suma:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Escenario combinado mayor', na.rm = TRUE),
+                   sum(datos$notatecnica$'Escenario combinado mayor',
+                       na.rm = TRUE),
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1162,7 +1000,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Escenario combinado mayor', na.rm = TRUE)/opciones$meses,
+                   sum(
+                     datos$notatecnica$'Escenario combinado mayor',
+                     na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1177,7 +1017,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Escenario combinado mayor', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Escenario combinado mayor', 
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1190,7 +1032,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Escenario por variabilidad y frecuencia', na.rm = TRUE),
+                   sum(
+                     datos$notatecnica$'Escenario por variabilidad y frecuencia', 
+                     na.rm = TRUE),
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1205,7 +1049,9 @@ shinyServer(function(input, output, session) {
     paste("   Suma a mes:",
           paste0("$",
                  formatC(
-                   sum(datos$notatecnica$'Escenario por variabilidad y frecuencia', na.rm = TRUE)/opciones$meses,
+                   sum(
+                     datos$notatecnica$'Escenario por variabilidad y frecuencia', 
+                     na.rm = TRUE)/opciones$nt_meses,
                    big.mark = ".",
                    decimal.mark = ",",
                    format = "f",
@@ -1220,7 +1066,9 @@ shinyServer(function(input, output, session) {
     paste("   Porcentaje del valor:",
           paste0(
             round0(
-              sum(datos$notatecnica$'Escenario por variabilidad y frecuencia', na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
+              sum(
+                datos$notatecnica$'Escenario por variabilidad y frecuencia',
+                na.rm = TRUE)/sum(datos$descriptiva$Suma, na.rm = TRUE)*100
             ),
             "%"
           ),
@@ -1228,57 +1076,325 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  ### Sección dashboard
+  output$nt_descargar_csv = downloadHandler(
+    filename = function() {
+      paste("notatecnica.csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = datos$notatecnica,
+        file = file, 
+        row.names = FALSE,
+        na="")
+    }, 
+    contentType = "text/csv"
+  )
   
-  # PAQUETES = as.data.table(readr::read_csv("datos/PAQUETES.csv"))
-  # PAQUETE_PP = PAQUETES[`COMPONENTE` == "PAQUETE"]
-  # PAQUETES_CC = PAQUETES[`COMPONENTE` != "PAQUETE"]
-  # REF_PAQUETES = as.data.table(readr::read_csv("datos/REFERENTE-PAQUETES.csv"))
-  # REF = as.data.table(readr::read_csv("datos/REFERENTE.csv"))
+  output$nt_descargar_xlsx = downloadHandler(
+    filename = function() {
+      paste("notatecnica.xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = datos$notatecnica,
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
   
-  output$paqueteIndexTable = DT::renderDataTable(
-    datatable(unique(PAQUETES[, list(`CODIGO PAQUETE` ,ESPECIALIDAD, SERVICIO, DESCRIPCION, INCLUSIONES, EXCLUSIONES)])
-              , rownames = F
-              , options = 
-                list(
-                  dom = 'ft',
-                  ordering = FALSE,
-                  scrollX = TRUE,
-                  scrollY = "80vh",
-                  pageLength = nrow(unique(PAQUETES[, list(`CODIGO PAQUETE` ,ESPECIALIDAD, SERVICIO, DESCRIPCION, INCLUSIONES, EXCLUSIONES)]))
+  # Histograma ----------------------------------------------------------------
+  
+  observeEvent(input$histograma_exe, {
+    if(!is.null(input$file)) {
+      if(!is.null(input$histograma_col) && input$histograma_col != "NA") {
+        opciones$histograma_col <- input$histograma_col
+        opciones$histograma_x <- c(input$histograma_x_min, input$histograma_x_max)
+        opciones$histograma_width <- input$histograma_width
+        opciones$histograma_bins <- input$histograma_bins
+        opciones$histograma_fill <- input$histograma_fill
+        if (input$histograma_fill == "NA" ||
+            input$histograma_fill == opciones$histograma_col) {
+          opciones$histograma_fill <- NULL
+        }
+
+        if (!opciones$analisis_prestacion) {
+          if (opciones$histograma_col == opciones$valor_costo) {
+            histograma_datos <- agregar(
+              data = datos$original,
+              columna_valor = opciones$valor_costo,
+              columnas = c(opciones$histograma_fill,
+                           "NRO_IDENTIFICACION"),
+              prestaciones = TRUE)
+          } else {
+            histograma_datos <- agregar(
+              data = datos$original, 
+              columna_valor = opciones$valor_costo,
+              columnas = c(opciones$histograma_fill,
+                           opciones$histograma_col,
+                           "NRO_IDENTIFICACION"),
+              prestaciones = FALSE)
+          }
+        } else {
+          histograma_datos <- datos$original
+        }
+        
+        if(opciones$histograma_col %in% datos$colnames_num) {
+          histograma_datos <- histograma_datos[
+            get(opciones$histograma_col) >= opciones$histograma_x[1] & 
+            get(opciones$histograma_col) <= opciones$histograma_x[2]]
+        }
+        
+        histograma <- ggplot(
+          data = histograma_datos,
+          aes(x=get(opciones$histograma_col)))
+        
+        output$histograma_render = renderPlotly({
+          if(is.null(opciones$histograma_fill) || 
+             opciones$histograma_fill %in% c(opciones$histograma_col,
+                                             "VALOR",
+                                             "COSTO")) {
+            if(opciones$histograma_col %in% datos$colnames_num) {
+              ggplotly(
+                tooltip = FALSE,
+                p = histograma +
+                  geom_histogram(
+                    bins = opciones$histograma_bins, 
+                    color="black",
+                    aes(y = ..density..)) +
+                  geom_density() +
+                  xlab(opciones$histograma_col) +
+                  ylab("Densidad") +
+                  scale_y_continuous(labels = scales::comma) +
+                  theme(axis.text.x = element_text(angle = 90,
+                                                   hjust = 1,
+                                                   size = 12),
+                        legend.title = element_blank())) %>% 
+                config(locale = "es") %>%
+                layout(legend = list(x= 1, y = 0.5))
+            } else {
+              ggplotly(
+                tooltip = NULL,
+                p = histograma +
+                  stat_count(width = opciones$histograma_width,
+                             color="black") +
+                  xlab(opciones$histograma_col) +
+                  ylab("Frecuencia") +
+                  scale_y_continuous(labels = scales::comma) +
+                  theme(
+                    axis.text.x = element_text(
+                      angle = 90,
+                      hjust = 1,
+                      size = 12),
+                    legend.title = element_blank())
+              ) %>% 
+                config(locale = "es") %>%
+                layout(legend = list(x= 1, y = 0.5))
+            }
+          } else {
+            if(opciones$histograma_col %in% datos$colnames_num) {
+              ggplotly(
+                tooltip = FALSE,
+                p = histograma +
+                  geom_histogram(
+                    bins = opciones$histograma_bins, 
+                    color="black",
+                    aes(y = ..density..,
+                        fill = get(opciones$histograma_fill))) +
+                  geom_density() +
+                  xlab(opciones$histograma_col) +
+                  ylab("Densidad") +
+                  scale_y_continuous(labels = scales::comma) +
+                  guides(
+                    fill=guide_legend(title=opciones$histograma_fill)) +
+                  theme(axis.text.x = element_text(angle = 90,
+                                                   hjust = 1,
+                                                   size = 12),
+                        legend.title = element_blank())) %>% 
+                config(locale = "es") %>%
+                layout(legend = list(x= 1, y = 0.5))
+              
+            } else {
+              ggplotly(
+                tooltip = NULL,
+                p = histograma +
+                  stat_count(width = opciones$histograma_width,
+                             color="black",
+                             aes(fill = get(opciones$histograma_fill))) +
+                  xlab(opciones$histograma_col) +
+                  ylab("Frecuencia") +
+                  scale_y_continuous(labels = scales::comma) +
+                  theme(
+                    axis.text.x = element_text(
+                      angle = 90,
+                      hjust = 1,
+                      size = 12),
+                    legend.title = element_blank())
+              ) %>% 
+                config(locale = "es") %>%
+                layout(legend = list(x= 1, y = 0.5))
+              
+            }
+          }
+        })
+      }
+    }
+  })
+  
+  # Bigotes -------------------------------------------------------------------
+  
+  observeEvent(input$bigotes_col, {
+    if(!is.null(input$file)) {
+      if(!is.null(input$bigotes_col) && input$bigotes_col != "NA") {
+        choices <- valores_unicos[[input$bigotes_col]]
+        updatePickerInput(
+          session = session,
+          inputId = "bigotes_seleccionar",
+          choices = choices,
+          choicesOpt = list(
+            content = stringr::str_replace_all(
+              str_wrap(choices, width = 30), "\\n", "<br>")))
+      }
+    }
+  })
+  
+  observeEvent(input$bigotes_exe, {
+    if(!is.null(input$file)) {
+      if(!is.null(input$bigotes_col) && 
+         input$bigotes_col != "NA" && 
+         !is.null(input$bigotes_seleccionar)) {
+        
+        withProgress(message = "Graficando", {
+          opciones$bigotes_col <- input$bigotes_col
+          opciones$bigotesFiltroY1 <- input$bigotes_y1
+          opciones$bigotesFiltroY2 <- input$bigotes_y2
+          if (!opciones$analisis_prestacion) {
+            datos_bigotes <- agregar(
+              data = datos$original[
+                get(input$bigotes_col) %in% input$bigotes_seleccionar],
+              columna_valor = opciones$valor_costo,
+              columnas = c('NRO_IDENTIFICACION', opciones$bigotes_col), 
+              prestaciones = TRUE)
+            bigotes_plot = ggplot(
+              data = datos_bigotes, 
+              aes(x=get(opciones$bigotes_col), 
+                  y=get(opciones$valor_costo), 
+                  group = get(opciones$bigotes_col))) +
+              geom_boxplot() +
+              scale_y_continuous(
+                labels = scales::comma,
+                name = opciones$valor_costo) +
+              coord_cartesian(
+                ylim = c(opciones$bigotes_y1,
+                         opciones$bigotes_y2)) +
+              xlab(opciones$bigotes_col) +
+              ylab(opciones$valor_costo) +
+              theme(
+                axis.text.x = element_text(angle = 90, hjust = 1, size = 12))
+            datos_bigotes <- NULL
+          }
+          else {
+            datos_bigotes <- NULL
+            bigotes_plot <- ggplot(
+             data = datos$original[
+               get(input$bigotes_col) %in% input$bigotes_seleccionar], 
+             aes(x=get(opciones$bigotes_col), 
+                 y=get(opciones$valor_costo), 
+                 group = get(opciones$bigotes_col) )) +
+              geom_boxplot() +
+              scale_y_continuous(
+                labels = scales::comma, name = opciones$valor_costo) +
+              coord_cartesian(
+                ylim = c(opciones$bigotes_y1, opciones$bigotes_y2)) +
+              xlab(opciones$bigotes_col) +
+              ylab(opciones$valor_costo) +
+              theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12))
+            
+          }
+          
+          output$bigotes_render <- plotly::renderPlotly({
+            ggplotly(
+              p = bigotes_plot) %>%
+              config(locale = "es")
+          })
+        })
+      }
+    }
+  })
+  
+  # Paquetes ----------------------------------------------------------------
+  
+  output$paquetes_indice_tabla <- DT::renderDataTable(
+    datatable(
+      unique(paquetes[, list(`CODIGO PAQUETE`,
+                             ESPECIALIDAD,
+                             SERVICIO,
+                             DESCRIPCION,
+                             INCLUSIONES,
+                             EXCLUSIONES)]),
+      rownames = F,
+      options = list(
+        dom = 'ft',
+        ordering = FALSE,
+        scrollX = TRUE,
+        scrollY = "80vh",
+        pageLength = nrow(
+          unique(paquetes[, list(`CODIGO PAQUETE`,
+                                 ESPECIALIDAD, SERVICIO,
+                                 DESCRIPCION, INCLUSIONES,
+                                 EXCLUSIONES)]))
                 )) %>%
       DT::formatStyle(1:6, backgroundColor = 'white')
   )
   
-  observeEvent(input$DASHBOARD_actualizar, {
-    confirmSweetAlert(session, inputId = "DASHBOARD_actualizar_conf", 
-                      title = "Confirmar", 
-                      text = "¿Seguro que quieres actualizar los paquetes? Al final, deberá reiniciar la aplicación."
-                      , showCloseButton = TRUE
-                      , btn_labels = c("Cancelar", "Confirmar"))
+  observeEvent(input$paquetes_actualizar, {
+    confirmSweetAlert(
+      session,
+      inputId = "paquetes_actualizar_confirmar", 
+      title = "Confirmar", 
+      text = "¿Seguro que quieres actualizar los paquetes?
+              Al final, deberá reiniciar la aplicación.", 
+      showCloseButton = TRUE,
+      btn_labels = c("Cancelar", "Confirmar"))
   })
   
-  observeEvent(input$DASHBOARD_actualizar_conf, {
-    if (isTRUE(input$DASHBOARD_actualizar_conf)) {
-      unlink("datos/PAQUETES/", recursive = TRUE)
-      dir.create("datos/PAQUETES")
-      withProgress(value = 0, message = "Actualizando paquetes...", {
-        write_feather(sheets_read(paquete_path, sheet = "PAQUETES", col_types = "cccdcccccccdd") 
-                      ,"datos/PAQUETES/PAQUETES.feather")
+  observeEvent(input$paquetes_actualizar_confirmar, {
+    if (paquetes_actualizar_confirmar) {
+      unlink("datos/paquetes/", recursive = TRUE)
+      dir.create("datos/paquetes")
+      withProgress(
+        value = 0,
+        message = "Actualizando paquetes...", {
+          write_feather(
+            x = sheets_read(
+              paquete_path,
+              sheet = "PAQUETES",
+              col_types = "cccdcccccccdd"),
+            "datos/paquetes/paquetes.feather")
         incProgress(0.3)
-        write_feather(sheets_read(paquete_path, sheet = "REFERENTE-PAQUETES") 
-                      ,"datos/PAQUETES/REFERENTE-PAQUETES.feather")
+        write_feather(
+          sheets_read(
+            paquete_path,
+            sheet = "REFERENTE-PAQUETES"),
+          "datos/paquetes/referente-paquetes.feather")
         incProgress(0.3)
-        write_feather(sheets_read(paquete_path, sheet = "REFERENTE") 
-                      ,"datos/PAQUETES/REFERENTE.feather")
+        write_feather(
+          sheets_read(
+            paquete_path,
+            sheet = "REFERENTE"),
+          "datos/paquetes/referente.feather")
         incProgress(0.3)
       })
-      sendSweetAlert(session, title = "¡Paquete actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
+      sendSweetAlert(
+        session,
+        title = "¡Paquete actualizados efectivamente!",
+        text = "Para ver los datos y gráficos actualizados,
+                por favor recargar la página.",
+        type = "success")
       stopApp()
     }
   })
   
-  selectedDash = reactiveValues(
+  paquetes_valores <- reactiveValues(
     "paquete" = "",
     "servicio" = "",
     "descripcion" = "",
@@ -1287,193 +1403,249 @@ shinyServer(function(input, output, session) {
     "especialidad" = ""
   )
   
-  observeEvent(input$paquete, {
-    if(!is.null(PAQUETES)) {
-      selectedDash$paquete = input$paquete
+  observeEvent(input$paquetes_select, {
+    if(!is.null(paquetes)) {
+      paquetes_valores$paquete <- input$paquetes_select
       
-      selectedDash$PAQUETE_PP = PAQUETE_PP[`CODIGO PAQUETE` == input$paquete]
-      selectedDash$PAQUETES_CC = PAQUETES_CC[`CODIGO PAQUETE` == selectedDash$paquete]
+      paquetes_valores$paquete_datos <- paquetes_paquetes[
+        `CODIGO PAQUETE` == input$paquetes_select]
+      paquetes_valores$paquete_cups <- paquetes_cups[
+        `CODIGO PAQUETE` == input$paquetes_select]
       
-      selectedDash$servicio = selectedDash$PAQUETE_PP$SERVICIO
-      selectedDash$especialidad = selectedDash$PAQUETE_PP$ESPECIALIDAD
-      selectedDash$descripcion = selectedDash$PAQUETE_PP$`DESCRIPCION`
-      selectedDash$inclusiones = selectedDash$PAQUETE_PP$`INCLUSIONES`
-      selectedDash$exclusiones = selectedDash$PAQUETE_PP$`EXCLUSIONES`
+      paquetes_valores$servicio <-
+        paquetes_valores$paquete_datos$SERVICIO
+      paquetes_valores$especialidad <-
+        paquetes_valores$paquete_datos$ESPECIALIDAD
+      paquetes_valores$descripcion <-
+        paquetes_valores$paquete_datos$`DESCRIPCION`
+      paquetes_valores$inclusiones <- 
+        paquetes_valores$paquete_datos$`INCLUSIONES`
+      paquetes_valores$exclusiones <- 
+        paquetes_valores$paquete_datos$`EXCLUSIONES`
     }
   })
   
-  output$TABLA_paquete = DT::renderDataTable({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_tabla <- DT::renderDataTable({
+    if(!is.null(paquetes)) {
       datatable(
-        selectedDash$PAQUETES_CC[, c("CUMS/CUPS", "PRESTACION", "COMPONENTE", "TIPO DE COSTO", "VALOR", "COSTO")]
-        , rownames = F
-        , selection = 'single'
-        , options = list(
-          dom='ft'
-          , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
-          , ordering = FALSE
-          , scrollX = TRUE
-          , scrollY = "60vh"
-        )
-      ) %>%
+        paquetes_valores$paquete_datos[,
+            c("CUMS/CUPS",
+              "PRESTACION",
+              "COMPONENTE", 
+              "TIPO DE COSTO",
+              "VALOR",
+              "COSTO")],
+        rownames = F,
+        selection = 'single',
+        options = list(
+          dom='ft',
+          language = list(
+            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+          pageLength = nrow(paquetes_valores$paquete_datos),
+          ordering = FALSE,
+          scrollX = TRUE,
+          scrollY = "60vh")) %>%
         DT::formatCurrency(
-          columns = c("VALOR", "COSTO")
-          , digits = 0
-          , mark = ".", dec.mark = ","
-        )
+          columns = c("VALOR", "COSTO"),
+          digits = 0,
+          mark = ".",
+          dec.mark = "," )
     }
   })
   
-  output$BOX_especialidad = renderValueBox({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_especialidad <- renderValueBox({
+    if(!is.null(paquetes)) {
       valueBox(
-        value = selectedDash$especialidad
-        , subtitle = "Especialidad"
-        , icon = icon("stethoscope", lib = "font-awesome")
-        , color = "yellow"
+        value = paquetes_valores$especialidad, 
+        subtitle = "Especialidad", 
+        icon = icon("stethoscope", lib = "font-awesome"), 
+        color = "yellow"
       )
     }
   })
   
-  output$BOX_valortotal = renderValueBox({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_valortotal <- renderValueBox({
+    if(!is.null(paquetes)) {
       valueBox(
-        value = formatAsCurrency(selectedDash$PAQUETE_PP$VALOR)
-        , subtitle = "Valor del paquete"
-        , icon = icon("tags", lib = "font-awesome")
-        , color = "green"
+        value = formatAsCurrency(paquetes_valores$paquete_datos$VALOR),
+        subtitle = "Valor del paquete", 
+        icon = icon("tags", lib = "font-awesome"), 
+        color = "green"
       )
     }
   })
   
-  output$BOX_costototal = renderValueBox({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_costototal <- renderValueBox({
+    if(!is.null(paquetes)) {
       valueBox(
-        value = formatAsCurrency(selectedDash$PAQUETE_PP$COSTO)
-        , subtitle = "Costo del paquete"
-        , icon = icon("money-check", lib = "font-awesome")
-        , color = "red"
+        value = formatAsCurrency(paquetes_valores$paquete_datos$COSTO),
+        subtitle = "Costo del paquete", 
+        icon = icon("money-check", lib = "font-awesome"),
+        color = "red"
       )
     }
   })
   
-  output$BOX_codpaquete = renderValueBox({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_codpaquete <- renderValueBox({
+    if(!is.null(paquetes)) {
       valueBox(
-        value = selectedDash$paquete
-        , subtitle = "Código del paquete"
-        , icon = icon("qrcode", lib = "font-awesome")
-        , color = "blue"
+        value = paquetes_valores$paquete,
+        subtitle = "Código del paquete", 
+        icon = icon("qrcode", lib = "font-awesome"),
+        color = "blue"
       )
     }
   })
   
-  output$BOX_servicio = renderText({
-    if(!is.null(PAQUETES))
-      selectedDash$servicio
+  output$paquetes_servicios <- renderText({
+    if(!is.null(paquetes))
+      paquetes_valores$servicio
   })
   
-  output$BOX_descripcion = renderValueBox({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_descripcion <- renderValueBox({
+    if(!is.null(paquetes)) {
       valueBox(
-        value = str_wrap(selectedDash$descripcion, width = 30)
-        , subtitle = "Descripción del paquete"
-        , icon = icon("hashtag", lib = "font-awesome")
-        , color = "teal"
+        value = str_wrap(paquetes_valores$descripcion, width = 30),
+        subtitle = "Descripción del paquete",
+        icon = icon("hashtag", lib = "font-awesome"),
+        color = "teal"
       )
     }
   })
   
-  output$BOX_inclusiones = renderText({
-    if(!is.null(PAQUETES)) 
-      selectedDash$inclusiones
+  output$paquetes_inclusiones <- renderText({
+    if(!is.null(paquetes)) {
+      paquetes_valores$inclusiones
+    }
   })
   
-  output$BOX_exclusiones = renderText({
-    if(!is.null(PAQUETES)) 
-      selectedDash$exclusiones
+  output$paquetes_exclusiones <- renderText({
+    if(!is.null(paquetes)) {
+      paquetes_valores$exclusiones
+    }
   })
   
-  output$PLOT_ref_paquete = renderggiraph({
-    if(!is.null(PAQUETES)) 
-      REFPgrafico(paquetes = selectedDash$PAQUETE_PP, referente = REF_PAQUETES, CUMSCUPS = selectedDash$paquete, valor_costo = input$DASHBOARD_valor_costo)
+  output$paquetes_plot_ref <- renderggiraph({
+    if(!is.null(paquetes)) {
+      REFPgrafico(
+        paquetes = paquetes_valores$paquete_datos,
+        referente = paquetes_ref,
+        CUMSCUPS = paquetes_valores$paquete,
+        valor_costo = input$paquetes_valor_costo)
+    }
   })
   
-  output$PLOT_ref_cumscups = renderggiraph({
-    if(!is.null(input$TABLA_paquete_rows_selected))
-      REFgrafico(paquetes = selectedDash$PAQUETES_CC, referente = REF[`CODIGO PAQUETE` == selectedDash$paquete], CUMSCUPS = selectedDash$PAQUETES_CC[input$TABLA_paquete_rows_selected, list(`CUMS/CUPS`)], valor_costo = input$DASHBOARD_valor_costo)
+  output$paquetes_ref_cups <- renderggiraph({
+    if(!is.null(input$paquetes_tabla_rows_selected))
+      REFgrafico(
+        paquetes = paquetes_valores$paquete_cups,
+        referente = paquetes_ref[
+          `CODIGO PAQUETE` == paquetes_valores$paquete],
+        CUMSCUPS = paquetes_valores$paquete_cups[
+          input$paquetes_tabla_rows_selected,
+          list(`CUMS/CUPS`)],
+        valor_costo = input$paquetes_valor_costo)
   })
   
-  output$PLOT_pie_paquete = renderggiraph({
-    if(!is.null(PAQUETES)) 
-      PIEchart(paquetes = selectedDash$PAQUETES_CC, columna = input$COL_pie_paquete, valor_costo = input$DASHBOARD_valor_costo)
+  output$paquetes_resumen_plot <- renderggiraph({
+    if(!is.null(paquetes)) 
+      PIEchart(
+        paquetes = paquetes_valores$paquete_cups,
+        columna = input$paquetes_resumen_select,
+        valor_costo = input$paquetes_valor_costo)
   })
   
-  output$TABLA_pie_paquete_resumen = DT::renderDataTable({
-    if(!is.null(PAQUETES)) {
+  output$paquetes_resumen_tabla <- DT::renderDataTable({
+    if(!is.null(paquetes)) {
       datatable(
-        resumenComp(tabla = selectedDash$PAQUETES_CC, columna = input$COL_pie_paquete, colsum = input$DASHBOARD_valor_costo)
-        , rownames = F
-        , selection = 'none'
-        , options = list(
-          dom='ft'
-          , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
-          , ordering = FALSE
-          , scrollX = TRUE
-          , scrollY = "30vh"
-        )
-      ) %>%
-        formatStyle(columns = c(input$COL_pie_paquete, "SUMA", "PARTICIPACIÓN (%)"), backgroundColor = "white")
+        resumenComp(
+          tabla = paquetes_valores$paquete_cups,
+          columna = input$paquetes_resumen_select, 
+          colsum = input$paquetes_valor_costo),
+        rownames = F,
+        selection = 'none',
+        options = list(
+          dom='ft',
+          language = list(
+            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+          pageLength = nrow(paquetes),
+          ordering = FALSE,
+          scrollX = TRUE,
+          scrollY = "30vh")) %>%
+        formatStyle(
+          columns = c(
+            input$paquetes_resumen_select,
+            "SUMA",
+            "PARTICIPACIÓN (%)"),
+          backgroundColor = "white")
     }
   })
   
-  output$PLOT_pie_componente = renderggiraph({
-    if(!is.null(input$COL_pie_componente))
-      PIEchart(paquetes = selectedDash$PAQUETES_CC[COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, valor_costo = input$DASHBOARD_valor_costo)
+  output$paquetes_componenete_plot <- renderggiraph({
+    if(!is.null(input$paquetes_componenete_select))
+      PIEchart(
+        paquetes = paquetes_valores$paquete_cups[
+          COMPONENTE %in% input$paquetes_componenete_select],
+        columna = input$paquetes_componenete_datos,
+        valor_costo = input$paquetes_valor_costo)
   })
   
-  output$TABLA_pie_componente = DT::renderDataTable({
-    if(!is.null(input$COL_pie_componente)) {
+  output$paquetes_componenete_tabla <- DT::renderDataTable({
+    if(!is.null(input$paquetes_componenete_select)) {
       datatable(
-        resumenComp(tabla = selectedDash$PAQUETES_CC[COMPONENTE %in% input$COL_pie_componente], columna = input$COL_pie_componente_en, colsum = input$DASHBOARD_valor_costo)
-        , rownames = F
-        , selection = 'none'
-        , options = list(
-          dom='ft'
-          , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
-          , ordering = FALSE
-          , scrollX = TRUE
-          , scrollY = "20vh"
-        )
-      ) %>%
-        formatStyle(columns = c(input$COL_pie_componente_en, "SUMA", "PARTICIPACIÓN (%)"), backgroundColor = "white")
+        resumenComp(
+          tabla = paquetes_valores$paquete_cups[
+            COMPONENTE %in% input$paquetes_componenete_select],
+          columna = input$paquetes_componenete_datos,
+          colsum = input$paquetes_valor_costo),
+        rownames = F, 
+        selection = 'none',
+        options = list(
+          dom='ft',
+          language = list(
+            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+          pageLength = nrow(paquetes), 
+          ordering = FALSE,
+          scrollX = TRUE,
+          scrollY = "20vh") ) %>%
+        formatStyle(
+          columns = c(input$paquetes_componenete_datos, "SUMA", "PARTICIPACIÓN (%)"),
+          backgroundColor = "white")
     }
   })
   
-  output$PLOT_pie_tipocosto = renderggiraph({
-    if(!is.null(input$COL_pie_tipocosto))
-      PIEchart(paquetes = selectedDash$PAQUETES_CC[`TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, valor_costo = input$DASHBOARD_valor_costo)
+  output$paquetes_tipo_costo_plot <- renderggiraph({
+    if(!is.null(input$paquetes_tipo_costo_select))
+      PIEchart(
+        paquetes = paquetes_valores$paquete_cups[
+          `TIPO DE COSTO` %in% input$paquetes_tipo_costo_select],
+        columna = input$paquetes_tipo_costo_datos,
+        valor_costo = input$paquetes_valor_costo)
   })
   
-  output$TABLA_pie_tipocosto = DT::renderDataTable({
-    if(!is.null(input$COL_pie_tipocosto)) {
+  output$paquetes_tipo_costo_tabla <- DT::renderDataTable({
+    if(!is.null(input$paquetes_tipo_costo_select)) {
       datatable(
-        resumenComp(tabla = selectedDash$PAQUETES_CC[`TIPO DE COSTO` %in% input$COL_pie_tipocosto], columna = input$COL_pie_tipocosto_en, colsum = input$DASHBOARD_valor_costo)
-        , rownames = F
-        , selection = 'none'
-        , options = list(
-          dom='ft'
-          , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
-          , ordering = FALSE
-          , scrollX = TRUE
-          , scrollY = "20vh"
-        )
-      ) %>%
-        formatStyle(columns = c(input$COL_pie_tipocosto_en, "SUMA", "PARTICIPACIÓN (%)"), backgroundColor = "white")
+        resumenComp(
+          tabla = paquetes_valores$paquete_cups[
+            `TIPO DE COSTO` %in% input$paquetes_tipo_costo_select],
+          columna = input$paquetes_tipo_costo_datos,
+          colsum = input$paquetes_valor_costo),
+        rownames = F,
+        selection = 'none',
+        options = list(
+          dom='ft',
+          language = list(
+            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+          pageLength = nrow(paquetes),
+          ordering = FALSE,
+          scrollX = TRUE,
+          scrollY = "20vh")) %>%
+        formatStyle(
+          columns = c(input$paquetes_tipo_costo_datos, 
+                      "SUMA",
+                      "PARTICIPACIÓN (%)"),
+          backgroundColor = "white")
     }
   })
   
@@ -1511,7 +1683,8 @@ shinyServer(function(input, output, session) {
   pricing = reactiveValues()
   
   observeEvent(input$pricingSelect, {
-    pricing$bd = as.data.table(readr::read_csv(paste0("datos/PRICING/", input$pricingSelect, ".csv"), na = c("-", "#N/A", "#DIV/0!", "NA")))
+    if (PRICING_INCLUIDO) {
+    pricing$bd = as.data.table(readr::read_csv(paste0("datos/pricing/", input$pricingSelect, ".csv"), na = c("-", "#N/A", "#DIV/0!", "NA")))
     
     pricing$datos$CODIGO_CUPS = as.character(pricing$datos$CODIGO_CUPS)
     pricing$datos$VALOR_UNITARIO = as.numeric(as.character(pricing$datos$VALOR_UNITARIO))
@@ -1524,7 +1697,7 @@ shinyServer(function(input, output, session) {
     pricing$bdsd.media = round(abs(sd(pricing$datos$RELATIVO_MEDIA, na.rm = TRUE)), digits = 3)
     pricing$bdsd.min = round(abs(median(pricing$datos$RELATIVO_MINIMO, na.rm = TRUE)), digits = 3)
     pricing$descriptiva = data.frame("x" = c("Valor Unitario Mínimo", "Valor Unitario Máximo", "Valor Unitario Promedio", "Mínimo", "Máximo", "Media"), "y" = c(0,0,0,0,0,0))
-    
+    }
   })
   
   output$pricingOutPrestacion = renderUI({
@@ -1694,7 +1867,9 @@ shinyServer(function(input, output, session) {
   output$dashNT_Poblacion = renderValueBox({
     if(!is.null(NT_TEMP$INDICE)) {
       valueBox(
-        value = format(NT_TEMP$INDICE$POBLACION, scientific = F, big.mark = ".", small.mark = ",")
+        value = format(NT_TEMP$INDICE$POBLACION,
+                       scientific = F,
+                       big.mark = ".", decimal.mark = ",")
         , subtitle = "Pobalción"
         , icon = icon("users", lib = "font-awesome")
         , color = "blue"
@@ -1723,7 +1898,7 @@ shinyServer(function(input, output, session) {
         , options = list(
           dom='ft'
           , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
+          , pageLength = nrow(paquetes)
           , ordering = FALSE
           , scrollX = TRUE
           , scrollY = "60vh"
@@ -1743,7 +1918,7 @@ shinyServer(function(input, output, session) {
         , options = list(
           dom='ft'
           , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
+          , pageLength = nrow(paquetes)
           , ordering = FALSE
           , scrollX = TRUE
           , scrollY = "60vh"
@@ -1767,7 +1942,7 @@ shinyServer(function(input, output, session) {
         , options = list(
           dom='ft'
           , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
+          , pageLength = nrow(paquetes)
           , ordering = FALSE
           , scrollX = TRUE
           , scrollY = "60vh"
@@ -1793,7 +1968,7 @@ shinyServer(function(input, output, session) {
         , options = list(
           dom='ft'
           , language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-          , pageLength = nrow(PAQUETES)
+          , pageLength = nrow(paquetes)
           , ordering = FALSE
           , scrollX = TRUE
           , scrollY = "60vh"

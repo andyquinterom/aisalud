@@ -56,15 +56,15 @@ shinyUI(
           menuItem(
               text = "Nota técnica",
               icon = icon("search-dollar", lib = "font-awesome"),
-              tabName = "notatecnica"),
+              tabName = "nota_tecnica"),
           (
           if (NT_INCLUIDO) {
             menuItem(
               text = "Notas técnicas",
               icon = icon("dollar-sign", lib = "font-awesome"),
-              tabName = "NTs",
+              tabName = "dash_nt",
               tags$br(),
-              actionButton("dashNT_actualizar", "Actualizar"), 
+              actionButton("dash_nt_actualizar", "Actualizar"), 
               menuSubItem(text = "Índice", tabName = "indiceNT"),
               menuSubItem(text = "Dashboard", tabName = "dashboardNT"),
               menuSubItem(text = "Comparar", tabName = "compararNT"))
@@ -76,12 +76,12 @@ shinyUI(
               text = "Paquetes",
               icon = icon("chart-pie", lib = "font-awesome"),
               tabName = "paquetes",
-              radioButtons("DASHBOARD_valorcosto", 
+              radioButtons("paquetes_valor_costo", 
                            "Graficar:",
                            choices = c("VALOR", "COSTO")),
-              actionButton("DASHBOARD_actualizar", "Actualizar"),
-              menuSubItem(text = "Índice", tabName = "indicepaquete"), 
-              menuSubItem(text = "Dashboard", tabName = "dashboardpaquete"),
+              actionButton("paquetes_actualizar", "Actualizar"),
+              menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
+              menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
               tags$br()
             )
           }
@@ -399,10 +399,9 @@ shinyUI(
                       style = "width:100%;"),
                     br(),
                     br(),
-                    textOutput(outputId = "sumasDescriptivaRegistros"),
-                    textOutput(outputId = "sumasDescriptivaPacientes"),
-                    textOutput(outputId = "sumasDescriptivaValorCosto"),
-                    textOutput(outputId = "sumasDescriptivaCUPS"))),
+                    textOutput(outputId = "descriptiva_sumas_registros"),
+                    textOutput(outputId = "descriptiva_sumas_pacientes"),
+                    textOutput(outputId = "descriptiva_sumas_valor"))),
               column(
                 width = 9,
                 box(
@@ -446,13 +445,13 @@ shinyUI(
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaDescriptivaEpCSV",
+                      outputId = "episodios_descargar_csv",
                       label = "CSV",
                       style = "width:100%;"),
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaDescriptivaEpEXCEL",
+                      outputId = "episodios_descargar_xlsx",
                       label = "Excel",
                       style = "width:100%;"))),
               column(
@@ -505,13 +504,13 @@ shinyUI(
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaOutliersCSV",
+                      outputId = "outliers_descargar_csv",
                       label = "CSV", 
                       style = "width:100%;"),
                     tags$br(),
                     tags$br(),
                     downloadButton(
-                      outputId = "descargaOutliersEXCEL",
+                      outputId = "outliers_descargar_xlsx",
                       label = "Excel",
                       style = "width:100%;"))),
               column(
@@ -556,7 +555,7 @@ shinyUI(
                     label = "# de bins",
                     value = 10),
                   actionButton(
-                    inputId = "exeOpcionesHistograma",
+                    inputId = "histograma_exe",
                     label = "Confirmar"),
                   br(),
                   br(),
@@ -588,15 +587,15 @@ shinyUI(
                       `actions-box` = TRUE,
                       `live-search` = TRUE)),
                   numericInput(
-                    inputId = "bigotesFiltroY1", 
+                    inputId = "bigotes_y1", 
                     label = "Y Min", 
                     value = 0),
                   numericInput(
-                    inputId = "bigotesFiltroY2", 
+                    inputId = "bigotes_y2", 
                     label = "Y Max", 
                     value = 1),
                   pickerInput(
-                    inputId = "bigotesSeleccionar",
+                    inputId = "bigotes_seleccionar",
                     label = "Datos:", 
                     choices = c("NA"), 
                     multiple = TRUE,
@@ -606,34 +605,17 @@ shinyUI(
                       `select-all-text` = "Seleccionar todos",
                       `live-search` = TRUE)),
                   actionButton(
-                    inputId = "exeOpcionesBigotes", 
+                    inputId = "bigotes_exe", 
                     label = "Confirmar"))),
               column(
                 width = 9,
                 box(
                   width = "100%",
                   plotlyOutput(
-                    outputId = "bigotesFinal",
+                    outputId = "bigotes_render",
                     height = "800px"))))),
           tabItem(
-            tabName = "lineadetiempo",
-            fluidRow(
-              column(
-                width = 3,
-                box(
-                  width = "100%",
-                  actionButton(
-                    inputId = "exeLineaDeTiempo",
-                    label = "Generar gráfico"))),
-              column(
-                width = 9,
-                box(
-                  width = "100%",
-                  plotOutput(
-                    outputId = "lineadetiempoFinal",
-                    height = "800px"))))),
-          tabItem(
-            tabName = "notatecnica",
+            tabName = "nota_tecnica",
             fluidRow(
               column(
                 width = 3,
@@ -664,10 +646,14 @@ shinyUI(
                   br(),
                   br(),
                   downloadButton(
-                    outputId = "descargaNTExcel",
+                    outputId = "nt_descargar_xlsx",
                     "Excel", 
                     style="width:100%;"),
                   br(),
+                  downloadButton(
+                    outputId = "nt_descargar_csv",
+                    "CSV", 
+                    style="width:100%;"),
                   br(),
                   tags$b("Primer escenario P75:"),
                   textOutput(outputId = "sumasNtEsc1"),
@@ -855,32 +841,35 @@ shinyUI(
                   DT::dataTableOutput(
                     outputId = "compararNT_difsValorCMEperc",
                     width = "100%"))))),
+          
+          # Paquetes ---------------------------------------------------------
+          
           tabItem(
-            tabName = "indicepaquete",
+            tabName = "paquetes_indice",
             fluidRow(
               box(
                 width = 12,
-                DT::dataTableOutput(outputId = "paqueteIndexTable")))),
+                DT::dataTableOutput(outputId = "paquetes_indice_tabla")))),
           tabItem(
-            tabName = "dashboardpaquete",
+            tabName = "paquetes_dash",
             fluidRow(
               column(
                 width = 12,
-                valueBoxOutput(outputId = "BOX_especialidad", width = "100%"))),
+                valueBoxOutput(outputId = "paquetes_especialidad", width = "100%"))),
             fluidRow(
               column(
                 width = 4,
-                valueBoxOutput(outputId = "BOX_valortotal", width = "100%")),
+                valueBoxOutput(outputId = "paquetes_valortotal", width = "100%")),
               column(
                 width = 4,
-                valueBoxOutput(outputId = "BOX_costototal", width = "100%")),
+                valueBoxOutput(outputId = "paquetes_costototal", width = "100%")),
               column(
                 width = 4,
-                valueBoxOutput(outputId = "BOX_codpaquete", width = "100%"))),
+                valueBoxOutput(outputId = "paquetes_codpaquete", width = "100%"))),
             fluidRow(
               column(
                 width = 12,
-                valueBoxOutput(outputId = "BOX_descripcion", width = "100%"))),
+                valueBoxOutput(outputId = "paquetes_descripcion", width = "100%"))),
             fluidRow(
               column(
                 width = 9,
@@ -888,11 +877,12 @@ shinyUI(
                   width = 12,
                   height = "100%",
                   selectInput(
-                    inputId = "paquete",
+                    inputId = "paquetes_select",
                     label = "Paquete:",
-                    choices = na.omit(unique(PAQUETES$`CODIGO PAQUETE`))),
+                    choices = na.omit(
+                      unique(paquetes$`CODIGO PAQUETE`))),
                   ggiraph::ggiraphOutput(
-                    outputId = "PLOT_ref_paquete",
+                    outputId = "paquetes_plot_ref",
                     width = "100%",
                     height = "100%"),
                   tags$p(style = "text-align: justify;",
@@ -903,35 +893,35 @@ shinyUI(
                 box(
                   title = "Servicio:",
                   width = "100%",
-                  tags$h3(textOutput(outputId = "BOX_servicio"))),
+                  tags$h3(textOutput(outputId = "paquetes_servicios"))),
                 box(
                   title = "Inclusiones:",
                   width = "100%",
                   height = "100%",
-                  tags$p(textOutput(outputId = "BOX_inclusiones"))),
+                  tags$p(textOutput(outputId = "paquetes_inclusiones"))),
                 box(
                   title = "Exclusiones:",
                   width = "100%",
                   height = "100%",
-                  tags$p(textOutput("BOX_exclusiones"))))),
+                  tags$p(textOutput("paquetes_exclusiones"))))),
             fluidRow(
               column(
                 width = 6,
                 box(
                   width = "100%",
                   selectInput(
-                    inputId = "COL_pie_componente",
+                    inputId = "paquetes_componenete_select",
                     label = "Componente:",
-                    choices = unique(PAQUETES_CC$COMPONENTE),
+                    choices = unique(paquetes_cups$COMPONENTE),
                     multiple = T),
                   selectInput(
-                    inputId = "COL_pie_componente_en",
+                    inputId = "paquetes_componenete_datos",
                     label = "Datos:",
                     choices = c("PRESTACION", "TIPO DE COSTO")),
                   ggiraph::ggiraphOutput(
-                    outputId = "PLOT_pie_componente",
+                    outputId = "paquetes_componenete_plot",
                     width = "100%"),
-                  dataTableOutput(outputId = "TABLA_pie_componente"),
+                  dataTableOutput(outputId = "paquetes_componenete_tabla"),
                   br(),
                   tags$p(style = "text-align: justify;",
                          tags$em(
@@ -942,18 +932,18 @@ shinyUI(
                 box(
                   width = "100%",
                   selectInput(
-                    inputId = "COL_pie_tipocosto",
+                    inputId = "paquetes_tipo_costo_select",
                     label = "Tipo de costo:",
-                    choices = unique(PAQUETES_CC$`TIPO DE COSTO`),
+                    choices = unique(paquetes_cups$`TIPO DE COSTO`),
                     multiple = T),
                   selectInput(
-                    inputId = "COL_pie_tipocosto_en",
+                    inputId = "paquetes_tipo_costo_datos",
                     label = "Datos:",
                     choices = c("PRESTACION", "COMPONENTE")),
                   ggiraph::ggiraphOutput(
-                    outputId = "PLOT_pie_tipocosto",
+                    outputId = "paquetes_tipo_costo_plot",
                     width = "100%"),
-                  dataTableOutput(outputId = "TABLA_pie_tipocosto"),
+                  dataTableOutput(outputId = "paquetes_tipo_costo_tabla"),
                   br(),
                   tags$p(style = "text-align: justify;",
                          tags$em(
@@ -964,13 +954,15 @@ shinyUI(
                 width = 7,
                 box(
                   width = "100%",
-                  DT::dataTableOutput(outputId = "TABLA_paquete", width = "100%"))),
+                  DT::dataTableOutput(
+                    outputId = "paquetes_tabla",
+                    width = "100%"))),
               column(
                 width = 5,
                 box(
                   width = "100%",
                   ggiraph::girafeOutput(
-                    outputId = "PLOT_ref_cumscups",
+                    outputId = "paquetes_ref_cups",
                     width = "100%"),
                   tags$p(style = "text-align: justify;",
                          tags$em(
@@ -978,18 +970,21 @@ shinyUI(
                            ))),
                 box(width = "100%",
                     selectInput(
-                      inputId = "COL_pie_paquete",
+                      inputId = "paquetes_resumen_select",
                       label = "",
                       choices = c("COMPONENTE", "TIPO DE COSTO")),
                     ggiraph::girafeOutput(
-                      outputId = "PLOT_pie_paquete",
+                      outputId = "paquetes_resumen_plot",
                       width = "100%"),
-                    dataTableOutput(outputId = "TABLA_pie_paquete_resumen"),
+                    dataTableOutput(outputId = "paquetes_resumen_tabla"),
                     br(),
                     tags$p(style = "text-align: justify;",
                            tags$em(
                              'Al seleccionar "Tipo de cost" o "Componente" se genera un gráfico circular mostrando las diferentes partes de la categoría y sus proporciones.'
                              )))))),
+          
+          # Pricing -----------------------------------------------------------
+          
           tabItem(
             tabName = "pricing",
             selectInput(

@@ -1,6 +1,6 @@
-PIEchart <- function(paquetes, columna, valorcosto) {
+PIEchart <- function(paquetes, columna, valor_costo) {
   piechart <- ggplot(
-    paquetes[, list(TOTAL = sum(get(valorcosto), na.rm = TRUE)), by = columna], 
+    paquetes[, list(TOTAL = sum(get(valor_costo), na.rm = TRUE)), by = columna], 
     aes(x="", 
         y=TOTAL, 
         fill=str_wrap(get(columna), 20),  
@@ -8,7 +8,7 @@ PIEchart <- function(paquetes, columna, valorcosto) {
         data_id = get(columna)))+
     geom_bar_interactive(width = 1, stat = "identity", colour="black") +
     coord_polar("y", start=0) +
-    scale_y_continuous(labels = scales::comma, name = valorcosto) +
+    scale_y_continuous(labels = scales::comma, name = valor_costo) +
     scale_x_discrete(name = "") +
     labs(fill = columna) +
     theme_minimal()

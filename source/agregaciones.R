@@ -10,7 +10,7 @@ agregar <- function(data, columna_valor, columnas, prestaciones) {
                         columnas[columnas != 'NRO_IDENTIFICACION'])]
   }
   data <- data[, list("Frecuencia" = length(VALOR),
-                      columna_valor = sum(VALOR, na.rm = TRUE),
+                      "columna_valor" = sum(VALOR, na.rm = TRUE),
                       "Promedio" = mean(VALOR, na.rm = TRUE)),
                by = c(columnas)]
   setnames(data, "columna_valor", columna_valor)

@@ -31,14 +31,14 @@ mapaValoresNT <- function(INDICE, ...) {
   tablaDep[is.na(Contratos), Contratos:=0]
   tablaDep[, c("id", "COD_DEPARTAMENTO") := NULL]
 
-  ValorFormato <- paste0(
+  tablaDep$ValorFormato <- paste0(
     "Valor: ",
     "$",
     format(tablaDep$Valor,
            scientific = FALSE,
            big.mark = ".",
            decimal.mark = ","))
-  `Departamento` <- tablaDep$depto
+  tablaDep$Departamento <- tablaDep$depto
 
   p <- ggplotly(
     p = colmaps2::colmap(
@@ -56,6 +56,6 @@ mapaValoresNT <- function(INDICE, ...) {
     tooltip = c("text", "nombre"), ...) %>%
     config(locale = "es") 
   
-  return(list(p, tablaDep))
+  return(p)
   
 }
