@@ -93,7 +93,7 @@ shinyUI(
               icon = icon("tags", lib = "font-awesome"),
               tabName = "pricingOpciones", 
               tags$br(),
-              actionButton("pricingActualizar", "Actualizar"),
+              actionButton("pricing_actualizar", "Actualizar"),
               menuSubItem(text = "Informes", tabName = "pricing"),
               tags$br()
             )
@@ -988,19 +988,19 @@ shinyUI(
           tabItem(
             tabName = "pricing",
             selectInput(
-              inputId = "pricingSelect",
+              inputId = "pricing_select",
               label = "Informe:",
-              choices = str_replace(list.files("datos/PRICING/"), ".csv", "")),
+              choices = str_replace(list.files("datos/pricing/"), ".csv", "")),
             fluidRow(
               column(
                 width = 3,
                 box(width = "100%",
-                    uiOutput(outputId = "pricingOutPrestacion"),
-                    uiOutput(outputId = "pricingOutEntidad"),
-                    uiOutput(outputId = "pricingOutObs"),
-                    uiOutput(outputId = "pricingOutRel_media"),
-                    uiOutput(outputId = "pricingOutRel_min"),
-                    actionButton(inputId = "pricingEjecutar", label = "Aplicar"))),
+                    uiOutput(outputId = "pricing_ui_prestacion"),
+                    uiOutput(outputId = "pricing_ui_entidad"),
+                    uiOutput(outputId = "pricing_ui_observacion"),
+                    uiOutput(outputId = "pricing_ui_rel_media"),
+                    uiOutput(outputId = "pricing_ui_rel_min"),
+                    actionButton(inputId = "pricing_exe", label = "Aplicar"))),
               column(
                 width = 9,
                 box(
@@ -1009,18 +1009,18 @@ shinyUI(
                     tabPanel(
                       title = "Entidades",
                       ggiraphOutput(
-                        outputId = "pricingEntidades",
+                        outputId = "pricing_entidades",
                         height = "600px",
                         width = "100%")),
                     tabPanel(
                       title = "Descriptiva por Prestación",
                       ggiraphOutput(
-                        outputId = "pricingPrestaciones",
+                        outputId = "pricing_prestaciones",
                         height = "600px",
                         width = "100%")))))),
             box(
               width = "100%",
-              DT::dataTableOutput(outputId = "pricingCUPSCUMS", height = "300px")
+              DT::dataTableOutput(outputId = "pricing_cups", height = "300px")
               ))
         )
       )

@@ -1429,7 +1429,7 @@ shinyServer(function(input, output, session) {
     if(!is.null(paquetes)) {
       datatable(
         paquetes_valores$paquete_datos[,
-            c("CUMS/CUPS",
+            c("CODIGO_CUPS",
               "PRESTACION",
               "COMPONENTE", 
               "TIPO DE COSTO",
@@ -1543,7 +1543,7 @@ shinyServer(function(input, output, session) {
           `CODIGO PAQUETE` == paquetes_valores$paquete],
         CUMSCUPS = paquetes_valores$paquete_cups[
           input$paquetes_tabla_rows_selected,
-          list(`CUMS/CUPS`)],
+          list(CODIGO_CUPS)],
         valor_costo = input$paquetes_valor_costo)
   })
   
@@ -1649,161 +1649,250 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  ### Sección Pricing
+  # Pricing ------------------------------------------------------------------
   
-  observeEvent(input$pricingActualizar, {
-    confirmSweetAlert(session, inputId = "pricingActualizar_conf", 
-                      title = "Confirmar", 
-                      text = "¿Seguro que quieres actualizar el pricing? Al final, deberá reiniciar la aplicación."
-                      , showCloseButton = TRUE
-                      , btn_labels = c("Cancelar", "Confirmar"))
+  observeEvent(input$pricing_actualizar, {
+    confirmSweetAlert(
+      session,
+      inputId = "pricing_actualizar_conf", 
+      title = "Confirmar", 
+      text = "¿Seguro que quieres actualizar el pricing?
+              Al final, deberá reiniciar la aplicación.",
+      showCloseButton = TRUE,
+      btn_labels = c("Cancelar", "Confirmar"))
   })
   
-  observeEvent(input$pricingActualizar_conf, {
-    if (isTRUE(input$pricingActualizar_conf)) {
-      withProgress(value = 0, message = "Actualizando pricing...", min = 0, max = 1.1, {
-        unlink("datos/PRICING/", recursive = TRUE)
-        dir.create("datos/PRICING")
-        pricingList = drive_ls(path = as_id(pricing_path))
-        incProgress(0.1, message = "¡Archivos leidos!")
-        i = 1
-        while (i <= length(pricingList$id)) {
-          drive_download(file = as_id(pricingList$id[i]), path = paste0("datos/PRICING/", pricingList$name[i]), overwrite = T)
-          i = i + 1
-          incProgress(1/length(pricingList$id))
-        }
-        i = NULL
-        
+  observeEvent(input$pricing_actualizar_conf, {
+    if (input$pricing_actualizar_conf) {
+      withProgress(
+        value = 0,
+        message = "Actualizando pricing...",
+        min = 0,
+        max = 1.1, {
+          unlink("datos/pricing/", recursive = TRUE)
+          dir.create("datos/pricing")
+          pricingList = drive_ls(path = as_id(pricing_path))
+          incProgress(0.1, message = "¡Archivos leidos!")
+          for (i in 1:length(pricingList$id)) {
+            drive_download(
+              file = as_id(pricingList$id[i]),
+              path = paste0("datos/pricing/", 
+                            pricingList$name[i]),
+              overwrite = T)
+            incProgress(1/length(pricingList$id))
+            }
       })
-      sendSweetAlert(session, title = "¡Pricing actualizados efectivamente!", text = "Para ver los datos y gráficos actualizados, por favor recargar la página.", type = "success")
+      
+      sendSweetAlert(
+        session,
+        title = "¡Pricing actualizados efectivamente!",
+        text = "Para ver los datos y gráficos actualizados,
+                por favor recargar la página.",
+        type = "success")
+      
       stopApp()
     }
   })
   
-  pricing = reactiveValues()
+  pricing <- reactiveValues()
   
-  observeEvent(input$pricingSelect, {
+  observeEvent(input$pricing_select, {
     if (PRICING_INCLUIDO) {
-    pricing$bd = as.data.table(readr::read_csv(paste0("datos/pricing/", input$pricingSelect, ".csv"), na = c("-", "#N/A", "#DIV/0!", "NA")))
+      pricing$datos <- fread(
+        input = paste0("datos/pricing/", input$pricing_select, ".csv"),
+        na.strings = c("-", "#N/A", "#DIV/0!", "NA"),
+        data.table = TRUE)
+      
+      pricing$datos[, "CODIGO_CUPS" := as.character(CODIGO_CUPS)]
+      pricing$datos[, "VALOR_UNITARIO" := numerize(VALOR_UNITARIO)]
+      pricing$datos[, "MAXIMO" := numerize(MAXIMO)]
+      pricing$datos[, "MINIMO" := numerize(MINIMO)]
+      pricing$datos[, "MEDIA" := numerize(MEDIA)]
+      pricing$datos[, "RELATIVO_MEDIA" := numerize(RELATIVO_MEDIA)]
+      pricing$datos[, "RELATIVO_MINIMO" := numerize(RELATIVO_MINIMO)]
     
-    pricing$datos$CODIGO_CUPS = as.character(pricing$datos$CODIGO_CUPS)
-    pricing$datos$VALOR_UNITARIO = as.numeric(as.character(pricing$datos$VALOR_UNITARIO))
-    pricing$datos$MAXIMO = as.numeric(as.character(pricing$datos$MAXIMO))
-    pricing$datos$MINIMO = as.numeric(as.character(pricing$datos$MINIMO))
-    pricing$bd$`MEDIA` = as.numeric(as.character(pricing$bd$"MEDIA"))
-    pricing$datos$RELATIVO_MINIMO = as.numeric(as.character(pricing$datos$RELATIVO_MINIMO))
-    pricing$datos$RELATIVO_MEDIA = as.numeric(as.character(pricing$datos$RELATIVO_MEDIA))
-    
-    pricing$bdsd.media = round(abs(sd(pricing$datos$RELATIVO_MEDIA, na.rm = TRUE)), digits = 3)
-    pricing$bdsd.min = round(abs(median(pricing$datos$RELATIVO_MINIMO, na.rm = TRUE)), digits = 3)
-    pricing$descriptiva = data.frame("x" = c("Valor Unitario Mínimo", "Valor Unitario Máximo", "Valor Unitario Promedio", "Mínimo", "Máximo", "Media"), "y" = c(0,0,0,0,0,0))
+    pricing$sd_media <- round(
+      abs(sd(pricing$datos$RELATIVO_MEDIA, na.rm = TRUE)),
+      digits = 3)
+    pricing$sd_min <- round(
+      abs(median(pricing$datos$RELATIVO_MINIMO, na.rm = TRUE)),
+      digits = 3)
+    pricing$descriptiva <- data.table(
+      "x" = c("Valor Unitario Mínimo",
+              "Valor Unitario Máximo",
+              "Valor Unitario Promedio",
+              "Mínimo",
+              "Máximo", 
+              "Media"),
+      "y" = c(0,0,0,0,0,0))
     }
   })
   
-  output$pricingOutPrestacion = renderUI({
-    pickerInput("pricingFiltroPrestacion", label = "Nombre de Prestación",
-                choices = unique(pricing$datos$NOMBRE_PRESTACION), multiple = TRUE,
-                options = list(`actions-box` = TRUE, `deselect-all-text` = "Deseleccionar todos",
-                               `select-all-text` = "Seleccionar todos", `live-search` = TRUE))
+  output$pricing_ui_prestacion <- renderUI({
+    pickerInput(
+      inputId = "pricing_filtro_prestaciones",
+      label = "Nombre de Prestación",
+      choices = unique(pricing$datos$NOMBRE_PRESTACION),
+      multiple = TRUE,
+      options = list(
+        `actions-box` = TRUE,
+        `deselect-all-text` = "Deseleccionar todos",
+        `select-all-text` = "Seleccionar todos",
+        `live-search` = TRUE))
   })
   
-  output$pricingOutEntidad = renderUI({
-    pickerInput("pricingFiltroEntidad", label = "Nombre Entidad",
-                choices = unique(pricing$datos$NOMBRE_ENTIDAD), multiple = TRUE,
-                options = list(`actions-box` = TRUE, `deselect-all-text` = "Deseleccionar todos",
-                               `select-all-text` = "Seleccionar todos", `live-search` = TRUE))
+  output$pricing_ui_entidad <- renderUI({
+    pickerInput(
+      inputId = "pricing_filtro_entidad",
+      label = "Nombre Entidad",
+      choices = unique(pricing$datos$NOMBRE_ENTIDAD),
+      multiple = TRUE,
+      options = list(
+        `actions-box` = TRUE,
+        `deselect-all-text` = "Deseleccionar todos",
+        `select-all-text` = "Seleccionar todos",
+        `live-search` = TRUE))
   })
   
-  output$pricingOutObs = renderUI({
-    pickerInput("pricingFiltroObservacion", label = "Observación",
-                choices = unique(pricing$datos$OBSERVACIÓN),
-                multiple = TRUE, 
-                options = list(`actions-box` = TRUE, `deselect-all-text` = "Deseleccionar todos",
-                               `select-all-text` = "Seleccionar todos", `live-search` = TRUE))
+  output$pricing_ui_observacion <- renderUI({
+    pickerInput(
+      inputId = "pricing_filtro_observacion",
+      label = "Observación",
+      choices = unique(pricing$datos$OBSERVACIÓN),
+      multiple = TRUE, 
+      options = list(
+        `actions-box` = TRUE,
+        `deselect-all-text` = "Deseleccionar todos",
+        `select-all-text` = "Seleccionar todos", 
+        `live-search` = TRUE))
   })
   
-  output$pricingOutRel_media = renderUI({
-    sliderInput("pricingRel_media", "Relativo a la media", min = -2*pricing$bdsd.media, max = 2*pricing$bdsd.media, value = c(-2*pricing$bdsd.media, 2*pricing$bdsd.media), step = 0.01)
+  output$pricing_ui_rel_media <- renderUI({
+    sliderInput(
+      inputId = "pricing_rel_media",
+      "Relativo a la media",
+      min = -2*pricing$sd_media,
+      max = 2*pricing$sd_media,
+      value = c(-2*pricing$sd_media, 2*pricing$sd_media),
+      step = 0.01)
   })
   
-  output$pricingOutRel_min = renderUI({
-    sliderInput("pricingRel_min", "Relativo al mínimo", min = -2*pricing$bdsd.min, max = 2*pricing$bdsd.min, value = c(-2*pricing$bdsd.min, 2*pricing$bdsd.min), step = 0.01)
+  output$pricing_ui_rel_min <- renderUI({
+    sliderInput(
+      inputId = "pricing_rel_min",
+      "Relativo al mínimo",
+      min = -2*pricing$sd_min,
+      max = 2*pricing$sd_min,
+      value = c(-2*pricing$sd_min, 2*pricing$sd_min),
+      step = 0.01)
   })
   
-  observeEvent(input$pricingEjecutar, {
-    pricing$filtrado = pricing$bd
-    pricing$filtrado = pricing$filtrado[NOMBRE_PRESTACION %in% input$pricingFiltroPrestacion & NOMBRE_ENTIDAD %in% input$pricingFiltroEntidad & OBSERVACIÓN %in% input$pricingFiltroObservacion]
-    
-    if (input$pricingRel_media[1] != -2*pricing$bdsd.media) {
-      pricing$filtrado = pricing$filtrado[RELATIVO_MEDIA >= input$pricingRel_media[1]]
+  observeEvent(input$pricing_exe, {
+    pricing$filtrado <- pricing$datos
+    pricing$filtrado <- pricing$filtrado[
+      NOMBRE_PRESTACION %in% input$pricing_filtro_prestaciones &
+      NOMBRE_ENTIDAD %in% input$pricing_filtro_entidad &
+      OBSERVACIÓN %in% input$pricing_filtro_observacion]
+
+    if (input$pricing_rel_media[1] != -2*pricing$sd_media) {
+      pricing$filtrado <- pricing$filtrado[
+        RELATIVO_MEDIA >= input$pricing_rel_media[1]]
     }
-    if (input$pricingRel_media[2] != 2*pricing$bdsd.media) {
-      pricing$filtrado = pricing$filtrado[RELATIVO_MEDIA <= input$pricingRel_media[2]]
+    if (input$pricing_rel_media[2] != 2*pricing$sd_media) {
+      pricing$filtrado <- pricing$filtrado[
+        RELATIVO_MEDIA <= input$pricing_rel_media[2]]
     }
+
+    if (input$pricing_rel_min[1] != -2*pricing$sd_min) {
+      pricing$filtrado <- pricing$filtrado[
+        RELATIVO_MINIMO >= input$pricing_rel_min[1]]
+    }
+    if (input$pricing_rel_min[2] != 2*pricing$sd_min) {
+      pricing$filtrado <- pricing$filtrado[
+        RELATIVO_MINIMO >= input$pricing_rel_min[2]]
+    }
+
+    pricing_descriptiva_y <- c(
+      min(pricing$filtrado$VALOR_UNITARIO, na.rm = T),
+      max(pricing$filtrado$VALOR_UNITARIO, na.rm = T),
+      mean(pricing$filtrado$VALOR_UNITARIO, na.rm = TRUE),
+      min(pricing$filtrado$MINIMO, na.rm = T),
+      max(pricing$filtrado$MAXIMO, na.rm = T),
+      max(pricing$filtrado$MEDIA, na.rm = TRUE))
     
-    if (input$pricingRel_min[1] != -2*pricing$bdsd.min) {
-      pricing$filtrado = pricing$filtrado[RELATIVO_MINIMO >= input$pricingRel_min[1]]
-    }
-    if (input$pricingRel_min[2] != 2*pricing$bdsd.min) {
-      pricing$filtrado = pricing$filtrado[RELATIVO_MINIMO >= input$pricingRel_min[2]]
-    }
-    
-    pricing$descriptiva$y =    c(min(pricing$filtrado$VALOR_UNITARIO, na.rm = T),
-                                 max(pricing$filtrado$VALOR_UNITARIO, na.rm = T),
-                                 mean(pricing$filtrado$VALOR_UNITARIO, na.rm = TRUE),
-                                 min(pricing$filtrado$MINIMO, na.rm = T),
-                                 max(pricing$filtrado$MAXIMO, na.rm = T),
-                                 max(pricing$filtrado$"MEDIA", na.rm = TRUE))
+    pricing$descriptiva[, "y" := pricing_descriptiva_y]
     
   })
   
-  observeEvent(input$pricingEjecutar, {
-    output$pricingCUPSCUMS = DT::renderDataTable({
-      datatable(pricing$filtrado[, 
-                                 list(
-                                   "MIN" = min(VALOR_UNITARIO, na.rm = TRUE),
-                                   "MEDIA" = mean(VALOR_UNITARIO, na.rm = TRUE), 
-                                   "MAX" = max(VALOR_UNITARIO, na.rm = TRUE), 
-                                   "MEDIA MERCADO" = min(MEDIA, na.rm = TRUE)), 
-                                 by= c("NOMBRE_ENTIDAD", "CODIGO_CUPS")]
-                , rownames = FALSE
-                , options = list(language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                                 ordering=T)) %>%
-        formatCurrency(c("MIN", "MEDIA", "MAX", "MEDIA MERCADO"), mark = ".", dec.mark = ",")
-    })
+  output$pricing_cups <- DT::renderDataTable({
+    if (!is.null(pricing$filtrado)) {
+      datatable(pricing$filtrado[, list(
+        "MIN" = min(VALOR_UNITARIO, na.rm = TRUE),
+        "MEDIA" = mean(VALOR_UNITARIO, na.rm = TRUE), 
+        "MAX" = max(VALOR_UNITARIO, na.rm = TRUE), 
+        "MEDIA MERCADO" = min(MEDIA, na.rm = TRUE)), 
+        by= c("NOMBRE_ENTIDAD", "CODIGO_CUPS")],
+        rownames = FALSE, 
+        options = list(
+          language = list(
+            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+          ordering=T)) %>%
+        formatCurrency(c("MIN", "MEDIA", "MAX", "MEDIA MERCADO"),
+                       mark = ".",
+                       dec.mark = ",")
+    }
   })
   
-  observeEvent(input$pricingEjecutar, {
-    output$pricingEntidades = renderggiraph({
+  output$pricing_entidades <- renderggiraph({
+    if (!is.null(pricing$filtrado)) {
       girafe(
-        ggobj = ggplot(pricing$filtrado, aes(NOMBRE_ENTIDAD, fill = OBSERVACIÓN, data_id = OBSERVACIÓN, tooltip = OBSERVACIÓN)) +
+        ggobj = ggplot(
+          data = pricing$filtrado, 
+          aes(NOMBRE_ENTIDAD,
+              fill = OBSERVACIÓN, 
+              data_id = OBSERVACIÓN,
+              tooltip = OBSERVACIÓN)) +
           geom_bar_interactive() +
           theme_minimal() +
-          scale_y_continuous(labels = scales::comma, name = "# de prestaciones") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position="left") +
-          labs(y= "Conteo", x = "Nombre Entidad")
-        , options = list(opts_selection(type = "none", only_shiny = FALSE))
-        , width_svg = 18, height_svg = 9
+          scale_y_continuous(
+            labels = scales::comma, 
+            name = "# de prestaciones") +
+          theme(
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position="left") +
+          labs(y= "Conteo", x = "Nombre Entidad"),
+        options = list(
+          opts_selection(type = "none", only_shiny = FALSE)),
+        width_svg = 18,
+        height_svg = 9
       )
-    })
+    }
   })
-  
-  observeEvent(input$pricingEjecutar, {
-    output$pricingPrestaciones = renderggiraph({
+
+  output$pricing_prestaciones <- renderggiraph({
+    if (!is.null(pricing$descriptiva)) {
       girafe(
-        ggobj =  ggplot(pricing$descriptiva, aes(x = x, y = as.numeric(as.character(y)), fill = x, data_id = x, tooltip = formatAsCurrency(as.numeric(as.character(y))))) +
+        ggobj = ggplot(
+          data = pricing$descriptiva,
+          aes(x = x,
+              y = as.numeric(as.character(y)),
+              fill = x,
+              data_id = x,
+              tooltip = formatAsCurrency(numerize(y)))) +
           geom_bar_interactive(stat = "identity") +
           theme_minimal() +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position="left") +
+          theme(
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position="left") +
           scale_y_continuous(labels = scales::comma, name = "Valor") +
-          labs(y= "Valor", x = "Comparación")
-        , options = list(opts_selection(type = "none", only_shiny = FALSE))
-        , width_svg = 18, height_svg = 9
+          labs(y= "Valor", x = "Comparación"),
+        options = list(opts_selection(type = "none", only_shiny = FALSE)),
+        width_svg = 18, height_svg = 9
       )
-    })
+    }
   })
   
-  ###Dashboard NT
+  # Dashboard NT --------------------------------------------------------------
   
   observeEvent(input$dashNT_actualizar, {
     confirmSweetAlert(session, inputId = "dashNT_actualizar_conf", 
