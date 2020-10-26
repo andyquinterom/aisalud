@@ -1,4 +1,4 @@
-PIEchart <- function(paquetes, columna, valor_costo) {
+pie_chart <- function(paquetes, columna, valor_costo) {
   piechart <- ggplot(
     paquetes[, list(TOTAL = sum(get(valor_costo), na.rm = TRUE)), by = columna], 
     aes(x="", 

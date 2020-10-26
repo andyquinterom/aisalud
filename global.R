@@ -207,25 +207,25 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
   
   NT_INCLUIDO <- TRUE
   
-  if (!(file.exists("datos/nts/NTs.feather") &&
-        file.exists("datos/nts/INDICE.feather") && 
-        file.exists("datos/nts/INCLUSIONES.feather") &&
-        file.exists("datos/nts/NTmapa.rds"))) {
+  if (!(file.exists("datos/nts/notas_tecnicas.feather") &&
+        file.exists("datos/nts/indice.feather") && 
+        file.exists("datos/nts/inclusiones.feather") &&
+        file.exists("datos/nts/nt_mapa.rds"))) {
     
     write_feather(sheets_read(nts_path,
                               sheet = "NTs",
                               col_types = "ccddd"),
-                  "datos/nts/NTs.feather")
+                  "datos/nts/notas_tecnicas.feather")
     
     write_feather(sheets_read(nts_path, 
                               sheet = "INDICE", 
                               col_types = "ccdcccd"),
-                  "datos/nts/INDICE.feather")
+                  "datos/nts/indice.feather")
     
     write_feather(sheets_read(nts_path, 
                               sheet = "INCLUSIONES", 
                               col_types = "ccdc") ,
-                  "datos/nts/INCLUSIONES.feather")
+                  "datos/nts/inclusiones.feather")
     
     saveRDS(
       mapaValoresNT(
@@ -237,14 +237,15 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
         )
       ) %>% 
         layout(autosize = TRUE),
-      "datos/nts/NTmapa.rds")
+      "datos/nts/nt_mapa.rds")
     
   }
   
 }
 
-MAPA_NT <- readRDS("datos/nts/NTmapa.rds")
-NTs_INDICE <- as.data.table(read_feather("datos/nts/INDICE.feather"))
-NTs_INCLUSIONES <- as.data.table(read_feather("datos/nts/INCLUSIONES.feather"))
-NTs_NT <- as.data.table(read_feather("datos/nts/NTs.feather"))
-NTs_UniqueCod <- unique(NTs_INDICE$COD_NT)
+dash_nt_mapa <- readRDS("datos/nts/nt_mapa.rds")
+dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
+dash_nt_inclusiones <- as.data.table(
+  read_feather("datos/nts/inclusiones.feather"))
+dash_nt_datos <- as.data.table(read_feather("datos/nts/notas_tecnicas.feather"))
+dash_nt_codigos <- unique(dash_nt_datos$COD_NT)

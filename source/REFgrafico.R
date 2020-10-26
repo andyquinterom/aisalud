@@ -1,4 +1,4 @@
-REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
+ref_plot <- function(paquetes, referente, cups, valor_costo) {
   
   referente.completo <- as.data.table(  
     rbind(fill = TRUE,
@@ -10,7 +10,7 @@ REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
           cbind(referente, data.frame(
             "TIPO" = rep("REFERENTE", nrow(referente))))))
       
-  promedios <- referente.completo[`CUMS/CUPS` %in% CUMSCUPS, list(
+  promedios <- referente.completo[`CUMS/CUPS` %in% cups, list(
     P,
     costomean = mean(`REF COSTO`, na.rm = T), 
     costomin = min(`REF COSTO`, na.rm = T),
@@ -54,13 +54,14 @@ REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
   
   plot1 <-
     ggplot(
-      data = referente.completo[`CUMS/CUPS` %in% CUMSCUPS],
+      data = referente.completo[`CUMS/CUPS` %in% cups],
       aes(x = P,
           y = get(REF),
           fill = TIPO,
           tooltip = format(get(REF),
                            digits = 0,
-                           big.mark = ",",
+                           big.mark = ".",
+                           decimal.mark = ",",
                            scientific = F),
           data_id = P)) +
     geom_col_interactive() +
@@ -71,7 +72,8 @@ REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
           color = get(MEDIA), 
           tooltip = format(get(ymean),
                            scientific = F,
-                           big.mark = ",",
+                           big.mark = ".",
+                           decimal.mark = ",",
                            digits = 0)),
       size=0.5, 
       linetype = "longdash",
@@ -86,7 +88,8 @@ REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
         color = get(MAX),
         tooltip = format(get(ymax),
                          scientific = F,
-                         big.mark = ",",
+                         big.mark = ".",
+                         decimal.mark = ",",
                          digits = 0)),
       size=0.5,
       linetype = "longdash",
@@ -101,7 +104,8 @@ REFgrafico <- function(paquetes, referente, CUMSCUPS, valor_costo) {
         color = get(MIN),
         tooltip = format(get(ymin),
                          scientific = F,
-                         big.mark = ",",
+                         big.mark = ".",
+                         decimal.mark = ",",
                          digits = 0)),
       size=0.5,
       linetype = "longdash",

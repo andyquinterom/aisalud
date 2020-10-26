@@ -50,9 +50,7 @@ shinyUI(
               menuSubItem(text = "Histogramas y barras",
                           tabName = "histogramas_barras"), 
               menuSubItem(text = "Caja de bigotes", 
-                          tabName = "cajadebigotes"), 
-              menuSubItem(text = "Linea de tiempo",
-                          tabName = "lineadetiempo")),
+                          tabName = "cajadebigotes")),
           menuItem(
               text = "Nota técnica",
               icon = icon("search-dollar", lib = "font-awesome"),
@@ -65,9 +63,9 @@ shinyUI(
               tabName = "dash_nt",
               tags$br(),
               actionButton("dash_nt_actualizar", "Actualizar"), 
-              menuSubItem(text = "Índice", tabName = "indiceNT"),
-              menuSubItem(text = "Dashboard", tabName = "dashboardNT"),
-              menuSubItem(text = "Comparar", tabName = "compararNT"))
+              menuSubItem(text = "Índice", tabName = "dash_nt_indice"),
+              menuSubItem(text = "Dashboard", tabName = "dash_nt_board"),
+              menuSubItem(text = "Comparar", tabName = "dash_nt_comparar"))
           }
           ),
           (
@@ -692,31 +690,36 @@ shinyUI(
                 width = 9,
                 box(width = "100%",
                     DT::dataTableOutput(outputId = "crear_nt_tabla"))))),
+          
+          # Dashboard NT -------------------------------------------------------
+          
           tabItem(
-            tabName = "indiceNT",
+            tabName = "dash_nt_indice",
             fluidRow(
               box(
                 width = 7,
-                DT::dataTableOutput(outputId = "indiceNT", height = "80vh")),
+                DT::dataTableOutput(
+                  outputId = "dash_nt_indice_tabla",
+                  height = "80vh")),
               box(width = 5, plotlyOutput(
-                outputId = "indiceNT_Mapa",
+                outputId = "dash_nt_indice_mapa",
                 height = "80vh")))),
           tabItem(
-            tabName = "dashboardNT",
+            tabName = "dash_nt_board",
             fluidRow(
               column(
                 width = 12,
-                valueBoxOutput(outputId = "dashNTNombreEntidad", width = 12))),
+                valueBoxOutput(outputId = "dash_nt_entidad", width = 12))),
             fluidRow(
               column(
                 width = 12,
                 valueBoxOutput(
-                  outputId = "dashNT_ValorMes", width = 4),
+                  outputId = "dash_nt_valor_mes", width = 4),
                 valueBoxOutput(
-                  outputId = "dashNT_Poblacion",
+                  outputId = "dash_nt_poblacion",
                   width = 4),
                 valueBoxOutput(
-                  outputId = "dashNT_Departamento",
+                  outputId = "dash_nt_departamento",
                   width = 4))),
             fluidRow(
               column(
@@ -724,9 +727,9 @@ shinyUI(
                 box(
                   width = 12,
                   pickerInput(
-                    inputId = "dashNT_select", 
+                    inputId = "dash_nt_board_select", 
                     width = "100%",
-                    choices = NTs_UniqueCod,
+                    choices = dash_nt_codigos,
                     label = "Nota técnica")),
                 box(
                   width = 12,
@@ -734,46 +737,46 @@ shinyUI(
                   fluidRow(
                     column(
                       width = 5,
-                      DT::dataTableOutput(outputId = "dashNT_NT")),
+                      DT::dataTableOutput(outputId = "dash_nt_board_datos")),
                     column(
                       width = 7,
                       ggiraph::ggiraphOutput(
-                        outputId = "dashNT_PLOT_Agrupadores",
+                        outputId = "dash_nt_plot_agrupadores",
                         width = "100%",
                         height = "100%")))),
                 box(
                   title = "Inclusiones:",
                   width = 6,
-                  DT::dataTableOutput(outputId = "dashNT_Inclusiones")),
+                  DT::dataTableOutput(outputId = "dash_nt_inclusiones")),
                 box(
                   title = "Exclusiones:",
                   width = 6,
-                  DT::dataTableOutput(outputId = "dashNT_Exclusiones"))))),
+                  DT::dataTableOutput(outputId = "dash_nt_exclusiones"))))),
           tabItem(
-            tabName = "compararNT",
+            tabName = "dash_nt_comparar",
             fluidRow(
               column(
                 width = 12,
                 box(
                   width = 4,
                   pickerInput(
-                    inputId = "compararNT_select",
+                    inputId = "dash_nt_comparar_select",
                     width = "100%",
-                    choices = NTs_UniqueCod, 
+                    choices = dash_nt_codigos, 
                     label = "Nota técnica"),
                   pickerInput(
-                    inputId = "comparar_nt_col",
+                    inputId = "dash_nt_comparar_agrupador",
                     width = "100%",
                     choices = c("NA"), 
                     label = "Columna de agrupador"),
                   actionButton(
-                    inputId = "compararNT_ejecutar",
+                    inputId = "dash_nt_comparar_exe",
                     "Ejecutar",
                     width = "100%")),
                 box(
                   width = 8,
                   DT::dataTableOutput(
-                    outputId = "compararNT_totales",
+                    outputId = "dash_nt_comparar_totales",
                     width = "100%",
                     height = "100%")))),
             fluidRow(
@@ -787,13 +790,13 @@ shinyUI(
                       width = 6,
                       tags$h3("Totales RIPS"),
                       DT::dataTableOutput(
-                        outputId = "compararNT_totalMesRIPS",
+                        outputId = "dash_nt_comparar_total_mes_rips",
                         width = "100%")),
                     column(
                       width = 6,
                       tags$h3("Totales CME"),
                       DT::dataTableOutput(
-                        outputId = "compararNT_totalMesCME",
+                        outputId = "dash_nt_comparar_total_mes_cme",
                         width = "100%")))),
                 box(
                   width = 12,
@@ -803,43 +806,43 @@ shinyUI(
                       width = 6,
                       tags$h3("Totales RIPS"),
                       DT::dataTableOutput(
-                        outputId = "compararNT_totalAgrupadorRIPS",
+                        outputId = "dash_nt_comparar_total_agrup_rips",
                         width = "100%")),
                     column(
                       width = 6,
                       tags$h3("Totales CME"),
                       DT::dataTableOutput(
-                        outputId = "compararNT_totalAgrupadorCME",
+                        outputId = "dash_nt_comparar_total_agrup_cme",
                         width = "100%")))),
                 box(
                   width = 12, 
                   title = "Suma de valor a mes",
                   DT::dataTableOutput(
-                    outputId = "compararNT_descBSumas",
+                    outputId = "dash_nt_comparar_desc_sumas",
                     width = "100%")),
                 box(
                   width = 12, 
                   title = "Frecuencias a mes",
                   DT::dataTableOutput(
-                    outputId = "compararNT_descBFrecs",
+                    outputId = "dash_nt_comparar_desc_frecs",
                     width = "100%")),
                 box(
                   width = 12, 
                   title = "Diferencias de valor con RIPS",
                   DT::dataTableOutput(
-                    outputId = "compararNT_difsValorRIPS",
+                    outputId = "dash_nt_comparar_diferencias_rips_sumas",
                     width = "100%"),
                   DT::dataTableOutput(
-                    outputId = "compararNT_difsValorRIPSperc", 
+                    outputId = "dash_nt_comparar_diferencias_rips_percent", 
                     width = "100%")),
                 box(
                   width = 12,
                   title = "Diferencias de valor con CME",
                   DT::dataTableOutput(
-                    outputId = "compararNT_difsValorCME",
+                    outputId = "dash_nt_comparar_diferencias_cme_sumas",
                     width = "100%"),
                   DT::dataTableOutput(
-                    outputId = "compararNT_difsValorCMEperc",
+                    outputId = "dash_nt_comparar_diferencias_cme_percent",
                     width = "100%"))))),
           
           # Paquetes ---------------------------------------------------------

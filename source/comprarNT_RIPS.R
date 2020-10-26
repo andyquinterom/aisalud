@@ -9,7 +9,7 @@ cbind.fill <- function(nm, agrupador){
   }
 }
 
-mesSpanish <- function(x) {
+mes_spanish <- function(x) {
   meses <- c(
     "Enero",
     "Febrero",
@@ -30,7 +30,7 @@ mesSpanish <- function(x) {
   
 }
 
-descriptivaBasica <- function(data, agrupador, columna_valor, prestaciones, 
+descriptiva_basica <- function(data, agrupador, columna_valor, prestaciones, 
                               columna_fecha) {
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
@@ -38,7 +38,7 @@ descriptivaBasica <- function(data, agrupador, columna_valor, prestaciones,
     data[[columna_fecha]])*100 + lubridate::month(data[[columna_fecha]])]
   data[, "MES_ANIO" := paste(lubridate::year(
     data[[columna_fecha]]),
-    mesSpanish(lubridate::month(data[[columna_fecha]])),
+    mes_spanish(lubridate::month(data[[columna_fecha]])),
     sep = " - ")]
   columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
   if (!prestaciones) {
@@ -55,7 +55,7 @@ descriptivaBasica <- function(data, agrupador, columna_valor, prestaciones,
   data <- NULL
 }
 
-descriptivaBasicaTrans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
+descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
   meses <- as.list(unique(data$MES_ANIO))
   agrupCompletos <- data.table(agrupador = unique(data[[agrupador]]))
   setnames(agrupCompletos, agrupador)
@@ -84,30 +84,33 @@ descriptivaBasicaTrans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
   
 }
 
-multiplicarCME <- function(frecs, NT) {
+multiplicar_cme <- function(frecs, nota_tecnica) {
   setnames(frecs, 1, "AGRUPADOR")
-  agrupCompartidos <- intersect(NT[["AGRUPADOR"]], frecs[["AGRUPADOR"]])
-  NT <- NT[AGRUPADOR %in% agrupCompartidos]
-  frecs <- frecs[AGRUPADOR %in% agrupCompartidos]
+  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]], 
+                                frecs[["AGRUPADOR"]])
+  nota_tecnica <- nota_tecnica[AGRUPADOR %in% agrupadores_compartidos]
+  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos]
   
-  NT <- NT[order(AGRUPADOR)]
+  nota_tecnica <- nota_tecnica[order(AGRUPADOR)]
   frecs <- frecs[order(AGRUPADOR)]
   
   return(
     as.matrix(apply(frecs[, -c("AGRUPADOR")], 2, as.numeric)) * 
-      numerize(NT[["CME"]])
+      numerize(nota_tecnica[["CME"]])
     )
   
 }
 
-diferenciaValorRIPS <- function(sumas, NT, porcentaje = FALSE) {
+diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
   setnames(sumas, 1, "AGRUPADOR")
-  agrupCompartidos <- intersect(NT[["AGRUPADOR"]], sumas[["AGRUPADOR"]])
-  NT <- NT[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
-  sumas <- sumas[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
+  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
+                                sumas[["AGRUPADOR"]])
+  nota_tecnica <- nota_tecnica[
+    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+  sumas <- sumas[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
   
-  NT[, "CME" := numerize(CME)]
-  NT[, "VALOR_MES" := numerize(VALOR_MES)]
+  nota_tecnica[, "CME" := numerize(CME)]
+  nota_tecnica[, "VALOR_MES" := numerize(VALOR_MES)]
   
   numero_meses <- 2:ncol(sumas)
   
@@ -119,7 +122,8 @@ diferenciaValorRIPS <- function(sumas, NT, porcentaje = FALSE) {
         append(
           list(AGRUPADOR = sumas$AGRUPADOR),
           as.data.frame(
-            sumas[, c(numero_meses) , with = FALSE] / NT[["VALOR_MES"]])))
+            sumas[, c(numero_meses) , with = FALSE] / 
+              nota_tecnica[["VALOR_MES"]])))
     )
   } else {
     return(
@@ -127,19 +131,22 @@ diferenciaValorRIPS <- function(sumas, NT, porcentaje = FALSE) {
         append(
           list(AGRUPADOR = sumas$AGRUPADOR),
           as.data.frame(
-            sumas[, c(numero_meses), with = FALSE] - NT[["VALOR_MES"]])))
+            sumas[, c(numero_meses), with = FALSE] -
+              nota_tecnica[["VALOR_MES"]])))
     )
   }
 }
 
-diferenciaValorCME <- function(frecs, NT, porcentaje = FALSE) {
+diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
   setnames(frecs, 1, "AGRUPADOR")
-  agrupCompartidos <- intersect(NT[["AGRUPADOR"]], frecs[["AGRUPADOR"]])
-  NT <- NT[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
-  frecs <- frecs[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
+  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
+                                frecs[["AGRUPADOR"]])
+  nota_tecnica <- nota_tecnica[
+    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
   
-  NT[["CME"]] <- numerize(NT[["CME"]])
-  NT[["VALOR_MES"]] <- numerize(NT[["VALOR_MES"]])
+  nota_tecnica[["CME"]] <- numerize(nota_tecnica[["CME"]])
+  nota_tecnica[["VALOR_MES"]] <- numerize(nota_tecnica[["VALOR_MES"]])
   
   numero_meses <- 2:ncol(frecs)
   frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
@@ -150,7 +157,8 @@ diferenciaValorCME <- function(frecs, NT, porcentaje = FALSE) {
         append(list(AGRUPADOR = frecs$AGRUPADOR),
                as.data.frame((
                  frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(NT[["CME"]])/NT[["VALOR_MES"]]))))
+                   numerize(nota_tecnica[["CME"]])/
+                   nota_tecnica[["VALOR_MES"]]))))
     )
   } else {
      return(
@@ -158,25 +166,28 @@ diferenciaValorCME <- function(frecs, NT, porcentaje = FALSE) {
         append(list(AGRUPADOR = frecs$AGRUPADOR), 
                as.data.frame((
                  frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(NT[["CME"]]) - NT[["VALOR_MES"]]))))
+                   numerize(nota_tecnica[["CME"]]) - 
+                   nota_tecnica[["VALOR_MES"]]))))
     )
   }
 }
 
-diferenciasTotales <- function(frecs, sumas, NT) {
+diferencias_totales <- function(frecs, sumas, nota_tecnica) {
 
   setnames(frecs, 1, "AGRUPADOR")
   setnames(sumas, 1, "AGRUPADOR")
-  agrupCompartidos <- intersect(NT[["AGRUPADOR"]], frecs[["AGRUPADOR"]])
-  valor_ejecutar_mes <- sum(NT[["VALOR_MES"]], na.rm = TRUE)
-  NT <- NT[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
-  frecs <- frecs[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
-  sumas <- sumas[AGRUPADOR %in% agrupCompartidos][order(AGRUPADOR)]
+  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
+                                frecs[["AGRUPADOR"]])
+  valor_ejecutar_mes <- sum(nota_tecnica[["VALOR_MES"]], na.rm = TRUE)
+  nota_tecnica <- nota_tecnica[
+    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+  sumas <- sumas[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
   
-  NT[, "CME" := numerize(CME)]
-  NT[, "VALOR_MES" := numerize(VALOR_MES)]
+  nota_tecnica[, "CME" := numerize(CME)]
+  nota_tecnica[, "VALOR_MES" := numerize(VALOR_MES)]
   
-  totalMesRIPS <- data.table(
+  total_mes_rips <- data.table(
     "Mes" = c(colnames(sumas[, -c(1)])),
     "Total" = c(as.vector(apply(sumas[, -c(1)], 2, sum, na.rm = TRUE))),
     "Diferencia" = c(as.vector(apply(sumas[, -c(1)], 2, sum, na.rm = TRUE)) -
@@ -185,61 +196,62 @@ diferenciasTotales <- function(frecs, sumas, NT) {
               valor_ejecutar_mes)
   )
   
-  totalAgrupadorRIPS <- data.table(
+  total_agrupador_rips <- data.table(
     "Agrupador" = c(sumas[["AGRUPADOR"]]),
     "Total" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE))),
     "Diferencia" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) -
-                       (NT[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
+                       (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
     "%" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) /
-              (NT[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
+              (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
   )
   
   numero_meses <- 2:ncol(frecs)
   frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
   
-  sumasCME <- frecs[, c(numero_meses) , with = FALSE] * numerize(NT[["CME"]])
+  sumas_cme <- frecs[, c(numero_meses) , with = FALSE] * 
+    numerize(nota_tecnica[["CME"]])
   
-  totalMesCME <- data.table(
+  total_mes_cme <- data.table(
     "Mes" = c(colnames(sumas[, -c(1)])),
-    "Total" = c(as.vector(apply(sumasCME, 2, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumasCME, 2, sum, na.rm = TRUE)) - 
+    "Total" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE))),
+    "Diferencia" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE)) - 
                        valor_ejecutar_mes),
-    "%" = c(as.vector(apply(sumasCME, 2, sum, na.rm = TRUE)) /
+    "%" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE)) /
               valor_ejecutar_mes)
   )
   
-  totalAgrupadorCME <- data.table(
+  total_agrupador_cme <- data.table(
     "Mes" = c(sumas[["AGRUPADOR"]]),
-    "Total" = c(as.vector(apply(sumasCME, 1, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumasCME, 1, sum, na.rm = TRUE)) -
-                       (NT[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
-    "%" = c(as.vector(apply(sumasCME, 1, sum, na.rm = TRUE)) /
-              (NT[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
+    "Total" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE))),
+    "Diferencia" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) -
+                       (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
+    "%" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) /
+              (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
   )
   
-  valorEjecutar <- valor_ejecutar_mes * ncol(sumas[, -c(1)])
-  valorEjecutadoRips <- sum(sumas[, -c(1)], na.rm = TRUE)
-  valorEjecutadoCME <- sum(sumasCME, na.rm = TRUE)
+  valor_ejecutar <- valor_ejecutar_mes * ncol(sumas[, -c(1)])
+  valor_ejecutado_rips <- sum(sumas[, -c(1)], na.rm = TRUE)
+  valor_ejecutado_cme <- sum(sumas_cme, na.rm = TRUE)
   
   totales <- data.table(
     "Detalle" = c("Valor a ejecutar", "Ejecutado RIPS", "Ejecutado CME"),
-    "Valor" = c(valorEjecutar, valorEjecutadoRips, valorEjecutadoCME),
+    "Valor" = c(valor_ejecutar, valor_ejecutado_rips, valor_ejecutado_cme),
     "Diferencias" = c(NA,
-                      valorEjecutadoRips - valorEjecutar,
-                      valorEjecutadoCME  - valorEjecutar),
+                      valor_ejecutado_rips - valor_ejecutar,
+                      valor_ejecutado_cme  - valor_ejecutar),
     "%" = c(NA,
-                      valorEjecutadoRips/valorEjecutar,
-                      valorEjecutadoCME/valorEjecutar)
+                      valor_ejecutado_rips/valor_ejecutar,
+                      valor_ejecutado_cme/valor_ejecutar)
   )
   
   
   
   return(
     list(
-      totalMesRIPS = totalMesRIPS,
-      totalMesCME  = totalMesCME,
-      totalAgrupadorRIPS = totalAgrupadorRIPS,
-      totalAgrupadorCME  = totalAgrupadorCME,
+      total_mes_rips = total_mes_rips,
+      total_mes_cme  = total_mes_cme,
+      total_agrupador_rips = total_agrupador_rips,
+      total_agrupador_cme  = total_agrupador_cme,
       totales = totales
     )
   )
