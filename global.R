@@ -20,7 +20,7 @@ library(googlesheets4)
 library(DT)
 library(markdown)
 library(tableHTML)
-#library(colmaps2)
+library(colmaps2)
 library(maps)
 library(withr)
 
@@ -52,24 +52,24 @@ for (i in paste0("source/", list.files("source/"))) {
 
 # Carga de datos ---------------------------------------------------------------
 
-if (file.exists("datos/PAQUETES/PAQUETES.feather") &&
-    file.exists("datos/PAQUETES/REFERENTE-PAQUETES.feather") && 
-    file.exists("datos/PAQUETES/REFERENTE.feather")) {
+if (file.exists("datos/paquetes/paquetes.feather") &&
+    file.exists("datos/paquetes/referente-paquetes.feather") && 
+    file.exists("datos/paquetes/referente.feather")) {
   
-  PAQUETES <- 
-    as.data.table(read_feather("datos/PAQUETES/PAQUETES.feather"))
+  paquetes <- 
+    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
   
-  REF_PAQUETES <- 
-    as.data.table(read_feather("datos/PAQUETES/REFERENTE-PAQUETES.feather"))
+  paquetes_ref_cups <- 
+    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
   
-  REF <- 
-    as.data.table(read_feather("datos/PAQUETES/REFERENTE.feather"))
+  paquetes_ref <- 
+    as.data.table(read_feather("datos/paquetes/referente.feather"))
   
-  PAQUETE_PP <- 
-    PAQUETES[`COMPONENTE` == "PAQUETE"]
+  paquetes_paquetes <- 
+    paquetes[`COMPONENTE` == "PAQUETE"]
   
-  PAQUETES_CC <- 
-    PAQUETES[`COMPONENTE` != "PAQUETE"]
+  paquetes_cups <- 
+    paquetes[`COMPONENTE` != "PAQUETE"]
   
 }
 
@@ -79,12 +79,16 @@ googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
 
 
 
-if (!dir.exists("datos/PAQUETES")) {
-  dir.create("datos/PAQUETES")
+if (!dir.exists("datos/paquetes")) {
+  dir.create("datos/paquetes")
 }
 
-if (!dir.exists("datos/PAQUETES")) {
-  dir.create("datos/PRICING")
+if (!dir.exists("datos/pricing")) {
+  dir.create("datos/pricing")
+}
+
+if (!dir.exists("datos/nts")) {
+  dir.create("datos/nts")
 }
 
 
@@ -129,34 +133,37 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
   
   PAQUETES_INCLUIDO <- TRUE
   
-  if (!(file.exists("datos/PAQUETES/PAQUETES.feather") &&
-        file.exists("datos/PAQUETES/REFERENTE-PAQUETES.feather") && 
-        file.exists("datos/PAQUETES/REFERENTE.feather"))) {
+  if (!(file.exists("datos/paquetes/paquetes.feather") &&
+        file.exists("datos/paquetes/referente-paquetes.feather") && 
+        file.exists("datos/paquetes/referente.feather"))) {
     
     write_feather(sheets_read(paquete_path, sheet = "PAQUETES",
                               col_types = "cccdcccccccdd"), 
-                  path = "datos/PAQUETES/PAQUETES.feather")
+                  path = "datos/paquetes/paquetes.feather")
     
     write_feather(sheets_read(paquete_path, sheet = "REFERENTE-PAQUETES"),
-                  path = "datos/PAQUETES/REFERENTE-PAQUETES.feather")
+                  path = "datos/paquetes/referente-paquetes.feather")
     
     write_feather(sheets_read(paquete_path, sheet = "REFERENTE"),
-                  path = "datos/PAQUETES/REFERENTE.feather")
+                  path = "datos/paquetes/referente.feather")
     
   }
   
   
-  PAQUETES <-
-    as.data.table(read_feather("datos/PAQUETES/PAQUETES.feather"))
+  paquetes <- 
+    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
   
-  REF_PAQUETES <-
-    as.data.table(read_feather("datos/PAQUETES/REFERENTE-PAQUETES.feather"))
+  paquetes_ref_cups <- 
+    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
   
-  REF <-
-    as.data.table(read_feather("datos/PAQUETES/REFERENTE.feather"))
-
-  PAQUETE_PP <- PAQUETES[`COMPONENTE` == "PAQUETE"]
-  PAQUETES_CC <- PAQUETES[`COMPONENTE` != "PAQUETE"]
+  paquetes_ref <- 
+    as.data.table(read_feather("datos/paquetes/referente.feather"))
+  
+  paquetes_paquetes <- 
+    paquetes[`COMPONENTE` == "PAQUETE"]
+  
+  paquetes_cups <- 
+    paquetes[`COMPONENTE` != "PAQUETE"]
 }
 
 # Pricing  -------------------------------------------------------------------- 
@@ -172,9 +179,9 @@ if (Sys.getenv("PRICING_INCLUIDO") == "") {
   pricingList <- drive_ls(path = as_id(pricing_path))
   
   archivos_pricing <- 
-    length(dir(path = "datos/PRICING",
+    length(dir(path = "datos/pricing",
                all.files = TRUE
-    )[-which(dir(path = "datos/PRICING", 
+    )[-which(dir(path = "datos/pricing", 
                  all.files = TRUE) %in% c(".", "..", ".DS_Store")
     )
     ]
@@ -183,7 +190,7 @@ if (Sys.getenv("PRICING_INCLUIDO") == "") {
   if (archivos_pricing == 0) {
     for (i in 1:length(pricingList$id)) {
       drive_download(file = as_id(pricingList$id[i]),
-                     path = paste0("datos/PRICING/", pricingList$name[i]),
+                     path = paste0("datos/pricing/", pricingList$name[i]),
                      overwrite = T)
     }
   }
@@ -200,25 +207,25 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
   
   NT_INCLUIDO <- TRUE
   
-  if (!(file.exists("datos/NTs/NTs.feather") &&
-        file.exists("datos/NTs/INDICE.feather") && 
-        file.exists("datos/NTs/INCLUSIONES.feather") &&
-        file.exists("datos/NTs/NTmapa.rds"))) {
+  if (!(file.exists("datos/nts/notas_tecnicas.feather") &&
+        file.exists("datos/nts/indice.feather") && 
+        file.exists("datos/nts/inclusiones.feather") &&
+        file.exists("datos/nts/nt_mapa.rds"))) {
     
     write_feather(sheets_read(nts_path,
                               sheet = "NTs",
                               col_types = "ccddd"),
-                  "datos/NTs/NTs.feather")
+                  "datos/nts/notas_tecnicas.feather")
     
     write_feather(sheets_read(nts_path, 
                               sheet = "INDICE", 
                               col_types = "ccdcccd"),
-                  "datos/NTs/INDICE.feather")
+                  "datos/nts/indice.feather")
     
     write_feather(sheets_read(nts_path, 
                               sheet = "INCLUSIONES", 
                               col_types = "ccdc") ,
-                  "datos/NTs/INCLUSIONES.feather")
+                  "datos/nts/inclusiones.feather")
     
     saveRDS(
       mapaValoresNT(
@@ -230,14 +237,15 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
         )
       ) %>% 
         layout(autosize = TRUE),
-      "datos/NTmapa.rds")
+      "datos/nts/nt_mapa.rds")
+    
   }
   
 }
 
-MAPA_NT <- readRDS("datos/NTs/NTmapa.rds")
-NTs_INDICE <- as.data.table(read_feather("datos/NTs/INDICE.feather"))
-NTs_INCLUSIONES <- as.data.table(read_feather("datos/NTs/INCLUSIONES.feather"))
-NTs_NT <- as.data.table(read_feather("datos/NTs/NTs.feather"))
-
-NTs_UniqueCod <- unique(NTs_INDICE$COD_NT)
+dash_nt_mapa <- readRDS("datos/nts/nt_mapa.rds")
+dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
+dash_nt_inclusiones <- as.data.table(
+  read_feather("datos/nts/inclusiones.feather"))
+dash_nt_datos <- as.data.table(read_feather("datos/nts/notas_tecnicas.feather"))
+dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
