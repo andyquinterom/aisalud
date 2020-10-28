@@ -3,7 +3,7 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
   
   data <- as.data.frame(data)
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
-  colnames(data) <- c('NRO_IDENTIFICACION', columna, "VALOR")
+  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR"))
   data$VALOR <- numerize(data$VALOR)
   data <- data.table(data, key= 'NRO_IDENTIFICACION')
   data <- data[, list("VALOR" = sum(VALOR)),
@@ -33,7 +33,7 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
   multiplicativo <- numerize(multiplicativo)
   data <- as.data.frame(data)
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
-  colnames(data) <- c('NRO_IDENTIFICACION', columna, "VALOR")
+  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR"))
   data$VALOR <- numerize(data$VALOR)
   data <- data.table(data, key= 'NRO_IDENTIFICACION')
   data <- data[, list("VALOR" = sum(VALOR, na.rm = TRUE)),

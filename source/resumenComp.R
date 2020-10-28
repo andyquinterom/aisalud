@@ -5,7 +5,7 @@ resumenComp <- function(tabla, columna, colsum) {
   totales <- data.table("x" = "TOTAL",
                         "SUMA" = formatAsCurrency(total),
                         "PARTICIPACIÓN (%)" = "100%")
-  colnames(totales) <- c(columna, "SUMA", "PARTICIPACIÓN (%)")
+  setnames(totales, c(columna, "SUMA", "PARTICIPACIÓN (%)"))
   
   return(
     rbind(
