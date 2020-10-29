@@ -45,7 +45,7 @@ descriptiva <- function(data, columnas, columna_valor, prestaciones) {
              "Min.",
              "Max.",
              "Rango"))
-  # colnames(data) = c(columnas, "Frecuencia", "Suma", "Media", "P50", "P75", "P90", "Media truncada 10%", "Media truncada 5%", "Desv.tipica", "Coef.var", "Min.", "Max.", "Rango")
+
   return(data)
   data <- NULL
 }

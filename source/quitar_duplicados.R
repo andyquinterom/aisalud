@@ -62,9 +62,10 @@ quitar_duplicados <- function(bd) {
   
   duplicado_bd_datos <- duplicado_bd_datos[!duplicados]
   
-  duplicado_bd_datos$TIEMPO_HOS <- NULL
-  duplicado_bd_datos$FECHA_INICIO_HORA <- NULL
-  duplicado_bd_datos$FECHA_EGRESO_HORA <- NULL
+  
+  duplicado_bd_datos[, "TIEMPO_HOS" := NULL]
+  duplicado_bd_datos[, "FECHA_INICIO_HORA" := NULL]
+  duplicado_bd_datos[, "FECHA_EGRESO_HORA" := NULL]
   
   bd <- rbind(noduplicado_bd, duplicado_bd_datos)
   
@@ -87,10 +88,10 @@ quitar_usuarios_duplicados <- function(us) {
   us_max_edad_datos <- 
     us_max_edad_datos[!duplicated(us_max_edad_datos$NRO_IDENTIFICACION)]
   us <- us_max_edad_datos
-  us$DUPLICADO <- NULL
-  us$EDAD.x <- NULL
-  colnames(us)[colnames(us) == "EDAD.y"] <- "EDAD"
-  
+  us[, "DUPLICADO" := NULL]
+  us[, "EDAD.x" := NULL]
+  setnames(us, "EDAD.y", "EDAD")
+
   return(us)
   
 }

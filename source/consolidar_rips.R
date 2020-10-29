@@ -53,13 +53,14 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   )
   
   # Se cambian nombres de columnas para merge
-  colnames(ac)[7] <- "COD_PRESTACION"
-  colnames(ap)[7] <- "COD_PRESTACION"
-  colnames(at)[7] <- "COD_PRESTACION"
-  colnames(am)[6] <- "COD_PRESTACION"
-  colnames(at)[8] <- "NOMBRE_PRESTACION"
-  colnames(am)[8] <- "NOMBRE_PRESTACION"
-  colnames(at)[6] <- "AMBITO"
+  setnames(ac, 7, "COD_PRESTACION")
+  
+  setnames(ap, 7, "COD_PRESTACION")
+  setnames(at, 7, "COD_PRESTACION")
+  setnames(am, 6, "COD_PRESTACION")
+  setnames(at, 8, "NOMBRE_PRESTACION")
+  setnames(am, 8, "NOMBRE_PRESTACION")
+  setnames(at, 6, "AMBITO")
   
   # Se hace merge entre el archivo de transacciones y los de prestaciones
   
@@ -185,10 +186,8 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   }
   
   # Cambiar nombres de columnas VALOR.x y VALOR.y después del merge
-  col_merge_pres <- colnames(merge_prestaciones)
-  col_merge_pres[which(col_merge_pres == "VALOR.x")] <- "VALOR_FACTURA"
-  col_merge_pres[which(col_merge_pres == "VALOR.y")] <- "VALOR"
-  colnames(merge_prestaciones) <- col_merge_pres
+  setnames(merge_prestaciones, "VALOR.x", "VALOR_FACTURA")
+  setnames(merge_prestaciones, "VALOR.y", "VALOR")
   
   # Juntar datos de usuarios con las prestaciones
   if (nrow(us) != 0) {
