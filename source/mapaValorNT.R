@@ -21,9 +21,9 @@ mapaValoresNT <- function(INDICE, ...) {
   INDICE_SUM <- INDICE_SUM[order(COD_DEPARTAMENTO)]
   
   tablaDep <- data.table(
-    id = numerize(departamentos@data[["id"]]),
-    depto = departamentos@data[["depto"]],
-    ID = str_pad(departamentos@data[["id"]], pad = "0", width = 2)
+    id = numerize(colmaps::departamentos@data[["id"]]),
+    depto = colmaps::departamentos@data[["depto"]],
+    ID = str_pad(colmaps::departamentos@data[["id"]], pad = "0", width = 2)
   )
   
   tablaDep <- merge(tablaDep, INDICE_SUM, all.x = TRUE, sort = FALSE)
