@@ -46,12 +46,13 @@ options(shiny.maxRequestSize = maxRequestSize)
 
 source("config.R")
 
-archivos_source = list.files("source/")
-sapply(paste0("source/", archivos_modulos), source)
+for (i in paste0("source/", list.files("source/"))) {
+  source(i)
+}
 
-archivos_modulos = list.files("modules/")
-sapply(paste0("modules/", archivos_modulos), source)
-
+for (i in paste0("modules/", list.files("modules/"))) {
+  source(i)
+}
 
 # Carga de datos ---------------------------------------------------------------
 

@@ -28,6 +28,10 @@ shinyUI(
                <img src="logoblanco.png" width="100%"/>
                '),
           menuItem(
+            text = "Prepara",
+            icon = icon("cog", lib = "font-awesome"),
+            tabName = "prepara"),
+          menuItem(
               text = "Opciones",
               icon = icon("cog", lib = "font-awesome"),
               tabName = "opciones"),
@@ -101,6 +105,10 @@ shinyUI(
       ),
       dashboardBody(
         tabItems(
+          tabItem(
+            tabName = "prepara",
+            prepara_ui("prepara_test")
+          ),
           tabItem(
             tabName = "opciones",
               chooseSliderSkin("Square"),

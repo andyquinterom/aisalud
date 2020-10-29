@@ -4,6 +4,14 @@ shinyServer(function(input, output, session) {
     stopApp()
   })
   
+ # Test ---------------------------------------------
+  
+  callModule(
+    module = prepara_server,
+    id = "prepara_test",
+    nombre_id = "prepara_test"
+  )
+  
   # Sección cargar datos -----------------------------------------------------
   
   opciones <- reactiveValues(descriptiva_cols = NULL, valor_costo = "VALOR")
