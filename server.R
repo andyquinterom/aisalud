@@ -1138,6 +1138,7 @@ shinyServer(function(input, output, session) {
           if (opciones$histograma_col == opciones$valor_costo) {
             histograma_datos <- agregar(
               data = datos$original,
+              columna_suma = "NRO_IDENTIFICACION",
               columna_valor = opciones$valor_costo,
               columnas = c(opciones$histograma_fill,
                            "NRO_IDENTIFICACION"),
@@ -1145,6 +1146,7 @@ shinyServer(function(input, output, session) {
           } else {
             histograma_datos <- agregar(
               data = datos$original, 
+              columna_suma = "NRO_IDENTIFICACION",
               columna_valor = opciones$valor_costo,
               columnas = c(opciones$histograma_fill,
                            opciones$histograma_col,
@@ -1288,6 +1290,7 @@ shinyServer(function(input, output, session) {
             datos_bigotes <- agregar(
               data = datos$original[
                 get(input$bigotes_col) %in% input$bigotes_seleccionar],
+              columna_suma = "NRO_IDENTIFICACION",
               columna_valor = opciones$valor_costo,
               columnas = c('NRO_IDENTIFICACION', opciones$bigotes_col), 
               prestaciones = TRUE)

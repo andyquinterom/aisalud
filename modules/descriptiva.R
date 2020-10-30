@@ -62,6 +62,7 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
             data = datos$data_table, 
             columnas = opciones$descriptiva_cols, 
             columna_valor = opciones$valor_costo, 
+            columna_suma = "NRO_IDENTIFICACION",
             prestaciones = opciones$analisis_prestacion)
           
           output$descriptiva_tabla <- DT::renderDataTable({
