@@ -19,10 +19,12 @@ shinyUI(
                 'updates', event.name, event.value);
          });"
       ))),
-    dashboardPage(
+    dashboardPagePlus(
       skin = "black",
-      dashboardHeader(title = "Salud - Analítica"),
-      dashboardSidebar(
+      dashboardHeaderPlus(
+        title = "Salud - Analítica",
+        enable_rightsidebar = TRUE),
+      sidebar = dashboardSidebar(
         sidebarMenu(
           HTML('
                <img src="logoblanco.png" width="100%"/>
@@ -109,6 +111,18 @@ shinyUI(
             )
             }
           )
+        )
+      ),
+      rightsidebar = rightSidebar(
+        width = 500,
+        rightSidebarTabContent(
+          id = "filtros_sideBar",
+          icon = "filter",
+          active = TRUE,
+          filtros_ui(
+            "discretos",
+            n_num = 3,
+            n_char = 5)
         )
       ),
       dashboardBody(
