@@ -4,9 +4,9 @@ shinyServer(function(input, output, session) {
     stopApp()
   })
   
- # Test ---------------------------------------------
+ # Modulo prepara ---------------------------------------------
   
-  callModule(
+  datos_modulos <- callModule(
     module = prepara_server,
     id = "prepara_test",
     nombre_id = "prepara_test"
@@ -454,6 +454,15 @@ shinyServer(function(input, output, session) {
         session = session)
     }
   })
+  
+  # Modulo descriptiva ---------------------------------------------------------
+  
+  callModule(
+    module = descriptiva_server,
+    id = "descriptiva_test",
+    datos = datos_modulos,
+    opciones = opciones
+  )
   
   # Descriptiva ---------------------------------------------------------------
   
