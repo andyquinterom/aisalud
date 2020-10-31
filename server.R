@@ -12,6 +12,14 @@ shinyServer(function(input, output, session) {
     nombre_id = "prepara_test"
   )
   
+  # Modulo filtros --------------------------------------------
+  
+  callModule(
+    module = filtros_server,
+    id = "filtros_test",
+    datos = datos_modulos
+  )
+  
   # Sección cargar datos -----------------------------------------------------
   
   opciones <- reactiveValues(descriptiva_cols = NULL, valor_costo = "VALOR")
@@ -519,9 +527,9 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  output$descriptiva_sumas_registros <- renderText({
+  output$descriptiva_sumas_pacientes <- renderText({
     if (!is.null(input$file)) {
-      paste("Total registros:", 
+      paste("Total pacientes:", 
             formatC(
               length(valores_unicos[["NRO_IDENTIFICACION"]]),
               big.mark = ".", 

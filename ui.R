@@ -22,6 +22,7 @@ shinyUI(
     dashboardPagePlus(
       skin = "black",
       dashboardHeaderPlus(
+        fixed = TRUE,
         title = "Salud - Analítica",
         enable_rightsidebar = TRUE),
       sidebar = dashboardSidebar(
@@ -114,19 +115,19 @@ shinyUI(
         )
       ),
       rightsidebar = rightSidebar(
-        width = 500,
+        width = 700,
         rightSidebarTabContent(
           id = "filtros_sideBar",
           icon = "filter",
           active = TRUE,
-          filtros_ui(
-            "discretos",
-            n_num = 3,
-            n_char = 5)
+          filtros_ui("filtros_test")
         )
       ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
+        tags$div(
+          style = "min-height: 50px;"
+        ),
         tabItems(
           tabItem(
             tabName = "prepara",

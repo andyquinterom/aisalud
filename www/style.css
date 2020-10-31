@@ -15,3 +15,7 @@ html {
 div[class^="tooltip_svg_"] {
   padding: 0 0 0 0 ;
 }
+
+.wrapper {
+    background-color: #ecf0f5 !important;
+}
