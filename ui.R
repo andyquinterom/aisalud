@@ -28,33 +28,41 @@ shinyUI(
                <img src="logoblanco.png" width="100%"/>
                '),
           menuItem(
-              text = "Opciones",
-              icon = icon("cog", lib = "font-awesome"),
-              tabName = "opciones"),
+            text = "Prepara",
+            icon = icon("cog", lib = "font-awesome"),
+            tabName = "prepara"),
           menuItem(
-              text = "Descriptiva",
-              icon = icon("table", lib = "font-awesome"),
-              tabName = "descriptiva_eventos"),
+            text = "Opciones",
+            icon = icon("cog", lib = "font-awesome"),
+            tabName = "opciones"),
+          menuItem(
+            text = "Descriptiva",
+            icon = icon("table", lib = "font-awesome"),
+            tabName = "descriptiva_eventos"),
+          menuItem(
+            text = "Descriptiva modulo",
+            icon = icon("table", lib = "font-awesome"),
+            tabName = "descriptiva_modulo"),
           menuItem(
             text = "Episodios", 
             icon = icon("table", lib = "font-awesome"),
             tabName = "episodios"),
           menuItem(
-              text = "Pacientes Outliers",
-              icon = icon("search-minus", lib = "font-awesome"),
-              tabName = "outliers"),
+            text = "Pacientes Outliers",
+            icon = icon("search-minus", lib = "font-awesome"),
+            tabName = "outliers"),
           menuItem(
-              text = "Gráficos",
-              icon = icon("chart-area", lib = "font-awesome"), 
-              tabName = "graficos",
-              menuSubItem(text = "Histogramas y barras",
-                          tabName = "histogramas_barras"), 
-              menuSubItem(text = "Caja de bigotes", 
-                          tabName = "cajadebigotes")),
+            text = "Gráficos",
+            icon = icon("chart-area", lib = "font-awesome"), 
+            tabName = "graficos",
+            menuSubItem(text = "Histogramas y barras",
+                        tabName = "histogramas_barras"), 
+            menuSubItem(text = "Caja de bigotes", 
+                        tabName = "cajadebigotes")),
           menuItem(
-              text = "Nota técnica",
-              icon = icon("search-dollar", lib = "font-awesome"),
-              tabName = "nota_tecnica"),
+            text = "Nota técnica",
+            icon = icon("search-dollar", lib = "font-awesome"),
+            tabName = "nota_tecnica"),
           (
           if (NT_INCLUIDO) {
             menuItem(
@@ -100,7 +108,17 @@ shinyUI(
         )
       ),
       dashboardBody(
+  # Modulos -------------------------------------------------------------------
         tabItems(
+          tabItem(
+            tabName = "prepara",
+            prepara_ui("prepara_test")
+          ),
+          tabItem(
+            tabName = "descriptiva_modulo",
+            descriptiva_ui("descriptiva_test")
+          ),
+  # Opciones -------------------------------------------------------------------
           tabItem(
             tabName = "opciones",
               chooseSliderSkin("Square"),
@@ -364,6 +382,7 @@ shinyUI(
                   DT::dataTableOutput(
                     outputId = "preview",
                     width = "100%"))))),
+  # Descriptiva ---------------------------------------------------------------
           tabItem(
             tabName = "descriptiva_eventos",
             fluidRow(
@@ -407,6 +426,7 @@ shinyUI(
                   div(
                     DT::dataTableOutput(outputId = "descriptiva_tabla"),
                     style = "font-size:90%"))))),
+ # Descriptiva episodios ------------------------------------------------------
           tabItem(
             tabName = "episodios",
             fluidRow(
@@ -459,6 +479,7 @@ shinyUI(
                   div(
                     DT::dataTableOutput(outputId = "episodios_tabla"),
                     style = "font-size:90%"))))),
+ # Outliers --------------------------------------------------------------------
           tabItem(
             tabName = "outliers",
             fluidRow(
@@ -516,6 +537,7 @@ shinyUI(
                 box(width = "100%",
                     div(DT::dataTableOutput("outliers_tabla"),
                         style = "font-size:90%"))))),
+ # Histogramas ----------------------------------------------------------------
           tabItem(
             tabName = "histogramas_barras",
             fluidRow(
@@ -570,6 +592,7 @@ shinyUI(
                   plotlyOutput(
                     outputId = "histograma_render",
                     height = "800px"))))),
+ # Caja de bigotes -------------------------------------------------------------
           tabItem(
             tabName = "cajadebigotes",
             fluidRow(
@@ -612,6 +635,7 @@ shinyUI(
                   plotlyOutput(
                     outputId = "bigotes_render",
                     height = "800px"))))),
+ # Nota técnica --------------------------------------------------------------
           tabItem(
             tabName = "nota_tecnica",
             fluidRow(

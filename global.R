@@ -50,6 +50,10 @@ for (i in paste0("source/", list.files("source/"))) {
   source(i)
 }
 
+for (i in paste0("modules/", list.files("modules/"))) {
+  source(i)
+}
+
 # Carga de datos ---------------------------------------------------------------
 
 if (file.exists("datos/paquetes/paquetes.feather") &&

@@ -8,13 +8,14 @@ rango <- function(x) {
   return(max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
 }
 
-descriptiva <- function(data, columnas, columna_valor, prestaciones) {
+descriptiva <- function(data, columnas, columna_valor, columna_suma,
+                        prestaciones) {
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   if (!prestaciones) {
     data <- data[, list("VALOR" = sum(VALOR)),
-                by = c('NRO_IDENTIFICACION', 
-                       columnas[columnas != 'NRO_IDENTIFICACION'])]
+                by = c(columna_suma, 
+                       columnas[columnas != columna_suma])]
   }
   data <- data[, list(
     "Frecuencia" = length(VALOR),
