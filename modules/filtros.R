@@ -70,6 +70,68 @@ filtros_server <- function(input, output, session, datos) {
     }
   )
   
+  lapply(
+    X = 1:n_num,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_num_columna_", i)]], {
+        if (input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_min_", i),
+            value = min(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+                ]],
+              na.rm = TRUE)
+          )
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_max_", i),
+            value = max(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+    }
+  )
+  
+  lapply(
+    X = 1:n_num,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_num_min_", i)]], {
+        if (is.na(input[[paste0("filtro_num_min_", i)]]) &
+            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_min_", i),
+            value = min(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+      observeEvent(input[[paste0("filtro_num_max_", i)]], {
+        if (is.na(input[[paste0("filtro_num_max_", i)]]) &
+            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_max_", i),
+            value = max(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+    }
+  )
+  
   observeEvent(input$aplicar_filtros, {
     inputs_filtros_char <- c()
     
@@ -90,7 +152,11 @@ filtros_server <- function(input, output, session, datos) {
             paste0(
               "[get(",
               paste0("input$filtro_char_columna_", i),
-              ") %in% ",
+              ifelse(
+                test = input[[paste0("filtro_char_incluir_", i)]],
+                yes = ") %in% ",
+                no = ") %notin% "
+              ),
               paste0("input$filtro_char_valor_", i),
               "]"
             )
