@@ -118,6 +118,8 @@ prepara_server <- function(input, output, session, nombre_id) {
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       } 
       if (input$file_type == "feather") {
         datos$data_original <- as.data.table(
@@ -133,6 +135,8 @@ prepara_server <- function(input, output, session, nombre_id) {
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       }
       if (input$file_type == "xlsx") {
         datos$data_original <- as.data.table(
@@ -150,6 +154,8 @@ prepara_server <- function(input, output, session, nombre_id) {
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       }
     }
   })

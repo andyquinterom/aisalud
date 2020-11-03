@@ -29,7 +29,7 @@ filtros_ui <- function(id) {
 
 filtros_server <- function(input, output, session, datos) {
 
-  n_num = 2
+  n_num = 3
   n_char = 5
   
   observeEvent(datos$colnames, {
@@ -53,7 +53,6 @@ filtros_server <- function(input, output, session, datos) {
         )
       }
     )
-    print(datos$colnames_num)
   })
   
   lapply(
@@ -73,37 +72,76 @@ filtros_server <- function(input, output, session, datos) {
   
   observeEvent(input$aplicar_filtros, {
     inputs_filtros_char <- c()
-    for (i in 1:n_char) {
-      if (input[[paste0("filtro_char_columna_", i)]] != "NA") {
-        inputs_filtros_char <- c(inputs_filtros_char, TRUE)
-      } else {
-        inputs_filtros_char <- c(inputs_filtros_char, FALSE)
-      }
-    }
     
-    inputs_filtros_num <- c()
-    for (i in 1:n_num) {
-      if (input[[paste0("filtro_num_columna_", i)]] != "NA") {
-        inputs_filtros_num <- c(inputs_filtros_num, TRUE)
-      } else {
-        inputs_filtros_num <- c(inputs_filtros_num, FALSE)
-      }
-    }
+    inputs_filtros_char <- unlist(
+      lapply(
+        X = 1:n_char,
+        FUN = function(i) {
+          return(input[[paste0("filtro_char_columna_", i)]] != "NA")
+        }
+      )
+    )
+    
+    inputs_filtros_char_arguments <- paste(unlist(
+      lapply(
+        X = (1:n_char)[inputs_filtros_char],
+        FUN = function(i) {
+          return(
+            paste0(
+              "[get(",
+              paste0("input$filtro_char_columna_", i),
+              ") %in% ",
+              paste0("input$filtro_char_valor_", i),
+              "]"
+            )
+          )
+        }
+      )
+    ),
+    collapse = "")
+    
+    inputs_filtros_num <- unlist(
+      lapply(
+        X = 1:n_char,
+        FUN = function(i) {
+          return(input[[paste0("filtro_num_columna_", i)]] != "NA")
+        }
+      )
+    )
+    
+    inputs_filtros_num_arguments <- paste(unlist(
+      lapply(
+        X = (1:n_num)[inputs_filtros_num],
+        FUN = function(i) {
+          return(
+            paste0(
+              "[get(",
+              paste0("input$filtro_num_columna_", i),
+              ") >= ",
+              paste0("input$filtro_num_min_", i),
+              " & get(",
+              paste0("input$filtro_num_columna_", i),
+              ") <= ",
+              paste0("input$filtro_num_max_", i),
+              "]"
+            )
+          )
+        }
+      )
+    ),
+    collapse = "")
+    
+    filtros_parse <- paste0(
+      "datos$data_table",
+      inputs_filtros_char_arguments,
+      inputs_filtros_num_arguments
+    )
+
 
     datos$data_table <- datos$data_original
-    for (i in (1:n_char)[inputs_filtros_char]) {
-      if (input[[paste0("filtro_char_incluir_", i)]]) {
-        datos$data_table <- datos$data_table[
-          get(input[[paste0("filtro_char_columna_", i)]]) %in%
-            input[[paste0("filtro_char_valor_", i)]]
-        ]
-      } else {
-        datos$data_table <- datos$data_table[
-          get(input[[paste0("filtro_char_columna_", i)]]) %notin%
-            input[[paste0("filtro_char_valor_", i)]]
-        ]
-      }
-    }
+    datos$data_table <- eval(parse(
+      text = filtros_parse
+    ))
   })
   
 }
