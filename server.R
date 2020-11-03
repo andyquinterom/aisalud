@@ -656,6 +656,15 @@ shinyServer(function(input, output, session) {
     contentType = "xlsx"
   )
   
+  # Modulo outliers -----------------------------------------------------------
+  
+  callModule(
+    module = outliers_server,
+    id = "outliers_test",
+    datos = datos_modulos,
+    opciones = opciones
+  )
+  
   # Outliers -----------------------------------------------------------------
   
   observeEvent(input$outliers_percentil_exe, {

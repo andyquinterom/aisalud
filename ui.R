@@ -32,6 +32,14 @@ shinyUI(
             icon = icon("cog", lib = "font-awesome"),
             tabName = "prepara"),
           menuItem(
+            text = "Descriptiva modulo",
+            icon = icon("table", lib = "font-awesome"),
+            tabName = "descriptiva_modulo"),
+          menuItem(
+            text = "Outliers modulo",
+            icon = icon("search-minus", lib = "font-awesome"),
+            tabName = "outliers_modulo"),
+          menuItem(
             text = "Opciones",
             icon = icon("cog", lib = "font-awesome"),
             tabName = "opciones"),
@@ -39,10 +47,6 @@ shinyUI(
             text = "Descriptiva",
             icon = icon("table", lib = "font-awesome"),
             tabName = "descriptiva_eventos"),
-          menuItem(
-            text = "Descriptiva modulo",
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptiva_modulo"),
           menuItem(
             text = "Episodios", 
             icon = icon("table", lib = "font-awesome"),
@@ -117,6 +121,10 @@ shinyUI(
           tabItem(
             tabName = "descriptiva_modulo",
             descriptiva_ui("descriptiva_test")
+          ),
+          tabItem(
+            tabName = "outliers_modulo",
+            outliers_ui("outliers_test")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
