@@ -149,16 +149,6 @@ filtros_server <- function(input, output, session, datos) {
 
 # Funciones ----------------
 
-if_na_return <- function(x, y) {
-  return(
-    ifelse(
-      test = is.na(x),
-      yes = y,
-      no = x
-    )
-  )
-}
-
 filtro_discreto_ui_fila <- function(ns, position = 1) {
   fluidRow(
     column(
