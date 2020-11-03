@@ -73,7 +73,7 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
                   url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
                 pageLength = 50,
                 autoWidth = FALSE,
-                ordering=T, 
+                ordering = T, 
                 scrollX = TRUE,
                 scrollY = "60vh"),
               rownames= FALSE) %>%
