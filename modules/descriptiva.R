@@ -43,7 +43,7 @@ descriptiva_ui <- function(id) {
 
 descriptiva_server <- function(input, output, session, datos, opciones) {
   
-  descriptiva <- reactiveValues()
+  descriptiva <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
     updatePickerInput(
@@ -93,10 +93,10 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
   })
   
   output$descriptiva_sumas_registros <- renderText({
-    if (!is.null(input$file)) {
+    if (!is.null(datos$colnames)) {
       paste("Total registros:", 
             formatC(
-              length(datos$original$NRO_IDENTIFICACION),
+              length(datos$data_table[["NRO_IDENTIFICACION"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -107,11 +107,11 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
     }
   })
   
-  output$descriptiva_sumas_registros <- renderText({
-    if (!is.null(input$file)) {
-      paste("Total registros:", 
+  output$descriptiva_sumas_pacientes <- renderText({
+    if (!is.null(datos$colnames)) {
+      paste("Total pacientes:", 
             formatC(
-              length(valores_unicos[["NRO_IDENTIFICACION"]]),
+              uniqueN(datos$data_table[["NRO_IDENTIFICACION"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -123,13 +123,13 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
   })
   
   output$descriptiva_sumas_valor <- renderText({
-    if (!is.null(input$file)) {
-      if(nrow(descriptiva$tabla) >= 1) {
+    if (!is.null(datos$colnames)) {
+      if(nrow(descriptiva$tabla) > 1) {
         paste("Total",
               paste0(tolower(opciones$valor_costo), ":"), 
               formatC(
                 sum(
-                  descriptiva$tabla$Suma,
+                  descriptiva$tabla[["Suma"]],
                   na.rm = TRUE), 
                 big.mark = ".", 
                 decimal.mark = ",", 
