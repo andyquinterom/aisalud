@@ -208,6 +208,12 @@ filtros_server <- function(input, output, session, datos) {
     datos$data_table <- eval(parse(
       text = filtros_parse
     ))
+    
+    showNotification(
+      ui = "Filtros aplicados.",
+      duration = 4
+    )
+    
   })
   
 }
