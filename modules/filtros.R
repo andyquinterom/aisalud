@@ -56,50 +56,20 @@ filtros_server <- function(input, output, session, datos) {
     print(datos$colnames_num)
   })
   
-  observeEvent(input$filtro_char_columna_1, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtro_char_valor_1",
-      server = TRUE,
-      choices = datos$valores_unicos[[input$filtro_char_columna_1]]
-    )
-  })
-  
-  observeEvent(input$filtro_char_columna_2, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtro_char_valor_2",
-      server = TRUE,
-      choices = datos$valores_unicos[[input$filtro_char_columna_2]]
-    )
-  })
-  
-  observeEvent(input$filtro_char_columna_3, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtro_char_valor_3",
-      server = TRUE,
-      choices = datos$valores_unicos[[input$filtro_char_columna_3]]
-    )
-  })
-  
-  observeEvent(input$filtro_char_columna_4, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtro_char_valor_4",
-      server = TRUE,
-      choices = datos$valores_unicos[[input$filtro_char_columna_4]]
-    )
-  })
-  
-  observeEvent(input$filtro_char_columna_5, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtro_char_valor_5",
-      server = TRUE,
-      choices = datos$valores_unicos[[input$filtro_char_columna_5]]
-    )
-  })
+  lapply(
+    X = 1:n_char,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_char_columna_", i)]], {
+        updateSelectizeInput(
+          session = session,
+          inputId = paste0("filtro_char_valor_", i),
+          server = TRUE,
+          choices = datos$valores_unicos[[
+            input[[paste0("filtro_char_columna_", i)]]]]
+        )
+      })
+    }
+  )
   
   observeEvent(input$aplicar_filtros, {
     inputs_filtros_char <- c()
