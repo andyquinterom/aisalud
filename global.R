@@ -24,6 +24,7 @@ library(colmaps2)
 library(maps)
 library(withr)
 library(shinydashboardPlus)
+library(shinyjqui)
 
 
 
