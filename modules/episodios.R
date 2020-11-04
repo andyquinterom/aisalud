@@ -3,61 +3,57 @@ episodios_ui <- function(id) {
   
   tagList(
     fluidRow(
-      column(
-        width = 3,
-        box(width = "100%",
-            pickerInput(
-              inputId = ns("episodios_col_valor"),
-              label = "Sumar valor por:",
-              choices = c("NA"),
-              multiple = FALSE,
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE)),
-            pickerInput(
-              inputId = ns("episodios_cols"),
-              label = "Agrupar por:",
-              choices = c("NA"),
-              multiple = FALSE,
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE)),
-            pickerInput(
-              inputId = ns("episodios_cols_sep"),
-              label = "Separar por:",
-              choices = c("NA"),
-              multiple = TRUE,
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE,
-                `select-all-text` = "Seleccionar todos",
-                `deselect-all-text` = "Deseleccionar todos")),
-            textOutput(outputId = ns("episodios_sumas_valor")),
-            tags$br(),
-            uiOutput(
-              outputId = ns("episodios_jerarquia")
-            ),
-            tags$br(),
-            actionButton(ns("episodios_exe"), "Confirmar"),
-            tags$br(),
-            tags$br(),
-            downloadButton(
-              outputId = ns("episodios_descargar_csv"),
-              label = "CSV",
-              style = "width:100%;"),
-            tags$br(),
-            tags$br(),
-            downloadButton(
-              outputId = ns("episodios_descargar_xlsx"),
-              label = "Excel",
-              style = "width:100%;"))),
-      column(
-        width = 9,
-        box(
-          width = "100%",
-          div(
-            DT::dataTableOutput(outputId = ns("episodios_tabla")),
-            style = "font-size:90%"))))
+      box(width = 3,
+        pickerInput(
+          inputId = ns("episodios_col_valor"),
+          label = "Sumar valor por:",
+          choices = c("NA"),
+          multiple = FALSE,
+          options = list(
+            `actions-box` = TRUE,
+            `live-search` = TRUE)),
+        pickerInput(
+          inputId = ns("episodios_cols"),
+          label = "Agrupar por:",
+          choices = c("NA"),
+          multiple = FALSE,
+          options = list(
+            `actions-box` = TRUE,
+            `live-search` = TRUE)),
+        pickerInput(
+          inputId = ns("episodios_cols_sep"),
+          label = "Separar por:",
+          choices = c("NA"),
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `live-search` = TRUE,
+            `select-all-text` = "Seleccionar todos",
+            `deselect-all-text` = "Deseleccionar todos")),
+        textOutput(outputId = ns("episodios_sumas_valor")),
+        tags$br(),
+        uiOutput(
+          outputId = ns("episodios_jerarquia")
+        ),
+        tags$br(),
+        actionButton(ns("episodios_exe"), "Confirmar"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("episodios_descargar_csv"),
+          label = "CSV",
+          style = "width:100%;"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("episodios_descargar_xlsx"),
+          label = "Excel",
+          style = "width:100%;")),
+    box(
+      width = 9,
+      div(
+        DT::dataTableOutput(outputId = ns("episodios_tabla")),
+        style = "font-size:90%")))
   )
 }
 

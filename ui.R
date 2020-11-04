@@ -37,15 +37,16 @@ shinyUI(
           menuItem(
             text = "Descriptiva modulo",
             icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptiva_modulo"),
+            tabName = "descriptivas",
+            menuSubItem(text = "Clásica",
+                        tabName = "descriptiva_modulo"), 
+            menuSubItem(text = "Episodios", 
+                        tabName = "episodios_modulo")
+            ),
           menuItem(
             text = "Outliers modulo",
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
-          menuItem(
-            text = "Episodios modulo", 
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "episodios_modulo"),
           menuItem(
             text = "Opciones",
             icon = icon("cog", lib = "font-awesome"),

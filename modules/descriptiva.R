@@ -2,57 +2,58 @@ descriptiva_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    box(width = 3,
-      pickerInput(
-        inputId = ns("descriptiva_cols"),
-        label = "Agrupar por:",
-        choices = c("NA"),
-        multiple = TRUE,
-        options = list(
-          `actions-box` = TRUE,
-          `deselect-all-text` = "Deseleccionar todos",
-          `select-all-text` = "Seleccionar todos",
-          `live-search` = TRUE)),
-      radioButtons(
-        inputId = ns("descriptiva_unidades"),
-        label = "Unidad de descriptiva",
-        choiceNames = c(
-          "Prestación",
-          "Paciente",
-          "Factura"
+    fluidRow(
+      box(width = 3,
+        pickerInput(
+          inputId = ns("descriptiva_cols"),
+          label = "Agrupar por:",
+          choices = c("NA"),
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `deselect-all-text` = "Deseleccionar todos",
+            `select-all-text` = "Seleccionar todos",
+            `live-search` = TRUE)),
+        radioButtons(
+          inputId = ns("descriptiva_unidades"),
+          label = "Unidad de descriptiva",
+          choiceNames = c(
+            "Prestación",
+            "Paciente",
+            "Factura"
+          ),
+          choiceValues = c(
+            "prestacion",
+            "NRO_IDENTIFICACION",
+            "NRO_FACTURA"
+          )
         ),
-        choiceValues = c(
-          "prestacion",
-          "NRO_IDENTIFICACION",
-          "NRO_FACTURA"
-        )
-      ),
-      actionButton(
-        inputId = ns("descriptiva_exe"),
-        label = "Confirmar"),
-      tags$br(),
-      tags$br(),
-      downloadButton(
-        outputId = ns("descriptiva_descargar_csv"),
-        label = "CSV",
-        style = "width:100%;"),
-      tags$br(),
-      tags$br(),
-      downloadButton(
-        outputId = ns("descriptiva_descargar_xlsx"), 
-        label = "Excel",
-        style = "width:100%;"),
-      br(),
-      br(),
-      textOutput(outputId = ns("descriptiva_sumas_registros")),
-      textOutput(outputId = ns("descriptiva_sumas_pacientes")),
-      textOutput(outputId = ns("descriptiva_sumas_valor"))),
-  box(
-    width = 9,
-    div(
-      DT::dataTableOutput(outputId = ns("descriptiva_tabla")),
-      style = "font-size:90%"))
-  )
+        actionButton(
+          inputId = ns("descriptiva_exe"),
+          label = "Confirmar"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("descriptiva_descargar_csv"),
+          label = "CSV",
+          style = "width:100%;"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("descriptiva_descargar_xlsx"), 
+          label = "Excel",
+          style = "width:100%;"),
+        br(),
+        br(),
+        textOutput(outputId = ns("descriptiva_sumas_registros")),
+        textOutput(outputId = ns("descriptiva_sumas_pacientes")),
+        textOutput(outputId = ns("descriptiva_sumas_valor"))),
+    box(
+      width = 9,
+      div(
+        DT::dataTableOutput(outputId = ns("descriptiva_tabla")),
+        style = "font-size:90%"))
+  ))
 }
 
 descriptiva_server <- function(input, output, session, datos, opciones) {
