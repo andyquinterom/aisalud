@@ -5,6 +5,7 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       uiOutput(ns("nota_tecnica_jerarquia"))
     ),
+    tags$br(),
     fluidRow(
       box(
         width = 3,
@@ -80,54 +81,61 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           agrupadores_items <- datos$valores_unicos[[input$nota_tecnica_cols]]
           output$nota_tecnica_jerarquia <- renderUI({
             tagList(
-              box(
-                width = 3,
-                orderInput(
-                  inputId = ns("nota_tecnica_jerarquia_nivel_1"),
-                  label = "Episodio",
-                  items = NULL,
-                  width = "100%", 
-                  connect = c(
-                    ns("nota_tecnica_jerarquia_nivel_2"),
-                    ns("nota_tecnica_jerarquia_nivel_3"),
-                    ns("nota_tecnica_jerarquia_nivel_4")))
+              tags$div(
+                class = "nota_tecnica_jerarquia_row",
+                box(
+                  width = 3,
+                  orderInput(
+                    inputId = ns("nota_tecnica_jerarquia_nivel_1"),
+                    label = "Episodio",
+                    items = NULL,
+                    width = "100%", 
+                    height = "100%",
+                    connect = c(
+                      ns("nota_tecnica_jerarquia_nivel_2"),
+                      ns("nota_tecnica_jerarquia_nivel_3"),
+                      ns("nota_tecnica_jerarquia_nivel_4")))
                 ),
-              box(
-                width = 3,
-                orderInput(
-                  inputId = ns("nota_tecnica_jerarquia_nivel_2"),
-                  label = "Factura",
-                  items = NULL,
-                  width = "100%",
-                  connect = c(
-                    ns("nota_tecnica_jerarquia_nivel_1"),
-                    ns("nota_tecnica_jerarquia_nivel_3"),
-                    ns("nota_tecnica_jerarquia_nivel_4")))
+                box(
+                  width = 3,
+                  orderInput(
+                    inputId = ns("nota_tecnica_jerarquia_nivel_2"),
+                    label = "Factura",
+                    items = NULL,
+                    width = "100%",
+                    height = "100%",
+                    connect = c(
+                      ns("nota_tecnica_jerarquia_nivel_1"),
+                      ns("nota_tecnica_jerarquia_nivel_3"),
+                      ns("nota_tecnica_jerarquia_nivel_4")))
                 ),
-              box(
-                width = 3,
-                orderInput(
-                  inputId = ns("nota_tecnica_jerarquia_nivel_3"),
-                  label = "Paciente",
-                  items = NULL,
-                  width = "100%",
-                  connect = c(
-                    ns("nota_tecnica_jerarquia_nivel_1"),
-                    ns("nota_tecnica_jerarquia_nivel_2"),
-                    ns("nota_tecnica_jerarquia_nivel_4")))
+                box(
+                  width = 3,
+                  orderInput(
+                    inputId = ns("nota_tecnica_jerarquia_nivel_3"),
+                    label = "Paciente",
+                    items = NULL,
+                    width = "100%",
+                    height = "100%",
+                    connect = c(
+                      ns("nota_tecnica_jerarquia_nivel_1"),
+                      ns("nota_tecnica_jerarquia_nivel_2"),
+                      ns("nota_tecnica_jerarquia_nivel_4")))
                 ),
-              box(
-                width = 3,
-                orderInput(
-                  inputId = ns("nota_tecnica_jerarquia_nivel_4"),
-                  label = "Prestación",
-                  items = agrupadores_items,
-                  width = "100%",
-                  connect = c(
-                    ns("nota_tecnica_jerarquia_nivel_1"),
-                    ns("nota_tecnica_jerarquia_nivel_2"),
-                    ns("nota_tecnica_jerarquia_nivel_3")))
+                box(
+                  width = 3,
+                  orderInput(
+                    inputId = ns("nota_tecnica_jerarquia_nivel_4"),
+                    label = "Prestación",
+                    items = agrupadores_items,
+                    width = "100%",
+                    height = "100%",
+                    connect = c(
+                      ns("nota_tecnica_jerarquia_nivel_1"),
+                      ns("nota_tecnica_jerarquia_nivel_2"),
+                      ns("nota_tecnica_jerarquia_nivel_3")))
                 )
+              )
             )
           })
         },
