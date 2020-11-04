@@ -3,19 +3,29 @@ div.filtros_char div.selectize-input {
     overflow-y: auto;
 }
 
-html {
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-.wrapper {
-    overflow: hidden;
-}
-
 div[class^="tooltip_svg_"] {
   padding: 0 0 0 0 ;
 }
 
 .wrapper {
     background-color: #ecf0f5 !important;
+    min-height: 120vh;
+    height: 120%;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding-bottom: 10%;
+}
+
+.btn {
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+.btn-file {
+    white-space: nowrap !important;
+}
+
+.dropdown-menu.open {
+  max-width: 100%;
 }
