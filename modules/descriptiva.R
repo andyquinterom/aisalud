@@ -17,7 +17,7 @@ descriptiva_ui <- function(id) {
         inputId = ns("descriptiva_unidades"),
         label = "Unidad de descriptiva",
         choiceNames = c(
-          "Pretación",
+          "Prestación",
           "Paciente",
           "Factura"
         ),
