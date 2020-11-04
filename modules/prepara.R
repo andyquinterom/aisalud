@@ -68,6 +68,7 @@ prepara_server <- function(input, output, session, nombre_id) {
   
   datos <- reactiveValues(
     "data_table" = data.table(),
+    "data_original" = data.table(),
     "colnames" = NULL
   )
   
@@ -103,46 +104,58 @@ prepara_server <- function(input, output, session, nombre_id) {
   observeEvent(input$file_load, {
     if (!is.null(input$file)) {
       if (input$file_type == "csv") {
-        datos$data_table <- fread(
+        datos$data_original <- fread(
           input = input$file$datapath, 
           sep = opciones$value_delimitador, 
           dec = opciones$value_decimal,
           data.table = TRUE)
-        datos$colnames <- colnames(datos$data_table)
-        datos$data_table[, "FECHA_PRESTACION" := as.Date(
+        datos$data_original[, "FECHA_PRESTACION" := as.Date(
           FECHA_PRESTACION, 
           format = input$formato_fecha)]
-        datos$data_table <- datos$data_table[
+        datos$data_original <- datos$data_original[
           FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
             FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+        datos$data_table <- datos$data_original
+        datos$valores_unicos <- lapply(datos$data_table, unique)
+        datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       } 
       if (input$file_type == "feather") {
-        datos$data_table <- as.data.table(
+        datos$data_original <- as.data.table(
           read_feather(
             path = input$file$datapath)
         )
-        datos$colnames <- colnames(datos$data_table)
-        datos$data_table[, "FECHA_PRESTACION" := as.Date(
+        datos$data_original[, "FECHA_PRESTACION" := as.Date(
           FECHA_PRESTACION, 
           format = input$formato_fecha)]
-        datos$data_table <- datos$data_table[
+        datos$data_original <- datos$data_original[
           FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
             FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+        datos$data_table <- datos$data_original
+        datos$valores_unicos <- lapply(datos$data_table, unique)
+        datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       }
       if (input$file_type == "xlsx") {
-        datos$data_table <- as.data.table(
+        datos$data_original <- as.data.table(
           read_excel(
             path = input$file$datapath, 
             sheet = opciones$value_sheet, 
             range = opciones$value_range)
         )
-        datos$colnames <- colnames(datos$data_table)
-        datos$data_table[, "FECHA_PRESTACION" := as.Date(
+        datos$data_original[, "FECHA_PRESTACION" := as.Date(
           FECHA_PRESTACION, 
           format = input$formato_fecha)]
-        datos$data_table <- datos$data_table[
+        datos$data_original <- datos$data_original[
           FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
             FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+        datos$data_table <- datos$data_original
+        datos$valores_unicos <- lapply(datos$data_table, unique)
+        datos$colnames <- colnames(datos$data_table)
+        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+        datos$colnames_num <- datos$colnames[columnas_num]
       }
     }
   })
@@ -159,10 +172,10 @@ prepara_server <- function(input, output, session, nombre_id) {
               "FECHA_PRESTACION",
               "VALOR",
               "COSTO"),
-            y = names(datos$data_table[1])
+            y = names(datos$data_original[1])
           )
           DT::datatable(
-            data = datos$data_table[
+            data = datos$data_original[
               1:5,
               columnas,
               with = FALSE],

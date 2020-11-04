@@ -88,9 +88,9 @@ outliers_server <- function(input, output, session, datos, opciones) {
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
               pageLength = 15, 
               autoWidth = FALSE,
-              ordering=T, 
+              ordering = T, 
               scrollX = TRUE),
-            rownames= FALSE) %>%
+            rownames = FALSE) %>%
             formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
         })   
       }
@@ -116,9 +116,9 @@ outliers_server <- function(input, output, session, datos, opciones) {
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
               pageLength = 15, 
               autoWidth = FALSE, 
-              ordering=T,
+              ordering = T,
               scrollX = TRUE),
-            rownames= FALSE) %>%
+            rownames = FALSE) %>%
             formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
         })   
       }
@@ -129,14 +129,14 @@ outliers_server <- function(input, output, session, datos, opciones) {
     filename = function() {
       paste("Outliers por ",
             opciones$outliers_cols,
-            ".csv", sep="")
+            ".csv", sep = "")
     },
     content = function(file) {
       write.csv(
         x = outliers$tabla,
         file = file, 
         row.names = FALSE,
-        na="")
+        na = "")
     }, 
     contentType = "text/csv"
   )
@@ -145,7 +145,7 @@ outliers_server <- function(input, output, session, datos, opciones) {
     filename = function() {
       paste("Outliers por ",
             opciones$outliers_cols,
-            ".xlsx", sep="")
+            ".xlsx", sep = "")
     },
     content = function(file) {
       write_xlsx(

@@ -9,6 +9,7 @@ episodios <- function(data, columnas, columna_valor, columna_suma,
   setnames(data, "VAR_PLACEHOLDER", columnas)
   data <- descriptiva(data,
                       columnas = c(columnas, columna_sep),
+                      columna_suma = "NRO_IDENTIFICACION",
                       columna_valor = "Suma", prestaciones = FALSE)
   return(data)
   data <- NULL

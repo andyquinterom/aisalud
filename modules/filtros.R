@@ -1,0 +1,319 @@
+filtros_ui <- function(id) {
+  ns <- NS(id)
+  
+  tagList(
+    tags$div(
+      class = "filtros",
+      fluidRow(
+        column(
+          width = 5,
+          tags$h3("Variables")
+        ),
+        column(
+          width = 2
+        ),
+        column(
+          width = 5,
+          tags$h3("Valores")
+        )
+      ),
+      tags$div(
+        class = "filtros_char",
+          filtro_discreto_ui_insert(ns = ns, n = 5)
+        ),
+      filtro_numerico_ui_insert(ns = ns, n = 3),
+      actionButton(ns("aplicar_filtros"), "Aplicar")
+    )
+  )
+}
+
+filtros_server <- function(input, output, session, datos) {
+
+  n_num = 3
+  n_char = 5
+  
+  observeEvent(datos$colnames, {
+    lapply(
+      X = 1:n_char,
+      FUN = function(x) {
+        updatePickerInput(
+          session = session,
+          inputId = paste("filtro_char_columna", x, sep = "_"),
+          choices = c("NA", datos$colnames)
+        )
+      }
+    )
+    lapply(
+      X = 1:n_num,
+      FUN = function(x) {
+        updatePickerInput(
+          session = session,
+          inputId = paste("filtro_num_columna", x, sep = "_"),
+          choices = c("NA", datos$colnames_num)
+        )
+      }
+    )
+  })
+  
+  lapply(
+    X = 1:n_char,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_char_columna_", i)]], {
+        updateSelectizeInput(
+          session = session,
+          inputId = paste0("filtro_char_valor_", i),
+          server = TRUE,
+          choices = datos$valores_unicos[[
+            input[[paste0("filtro_char_columna_", i)]]]]
+        )
+      })
+    }
+  )
+  
+  lapply(
+    X = 1:n_num,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_num_columna_", i)]], {
+        if (input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_min_", i),
+            value = min(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+                ]],
+              na.rm = TRUE)
+          )
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_max_", i),
+            value = max(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+    }
+  )
+  
+  lapply(
+    X = 1:n_num,
+    FUN = function(i) {
+      observeEvent(input[[paste0("filtro_num_min_", i)]], {
+        if (is.na(input[[paste0("filtro_num_min_", i)]]) &
+            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_min_", i),
+            value = min(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+      observeEvent(input[[paste0("filtro_num_max_", i)]], {
+        if (is.na(input[[paste0("filtro_num_max_", i)]]) &
+            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+          updateNumericInput(
+            session = session,
+            inputId = paste0("filtro_num_max_", i),
+            value = max(
+              datos$data_original[[
+                input[[paste0("filtro_num_columna_", i)]]
+              ]],
+              na.rm = TRUE)
+          )
+        }
+      })
+    }
+  )
+  
+  observeEvent(input$aplicar_filtros, {
+    inputs_filtros_char <- c()
+    
+    inputs_filtros_char <- unlist(
+      lapply(
+        X = 1:n_char,
+        FUN = function(i) {
+          return(input[[paste0("filtro_char_columna_", i)]] != "NA")
+        }
+      )
+    )
+    
+    inputs_filtros_char_arguments <- paste(unlist(
+      lapply(
+        X = (1:n_char)[inputs_filtros_char],
+        FUN = function(i) {
+          return(
+            paste0(
+              "[get(",
+              paste0("input$filtro_char_columna_", i),
+              ifelse(
+                test = input[[paste0("filtro_char_incluir_", i)]],
+                yes = ") %in% ",
+                no = ") %notin% "
+              ),
+              paste0("input$filtro_char_valor_", i),
+              "]"
+            )
+          )
+        }
+      )
+    ),
+    collapse = "")
+    
+    inputs_filtros_num <- unlist(
+      lapply(
+        X = 1:n_char,
+        FUN = function(i) {
+          return(input[[paste0("filtro_num_columna_", i)]] != "NA")
+        }
+      )
+    )
+    
+    inputs_filtros_num_arguments <- paste(unlist(
+      lapply(
+        X = (1:n_num)[inputs_filtros_num],
+        FUN = function(i) {
+          return(
+            paste0(
+              "[get(",
+              paste0("input$filtro_num_columna_", i),
+              ") >= ",
+              paste0("input$filtro_num_min_", i),
+              " & get(",
+              paste0("input$filtro_num_columna_", i),
+              ") <= ",
+              paste0("input$filtro_num_max_", i),
+              "]"
+            )
+          )
+        }
+      )
+    ),
+    collapse = "")
+    
+    filtros_parse <- paste0(
+      "datos$data_table",
+      inputs_filtros_char_arguments,
+      inputs_filtros_num_arguments
+    )
+
+
+    datos$data_table <- datos$data_original
+    datos$data_table <- eval(parse(
+      text = filtros_parse
+    ))
+    
+    showNotification(
+      ui = "Filtros aplicados.",
+      duration = 4
+    )
+    
+  })
+  
+}
+
+
+# Funciones ----------------
+
+filtro_discreto_ui_fila <- function(ns, position = 1) {
+  fluidRow(
+    column(
+      width = 5,
+      pickerInput(
+        inputId = ns(paste("filtro_char_columna", position, sep = "_")),
+        label = NULL,
+        choices = "NA",
+        selected = "NA",
+        multiple = FALSE
+      )),
+    column(
+      width = 2,
+      shinyWidgets::switchInput(
+        inputId = ns(paste("filtro_char_incluir", position, sep = "_")),
+        onLabel = "Incluir",
+        offLabel = "Excluir",
+        value = TRUE
+      )
+    ),
+    column(
+      width = 5,
+      selectizeInput(
+        inputId = ns(paste("filtro_char_valor", position, sep = "_")),
+        label = NULL,
+        choices = "NA",
+        selected = "NA",
+        multiple = TRUE
+      ))
+  )
+}
+
+filtro_discreto_ui_insert <- function(ns, n) {
+  
+  filtros_filas <- list()
+  
+  for (i in 1:n) {
+    filtros_filas[[i]] <- filtro_discreto_ui_fila(
+      ns = ns, 
+      position = i)
+  }
+  
+  return(filtros_filas)
+  
+}
+
+filtro_numerico_ui_fila <- function(ns, position = 1) {
+  fluidRow(
+    column(
+      width = 5,
+      pickerInput(
+        inputId = ns(paste("filtro_num_columna", position, sep = "_")),
+        choices = c("NA"),
+        width = "100%")),
+    column(
+      width = 2
+    ),
+    column(
+      width = 5,
+      fluidRow(
+        column(
+          width = 6,
+          numericInput(
+            inputId = ns(paste("filtro_num_min", position, sep = "_")),
+            label = NULL,
+            value = 0,
+            min = 0,
+            max = 0, 
+            width = "100%")),
+        column(
+          width = 6,
+          numericInput(
+            inputId = ns(paste("filtro_num_max", position, sep = "_")),
+            label = NULL, 
+            value = 0,
+            min = 0,
+            max = 0,
+            width = "100%"))
+      )
+    )
+    )
+}
+
+filtro_numerico_ui_insert <- function(ns, n) {
+  
+  filtros_filas <- list()
+  
+  for (i in 1:n) {
+    filtros_filas[[i]] <- filtro_numerico_ui_fila(
+      ns = ns, 
+      position = i)
+  }
+  
+  return(filtros_filas)
+  
+}

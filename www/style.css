@@ -1,21 +1,21 @@
-.blog {
-	   -webkit-transition: width .3s ease-in-out;
-    -o-transition: width .3s ease-in-out;
-    transition: width .3s ease-in-out;
-    display: block;
-    float: left;
-    height: 50px;
-    font-size: 20px;
-    line-height: 50px;
-    text-align: left;
-    width: 230px;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    padding: 0 15px;
-    font-weight: 300;
+div.filtros_char div.selectize-input {
+    max-height: 102px;
+    overflow-y: auto;
+}
+
+html {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.wrapper {
     overflow: hidden;
 }
 
-body {
-    height: 100%; 
-    
+div[class^="tooltip_svg_"] {
+  padding: 0 0 0 0 ;
+}
+
+.wrapper {
+    background-color: #ecf0f5 !important;
 }

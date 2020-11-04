@@ -19,10 +19,13 @@ shinyUI(
                 'updates', event.name, event.value);
          });"
       ))),
-    dashboardPage(
+    dashboardPagePlus(
       skin = "black",
-      dashboardHeader(title = "Salud - Analítica"),
-      dashboardSidebar(
+      dashboardHeaderPlus(
+        fixed = TRUE,
+        title = "Salud - Analítica",
+        enable_rightsidebar = TRUE),
+      sidebar = dashboardSidebar(
         sidebarMenu(
           HTML('
                <img src="logoblanco.png" width="100%"/>
@@ -111,8 +114,20 @@ shinyUI(
           )
         )
       ),
+      rightsidebar = rightSidebar(
+        width = 700,
+        rightSidebarTabContent(
+          id = "filtros_sideBar",
+          icon = "filter",
+          active = TRUE,
+          filtros_ui("filtros_test")
+        )
+      ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
+        tags$div(
+          style = "min-height: 50px;"
+        ),
         tabItems(
           tabItem(
             tabName = "prepara",

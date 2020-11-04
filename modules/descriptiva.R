@@ -13,6 +13,20 @@ descriptiva_ui <- function(id) {
           `deselect-all-text` = "Deseleccionar todos",
           `select-all-text` = "Seleccionar todos",
           `live-search` = TRUE)),
+      radioButtons(
+        inputId = ns("descriptiva_unidades"),
+        label = "Unidad de descriptiva",
+        choiceNames = c(
+          "Pretación",
+          "Paciente",
+          "Factura"
+        ),
+        choiceValues = c(
+          "prestacion",
+          "NRO_IDENTIFICACION",
+          "NRO_FACTURA"
+        )
+      ),
       actionButton(
         inputId = ns("descriptiva_exe"),
         label = "Confirmar"),
@@ -43,7 +57,7 @@ descriptiva_ui <- function(id) {
 
 descriptiva_server <- function(input, output, session, datos, opciones) {
   
-  descriptiva <- reactiveValues()
+  descriptiva <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
     updatePickerInput(
@@ -58,45 +72,61 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
       if(!is.null(input$descriptiva_cols) && input$descriptiva_cols != "NA") {
         opciones$descriptiva_cols <- input$descriptiva_cols
         withProgress(message = "Calculando descriptiva", {
-          descriptiva$tabla <- descriptiva(
-            data = datos$data_table, 
-            columnas = opciones$descriptiva_cols, 
-            columna_valor = opciones$valor_costo, 
-            columna_suma = "NRO_IDENTIFICACION",
-            prestaciones = opciones$analisis_prestacion)
-          
-          output$descriptiva_tabla <- DT::renderDataTable({
-            DT::datatable(
-              descriptiva$tabla,
-              options = list(
-                language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                pageLength = 50,
-                autoWidth = FALSE,
-                ordering=T, 
-                scrollX = TRUE,
-                scrollY = "60vh"),
-              rownames= FALSE) %>%
-              formatCurrency(
-                c('P50','P75','P90','Media','Media truncada 10%',
-                  'Media truncada 5%','Desv.tipica'),
-                mark = ".", 
-                dec.mark = ",") %>%
-              formatCurrency(c('Suma','Min.','Max.','Rango'),
-                             digits = 0, 
-                             mark = ".",
-                             dec.mark = ",")
-          })   
+          tryCatch(
+            expr = {
+              descriptiva$tabla <- descriptiva(
+                data = datos$data_table, 
+                columnas = opciones$descriptiva_cols, 
+                columna_valor = opciones$valor_costo, 
+                columna_suma = input$descriptiva_unidades,
+                prestaciones = input$descriptiva_unidades == "prestacion"
+              )
+              
+              output$descriptiva_tabla <- DT::renderDataTable({
+                DT::datatable(
+                  descriptiva$tabla,
+                  options = list(
+                    language = list(
+                      url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                    pageLength = 50,
+                    autoWidth = FALSE,
+                    ordering = T, 
+                    scrollX = TRUE,
+                    scrollY = "60vh"),
+                  rownames= FALSE) %>%
+                  formatCurrency(
+                    c('P50','P75','P90','Media','Media truncada 10%',
+                      'Media truncada 5%','Desv.tipica'),
+                    mark = ".", 
+                    dec.mark = ",") %>%
+                  formatCurrency(c('Suma','Min.','Max.','Rango'),
+                                 digits = 0, 
+                                 mark = ".",
+                                 dec.mark = ",")
+              })
+            },
+            error = function(e) {
+              sendSweetAlert(
+                session = session,
+                title = "Error", 
+                type = "error",
+                text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+              )
+              print(e)
+            }
+          )
         })
       }
     }
   })
   
   output$descriptiva_sumas_registros <- renderText({
-    if (!is.null(input$file)) {
+    if (!is.null(datos$colnames)) {
       paste("Total registros:", 
             formatC(
-              length(datos$original$NRO_IDENTIFICACION),
+              length(datos$data_table[["NRO_IDENTIFICACION"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -107,11 +137,11 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
     }
   })
   
-  output$descriptiva_sumas_registros <- renderText({
-    if (!is.null(input$file)) {
-      paste("Total registros:", 
+  output$descriptiva_sumas_pacientes <- renderText({
+    if (!is.null(datos$colnames)) {
+      paste("Total pacientes:", 
             formatC(
-              length(valores_unicos[["NRO_IDENTIFICACION"]]),
+              uniqueN(datos$data_table[["NRO_IDENTIFICACION"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -123,13 +153,13 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
   })
   
   output$descriptiva_sumas_valor <- renderText({
-    if (!is.null(input$file)) {
-      if(nrow(descriptiva$tabla) >= 1) {
+    if (!is.null(datos$colnames)) {
+      if(nrow(descriptiva$tabla) > 1) {
         paste("Total",
               paste0(tolower(opciones$valor_costo), ":"), 
               formatC(
                 sum(
-                  descriptiva$tabla$Suma,
+                  descriptiva$tabla[["Suma"]],
                   na.rm = TRUE), 
                 big.mark = ".", 
                 decimal.mark = ",", 
