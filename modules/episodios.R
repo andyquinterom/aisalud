@@ -89,94 +89,122 @@ episodios_server <- function(input, output, session, datos, opciones,
   observeEvent(input$episodios_cols, {
     if (!is.null(datos$colnames) && 
         length(datos$valores_unicos[[input$episodios_cols]]) <= 125) {
-      output$episodios_jerarquia <- renderUI({
-        tagList(
-          orderInput(
-            inputId = ns("episodios_jerarquia_nivel_1"),
-            label = "Episodio",
-            items = NULL,
-            width = "100%", 
-            connect = c(
-              ns("episodios_jerarquia_nivel_2"),
-              ns("episodios_jerarquia_nivel_3"),
-              ns("episodios_jerarquia_nivel_4"))
-          ),
-          orderInput(
-            inputId = ns("episodios_jerarquia_nivel_2"),
-            label = "Factura",
-            items = NULL,
-            width = "100%",
-            connect = c(
-              ns("episodios_jerarquia_nivel_1"),
-              ns("episodios_jerarquia_nivel_3"),
-              ns("episodios_jerarquia_nivel_4"))
-          ),
-          orderInput(
-            inputId = ns("episodios_jerarquia_nivel_3"),
-            label = "Paciente",
-            items = NULL,
-            width = "100%",
-            connect = c(
-              ns("episodios_jerarquia_nivel_1"),
-              ns("episodios_jerarquia_nivel_2"),
-              ns("episodios_jerarquia_nivel_4"))
-          ),
-          orderInput(
-            inputId = ns("episodios_jerarquia_nivel_4"),
-            label = "Prestación",
-            items = datos$valores_unicos[[input$episodios_cols]],
-            width = "100%",
-            connect = c(
-              ns("episodios_jerarquia_nivel_1"),
-              ns("episodios_jerarquia_nivel_2"),
-              ns("episodios_jerarquia_nivel_3"))
+      tryCatch(
+        expr = {
+          output$episodios_jerarquia <- renderUI({
+            tagList(
+              orderInput(
+                inputId = ns("episodios_jerarquia_nivel_1"),
+                label = "Episodio",
+                items = NULL,
+                width = "100%", 
+                connect = c(
+                  ns("episodios_jerarquia_nivel_2"),
+                  ns("episodios_jerarquia_nivel_3"),
+                  ns("episodios_jerarquia_nivel_4"))
+              ),
+              orderInput(
+                inputId = ns("episodios_jerarquia_nivel_2"),
+                label = "Factura",
+                items = NULL,
+                width = "100%",
+                connect = c(
+                  ns("episodios_jerarquia_nivel_1"),
+                  ns("episodios_jerarquia_nivel_3"),
+                  ns("episodios_jerarquia_nivel_4"))
+              ),
+              orderInput(
+                inputId = ns("episodios_jerarquia_nivel_3"),
+                label = "Paciente",
+                items = NULL,
+                width = "100%",
+                connect = c(
+                  ns("episodios_jerarquia_nivel_1"),
+                  ns("episodios_jerarquia_nivel_2"),
+                  ns("episodios_jerarquia_nivel_4"))
+              ),
+              orderInput(
+                inputId = ns("episodios_jerarquia_nivel_4"),
+                label = "Prestación",
+                items = datos$valores_unicos[[input$episodios_cols]],
+                width = "100%",
+                connect = c(
+                  ns("episodios_jerarquia_nivel_1"),
+                  ns("episodios_jerarquia_nivel_2"),
+                  ns("episodios_jerarquia_nivel_3"))
+              )
+            )
+          })
+        },
+        error = function(e) {
+          sendSweetAlert(
+            session = session,
+            title = "Error", 
+            type = "error",
+            text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
           )
-        )
-      })
+        }
+      )
     }
   })
   
   observeEvent(input$episodios_exe, {
     if(!is.null(datos$colnames)) {
       if(!is.null(input$episodios_col_valor) && input$episodios_cols != "NA") {
-        opciones$episodios_cols <- input$episodios_cols
-        opciones$episodios_col_valor <- input$episodios_col_valor
-        opciones$episodios_cols_sep <- input$episodios_cols_sep
-        withProgress(message = "Calculando descriptiva por episodio",{
-          episodios$tabla <- episodios_jerarquia(
-            data = datos$data_table,
-            columnas =      opciones$episodios_cols, 
-            columna_valor = opciones$valor_costo, 
-            columna_sep =   opciones$episodios_cols_sep,
-            columna_suma =  opciones$episodios_col_valor,
-            nivel_1 = input$episodios_jerarquia_nivel_1_order,
-            nivel_2 = input$episodios_jerarquia_nivel_2_order,
-            nivel_3 = input$episodios_jerarquia_nivel_3_order,
-            nivel_4 = input$episodios_jerarquia_nivel_4_order)
-          
-          output$episodios_tabla <- DT::renderDataTable({
-            DT::datatable(
-              episodios$tabla,
-              options = list(
-                language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                pageLength = 50,
-                autoWidth = FALSE,
-                ordering=T, 
-                scrollX = TRUE,
-                scrollY = "60vh"),
-              rownames= FALSE) %>%
-              formatCurrency(
-                c('P50','P75','P90','Media','Media truncada 10%',
-                  'Media truncada 5%','Desv.tipica'),
-                mark = ".",
-                dec.mark = ",") %>%
-              formatCurrency(c('Suma','Min.','Max.','Rango'),
-                             digits=0,
-                             mark = ".",
-                             dec.mark = ",")
-          })   
-        })
+        tryCatch(
+          expr = {
+            opciones$episodios_cols <- input$episodios_cols
+            opciones$episodios_col_valor <- input$episodios_col_valor
+            opciones$episodios_cols_sep <- input$episodios_cols_sep
+            withProgress(message = "Calculando descriptiva por episodio",{
+              episodios$tabla <- episodios_jerarquia(
+                data = datos$data_table,
+                columnas =      opciones$episodios_cols, 
+                columna_valor = opciones$valor_costo, 
+                columna_sep =   opciones$episodios_cols_sep,
+                columna_suma =  opciones$episodios_col_valor,
+                nivel_1 = input$episodios_jerarquia_nivel_1_order,
+                nivel_2 = input$episodios_jerarquia_nivel_2_order,
+                nivel_3 = input$episodios_jerarquia_nivel_3_order,
+                nivel_4 = input$episodios_jerarquia_nivel_4_order)
+              
+              output$episodios_tabla <- DT::renderDataTable({
+                DT::datatable(
+                  episodios$tabla,
+                  options = list(
+                    language = list(
+                      url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                    pageLength = 50,
+                    autoWidth = FALSE,
+                    ordering=T, 
+                    scrollX = TRUE,
+                    scrollY = "60vh"),
+                  rownames= FALSE) %>%
+                  formatCurrency(
+                    c('P50','P75','P90','Media','Media truncada 10%',
+                      'Media truncada 5%','Desv.tipica'),
+                    mark = ".",
+                    dec.mark = ",") %>%
+                  formatCurrency(c('Suma','Min.','Max.','Rango'),
+                                 digits=0,
+                                 mark = ".",
+                                 dec.mark = ",")
+              })   
+            })
+          },
+          error = function(e) {
+            sendSweetAlert(
+              session = session,
+              title = "Error", 
+              type = "error",
+              text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+            )
+          }
+        )
       }
     }
   })

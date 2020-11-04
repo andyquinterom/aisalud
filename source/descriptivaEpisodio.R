@@ -56,7 +56,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
       columna_suma = "NRO_FACTURA",
-      prestaciones = TRUE
+      prestaciones = FALSE
     )[get(columnas) %in% nivel_2]
     registros_procesados <- unique(data[
       get(columnas) %in% i][["NRO_FACTURA"]])
