@@ -86,35 +86,49 @@ episodios_server <- function(input, output, session, datos, opciones,
   })
   
   observeEvent(input$episodios_cols, {
-    if (!is.null(datos$colnames)) {
+    if (!is.null(datos$colnames) && 
+        length(datos$valores_unicos[[input$episodios_cols]]) <= 125) {
       output$episodios_jerarquia <- renderUI({
         tagList(
           orderInput(
             inputId = ns("episodios_jerarquia_nivel_1"),
-            label = "Nivel 1",
+            label = "Episodio",
             items = NULL,
             width = "100%", 
             connect = c(
               ns("episodios_jerarquia_nivel_2"),
-              ns("episodios_jerarquia_nivel_3"))
+              ns("episodios_jerarquia_nivel_3"),
+              ns("episodios_jerarquia_nivel_4"))
           ),
           orderInput(
             inputId = ns("episodios_jerarquia_nivel_2"),
-            label = "Nivel 2",
+            label = "Factura",
             items = NULL,
             width = "100%",
             connect = c(
               ns("episodios_jerarquia_nivel_1"),
-              ns("episodios_jerarquia_nivel_3"))
+              ns("episodios_jerarquia_nivel_3"),
+              ns("episodios_jerarquia_nivel_4"))
           ),
           orderInput(
             inputId = ns("episodios_jerarquia_nivel_3"),
-            label = "Nivel 3",
+            label = "Paciente",
+            items = NULL,
+            width = "100%",
+            connect = c(
+              ns("episodios_jerarquia_nivel_1"),
+              ns("episodios_jerarquia_nivel_2"),
+              ns("episodios_jerarquia_nivel_4"))
+          ),
+          orderInput(
+            inputId = ns("episodios_jerarquia_nivel_4"),
+            label = "Prestación",
             items = datos$valores_unicos[[input$episodios_cols]],
             width = "100%",
             connect = c(
               ns("episodios_jerarquia_nivel_1"),
-              ns("episodios_jerarquia_nivel_2"))
+              ns("episodios_jerarquia_nivel_2"),
+              ns("episodios_jerarquia_nivel_3"))
           )
         )
       })
@@ -122,9 +136,6 @@ episodios_server <- function(input, output, session, datos, opciones,
   })
   
   observeEvent(input$episodios_exe, {
-    print(input$episodios_jerarquia_nivel_1_order)
-    print(input$episodios_jerarquia_nivel_2_order)
-    print(input$episodios_jerarquia_nivel_3_order)
     if(!is.null(datos$colnames)) {
       if(!is.null(input$episodios_col_valor) && input$episodios_cols != "NA") {
         opciones$episodios_cols <- input$episodios_cols
@@ -139,7 +150,8 @@ episodios_server <- function(input, output, session, datos, opciones,
             columna_suma =  opciones$episodios_col_valor,
             nivel_1 = input$episodios_jerarquia_nivel_1_order,
             nivel_2 = input$episodios_jerarquia_nivel_2_order,
-            nivel_3 = input$episodios_jerarquia_nivel_3_order)
+            nivel_3 = input$episodios_jerarquia_nivel_3_order,
+            nivel_4 = input$episodios_jerarquia_nivel_4_order)
           
           print(episodios$tabla)
           
@@ -169,4 +181,32 @@ episodios_server <- function(input, output, session, datos, opciones,
       }
     }
   })
+  
+  output$episodios_descargar_csv <- downloadHandler(
+    filename = function() {
+      paste("Episodios",
+            ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = episodios$tabla,
+        file = file, 
+        row.names = FALSE,
+        na="")
+    }, 
+    contentType = "text/csv"
+  )
+  
+  output$episodios_descargar_xlsx <- downloadHandler(
+    filename = function() {
+      paste("Episodios",
+            ".xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = episodios$tabla,
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
 }
