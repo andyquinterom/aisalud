@@ -32,6 +32,8 @@ episodios_ui <- function(id) {
                 `live-search` = TRUE,
                 `select-all-text` = "Seleccionar todos",
                 `deselect-all-text` = "Deseleccionar todos")),
+            textOutput(outputId = ns("episodios_sumas_valor")),
+            tags$br(),
             uiOutput(
               outputId = ns("episodios_jerarquia")
             ),
@@ -67,7 +69,6 @@ episodios_server <- function(input, output, session, datos, opciones,
   episodios <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
-    print(datos$colnames)
     updatePickerInput(
       session = session,
       inputId = "episodios_col_valor",
@@ -153,8 +154,6 @@ episodios_server <- function(input, output, session, datos, opciones,
             nivel_3 = input$episodios_jerarquia_nivel_3_order,
             nivel_4 = input$episodios_jerarquia_nivel_4_order)
           
-          print(episodios$tabla)
-          
           output$episodios_tabla <- DT::renderDataTable({
             DT::datatable(
               episodios$tabla,
@@ -178,6 +177,25 @@ episodios_server <- function(input, output, session, datos, opciones,
                              dec.mark = ",")
           })   
         })
+      }
+    }
+  })
+  
+  output$episodios_sumas_valor <- renderText({
+    if (!is.null(datos$colnames)) {
+      if(nrow(episodios$tabla) > 1) {
+        paste("Total",
+              paste0(tolower(opciones$valor_costo), ":"), 
+              formatC(
+                sum(
+                  episodios$tabla[["Suma"]],
+                  na.rm = TRUE), 
+                big.mark = ".", 
+                decimal.mark = ",", 
+                format = "f", 
+                digits = 0),
+              sep = " "
+        )
       }
     }
   })
