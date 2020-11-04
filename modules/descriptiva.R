@@ -3,7 +3,8 @@ descriptiva_ui <- function(id) {
   
   tagList(
     fluidRow(
-      box(width = 3,
+      box(
+        width = 3,
         pickerInput(
           inputId = ns("descriptiva_cols"),
           label = "Agrupar por:",
