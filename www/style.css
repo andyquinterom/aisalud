@@ -7,14 +7,14 @@ div[class^="tooltip_svg_"] {
   padding: 0 0 0 0 ;
 }
 
+html {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
 .wrapper {
     background-color: #ecf0f5 !important;
-    min-height: 120vh;
-    height: 120%;
-    position: relative;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    padding-bottom: 10%;
+    overflow: hidden;
 }
 
 .btn {

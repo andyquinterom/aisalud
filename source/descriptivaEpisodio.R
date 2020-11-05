@@ -19,7 +19,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
                                 nivel_4) {
   
-  data[, "ASIGNACION_NIVEL" := 3]
+  data[, "ASIGNACION_NIVEL" := ""]
   
   episodios_nivel_1 <- data.table()
   episodios_nivel_2 <- data.table()
