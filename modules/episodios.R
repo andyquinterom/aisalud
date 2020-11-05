@@ -14,16 +14,11 @@ episodios_ui <- function(id) {
           label = "Agrupar por:",
           choices = NULL, 
           multiple = FALSE),
-        pickerInput(
+        selectizeInput(
           inputId = ns("episodios_cols_sep"),
           label = "Separar por:",
-          choices = c("NA"),
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE,
-            `select-all-text` = "Seleccionar todos",
-            `deselect-all-text` = "Deseleccionar todos")),
+          choices = NULL,
+          multiple = TRUE),
         textOutput(outputId = ns("episodios_sumas_valor")),
         tags$br(),
         uiOutput(
@@ -69,7 +64,7 @@ episodios_server <- function(input, output, session, datos, opciones,
       inputId = "episodios_cols",
       choices = datos$colnames
     )
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "episodios_cols_sep",
       choices = datos$colnames

@@ -4,16 +4,11 @@ descriptiva_ui <- function(id) {
   tagList(
     fluidRow(
       box(width = 3,
-        pickerInput(
+        selectizeInput(
           inputId = ns("descriptiva_cols"),
           label = "Agrupar por:",
-          choices = c("NA"),
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `deselect-all-text` = "Deseleccionar todos",
-            `select-all-text` = "Seleccionar todos",
-            `live-search` = TRUE)),
+          choices = NULL,
+          multiple = TRUE),
         radioButtons(
           inputId = ns("descriptiva_unidades"),
           label = "Unidad de descriptiva",
@@ -61,7 +56,7 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
   descriptiva <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "descriptiva_cols",
       choices = datos$colnames
@@ -70,7 +65,7 @@ descriptiva_server <- function(input, output, session, datos, opciones) {
   
   observeEvent(input$descriptiva_exe, {
     if(!is.null(datos$colnames)) {
-      if(!is.null(input$descriptiva_cols) && input$descriptiva_cols != "NA") {
+      if(!is.null(input$descriptiva_cols)) {
         opciones$descriptiva_cols <- input$descriptiva_cols
         withProgress(message = "Calculando descriptiva", {
           tryCatch(

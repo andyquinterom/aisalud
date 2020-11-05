@@ -14,7 +14,7 @@ html {
 
 .wrapper {
     background-color: #ecf0f5 !important;
-    overflow: hidden;
+    overflow-y: hidden;
 }
 
 .btn {
@@ -24,8 +24,4 @@ html {
 
 .btn-file {
     white-space: nowrap !important;
-}
-
-.dropdown-menu.open {
-  max-width: 100%;
 }
