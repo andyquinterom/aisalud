@@ -4,22 +4,16 @@ episodios_ui <- function(id) {
   tagList(
     fluidRow(
       box(width = 3,
-        pickerInput(
+        selectizeInput(
           inputId = ns("episodios_col_valor"),
           label = "Sumar valor por:",
-          choices = c("NA"),
-          multiple = FALSE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE)),
-        pickerInput(
+          choices = NULL,
+          multiple = FALSE),
+        selectizeInput(
           inputId = ns("episodios_cols"),
           label = "Agrupar por:",
-          choices = c("NA"),
-          multiple = FALSE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE)),
+          choices = NULL, 
+          multiple = FALSE),
         pickerInput(
           inputId = ns("episodios_cols_sep"),
           label = "Separar por:",
@@ -65,12 +59,12 @@ episodios_server <- function(input, output, session, datos, opciones,
   episodios <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "episodios_col_valor",
       choices = datos$colnames
     )
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "episodios_cols",
       choices = datos$colnames
@@ -84,6 +78,7 @@ episodios_server <- function(input, output, session, datos, opciones,
   
   observeEvent(input$episodios_cols, {
     if (!is.null(datos$colnames) && 
+        !is.null(input$episodios_cols) &&
         length(datos$valores_unicos[[input$episodios_cols]]) <= 125) {
       tryCatch(
         expr = {
@@ -148,7 +143,9 @@ episodios_server <- function(input, output, session, datos, opciones,
   
   observeEvent(input$episodios_exe, {
     if(!is.null(datos$colnames)) {
-      if(!is.null(input$episodios_col_valor) && input$episodios_cols != "NA") {
+      if(!is.null(input$episodios_col_valor) && 
+         !is.null(input$episodios_cols) &&
+         input$episodios_cols != "NA") {
         tryCatch(
           expr = {
             opciones$episodios_cols <- input$episodios_cols
