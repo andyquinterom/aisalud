@@ -35,18 +35,27 @@ shinyUI(
             icon = icon("cog", lib = "font-awesome"),
             tabName = "prepara"),
           menuItem(
-            text = "Descriptiva modulo",
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptivas",
-            menuSubItem(text = "Clásica",
-                        tabName = "descriptiva_modulo"), 
-            menuSubItem(text = "Episodios", 
-                        tabName = "episodios_modulo")
-            ),
+            text = tags$b("- Modulos -")
+          ),
+          menuItem(
+            text = "Descriptiva clásica",
+            tabName = "descriptiva_modulo",
+             icon = icon("table", lib = "font-awesome")),
+          menuItem(
+            text = "Descriptiva episodios",
+            tabName = "episodios_modulo",
+            icon = icon("table", lib = "font-awesome")),
+          menuItem(
+            text = "Nota técnica",
+            tabName = "nota_tecnica_modulo",
+            icon = icon("table", lib = "font-awesome")),
           menuItem(
             text = "Outliers modulo",
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
+          menuItem(
+            text = tags$b("- Normal -")
+          ),
           menuItem(
             text = "Opciones",
             icon = icon("cog", lib = "font-awesome"),
@@ -149,6 +158,10 @@ shinyUI(
           tabItem(
             tabName = "episodios_modulo",
             episodios_ui("episodios_modulo")
+          ),
+          tabItem(
+            tabName = "nota_tecnica_modulo",
+            nota_tecnica_ui("nota_tecnica_modulo")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
