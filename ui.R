@@ -37,7 +37,12 @@ shinyUI(
           menuItem(
             text = "Descriptiva modulo",
             icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptiva_modulo"),
+            tabName = "descriptivas",
+            menuSubItem(text = "Clásica",
+                        tabName = "descriptiva_modulo"), 
+            menuSubItem(text = "Episodios", 
+                        tabName = "episodios_modulo")
+            ),
           menuItem(
             text = "Outliers modulo",
             icon = icon("search-minus", lib = "font-awesome"),
@@ -120,7 +125,7 @@ shinyUI(
           id = "filtros_sideBar",
           icon = "filter",
           active = TRUE,
-          filtros_ui("filtros_test")
+          filtros_ui("filtros_sideBar")
         )
       ),
       dashboardBody(
@@ -131,15 +136,19 @@ shinyUI(
         tabItems(
           tabItem(
             tabName = "prepara",
-            prepara_ui("prepara_test")
+            prepara_ui("prepara_modulo")
           ),
           tabItem(
             tabName = "descriptiva_modulo",
-            descriptiva_ui("descriptiva_test")
+            descriptiva_ui("descriptiva_modulo")
           ),
           tabItem(
             tabName = "outliers_modulo",
-            outliers_ui("outliers_test")
+            outliers_ui("outliers_modulo")
+          ),
+          tabItem(
+            tabName = "episodios_modulo",
+            episodios_ui("episodios_modulo")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(

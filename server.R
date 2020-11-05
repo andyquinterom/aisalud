@@ -8,15 +8,15 @@ shinyServer(function(input, output, session) {
   
   datos_modulos <- callModule(
     module = prepara_server,
-    id = "prepara_test",
-    nombre_id = "prepara_test"
+    id = "prepara_modulo",
+    nombre_id = "prepara_modulo"
   )
   
   # Modulo filtros --------------------------------------------
   
   callModule(
     module = filtros_server,
-    id = "filtros_test",
+    id = "filtros_sideBar",
     datos = datos_modulos
   )
   
@@ -467,7 +467,7 @@ shinyServer(function(input, output, session) {
   
   callModule(
     module = descriptiva_server,
-    id = "descriptiva_test",
+    id = "descriptiva_modulo",
     datos = datos_modulos,
     opciones = opciones
   )
@@ -591,6 +591,16 @@ shinyServer(function(input, output, session) {
     contentType = "xlsx"
   )
   
+  # Modulo episodios -------------------------------------------------------
+  
+  callModule(
+    module = episodios_server, 
+    id = "episodios_modulo",
+    opciones = opciones,
+    nombre_id = "episodios_modulo",
+    datos = datos_modulos
+  )
+  
   # Episodios ----------------------------------------------------------------
   
   observeEvent(input$episodios_exe, {
@@ -668,7 +678,7 @@ shinyServer(function(input, output, session) {
   
   callModule(
     module = outliers_server,
-    id = "outliers_test",
+    id = "outliers_modulo",
     datos = datos_modulos,
     opciones = opciones
   )
