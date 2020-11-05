@@ -77,6 +77,7 @@ episodios_server <- function(input, output, session, datos, opciones,
         length(datos$valores_unicos[[input$episodios_cols]]) <= 125) {
       tryCatch(
         expr = {
+          agrupadores_items <- datos$valores_unicos[[input$episodios_cols]]
           output$episodios_jerarquia <- renderUI({
             tagList(
               orderInput(
@@ -112,7 +113,7 @@ episodios_server <- function(input, output, session, datos, opciones,
               orderInput(
                 inputId = ns("episodios_jerarquia_nivel_4"),
                 label = "Prestación",
-                items = datos$valores_unicos[[input$episodios_cols]],
+                items = agrupadores_items,
                 width = "100%",
                 connect = c(
                   ns("episodios_jerarquia_nivel_1"),
