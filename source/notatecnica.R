@@ -2,6 +2,69 @@ round0 <- function(x) {
   return(round(x, 0))
 }
 
+crear_notatecnica_escenarios <- function(data = NULL, columnas, poblacion = 1, meses = 1,
+                              escenario = 1) {
+  if (escenario == 1) {
+    nota_tecnica_tabla <- data[
+      , list(
+        "CME" = round0(Media),
+        "Frecuencia a mes" = round0(Frecuencia/meses),
+        "Valor a mes" = round0(Media*Frecuencia/meses),
+        "Frecuencia per capita" = Frecuencia/poblacion,
+        "Coe" = get('Coef.var')
+      ),
+      by = c(columnas)
+    ]
+    
+    return(nota_tecnica_tabla)
+  }
+  
+  if (escenario == 2) {
+    nota_tecnica_tabla <- data[
+      , list(
+        "CME" = round0(P75),
+        "Frecuencia a mes" = round0(Frecuencia/meses),
+        "Valor a mes" = round0(P75*Frecuencia/meses),
+        "Frecuencia per capita" = Frecuencia/poblacion,
+        "Coe" = get('Coef.var')
+      ),
+      by = c(columnas)
+    ]
+    
+    return(nota_tecnica_tabla)
+  }
+  
+  if (escenario == 3) {
+    nota_tecnica_tabla <- data[
+      , list(
+        "CME" = round0(get('Media truncada 10%')),
+        "Frecuencia a mes" = round0(Frecuencia/meses),
+        "Valor a mes" = round0(get('Media truncada 10%')*Frecuencia/meses),
+        "Frecuencia per capita" = Frecuencia/poblacion,
+        "Coe" = get('Coef.var')
+      ),
+      by = c(columnas)
+    ]
+    
+    return(nota_tecnica_tabla)
+  }
+  
+  if (escenario == 4) {
+    nota_tecnica_tabla <- data[
+      , list(
+        "CME" = round0(get('Media truncada 5%')),
+        "Frecuencia a mes" = round0(Frecuencia/meses),
+        "Valor a mes" = round0(get('Media truncada 5%')*Frecuencia/meses),
+        "Frecuencia per capita" = Frecuencia/poblacion,
+        "Coe" = get('Coef.var')
+      ),
+      by = c(columnas)
+    ]
+    
+    return(nota_tecnica_tabla)
+  }
+}
+
 crear_notatecnica <- function(x = NULL, columnas, poblacion = 1, meses = 1) {
   x <- as.data.table(x)
   frecP25 <- quantile(x$Frecuencia, probs = 0.25)/meses

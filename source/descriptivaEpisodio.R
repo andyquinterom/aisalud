@@ -17,7 +17,7 @@ episodios_descriptiva <- function(data, columnas, columna_valor, columna_suma,
 
 episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
-                                nivel_4) {
+                                nivel_4, return_list = FALSE) {
   
   data[, "ASIGNACION_NIVEL" := ""]
   
@@ -92,12 +92,21 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
   
   return(
-    rbind(
-      episodios_nivel_1,
-      episodios_nivel_2,
-      episodios_nivel_3,
-      episodios_nivel_4
-    )
+    if (return_list) {
+      list(
+        "episodio" = episodios_nivel_1,
+        "factura"   = episodios_nivel_2,
+        "paciente"  = episodios_nivel_3,
+        "prestacion"= episodios_nivel_4
+      )
+    } else {
+      rbind(
+        episodios_nivel_1,
+        episodios_nivel_2,
+        episodios_nivel_3,
+        episodios_nivel_4
+      )
+    }
   )
   
 }
