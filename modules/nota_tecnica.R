@@ -9,32 +9,21 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       box(
         width = 3,
-        pickerInput(
+        selectizeInput(
           inputId = ns("nota_tecnica_col_valor"),
           label = "Sumar valor por:",
           choices = c("NA"),
-          multiple = FALSE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE)),
-        pickerInput(
+          multiple = FALSE),
+        selectizeInput(
           inputId = ns("nota_tecnica_cols"),
           label = "Agrupar por:",
           choices = c("NA"),
-          multiple = FALSE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE)),
-        pickerInput(
+          multiple = FALSE),
+        selectizeInput(
           inputId = ns("nota_tecnica_cols_sep"),
           label = "Separar por:",
           choices = c("NA"),
-          multiple = TRUE,
-          options = list(
-            `actions-box` = TRUE,
-            `live-search` = TRUE,
-            `select-all-text` = "Seleccionar todos",
-            `deselect-all-text` = "Deseleccionar todos"))
+          multiple = TRUE)
       ),
       box(
         width = 9
@@ -56,17 +45,17 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   nota_tecnica <- reactiveValues(tabla = data.table())
   
   observeEvent(datos$colnames, {
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "nota_tecnica_col_valor",
       choices = datos$colnames
     )
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "nota_tecnica_cols",
       choices = datos$colnames
     )
-    updatePickerInput(
+    updateSelectizeInput(
       session = session,
       inputId = "nota_tecnica_cols_sep",
       choices = datos$colnames
