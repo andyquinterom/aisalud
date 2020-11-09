@@ -463,7 +463,7 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # Modulo descriptiva ---------------------------------------------------------
+  # Modulo descriptiva clasica ----------------------------------------
   
   callModule(
     module = descriptiva_server,
@@ -591,7 +591,7 @@ shinyServer(function(input, output, session) {
     contentType = "xlsx"
   )
   
-  # Modulo episodios -------------------------------------------------------
+  # Modulo descriptiva y episodios --------------------------------------------
   
   callModule(
     module = episodios_server, 

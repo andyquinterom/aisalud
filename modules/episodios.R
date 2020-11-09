@@ -51,13 +51,16 @@ episodios_server <- function(input, output, session, datos, opciones,
   
   ns <- NS(nombre_id)
   
-  episodios <- reactiveValues(tabla = data.table())
+  episodios <- reactiveValues(
+    tabla = data.table(),
+    agrupadores_items = NULL)
   
   observeEvent(datos$colnames, {
     updateSelectizeInput(
       session = session,
       inputId = "episodios_col_valor",
-      choices = datos$colnames
+      choices = datos$colnames,
+      selected = "NRO_IDENTIFICACION"
     )
     updateSelectizeInput(
       session = session,
@@ -73,55 +76,37 @@ episodios_server <- function(input, output, session, datos, opciones,
   
   observeEvent(input$episodios_cols, {
     if (!is.null(datos$colnames) && 
-        !is.null(input$episodios_cols) &&
-        length(datos$valores_unicos[[input$episodios_cols]]) <= 125) {
+        !is.null(input$episodios_cols)) {
       tryCatch(
         expr = {
-          agrupadores_items <- datos$valores_unicos[[input$episodios_cols]]
-          output$episodios_jerarquia <- renderUI({
-            tagList(
-              orderInput(
-                inputId = ns("episodios_jerarquia_nivel_1"),
-                label = "Episodio",
-                items = NULL,
-                width = "100%", 
-                connect = c(
-                  ns("episodios_jerarquia_nivel_2"),
-                  ns("episodios_jerarquia_nivel_3"),
-                  ns("episodios_jerarquia_nivel_4"))
-              ),
-              orderInput(
-                inputId = ns("episodios_jerarquia_nivel_2"),
-                label = "Factura",
-                items = NULL,
-                width = "100%",
-                connect = c(
-                  ns("episodios_jerarquia_nivel_1"),
-                  ns("episodios_jerarquia_nivel_3"),
-                  ns("episodios_jerarquia_nivel_4"))
-              ),
-              orderInput(
-                inputId = ns("episodios_jerarquia_nivel_3"),
-                label = "Paciente",
-                items = NULL,
-                width = "100%",
-                connect = c(
-                  ns("episodios_jerarquia_nivel_1"),
-                  ns("episodios_jerarquia_nivel_2"),
-                  ns("episodios_jerarquia_nivel_4"))
-              ),
-              orderInput(
-                inputId = ns("episodios_jerarquia_nivel_4"),
-                label = "Prestación",
-                items = agrupadores_items,
-                width = "100%",
-                connect = c(
-                  ns("episodios_jerarquia_nivel_1"),
-                  ns("episodios_jerarquia_nivel_2"),
-                  ns("episodios_jerarquia_nivel_3"))
+          if (length(datos$valores_unicos[[input$episodios_cols]]) <= 60) {
+            episodios$agrupadores_items <-
+              datos$valores_unicos[[input$episodios_cols]]
+            output$episodios_jerarquia <- renderUI({
+              descriptiva_jerarquia(
+                ns = ns,
+                items_nivel_4 = episodios$agrupadores_items
               )
-            )
-          })
+            })
+          } else {
+            episodios$agrupadores_items <- NULL
+            output$episodios_jerarquia <- renderUI({
+              radioButtons(
+                inputId = ns("descriptiva_unidades"),
+                label = "Unidad de descriptiva",
+                choiceNames = c(
+                  "Prestación",
+                  "Paciente",
+                  "Factura"
+                ),
+                choiceValues = c(
+                  "prestacion",
+                  "NRO_IDENTIFICACION",
+                  "NRO_FACTURA"
+                )
+              )
+            })
+          }
         },
         error = function(e) {
           sendSweetAlert(
@@ -137,27 +122,82 @@ episodios_server <- function(input, output, session, datos, opciones,
     }
   })
   
+  observeEvent(input$seleccionar_episodio, {
+    output$episodios_jerarquia <- renderUI({
+      tagList(
+        descriptiva_jerarquia(
+          ns = ns,
+          items_nivel_1 = episodios$agrupadores_items)
+      )
+    })
+  })
+  
+  observeEvent(input$seleccionar_factura, {
+    output$episodios_jerarquia <- renderUI({
+      tagList(
+        descriptiva_jerarquia(
+          ns = ns,
+          items_nivel_2 = episodios$agrupadores_items)
+      )
+    })
+  })
+  
+  observeEvent(input$seleccionar_paciente, {
+    output$episodios_jerarquia <- renderUI({
+      tagList(
+        descriptiva_jerarquia(
+          ns = ns,
+          items_nivel_3 = episodios$agrupadores_items)
+      )
+    })
+  })
+  
+  observeEvent(input$seleccionar_prestacion, {
+    output$episodios_jerarquia <- renderUI({
+      tagList(
+        descriptiva_jerarquia(
+          ns = ns,
+          items_nivel_4 = episodios$agrupadores_items)
+      )
+    })
+  })
+  
+  
   observeEvent(input$episodios_exe, {
+    
     if(!is.null(datos$colnames)) {
       if(!is.null(input$episodios_col_valor) && 
          !is.null(input$episodios_cols) &&
          input$episodios_cols != "NA") {
         tryCatch(
           expr = {
-            opciones$episodios_cols <- input$episodios_cols
-            opciones$episodios_col_valor <- input$episodios_col_valor
-            opciones$episodios_cols_sep <- input$episodios_cols_sep
+            episodios_cols <- input$episodios_cols
+            episodios_col_valor <- input$episodios_col_valor
+            episodios_cols_sep <- input$episodios_cols_sep
             withProgress(message = "Calculando descriptiva por episodio",{
-              episodios$tabla <- episodios_jerarquia(
-                data = datos$data_table,
-                columnas =      opciones$episodios_cols, 
-                columna_valor = opciones$valor_costo, 
-                columna_sep =   opciones$episodios_cols_sep,
-                columna_suma =  opciones$episodios_col_valor,
-                nivel_1 = input$episodios_jerarquia_nivel_1_order,
-                nivel_2 = input$episodios_jerarquia_nivel_2_order,
-                nivel_3 = input$episodios_jerarquia_nivel_3_order,
-                nivel_4 = input$episodios_jerarquia_nivel_4_order)
+              if (!is.null(episodios$agrupadores_items)) {
+                episodios$tabla <- episodios_jerarquia(
+                  data = datos$data_table,
+                  columnas =      episodios_cols, 
+                  columna_valor = opciones$valor_costo, 
+                  columna_sep =   episodios_cols_sep,
+                  columna_suma =  episodios_col_valor,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order)
+              } else {
+                episodios$tabla <- descriptiva(
+                  data = datos$data_table,
+                  columnas = c(
+                    episodios_cols,
+                    episodios_cols_sep
+                  ),
+                  columna_valor = opciones$valor_costo,
+                  columna_suma = input$descriptiva_unidades,
+                  prestaciones = (input$descriptiva_unidades == "prestacion")
+                )
+              }
               
               output$episodios_tabla <- DT::renderDataTable({
                 DT::datatable(
@@ -243,5 +283,57 @@ episodios_server <- function(input, output, session, datos, opciones,
         path = file)
     }, 
     contentType = "xlsx"
+  )
+}
+
+descriptiva_jerarquia <- function(
+  ns,
+  items_nivel_1 = NULL,
+  items_nivel_2 = NULL,
+  items_nivel_3 = NULL, 
+  items_nivel_4 = NULL) {
+  return(
+    tagList(
+      orderInput(
+        inputId = ns("episodios_jerarquia_nivel_1"),
+        label = actionLink(ns("seleccionar_episodio"), label = "Episodio"),
+        items = items_nivel_1,
+        width = "100%", 
+        height = "100%",
+        connect = c(
+          ns("episodios_jerarquia_nivel_2"),
+          ns("episodios_jerarquia_nivel_3"),
+          ns("episodios_jerarquia_nivel_4"))),
+      orderInput(
+        inputId = ns("episodios_jerarquia_nivel_2"),
+        label = actionLink(ns("seleccionar_factura"), label = "Factura"),
+        items = items_nivel_2,
+        width = "100%",
+        height = "100%",
+        connect = c(
+          ns("episodios_jerarquia_nivel_1"),
+          ns("episodios_jerarquia_nivel_3"),
+          ns("episodios_jerarquia_nivel_4"))),
+      orderInput(
+        inputId = ns("episodios_jerarquia_nivel_3"),
+        label = actionLink(ns("seleccionar_paciente"), label = "Paciente"),
+        items = items_nivel_3,
+        width = "100%",
+        height = "100%",
+        connect = c(
+          ns("episodios_jerarquia_nivel_1"),
+          ns("episodios_jerarquia_nivel_2"),
+          ns("episodios_jerarquia_nivel_4"))),
+      orderInput(
+        inputId = ns("episodios_jerarquia_nivel_4"),
+        label = actionLink(ns("seleccionar_prestacion"), label = "Prestación"),
+        items = items_nivel_4,
+        width = "100%",
+        height = "100%",
+        connect = c(
+          ns("episodios_jerarquia_nivel_1"),
+          ns("episodios_jerarquia_nivel_2"),
+          ns("episodios_jerarquia_nivel_3")))
+      )
   )
 }
