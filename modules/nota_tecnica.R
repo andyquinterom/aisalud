@@ -102,7 +102,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
     updateSelectizeInput(
       session = session,
       inputId = "nota_tecnica_col_valor",
-      choices = datos$colnames
+      choices = datos$colnames,
+      selected = "NRO_IDENTIFICACION"
     )
     updateSelectizeInput(
       session = session,
