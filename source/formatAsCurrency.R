@@ -6,8 +6,8 @@ formatAsCurrency <- function(x) {
       format(
         x,
         digits = 0,
-        big.mark = ",", 
-        decimal.mark = ".",
+        big.mark = ".", 
+        decimal.mark = ",",
         scientific = F))
   )
 }
@@ -19,8 +19,8 @@ formatAsPerc <- function(x) {
       format(
         x,
         digits = 0,
-        big.mark = ",", 
-        decimal.mark = ".",
+        big.mark = ".", 
+        decimal.mark = ",",
         scientific = F),
       "%")
   )

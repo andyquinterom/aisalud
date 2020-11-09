@@ -40,13 +40,42 @@ nota_tecnica_ui <- function(id) {
           inputId = ns("nota_tecnica_exe"),
           label = "Generar escenarios",
           width = "100%"
-        )
+        ),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("nota_tecnica_descargar_xlsx"), 
+          label = "Excel",
+          style = "width:100%;"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("nota_tecnica_descargar_csv"),
+          label = "CSV",
+          style = "width:100%;"),
       ),
       box(
-        width = 9
+        width = 9,
+        valueBoxOutput(
+          outputId = ns("nota_tecnica_suma"),
+          width = 6),
+        valueBoxOutput(
+          outputId = ns("nota_tecnica_porcentaje"),
+          width = 6),
+        valueBoxOutput(
+          outputId = ns("nota_tecnica_warnings"),
+          width = 12),
+        DT::dataTableOutput(ns("nota_tecnica_junta"))
       )
     ),
     fluidRow(
+      box(
+        width = 12,
+        actionButton(
+          inputId = ns("nota_tecnica_juntar"), 
+          label = "Juntar", 
+          class = "nota_tecnica_juntar_btn")
+      ),
       uiOutput(
         outputId = ns("nota_tecnica_escenarios")
       )
@@ -59,7 +88,15 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   
   ns <- NS(nombre_id)
   
-  nota_tecnica <- reactiveValues(tabla = data.table())
+  nota_tecnica <- reactiveValues(
+    tabla = data.table(),
+    tabla_junta = data.table(),
+    escenarios = list(
+      "episodio" = list(),
+      "factura" = list(),
+      "paciente" = list(),
+      "prestacion" = list()
+    ))
   
   observeEvent(datos$colnames, {
     updateSelectizeInput(
@@ -300,22 +337,36 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           )
         }
         
+        nota_tecnica$escenarios_activos <- c(
+          test_episodio, test_factura, test_paciente, test_prestacion
+        )
+
         lapply(
           X = 1:4,
           FUN = function(i) {
-            if (test_episodio) {
-              output[[paste0("escenario_episodio_", i)]] <- DT::renderDataTable(
-                server = FALSE,
-                clean_datatable(
+            lapply(
+              X = c("episodio", "factura","paciente", "prestacion")[
+                nota_tecnica$escenarios_activos],
+              i = i,
+              FUN = function(x, i) {
+                nota_tecnica$escenarios[[x]][[i]] <-
                   crear_notatecnica_escenarios(
-                    data = descriptiva_escenarios[["episodio"]], 
+                    data = descriptiva_escenarios[[x]],
                     columnas = c(
                       nota_tecnica_cols,
                       nota_tecnica_cols_sep),
                     poblacion = input$nota_tecnica_poblacion,
                     meses = input$nota_tecnica_meses,
                     escenario = i
-                  ),
+                  )
+              }
+            )
+            
+            if (test_episodio) {
+              output[[paste0("escenario_episodio_", i)]] <- DT::renderDataTable(
+                server = FALSE,
+                clean_datatable(
+                  nota_tecnica$escenarios[["episodio"]][[i]],
                   columnDefs = list(
                     list(
                       targets = c(
@@ -331,15 +382,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
               output[[paste0("escenario_factura_", i)]] <- DT::renderDataTable(
                 server = FALSE,
                 clean_datatable(
-                  crear_notatecnica_escenarios(
-                    data = descriptiva_escenarios[["factura"]], 
-                    columnas = c(
-                      nota_tecnica_cols,
-                      nota_tecnica_cols_sep),
-                    poblacion = input$nota_tecnica_poblacion,
-                    meses = input$nota_tecnica_meses,
-                    escenario = i
-                  ),
+                  nota_tecnica$escenarios[["factura"]][[i]],
                   columnDefs = list(
                     list(
                       targets = c(
@@ -355,15 +398,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
               output[[paste0("escenario_paciente_", i)]] <- DT::renderDataTable(
                 server = FALSE,
                 clean_datatable(
-                  crear_notatecnica_escenarios(
-                    data = descriptiva_escenarios[["paciente"]], 
-                    columnas = c(
-                      nota_tecnica_cols,
-                      nota_tecnica_cols_sep),
-                    poblacion = input$nota_tecnica_poblacion,
-                    meses = input$nota_tecnica_meses,
-                    escenario = i
-                  ),
+                  nota_tecnica$escenarios[["paciente"]][[i]],
                   columnDefs = list(
                     list(
                       targets = c(
@@ -379,15 +414,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
               output[[paste0("escenario_prestacion_", i)]] <- DT::renderDataTable(
                 server = FALSE,
                 clean_datatable(
-                  crear_notatecnica_escenarios(
-                    data = descriptiva_escenarios[["prestacion"]], 
-                    columnas = c(
-                      nota_tecnica_cols,
-                      nota_tecnica_cols_sep),
-                    poblacion = input$nota_tecnica_poblacion,
-                    meses = input$nota_tecnica_meses,
-                    escenario = i
-                  ),
+                  nota_tecnica$escenarios[["prestacion"]][[i]],
                   columnDefs = list(
                     list(
                       targets = c(
@@ -401,21 +428,238 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             }
           }
         )
-    
-  },
-  error = function(e) {
-    sendSweetAlert(
-      session = session,
-      title = "Error", 
-      type = "error",
-      text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+        
+        nota_tecnica$descriptiva_escenarios <- descriptiva_escenarios
+        
+        },
+      error = function(e) {
+        sendSweetAlert(
+        session = session,
+        title = "Error", 
+        type = "error",
+        text = "Por favor revisar los parametros de carga de datos,
+                  columnas, formato de fecha y los datos. Si este problema persiste
+                  ponerse en contacto con un administrador.")
+        }
     )
-  }
+    
+  })
+  
+  observeEvent(input$nota_tecnica_juntar, {
+    tryCatch(
+      expr = {
+        rows_selected <- list(
+          "episodio" = list(),
+          "factura" = list(),
+          "paciente" = list(),
+          "prestacion" = list())
+        
+        lapply(
+          X = 1:4,
+          FUN = function(i) {
+            rows_episodio <- 
+              input[[paste0("escenario_episodio_", i, "_rows_selected")]]
+            rows_factura <- 
+              input[[paste0("escenario_factura_", i, "_rows_selected")]]
+            rows_paciente <- 
+              input[[paste0("escenario_paciente_", i, "_rows_selected")]]
+            rows_prestacion <- 
+              input[[paste0("escenario_prestacion_", i, "_rows_selected")]]
+            
+            rows_selected[["episodio"]][[i]] <<- 
+              if (!is.null(rows_episodio)) {
+                nota_tecnica$escenarios[["episodio"]][[i]][
+                  rows_episodio]
+              }
+            rows_selected[["factura"]][[i]] <<- 
+              if (!is.null(rows_factura)) {
+                nota_tecnica$escenarios[["factura"]][[i]][
+                  rows_factura]
+              }
+            rows_selected[["paciente"]][[i]] <<- 
+              if (!is.null(rows_paciente)) {
+                nota_tecnica$escenarios[["paciente"]][[i]][
+                  rows_paciente]
+              }
+            rows_selected[["prestacion"]][[i]] <<- 
+              if (!is.null(rows_prestacion)) {
+                nota_tecnica$escenarios[["prestacion"]][[i]][
+                  rows_prestacion]
+              }
+          }
+        )
+        
+        nota_tecnica$tabla_junta <-
+          rbindlist(
+            lapply(
+              X = c("episodio", "factura", "paciente", "prestacion"),
+              FUN = function(i) {
+                if (!is.null(rows_selected[[i]])) {
+                  return(
+                    cbind(
+                      "Modalidad" = toupper(i),
+                      rbindlist(rows_selected[[i]])
+                    )
+                  )
+                } else {
+                  return(data.table())
+                }
+              }
+              )[nota_tecnica$escenarios_activos]
+          )
+        
+        suma_valor_mes <- sum(
+          numerize(nota_tecnica$tabla_junta[["Valor a mes"]]), na.rm = TRUE)
+        
+        nota_tecnica$tabla_junta[
+          , "Participacion" := `Valor a mes`/suma_valor_mes,
+          by = c("Valor a mes")]
+        
+      },
+      error = function(e) {
+        sendSweetAlert(
+          session = session,
+          title = "Error", 
+          type = "error",
+          text = "Por favor revisar los parametros de carga de datos,
+                  columnas, formato de fecha y los datos. Si este problema persiste
+                  ponerse en contacto con un administrador.")
+        }
+      )
+  })
+  
+  output$nota_tecnica_junta <- DT::renderDataTable(
+    server = FALSE, {
+      if (nrow(nota_tecnica$tabla_junta) == 0 ||
+          "CM" %notin% names(nota_tecnica$tabla_junta)) {
+        datatable(data = data.table())
+      } else {
+        datatable(
+          data = nota_tecnica$tabla_junta[, -c("Coe")],
+          rownames = FALSE, 
+          options = list(
+            ordering = T,
+            scrollX = TRUE,
+            pageLength = 1000,
+            dom = "ft"
+          )
+        ) %>%
+          formatCurrency(
+            c("CM", "Valor a mes"),
+            dec.mark = ",", 
+            mark = ".", 
+            currency = "$", 
+            digits = 0
+          ) %>%
+          formatPercentage(
+            c("Participacion"),
+            dec.mark = ",",
+            mark = "."
+          )
+      }
+    }
   )
   
+  output$nota_tecnica_suma <- renderValueBox({
+    valueBox(
+      subtitle = "Valor total a mes.",
+      value = {
+        if (nrow(nota_tecnica$tabla_junta) >= 1) {
+          formatAsCurrency(
+            sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE)
+          )
+        } else {
+          0
+        }
+      }, 
+      color = "green",
+      icon = icon("dollar-sign", "font-awesome")
+    )
   })
+  
+  output$nota_tecnica_porcentaje <- renderValueBox({
+    valueBox(
+      subtitle = "Porcentaje del valor de los datos.",
+      value = {
+        if (nrow(nota_tecnica$tabla_junta) >= 1) {
+          formatAsPerc(
+            100 * sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE) /
+              (sum(datos$data_table[[opciones$valor_costo]], na.rm = TRUE) /
+                 input$nota_tecnica_meses)
+          )
+        } else {
+          0
+        }
+      }, 
+      color = "yellow",
+      icon = icon("percent", "font-awesome")
+    )
+  })
+  
+  output$nota_tecnica_warnings <- renderValueBox({
+    if (nrow(nota_tecnica$tabla_junta >= 1) &&
+        c(input$nota_tecnica_cols, input$nota_tecnica_cols_sep) %in%
+        names(nota_tecnica$tabla_junta)) {
+      
+      repetidos <-sum(duplicated(nota_tecnica$tabla_junta[
+        , c(input$nota_tecnica_cols, input$nota_tecnica_cols_sep),
+        with = FALSE]))
+      
+      if (repetidos == 0) {
+        valueBox(
+          subtitle = "Correcto",
+          value = "Estado.", 
+          color = "green",
+          icon = icon("thumbs-up", "font-awesome")
+        )
+      } else {
+        valueBox(
+          value = "¡Advertencia!",
+          subtitle = paste0(
+            "Tienes ", repetidos, " agrupadores duplicados."
+          ), 
+          color = "red",
+          icon = icon("exclamation-circle", "font-awesome")
+        )
+      }
+    } else {
+      valueBox(
+        subtitle = "Correcto",
+        value = "Estado.", 
+        color = "green",
+        icon = icon("thumbs-up", "font-awesome")
+      )
+    }
+  })
+  
+  output$nota_tecnica_descargar_xlsx <- downloadHandler(
+    filename = function() {
+      paste("Nota técnica",
+            ".xlsx", sep="")
+    },
+    content = function(file) {
+      write_xlsx(
+        x = append(
+          list("Nota tecnica" = nota_tecnica$tabla_junta[, -c("Coe")]),
+          nota_tecnica$descriptiva_escenarios
+        ),
+        path = file)
+    }, 
+    contentType = "xlsx"
+  )
+  
+  output$nota_tecnica_descargar_csv <- downloadHandler(
+    filename = function() {
+      paste("Nota técnica",
+            ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(
+        x = nota_tecnica$descriptiva_escenarios,
+        file = file)
+    }, 
+    contentType = "text/csv"
+  )
   
 }
 
@@ -442,7 +686,7 @@ formato_escenarios <- function(x) {
   return(
     x %>%
       formatCurrency(
-        c("CME", "Valor a mes"),
+        c("CM", "Valor a mes"),
         dec.mark = ",", 
         mark = ".", 
         currency = "$", 
@@ -460,7 +704,8 @@ formato_escenarios <- function(x) {
         target = "row",
         backgroundColor = styleEqual(
           levels = c(0, 1),
-          values = c('yellow', 'yellow')
+          values = c('rgb(255, 218, 84)',
+                     'rgb(255, 218, 84)')
         )
       )
   )

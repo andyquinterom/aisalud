@@ -50,3 +50,8 @@ div.nota_tecnica_jerarquia_row div.box-body
 div.ui-sortable {
   height: 100%;
 }
+
+.nota_tecnica_juntar_btn {
+  width: 100%;
+  border: 0;
+}
