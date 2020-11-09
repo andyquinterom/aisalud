@@ -497,7 +497,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                 if (!is.null(rows_selected[[i]])) {
                   return(
                     cbind(
-                      "Modalidad" = toupper(i),
+                      "Tipo" = toupper(i),
                       rbindlist(rows_selected[[i]])
                     )
                   )
