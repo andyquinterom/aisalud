@@ -477,6 +477,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   observeEvent(input$nota_tecnica_juntar, {
     tryCatch(
       expr = {
+        rows_selected <- NULL
+        
         rows_selected <- list(
           "episodio" = list(),
           "factura" = list(),
@@ -486,6 +488,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         lapply(
           X = 1:4,
           FUN = function(i) {
+            
+            
             rows_episodio <- 
               input[[paste0("escenario_episodio_", i, "_rows_selected")]]
             rows_factura <- 
@@ -520,16 +524,22 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         
         nota_tecnica$tabla_junta <-
           rbindlist(
+            fill = TRUE,
             lapply(
               X = c("episodio", "factura", "paciente", "prestacion"),
               FUN = function(i) {
                 if (!is.null(rows_selected[[i]])) {
-                  return(
-                    cbind(
-                      "Modalidad" = toupper(i),
-                      rbindlist(rows_selected[[i]])
+                  seleccionados_juntos <- rbindlist(rows_selected[[i]])
+                  if (nrow(seleccionados_juntos) > 0) {
+                    return(
+                      cbind(
+                        "Modalidad" = toupper(i),
+                        seleccionados_juntos
+                      )
                     )
-                  )
+                  } else {
+                    return(data.table())
+                  }
                 } else {
                   return(data.table())
                 }
@@ -546,6 +556,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         
       },
       error = function(e) {
+        print(e)
         sendSweetAlert(
           session = session,
           title = "Error", 
