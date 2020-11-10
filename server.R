@@ -771,6 +771,16 @@ shinyServer(function(input, output, session) {
     contentType = "xlsx"
   )
   
+  # Modulo generar nota técnica -----------------------------------------------
+  
+  callModule(
+    module = nota_tecnica_server,
+    id = "nota_tecnica_modulo",
+    nombre_id = "nota_tecnica_modulo",
+    datos = datos_modulos,
+    opciones = opciones
+  )
+  
   # Generar nota técnica ------------------------------------------------------
   
   observeEvent(input$crear_nt_exe, {
