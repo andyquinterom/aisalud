@@ -804,10 +804,3 @@ nota_tecnica_cajas_jerarquia <- function(
     )
   )
 }
-
-
-# selectizeInput(
-#   inputId = ns("nota_tecnica_col_valor"),
-#   label = "Sumar valor por:",
-#   choices = c("NA"),
-#   multiple = FALSE),

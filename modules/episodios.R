@@ -3,12 +3,16 @@ episodios_ui <- function(id) {
   
   tagList(
     fluidRow(
-      box(width = 3,
-        selectizeInput(
-          inputId = ns("episodios_col_valor"),
-          label = "Sumar valor por:",
-          choices = NULL,
-          multiple = FALSE),
+      box(
+        width = 3,
+        checkboxInput(
+          inputId = ns("episodios_enable"),
+          label = "Agrupar por episodios",
+          value = F
+        ),
+        uiOutput(
+          outputId = ns("episodios_col_valor_out")
+        ),  
         selectizeInput(
           inputId = ns("episodios_cols"),
           label = "Agrupar por:",
@@ -56,12 +60,14 @@ episodios_server <- function(input, output, session, datos, opciones,
     agrupadores_items = NULL)
   
   observeEvent(datos$colnames, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "episodios_col_valor",
-      choices = datos$colnames,
-      selected = "NRO_IDENTIFICACION"
-    )
+    if (input$episodios_enable) {
+      updateSelectizeInput(
+        session = session,
+        inputId = "episodios_col_valor",
+        choices = datos$colnames,
+        selected = "NRO_IDENTIFICACION"
+      )
+    }
     updateSelectizeInput(
       session = session,
       inputId = "episodios_cols",
@@ -74,12 +80,32 @@ episodios_server <- function(input, output, session, datos, opciones,
     )
   })
   
-  observeEvent(input$episodios_cols, {
+  observeEvent(input$episodios_enable, {
+    if (input$episodios_enable) {
+      output$episodios_col_valor_out <- renderUI({
+        selectizeInput(
+          inputId = ns("episodios_col_valor"),
+          label = "Sumar valor por:",
+          choices = datos$colnames,
+          selected = "NRO_IDENTIFICACION",
+          multiple = FALSE)
+      })
+    } else {
+      output$episodios_col_valor_out <- renderUI({})
+    }
+  })
+  
+  cambio_columnas <- reactive({
+    list(input$episodios_cols, input$episodios_enable)
+  })
+  
+  observeEvent(cambio_columnas(), {
     if (!is.null(datos$colnames) && 
         !is.null(input$episodios_cols)) {
       tryCatch(
         expr = {
-          if (length(datos$valores_unicos[[input$episodios_cols]]) <= 60) {
+          if (length(datos$valores_unicos[[input$episodios_cols]]) <= 60 &&
+              input$episodios_enable) {
             episodios$agrupadores_items <-
               datos$valores_unicos[[input$episodios_cols]]
             output$episodios_jerarquia <- renderUI({
@@ -166,13 +192,14 @@ episodios_server <- function(input, output, session, datos, opciones,
   observeEvent(input$episodios_exe, {
     
     if(!is.null(datos$colnames)) {
-      if(!is.null(input$episodios_col_valor) && 
-         !is.null(input$episodios_cols) &&
+      if(!is.null(input$episodios_cols) &&
          input$episodios_cols != "NA") {
         tryCatch(
           expr = {
             episodios_cols <- input$episodios_cols
-            episodios_col_valor <- input$episodios_col_valor
+            if (input$episodios_enable) {
+              episodios_col_valor <- input$episodios_col_valor
+            }
             episodios_cols_sep <- input$episodios_cols_sep
             withProgress(message = "Calculando descriptiva por episodio",{
               if (!is.null(episodios$agrupadores_items)) {
