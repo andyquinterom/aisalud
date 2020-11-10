@@ -533,7 +533,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   if (nrow(seleccionados_juntos) > 0) {
                     return(
                       cbind(
-                        "Modalidad" = toupper(i),
+                        "Tipo" = toupper(i),
                         seleccionados_juntos
                       )
                     )
