@@ -59,7 +59,12 @@ shinyUI(
           menuItem(
             text = "Índice",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "seguimiento_modulo"
+            tabName = "seguimiento_modulo_indice"
+          ),
+          menuItem(
+            text = "Índice",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            tabName = "seguimiento_modulo_dash"
           ),
           menuItem(
             text = tags$b("- Normal -")
@@ -172,8 +177,12 @@ shinyUI(
             nota_tecnica_ui("nota_tecnica_modulo")
           ),
           tabItem(
-            tabName = "seguimiento_modulo",
+            tabName = "seguimiento_modulo_indice",
             seguimiento_notas_indice_ui("seguimiento_notas_indice")
+          ),
+          tabItem(
+            tabName = "seguimiento_modulo_dash",
+            seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(

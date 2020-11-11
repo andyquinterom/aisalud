@@ -1949,13 +1949,21 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  # Modulos seguimiento NT
+  # Modulos seguimiento NT ---------------------------------------------
   
   callModule(
     module = seguimiento_notas_indice_server,
     id = "seguimiento_notas_indice",
     indice = dash_nt_indice,
     mapa = dash_nt_mapa
+  )
+  
+  callModule(
+    module = seguimiento_notas_dashboard_server,
+    id = "seguimiento_notas_dash",
+    indice = dash_nt_indice,
+    nota_tecnica = dash_nt_datos,
+    inclusiones = dash_nt_inclusiones
   )
   
   # Dashboard NT --------------------------------------------------------------
