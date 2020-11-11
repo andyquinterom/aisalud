@@ -54,6 +54,14 @@ shinyUI(
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
           menuItem(
+            text = tags$b("- Seguimiento Notas -")
+          ),
+          menuItem(
+            text = "Índice",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            tabName = "seguimiento_modulo"
+          ),
+          menuItem(
             text = tags$b("- Normal -")
           ),
           menuItem(
@@ -162,6 +170,10 @@ shinyUI(
           tabItem(
             tabName = "nota_tecnica_modulo",
             nota_tecnica_ui("nota_tecnica_modulo")
+          ),
+          tabItem(
+            tabName = "seguimiento_modulo",
+            seguimiento_notas_indice_ui("seguimiento_notas_indice")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
