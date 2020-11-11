@@ -9,11 +9,14 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       box(
         width = 3,
-        selectizeInput(
-          inputId = ns("nota_tecnica_col_valor"),
-          label = "Sumar valor por:",
-          choices = c("NA"),
-          multiple = FALSE),
+        checkboxInput(
+          inputId = ns("nota_tecnica_episodios"),
+          label = "Agrupar por episodios",
+          value = F
+        ),
+        uiOutput(
+          outputId = ns("nota_tecnica_col_valor_out")
+        ),
         selectizeInput(
           inputId = ns("nota_tecnica_cols"),
           label = "Agrupar por:",
@@ -99,12 +102,13 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
     ))
   
   observeEvent(datos$colnames, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "nota_tecnica_col_valor",
-      choices = datos$colnames,
-      selected = "NRO_IDENTIFICACION"
-    )
+    if (input$nota_tecnica_episodios) {
+      updateSelectizeInput(
+        session = session,
+        inputId = "nota_tecnica_col_valor",
+        choices = datos$colnames
+      )
+    }
     updateSelectizeInput(
       session = session,
       inputId = "nota_tecnica_cols",
@@ -122,9 +126,29 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
     )
   })
   
-  observeEvent(input$nota_tecnica_cols, {
+  observeEvent(input$nota_tecnica_episodios, {
+    if (input$nota_tecnica_episodios) {
+      output$nota_tecnica_col_valor_out <- renderUI({
+        selectizeInput(
+          inputId = ns("nota_tecnica_col_valor"),
+          label = "Sumar valor por:",
+          selected = "NRO_IDENTIFICACION",
+          choices = datos$colnames,
+          multiple = FALSE)
+      })
+    } else {
+      output$nota_tecnica_col_valor_out <- renderUI({})
+    }
+  })
+  
+  cambio_columnas <- reactive({
+    list(input$nota_tecnica_cols, input$nota_tecnica_episodios)
+  })
+  
+  observeEvent(cambio_columnas(), {
     if (!is.null(datos$colnames) && 
-        length(datos$valores_unicos[[input$nota_tecnica_cols]]) <= 125) {
+        length(datos$valores_unicos[[input$nota_tecnica_cols]]) <= 125 &&
+        input$nota_tecnica_episodios) {
       tryCatch(
         expr = {
           nota_tecnica$agrupadores_items <-
@@ -233,7 +257,11 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         }
         
         nota_tecnica_cols <- input$nota_tecnica_cols
-        nota_tecnica_col_valor <- input$nota_tecnica_col_valor
+        if (input$nota_tecnica_episodios) {
+          nota_tecnica_col_valor <- input$nota_tecnica_col_valor
+        } else {
+          nota_tecnica_col_valor <- NULL
+        }
         nota_tecnica_cols_sep <- input$nota_tecnica_cols_sep
         
         output$nota_tecnica_escenarios <- renderUI({
@@ -449,6 +477,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   observeEvent(input$nota_tecnica_juntar, {
     tryCatch(
       expr = {
+        rows_selected <- NULL
+        
         rows_selected <- list(
           "episodio" = list(),
           "factura" = list(),
@@ -458,6 +488,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         lapply(
           X = 1:4,
           FUN = function(i) {
+            
+            
             rows_episodio <- 
               input[[paste0("escenario_episodio_", i, "_rows_selected")]]
             rows_factura <- 
@@ -492,16 +524,22 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         
         nota_tecnica$tabla_junta <-
           rbindlist(
+            fill = TRUE,
             lapply(
               X = c("episodio", "factura", "paciente", "prestacion"),
               FUN = function(i) {
                 if (!is.null(rows_selected[[i]])) {
-                  return(
-                    cbind(
-                      "Tipo" = toupper(i),
-                      rbindlist(rows_selected[[i]])
+                  seleccionados_juntos <- rbindlist(rows_selected[[i]])
+                  if (nrow(seleccionados_juntos) > 0) {
+                    return(
+                      cbind(
+                        "Tipo" = toupper(i),
+                        seleccionados_juntos
+                      )
                     )
-                  )
+                  } else {
+                    return(data.table())
+                  }
                 } else {
                   return(data.table())
                 }
@@ -518,6 +556,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         
       },
       error = function(e) {
+        print(e)
         sendSweetAlert(
           session = session,
           title = "Error", 
