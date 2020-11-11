@@ -25,16 +25,10 @@ library(maps)
 library(withr)
 library(shinydashboardPlus)
 library(shinyjqui)
-
-
-
+library(googledrive)
 
 enableBookmarking(store = "server")
 
-require(googlesheets4)
-require(googledrive)
-require(data.table)
-require(feather)
 
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 

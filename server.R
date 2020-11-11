@@ -1202,7 +1202,7 @@ shinyServer(function(input, output, session) {
         
         histograma <- ggplot(
           data = histograma_datos,
-          aes(x=get(opciones$histograma_col)))
+          mapping = aes(x = get(opciones$histograma_col)))
         
         output$histograma_render = renderPlotly({
           if(is.null(opciones$histograma_fill) || 
@@ -1210,23 +1210,22 @@ shinyServer(function(input, output, session) {
                                              "VALOR",
                                              "COSTO")) {
             if(opciones$histograma_col %in% datos$colnames_num) {
-              ggplotly(
-                tooltip = FALSE,
-                p = histograma +
-                  geom_histogram(
-                    bins = opciones$histograma_bins, 
-                    color="black",
-                    aes(y = ..density..)) +
-                  geom_density() +
-                  xlab(opciones$histograma_col) +
-                  ylab("Densidad") +
-                  scale_y_continuous(labels = scales::comma) +
-                  theme(axis.text.x = element_text(angle = 90,
-                                                   hjust = 1,
-                                                   size = 12),
-                        legend.title = element_blank())) %>% 
-                config(locale = "es") %>%
-                layout(legend = list(x= 1, y = 0.5))
+              variable <- as.data.table(histograma_datos)[ 
+                , get(opciones$histograma_col)]
+              densidad <- density(variable)
+              
+              plot_ly() %>% 
+                add_histogram(variable, name = "Histograma",
+                              nbinsx = opciones$histograma_bins) %>% 
+                add_trace(x = densidad$x, y = densidad$y, type = "scatter",
+                          mode = "lines", fill = "#8a2be2", yaxis = "y2",
+                          name = "Densidad") %>% 
+                layout(yaxis2 = list(overlaying = "y", side = "right",
+                                     zeroline = FALSE, showticklabels = FALSE,
+                                     showgrid = FALSE),
+                       xaxis = list(title = opciones$histograma_col),
+                       yaxis = list(title = "Conteo"),
+                       showlegend = FALSE)
             } else {
               ggplotly(
                 tooltip = NULL,
@@ -1248,26 +1247,29 @@ shinyServer(function(input, output, session) {
             }
           } else {
             if(opciones$histograma_col %in% datos$colnames_num) {
-              ggplotly(
-                tooltip = FALSE,
-                p = histograma +
-                  geom_histogram(
-                    bins = opciones$histograma_bins, 
-                    color="black",
-                    aes(y = ..density..,
-                        fill = get(opciones$histograma_fill))) +
-                  geom_density() +
-                  xlab(opciones$histograma_col) +
-                  ylab("Densidad") +
-                  scale_y_continuous(labels = scales::comma) +
-                  guides(
-                    fill=guide_legend(title=opciones$histograma_fill)) +
-                  theme(axis.text.x = element_text(angle = 90,
-                                                   hjust = 1,
-                                                   size = 12),
-                        legend.title = element_blank())) %>% 
-                config(locale = "es") %>%
-                layout(legend = list(x= 1, y = 0.5))
+              
+              variable <- as.data.table(histograma_datos)[ 
+                ,
+                get(opciones$histograma_col)]
+              densidad <- density(variable)
+              agrupador <- as.data.table(histograma_datos)[ 
+                ,
+                get(opciones$histograma_fill)]
+              
+  
+              plot_ly() %>% 
+                add_histogram(variable, nbinsx = opciones$histograma_bins,
+                              color = agrupador) %>% 
+                add_trace(x = densidad$x, y = densidad$y, type = "scatter",
+                          mode = "lines", fill = "#8a2be2", yaxis = "y2",
+                          name = "Densidad") %>% 
+                layout(yaxis2 = list(overlaying = "y", side = "right",
+                                     zeroline = FALSE, showticklabels = FALSE,
+                                     showgrid = FALSE),
+                       xaxis = list(title = opciones$histograma_col),
+                       yaxis = list(title = "Conteo"),
+                       showlegend = TRUE,
+                       barmode = "stack")
               
             } else {
               ggplotly(
