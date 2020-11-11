@@ -42,7 +42,7 @@ shinyUI(
             tabName = "descriptiva_modulo",
              icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = "Descriptiva episodios",
+            text = "Descriptiva con episodios",
             tabName = "episodios_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
