@@ -241,11 +241,13 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
     
   }
   
+  dash_nt_mapa <- readRDS("datos/nts/nt_mapa.rds")
+  dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
+  dash_nt_inclusiones <- as.data.table(
+    read_feather("datos/nts/inclusiones.feather"))
+  dash_nt_datos <- as.data.table(
+    read_feather("datos/nts/notas_tecnicas.feather"))
+  dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
+  
 }
 
-dash_nt_mapa <- readRDS("datos/nts/nt_mapa.rds")
-dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
-dash_nt_inclusiones <- as.data.table(
-  read_feather("datos/nts/inclusiones.feather"))
-dash_nt_datos <- as.data.table(read_feather("datos/nts/notas_tecnicas.feather"))
-dash_nt_codigos <- unique(dash_nt_datos$COD_NT)

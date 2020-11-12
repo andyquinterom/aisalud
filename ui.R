@@ -54,6 +54,19 @@ shinyUI(
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
           menuItem(
+            text = "Seguimiento",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            menuSubItem(
+              text = "Índice",
+              tabName = "seguimiento_modulo_indice"),
+            menuSubItem(
+              text = "Dashboard",
+              tabName = "seguimiento_modulo_dash"),
+            menuSubItem(
+              text = "Comparación",
+              tabName = "seguimiento_modulo_comparar")
+          ),
+          menuItem(
             text = tags$b("- Normal -")
           ),
           menuItem(
@@ -84,19 +97,6 @@ shinyUI(
             text = "Nota técnica",
             icon = icon("search-dollar", lib = "font-awesome"),
             tabName = "nota_tecnica"),
-          (
-          if (NT_INCLUIDO) {
-            menuItem(
-              text = "Notas técnicas",
-              icon = icon("dollar-sign", lib = "font-awesome"),
-              tabName = "dash_nt",
-              tags$br(),
-              actionButton("dash_nt_actualizar", "Actualizar"), 
-              menuSubItem(text = "Índice", tabName = "dash_nt_indice"),
-              menuSubItem(text = "Dashboard", tabName = "dash_nt_board"),
-              menuSubItem(text = "Comparar", tabName = "dash_nt_comparar"))
-          }
-          ),
           (
           if (PAQUETES_INCLUIDO) {
             menuItem(
@@ -162,6 +162,36 @@ shinyUI(
           tabItem(
             tabName = "nota_tecnica_modulo",
             nota_tecnica_ui("nota_tecnica_modulo")
+          ),
+          tabItem(
+            tabName = "seguimiento_modulo_indice",
+            if (NT_INCLUIDO) {
+              tagList(
+                fluidRow(
+                  column(
+                    width = 12,
+                    box(
+                      width = 12,
+                      actionButton(
+                        "dash_nt_actualizar",
+                        "Actualizar",
+                        width = "100%")))
+                ),
+                seguimiento_notas_indice_ui("seguimiento_notas_indice")
+              )
+            }
+          ),
+          tabItem(
+            tabName = "seguimiento_modulo_dash",
+            if (NT_INCLUIDO) {
+              seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
+            }
+          ),
+          tabItem(
+            tabName = "seguimiento_modulo_comparar",
+            if (NT_INCLUIDO) {
+              seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
+            }
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
@@ -759,161 +789,6 @@ shinyUI(
                 width = 9,
                 box(width = "100%",
                     DT::dataTableOutput(outputId = "crear_nt_tabla"))))),
-          
-          # Dashboard NT -------------------------------------------------------
-          
-          tabItem(
-            tabName = "dash_nt_indice",
-            fluidRow(
-              box(
-                width = 7,
-                DT::dataTableOutput(
-                  outputId = "dash_nt_indice_tabla",
-                  height = "80vh")),
-              box(width = 5, plotlyOutput(
-                outputId = "dash_nt_indice_mapa",
-                height = "80vh")))),
-          tabItem(
-            tabName = "dash_nt_board",
-            fluidRow(
-              column(
-                width = 12,
-                valueBoxOutput(outputId = "dash_nt_entidad", width = 12))),
-            fluidRow(
-              column(
-                width = 12,
-                valueBoxOutput(
-                  outputId = "dash_nt_valor_mes", width = 4),
-                valueBoxOutput(
-                  outputId = "dash_nt_poblacion",
-                  width = 4),
-                valueBoxOutput(
-                  outputId = "dash_nt_departamento",
-                  width = 4))),
-            fluidRow(
-              column(
-                width = 12,
-                box(
-                  width = 12,
-                  pickerInput(
-                    inputId = "dash_nt_board_select", 
-                    width = "100%",
-                    choices = dash_nt_codigos,
-                    label = "Nota técnica")),
-                box(
-                  width = 12,
-                  title = "Nota técnica:",
-                  fluidRow(
-                    column(
-                      width = 5,
-                      DT::dataTableOutput(outputId = "dash_nt_board_datos")),
-                    column(
-                      width = 7,
-                      ggiraph::ggiraphOutput(
-                        outputId = "dash_nt_plot_agrupadores",
-                        width = "100%",
-                        height = "100%")))),
-                box(
-                  title = "Inclusiones:",
-                  width = 6,
-                  DT::dataTableOutput(outputId = "dash_nt_inclusiones")),
-                box(
-                  title = "Exclusiones:",
-                  width = 6,
-                  DT::dataTableOutput(outputId = "dash_nt_exclusiones"))))),
-          tabItem(
-            tabName = "dash_nt_comparar",
-            fluidRow(
-              column(
-                width = 12,
-                box(
-                  width = 4,
-                  pickerInput(
-                    inputId = "dash_nt_comparar_select",
-                    width = "100%",
-                    choices = dash_nt_codigos, 
-                    label = "Nota técnica"),
-                  pickerInput(
-                    inputId = "dash_nt_comparar_agrupador",
-                    width = "100%",
-                    choices = c("NA"), 
-                    label = "Columna de agrupador"),
-                  actionButton(
-                    inputId = "dash_nt_comparar_exe",
-                    "Ejecutar",
-                    width = "100%")),
-                box(
-                  width = 8,
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_totales",
-                    width = "100%",
-                    height = "100%")))),
-            fluidRow(
-              column(
-                width = 12,
-                box(
-                  width = 12, 
-                  title = "Resultados a mes",
-                  fluidRow(
-                    column(
-                      width = 6,
-                      tags$h3("Totales RIPS"),
-                      DT::dataTableOutput(
-                        outputId = "dash_nt_comparar_total_mes_rips",
-                        width = "100%")),
-                    column(
-                      width = 6,
-                      tags$h3("Totales CME"),
-                      DT::dataTableOutput(
-                        outputId = "dash_nt_comparar_total_mes_cme",
-                        width = "100%")))),
-                box(
-                  width = 12,
-                  title = "Resultados por agrupador",
-                  fluidRow(
-                    column(
-                      width = 6,
-                      tags$h3("Totales RIPS"),
-                      DT::dataTableOutput(
-                        outputId = "dash_nt_comparar_total_agrup_rips",
-                        width = "100%")),
-                    column(
-                      width = 6,
-                      tags$h3("Totales CME"),
-                      DT::dataTableOutput(
-                        outputId = "dash_nt_comparar_total_agrup_cme",
-                        width = "100%")))),
-                box(
-                  width = 12, 
-                  title = "Suma de valor a mes",
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_desc_sumas",
-                    width = "100%")),
-                box(
-                  width = 12, 
-                  title = "Frecuencias a mes",
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_desc_frecs",
-                    width = "100%")),
-                box(
-                  width = 12, 
-                  title = "Diferencias de valor con RIPS",
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_diferencias_rips_sumas",
-                    width = "100%"),
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_diferencias_rips_percent", 
-                    width = "100%")),
-                box(
-                  width = 12,
-                  title = "Diferencias de valor con CME",
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_diferencias_cme_sumas",
-                    width = "100%"),
-                  DT::dataTableOutput(
-                    outputId = "dash_nt_comparar_diferencias_cme_percent",
-                    width = "100%"))))),
-          
           # Paquetes ---------------------------------------------------------
           
           tabItem(
