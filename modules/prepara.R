@@ -14,7 +14,7 @@ prepara_ui <- function(id) {
         inputId = ns("file_type"),
         label = "Tipo de archivo",
         inline = TRUE, 
-        choices = c("feather", "csv", "xlsx")),
+        choices = c("feather", "csv", "xlsx", "almacenado en la nube")),
       actionButton(
         inputId = ns("file_options_open"),
         label = "Opciones")
@@ -85,7 +85,8 @@ prepara_server <- function(input, output, session, nombre_id) {
           value_decimal = opciones$value_decimal,
           value_delimitador = opciones$value_delimitador,
           value_range = opciones$value_range,
-          value_sheet = opciones$value_sheet),
+          value_sheet = opciones$value_sheet,
+          value_file = opciones$value_file),
         footer = actionButton(
           inputId = ns("datos_opciones_guardar"),
           label = "Guardar")
@@ -98,10 +99,29 @@ prepara_server <- function(input, output, session, nombre_id) {
     opciones$value_delimitador <- input$value_delimitador
     opciones$value_sheet <- input$value_sheet
     opciones$value_range <- input$value_range
+    opciones$value_file <- input$value_file
     removeModal(session = session)
   })
   
   observeEvent(input$file_load, {
+    if (input$file_type == "almacenado en la nube" &&
+        !is.null(opciones$value_file)) {
+      datos$data_original <- as.data.table(
+        read_feather(
+          path = paste0("datos/saved/", opciones$value_file))
+      )
+      datos$data_original[, "FECHA_PRESTACION" := as.Date(
+        FECHA_PRESTACION, 
+        format = input$formato_fecha)]
+      datos$data_original <- datos$data_original[
+        FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
+          FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+      datos$data_table <- datos$data_original
+      datos$valores_unicos <- lapply(datos$data_table, unique)
+      datos$colnames <- colnames(datos$data_table)
+      columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+      datos$colnames_num <- datos$colnames[columnas_num]
+    }
     if (!is.null(input$file)) {
       if (input$file_type == "csv") {
         datos$data_original <- fread(
@@ -216,7 +236,8 @@ prepara_server <- function(input, output, session, nombre_id) {
 # Funciones --------------------------------------------------------------------
 
 datos_opciones_ui <- function(
-  id, file_type, value_decimal, value_delimitador, value_sheet, value_range) {
+  id, file_type, value_decimal, value_delimitador, value_sheet, value_range,
+  value_file) {
   
   if (file_type == "csv") {
     return(
@@ -233,6 +254,15 @@ datos_opciones_ui <- function(
         id = id,
         value_sheet = value_sheet,
         value_range = value_range
+      )
+    )
+  }
+  
+  if (file_type == "almacenado en la nube") {
+    return(
+      datos_opciones_cloud_ui(
+        id = id,
+        value_file = value_file
       )
     )
   }
@@ -280,6 +310,20 @@ datos_opciones_xlsx_ui <- function(id, value_sheet, value_range) {
       placeholder = "A1:A1",
       value = value_range
     ),
+  )
+  
+}
+
+datos_opciones_cloud_ui <- function(id, value_file) {
+  ns <- NS(id)
+  
+  tagList(
+    selectizeInput(
+      inputId = ns("value_file"),
+      choices = list.files("datos/saved/"),
+      label = "Archivo:",
+      selected = value_file
+    )
   )
   
 }

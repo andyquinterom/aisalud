@@ -510,7 +510,6 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             
             if (test_episodio) {
               output[[paste0("escenario_episodio_", i)]] <- DT::renderDataTable(
-                server = FALSE,
                 clean_datatable(
                   nota_tecnica$escenarios[["episodio"]][[i]],
                   columnDefs = list(
@@ -523,7 +522,6 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             }
             if (test_factura) {
               output[[paste0("escenario_factura_", i)]] <- DT::renderDataTable(
-                server = FALSE,
                 clean_datatable(
                   nota_tecnica$escenarios[["factura"]][[i]],
                   columnDefs = list(
@@ -536,7 +534,6 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             }
             if (test_paciente) {
               output[[paste0("escenario_paciente_", i)]] <- DT::renderDataTable(
-                server = FALSE,
                 clean_datatable(
                   nota_tecnica$escenarios[["paciente"]][[i]],
                   columnDefs = list(
@@ -549,7 +546,6 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             }
             if (test_prestacion) {
               output[[paste0("escenario_prestacion_", i)]] <- DT::renderDataTable(
-                server = FALSE,
                 clean_datatable(
                   nota_tecnica$escenarios[["prestacion"]][[i]],
                   columnDefs = list(
@@ -679,8 +675,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
       )
   })
   
-  output$nota_tecnica_junta <- DT::renderDataTable(
-    server = FALSE, {
+  output$nota_tecnica_junta <- DT::renderDataTable({
       if (nrow(nota_tecnica$tabla_junta) == 0 ||
           "CM" %notin% names(nota_tecnica$tabla_junta)) {
         datatable(data = data.table())
