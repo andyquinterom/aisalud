@@ -34,15 +34,15 @@ shinyUI(
             text = "Prepara",
             icon = icon("cog", lib = "font-awesome"),
             tabName = "prepara"),
+          # menuItem(
+          #   text = tags$b("- Modulos -")
+          # ),
+          # menuItem(
+          #   text = "Descriptiva clásica",
+          #   tabName = "descriptiva_modulo",
+          #    icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = tags$b("- Modulos -")
-          ),
-          menuItem(
-            text = "Descriptiva clásica",
-            tabName = "descriptiva_modulo",
-             icon = icon("table", lib = "font-awesome")),
-          menuItem(
-            text = "Descriptiva con episodios",
+            text = "Descriptiva",
             tabName = "episodios_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
@@ -50,7 +50,7 @@ shinyUI(
             tabName = "nota_tecnica_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = "Outliers modulo",
+            text = "Outliers",
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
           menuItem(
@@ -65,67 +65,67 @@ shinyUI(
             menuSubItem(
               text = "Comparación",
               tabName = "seguimiento_modulo_comparar")
-          ),
-          menuItem(
-            text = tags$b("- Normal -")
-          ),
-          menuItem(
-            text = "Opciones",
-            icon = icon("cog", lib = "font-awesome"),
-            tabName = "opciones"),
-          menuItem(
-            text = "Descriptiva",
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptiva_eventos"),
-          menuItem(
-            text = "Episodios", 
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "episodios"),
-          menuItem(
-            text = "Pacientes Outliers",
-            icon = icon("search-minus", lib = "font-awesome"),
-            tabName = "outliers"),
-          menuItem(
-            text = "Gráficos",
-            icon = icon("chart-area", lib = "font-awesome"), 
-            tabName = "graficos",
-            menuSubItem(text = "Histogramas y barras",
-                        tabName = "histogramas_barras"), 
-            menuSubItem(text = "Caja de bigotes", 
-                        tabName = "cajadebigotes")),
-          menuItem(
-            text = "Nota técnica",
-            icon = icon("search-dollar", lib = "font-awesome"),
-            tabName = "nota_tecnica"),
-          (
-          if (PAQUETES_INCLUIDO) {
-            menuItem(
-              text = "Paquetes",
-              icon = icon("chart-pie", lib = "font-awesome"),
-              tabName = "paquetes",
-              radioButtons("paquetes_valor_costo", 
-                           "Graficar:",
-                           choices = c("VALOR", "COSTO")),
-              actionButton("paquetes_actualizar", "Actualizar"),
-              menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
-              menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
-              tags$br()
-            )
-          }
-          ),
-          (
-          if (PRICING_INCLUIDO) {
-            menuItem(
-              text = "Pricing", 
-              icon = icon("tags", lib = "font-awesome"),
-              tabName = "pricingOpciones", 
-              tags$br(),
-              actionButton("pricing_actualizar", "Actualizar"),
-              menuSubItem(text = "Informes", tabName = "pricing"),
-              tags$br()
-            )
-            }
           )
+          # menuItem(
+          #   text = tags$b("- Normal -")
+          # ),
+          # menuItem(
+          #   text = "Opciones",
+          #   icon = icon("cog", lib = "font-awesome"),
+          #   tabName = "opciones"),
+          # menuItem(
+          #   text = "Descriptiva",
+          #   icon = icon("table", lib = "font-awesome"),
+          #   tabName = "descriptiva_eventos"),
+          # menuItem(
+          #   text = "Episodios", 
+          #   icon = icon("table", lib = "font-awesome"),
+          #   tabName = "episodios"),
+          # menuItem(
+          #   text = "Pacientes Outliers",
+          #   icon = icon("search-minus", lib = "font-awesome"),
+          #   tabName = "outliers"),
+          # menuItem(
+          #   text = "Gráficos",
+          #   icon = icon("chart-area", lib = "font-awesome"), 
+          #   tabName = "graficos",
+          #   menuSubItem(text = "Histogramas y barras",
+          #               tabName = "histogramas_barras"), 
+          #   menuSubItem(text = "Caja de bigotes", 
+          #               tabName = "cajadebigotes")),
+          # menuItem(
+          #   text = "Nota técnica",
+          #   icon = icon("search-dollar", lib = "font-awesome"),
+          #   tabName = "nota_tecnica"),
+          # (
+          # if (PAQUETES_INCLUIDO) {
+          #   menuItem(
+          #     text = "Paquetes",
+          #     icon = icon("chart-pie", lib = "font-awesome"),
+          #     tabName = "paquetes",
+          #     radioButtons("paquetes_valor_costo", 
+          #                  "Graficar:",
+          #                  choices = c("VALOR", "COSTO")),
+          #     actionButton("paquetes_actualizar", "Actualizar"),
+          #     menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
+          #     menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
+          #     tags$br()
+          #   )
+          # }
+          # ),
+          # (
+          # if (PRICING_INCLUIDO) {
+          #   menuItem(
+          #     text = "Pricing", 
+          #     icon = icon("tags", lib = "font-awesome"),
+          #     tabName = "pricingOpciones", 
+          #     tags$br(),
+          #     actionButton("pricing_actualizar", "Actualizar"),
+          #     menuSubItem(text = "Informes", tabName = "pricing"),
+          #     tags$br()
+          #   )
+          #   }
+          # )
         )
       ),
       rightsidebar = rightSidebar(

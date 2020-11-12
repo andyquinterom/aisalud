@@ -61,6 +61,8 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
     datafinal <- rbind(datafinal, datatemp)
   }
   
+  setorder(datafinal, -VALOR)
+  
   return(datafinal)
 
 }
