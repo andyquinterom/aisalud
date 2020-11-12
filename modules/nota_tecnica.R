@@ -459,6 +459,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         )
         
         nota_tecnica$descriptiva_escenarios <- descriptiva_escenarios
+        nota_tecnica$descriptiva_escenarios[
+          sapply(nota_tecnica$descriptiva_escenarios, is.null)] <- NULL
         
         },
       error = function(e) {
