@@ -1,5 +1,3 @@
-require(data.table)
-
 agregar <- function(data, columna_valor, columnas, columna_suma,
                     prestaciones) {
 
