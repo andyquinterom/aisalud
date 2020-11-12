@@ -79,8 +79,43 @@ nota_tecnica_ui <- function(id) {
           label = "Juntar", 
           class = "nota_tecnica_juntar_btn")
       ),
-      uiOutput(
-        outputId = ns("nota_tecnica_escenarios")
+      fluidRow(
+        column(
+          width = 12,
+          box(
+            width = 12,
+            div(
+              style = "text-align: center;",
+              column(
+                width = 4,
+                tags$h4("Escenarios a mes")
+                ),
+              column(
+                width = 2,
+                tags$h4("Media")
+              ),
+              column(
+                width = 2,
+                tags$h4("P75")
+              ),
+              column(
+                width = 2,
+                tags$h4("Media truncada 10%")
+              ),
+              column(
+                width = 2,
+                tags$h4("Media truncada 5%")
+              )
+            ),
+            div(
+              class = "escenarios_inline_div",
+              column(
+                width = 4,
+                uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
+              uiOutput(outputId = ns("nota_tecnica_escenarios"))
+            )
+          )
+        )
       )
     )
   )
@@ -264,6 +299,48 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         }
         nota_tecnica_cols_sep <- input$nota_tecnica_cols_sep
         
+        output$nota_tecnica_escenarios_nombres <- renderUI({
+          
+          tagList(
+            if (test_episodio) {
+              tagList(
+                tags$h4("Episodio"),
+                DT::dataTableOutput(
+                  outputId = ns(paste0("nombres_episodio"))
+                ),
+                tags$br()
+              )
+            },
+            if (test_factura) {
+              tagList(
+                tags$h4("Factura"),
+                DT::dataTableOutput(
+                  outputId = ns(paste0("nombres_factura"))
+                ),
+                tags$br()
+              )
+            },
+            if (test_paciente) {
+              tagList(
+                tags$h4("Paciente"),
+                DT::dataTableOutput(
+                  outputId = ns(paste0("nombres_paciente"))
+                ),
+                tags$br()
+              )
+            },
+            if (test_prestacion) {
+              tagList(
+                tags$h4("Prestación"),
+                DT::dataTableOutput(
+                  outputId = ns(paste0("nombres_prestacion"))
+                )
+              )
+            }
+          )
+          
+        })
+        
         output$nota_tecnica_escenarios <- renderUI({
           
           nombres_escenarios <- c(
@@ -276,12 +353,12 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           lapply(
             X = 1:4,
             FUN = function(i) {
-              box(
+              column(
                 title = tags$h1(nombres_escenarios[i]),
-                width = 6,
+                width = 2,
                 if (test_episodio) {
                   tagList(
-                    tags$h4("Episodio"),
+                    tags$h4(tags$br()),
                     DT::dataTableOutput(
                       outputId = ns(paste0("escenario_episodio_", i))
                     ),
@@ -290,7 +367,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                 },
                 if (test_factura) {
                   tagList(
-                    tags$h4("Factura"),
+                    tags$h4(tags$br()),
                     DT::dataTableOutput(
                       outputId = ns(paste0("escenario_factura_", i))
                     ),
@@ -299,7 +376,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                 },
                 if (test_paciente) {
                   tagList(
-                    tags$h4("Paciente"),
+                    tags$h4(tags$br()),
                     DT::dataTableOutput(
                       outputId = ns(paste0("escenario_paciente_", i))
                     ),
@@ -308,12 +385,12 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                 },
                 if (test_prestacion) {
                   tagList(
-                    tags$h4("Prestación"),
+                    tags$h4(tags$br()),
                     DT::dataTableOutput(
                       outputId = ns(paste0("escenario_prestacion_", i))
                     )
                   )
-                },
+                }
               )
             }
           )
@@ -370,6 +447,18 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           test_episodio, test_factura, test_paciente, test_prestacion
         )
 
+        targets_invisible <- c(
+          0:(length(c(nota_tecnica_cols,nota_tecnica_cols_sep))-1),
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)) + 1,
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)) + 3,
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)) + 4)
+        
+        targets_visible <- c(
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)),
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)) + 2,
+          length(c(nota_tecnica_cols,nota_tecnica_cols_sep)) + 4
+        )
+        
         lapply(
           X = 1:4,
           FUN = function(i) {
@@ -388,6 +477,34 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                     meses = input$nota_tecnica_meses,
                     escenario = i
                   )
+                if (i == 1) {
+                  output[[paste0("nombres_", x)]] <- DT::renderDataTable({
+                    datatable(
+                      data = nota_tecnica$escenarios[[x]][[1]],
+                      class = "display nowrap",
+                      colnames = c(
+                        "Frecuencia" = 'Frecuencia a mes',
+                        "per capita" = 'Frecuencia per capita'
+                      ),
+                      rownames = FALSE, 
+                      options = list(
+                        ordering = F,
+                        scrollX = TRUE,
+                        pageLength = 1000,
+                        dom = "t",
+                        columnDefs = list(
+                          list(
+                            targets = targets_visible,
+                            visible = FALSE))
+                      )
+                    ) %>%
+                      formatStyle(
+                        columns = 1:ncol(nota_tecnica$escenarios[[x]][[1]]),
+                        fontSize = '95%',
+                        "white-space"="nowrap"
+                      )
+                  })
+                }
               }
             )
             
@@ -398,10 +515,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica$escenarios[["episodio"]][[i]],
                   columnDefs = list(
                     list(
-                      targets = c(
-                        length(c(
-                          nota_tecnica_cols,
-                          nota_tecnica_cols_sep)) + 4),
+                      targets = targets_invisible,
                       visible = FALSE))
                 ) %>%
                   formato_escenarios()
@@ -414,10 +528,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica$escenarios[["factura"]][[i]],
                   columnDefs = list(
                     list(
-                      targets = c(
-                        length(c(
-                          nota_tecnica_cols,
-                          nota_tecnica_cols_sep)) + 4),
+                      targets = targets_invisible,
                       visible = FALSE))
                 ) %>%
                   formato_escenarios()
@@ -430,10 +541,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica$escenarios[["paciente"]][[i]],
                   columnDefs = list(
                     list(
-                      targets = c(
-                        length(c(
-                          nota_tecnica_cols,
-                          nota_tecnica_cols_sep)) + 4),
+                      targets = targets_invisible,
                       visible = FALSE))
                 ) %>%
                   formato_escenarios()
@@ -446,10 +554,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica$escenarios[["prestacion"]][[i]],
                   columnDefs = list(
                     list(
-                      targets = c(
-                        length(c(
-                          nota_tecnica_cols,
-                          nota_tecnica_cols_sep)) + 4),
+                      targets = targets_invisible,
                       visible = FALSE))
                 ) %>%
                   formato_escenarios()
@@ -477,6 +582,10 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   })
   
   observeEvent(input$nota_tecnica_juntar, {
+    
+    nota_tecnica$cols_sep <- input$nota_tecnica_cols_sep
+    nota_tecnica$cols <- input$nota_tecnica_cols
+    
     tryCatch(
       expr = {
         rows_selected <- NULL
@@ -581,6 +690,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           rownames = FALSE, 
           options = list(
             ordering = T,
+            scrollY = "50vh",
             scrollX = TRUE,
             pageLength = 1000,
             dom = "ft"
@@ -640,11 +750,11 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
   
   output$nota_tecnica_warnings <- renderValueBox({
     if (nrow(nota_tecnica$tabla_junta >= 1) &&
-        c(input$nota_tecnica_cols, input$nota_tecnica_cols_sep) %in%
-        names(nota_tecnica$tabla_junta)) {
+        all(c(nota_tecnica$cols, nota_tecnica$cols_sep) %in%
+            names(nota_tecnica$tabla_junta))) {
       
       repetidos <-sum(duplicated(nota_tecnica$tabla_junta[
-        , c(input$nota_tecnica_cols, input$nota_tecnica_cols_sep),
+        , c(nota_tecnica$cols, nota_tecnica$cols_sep),
         with = FALSE]))
       
       if (repetidos == 0) {
@@ -709,6 +819,10 @@ clean_datatable <- function(data, length = 1000, columnDefs = NULL) {
   return(
     datatable(
       data = data,
+      colnames = c(
+        "Valor" = 'Valor a mes'
+      ),
+      class = "display nowrap",
       rownames = FALSE, 
       options = list(
         ordering = F,
@@ -723,16 +837,21 @@ clean_datatable <- function(data, length = 1000, columnDefs = NULL) {
 
 formato_escenarios <- function(x) {
   brks <- c(1:3)
-  clrs <- round(seq(255, 40, length.out = 4), 0) %>%
+  clrs <- round(seq(255, 90, length.out = 4), 0) %>%
     {paste0("rgb(255,", ., ",", ., ")")}
   return(
     x %>%
       formatCurrency(
-        c("CM", "Valor a mes"),
+        c("CM", "Valor"),
         dec.mark = ",", 
         mark = ".", 
         currency = "$", 
         digits = 0
+      ) %>%
+      formatStyle(
+        columns = 1:ncol(x[["x"]][["data"]]),
+        fontSize = '95%',
+        "white-space"="nowrap"
       ) %>%
       formatStyle(
         "Coe",

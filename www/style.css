@@ -55,3 +55,21 @@ div.ui-sortable {
   width: 100%;
   border: 0;
 }
+
+
+div.escenarios_inline_div div.col-sm-2 {
+  padding-right: 5px !important;
+  padding-left: 5px !important;
+}
+
+div.escenarios_inline_div div.col-sm-4 {
+  padding: 0 !important; 
+}
+
+div.escenarios_inline_div div.dataTables_scrollBody {
+  overflow-x: scroll !important;
+}
+
+div.escenarios_inline_div td {
+  padding: 0 3px 0 3px !important;
+}
