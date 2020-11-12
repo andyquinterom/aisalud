@@ -15,14 +15,19 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
                       "Frec" = length(VALOR)), by = c(columna)]  
   data <- data[Frec >= frecuencia]
   datafinal <- data.table()  
-  for (i in unique(data[[columna]])) {
-    datatemp <- data.table()
-    datatemp <- datapacientes[get(columna) == i]
-    condicion <- data[get(columna) == i, Condicion]
-    datatemp <- datatemp[VALOR >= condicion]
-    datafinal <- rbind(datafinal, datatemp)
-  }
+  lapply(
+    X = unique(data[[columna]]),
+    FUN = function(i) {
+      datatemp <<- data.table()
+      datatemp <<- datapacientes[get(columna) == i]
+      condicion <<- data[get(columna) == i, Condicion]
+      datatemp <<- datatemp[VALOR >= condicion]
+      datafinal <<- rbind(datafinal, datatemp)
+    }
+  )
 
+  setorder(datafinal, -VALOR)
+  
   return(datafinal)
   
 }

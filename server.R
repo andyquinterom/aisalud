@@ -680,7 +680,8 @@ shinyServer(function(input, output, session) {
     module = outliers_server,
     id = "outliers_modulo",
     datos = datos_modulos,
-    opciones = opciones
+    opciones = opciones,
+    nombre_id = "outliers_modulo"
   )
   
   # Outliers -----------------------------------------------------------------
