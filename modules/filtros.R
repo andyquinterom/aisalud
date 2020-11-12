@@ -39,7 +39,7 @@ filtros_server <- function(input, output, session, datos) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_char_columna", x, sep = "_"),
-          choices = c("NA", datos$colnames)
+          choices = c("Ninguno", datos$colnames)
         )
       }
     )
@@ -49,7 +49,7 @@ filtros_server <- function(input, output, session, datos) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_num_columna", x, sep = "_"),
-          choices = c("NA", datos$colnames_num)
+          choices = c("Ninguno", datos$colnames_num)
         )
       }
     )
@@ -74,7 +74,7 @@ filtros_server <- function(input, output, session, datos) {
     X = 1:n_num,
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_num_columna_", i)]], {
-        if (input[[paste0("filtro_num_columna_", i)]] != "NA") {
+        if (input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_min_", i),
@@ -103,7 +103,7 @@ filtros_server <- function(input, output, session, datos) {
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_num_min_", i)]], {
         if (is.na(input[[paste0("filtro_num_min_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_min_", i),
@@ -117,7 +117,7 @@ filtros_server <- function(input, output, session, datos) {
       })
       observeEvent(input[[paste0("filtro_num_max_", i)]], {
         if (is.na(input[[paste0("filtro_num_max_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_max_", i),
@@ -139,7 +139,7 @@ filtros_server <- function(input, output, session, datos) {
       lapply(
         X = 1:n_char,
         FUN = function(i) {
-          return(input[[paste0("filtro_char_columna_", i)]] != "NA")
+          return(input[[paste0("filtro_char_columna_", i)]] != "Ninguno")
         }
       )
     )
@@ -170,7 +170,7 @@ filtros_server <- function(input, output, session, datos) {
       lapply(
         X = 1:n_char,
         FUN = function(i) {
-          return(input[[paste0("filtro_num_columna_", i)]] != "NA")
+          return(input[[paste0("filtro_num_columna_", i)]] != "Ninguno")
         }
       )
     )
@@ -228,8 +228,8 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
       pickerInput(
         inputId = ns(paste("filtro_char_columna", position, sep = "_")),
         label = NULL,
-        choices = "NA",
-        selected = "NA",
+        choices = "Ninguno",
+        selected = "Ninguno",
         multiple = FALSE
       )),
     column(
@@ -246,8 +246,8 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
       selectizeInput(
         inputId = ns(paste("filtro_char_valor", position, sep = "_")),
         label = NULL,
-        choices = "NA",
-        selected = "NA",
+        choices = "Ninguno",
+        selected = "Ninguno",
         multiple = TRUE
       ))
   )
@@ -273,7 +273,7 @@ filtro_numerico_ui_fila <- function(ns, position = 1) {
       width = 5,
       pickerInput(
         inputId = ns(paste("filtro_num_columna", position, sep = "_")),
-        choices = c("NA"),
+        choices = c("Ninguno"),
         width = "100%")),
     column(
       width = 2
@@ -308,7 +308,23 @@ filtro_numerico_ui_insert <- function(ns, n) {
   
   filtros_filas <- list()
   
-  for (i in 1:n) {
+  filtros_filas[[1]] <-  fluidRow(
+    column(width = 7),
+    column(
+      width = 5,
+      fluidRow(
+        column(
+          width = 6,
+          tags$p("Mínimo", style = "font-size: 100%;")),
+        column(
+          width = 6,
+          tags$p("Máximo", style = "font-size: 100%;"))
+      )
+    )
+  )
+    
+  
+  for (i in 1:n + 1) {
     filtros_filas[[i]] <- filtro_numerico_ui_fila(
       ns = ns, 
       position = i)
