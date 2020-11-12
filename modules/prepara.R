@@ -40,7 +40,7 @@ prepara_ui <- function(id) {
       fluidRow(
         column(
           width = 2,
-          tags$h3("Preview:")),
+          tags$h3("Prevista:")),
         column(
           width = 10,
           br(),
