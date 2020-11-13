@@ -324,7 +324,7 @@ filtro_numerico_ui_insert <- function(ns, n) {
   )
     
   
-  for (i in 1:n + 1) {
+  for (i in 1:n) {
     filtros_filas[[i]] <- filtro_numerico_ui_fila(
       ns = ns, 
       position = i)
