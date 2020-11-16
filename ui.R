@@ -65,6 +65,18 @@ shinyUI(
             menuSubItem(
               text = "Comparación",
               tabName = "seguimiento_modulo_comparar")
+          ),
+          menuItem(
+            text = "Paquetes",
+            icon = icon("chart-pie", lib = "font-awesome"),
+            tabName = "paquetes_modulo",
+            radioButtons("paquetes_valor_costo",
+                         "Graficar:",
+                         choices = c("VALOR", "COSTO")),
+            actionButton("paquetes_actualizar", "Actualizar"),
+            menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
+            menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
+            tags$br()
           )
           # menuItem(
           #   text = tags$b("- Normal -")
@@ -192,6 +204,10 @@ shinyUI(
             if (NT_INCLUIDO) {
               seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
             }
+          ),
+          tabItem(
+            tabName = "paquetes_modulo_dashboard",
+            paquetes_dashboard_ui("paquetes_modulo_indice")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(

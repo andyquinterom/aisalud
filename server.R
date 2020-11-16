@@ -1381,6 +1381,18 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # Modulo paquete -------------------------------------------------
+  
+  callModule(
+    module = paquetes_dashboard_server,
+    id = "paquetes_modulo_indice",
+    paquetes = paquetes,
+    paquetes_ref_cups = paquetes_ref_cups,
+    paquetes_ref = paquetes_ref,
+    paquetes_paquetes = paquetes_paquetes,
+    paquetes_cups = paquetes_cups
+  )
+  
   # Paquetes ----------------------------------------------------------------
   
   output$paquetes_indice_tabla <- DT::renderDataTable(

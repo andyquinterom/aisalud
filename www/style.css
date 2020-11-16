@@ -5,6 +5,10 @@ div.filtros_char div.selectize-input {
 
 div[class^="tooltip_svg_"] {
   padding: 0 0 0 0 ;
+  height: 0 !important;
+  width: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
 }
 
 html {
