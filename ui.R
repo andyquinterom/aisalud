@@ -144,7 +144,6 @@ shinyUI(
         width = 700,
         rightSidebarTabContent(
           id = "filtros_sideBar",
-          icon = "filter",
           active = TRUE,
           filtros_ui("filtros_sideBar")
         )

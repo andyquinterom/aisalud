@@ -14,21 +14,20 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
                                              na.rm = TRUE),
                       "Frec" = length(VALOR)), by = c(columna)]  
   data <- data[Frec >= frecuencia]
-  datafinal <- data.table()  
-  lapply(
-    X = unique(data[[columna]]),
-    FUN = function(i) {
-      datatemp <<- data.table()
-      datatemp <<- datapacientes[get(columna) == i]
-      condicion <<- data[get(columna) == i, Condicion]
-      datatemp <<- datatemp[VALOR >= condicion]
-      datafinal <<- rbind(datafinal, datatemp)
-    }
+  data <- merge.data.table(
+    x = datapacientes,
+    y = data,
+    by = columna
   )
-
-  setorder(datafinal, -VALOR)
+  data[, "DIFERENCIA" := Condicion - VALOR]
+  data <- data[DIFERENCIA < 0]
+  setorder(data, -VALOR)
   
-  return(datafinal)
+  data <- data[, list(get(columna), NRO_IDENTIFICACION, VALOR)]
+  
+  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR"))
+  
+  return(data)
   
 }
 
@@ -51,19 +50,28 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
       (IQR(VALOR, na.rm = TRUE)*multiplicativo), 
     "Frec" = length(VALOR)), by = c(columna)]  
   data <- data[Frec >= frecuencia]
-  datafinal <- data.table()  
-  for (i in unique(data[[columna]])) {
-    datatemp <- data.table()
-    datatemp <- datapacientes[get(columna) == i]
-    condicion1 <- data[get(columna) == i, Condicion1]
-    condicion2 <- data[get(columna) == i, Condicion2]
-    datatemp <- datatemp[!(VALOR <= condicion1 & VALOR >= condicion2)]
-    datafinal <- rbind(datafinal, datatemp)
-  }
   
-  setorder(datafinal, -VALOR)
+  data <- merge.data.table(
+    x = datapacientes,
+    y = data,
+    by = columna
+  )
   
-  return(datafinal)
+  data[, "DIFERENCIA_1" := Condicion1 - VALOR]
+  data[, "DIFERENCIA_2" := Condicion2 - VALOR]
+  
+  data <- rbind(
+    data[DIFERENCIA_1 < 0],
+    data[DIFERENCIA_2 > 0]
+  )
+  
+  setorder(data, -VALOR)
+  
+  data <- data[, list(get(columna), NRO_IDENTIFICACION, VALOR)]
+  
+  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR"))
+  
+  return(data)
 
 }
 

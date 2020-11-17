@@ -27,6 +27,28 @@ filtros_ui <- function(id) {
   )
 }
 
+filtros_pacientes_ui <- function(id) {
+  ns <- NS(id)
+  
+  tagList(
+    tags$div(
+      class = "filtros_pacientes",
+      fluidRow(
+        column(
+          width = 12,
+          selectizeInput(
+            inputId = ns("filtros_outliers"),
+            label = NULL,
+            multiple = TRUE,
+            width = "100%",
+            choices = NULL
+          )
+        )
+      )
+    )
+  )
+}
+
 filtros_server <- function(input, output, session, datos) {
 
   n_num = 3
@@ -52,6 +74,11 @@ filtros_server <- function(input, output, session, datos) {
           choices = c("Ninguno", datos$colnames_num)
         )
       }
+    )
+    updateSelectizeInput(
+      session = session,
+      inputId = "filtros_outliers",
+      choices = datos$valores_unicos[["NRO_IDENTIFICACION"]]
     )
   })
   
@@ -197,10 +224,17 @@ filtros_server <- function(input, output, session, datos) {
     ),
     collapse = "")
     
+    inputs_filtros_pacientes_arguments <- ifelse(
+      test = !is.null(input$filtros_outliers),
+      yes = "[NRO_IDENTIFICACION %notin% input$filtros_outliers]",
+      no = "[]"
+    )
+    
     filtros_parse <- paste0(
       "datos$data_table",
       inputs_filtros_char_arguments,
-      inputs_filtros_num_arguments
+      inputs_filtros_num_arguments,
+      inputs_filtros_pacientes_arguments
     )
 
 

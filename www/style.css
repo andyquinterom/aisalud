@@ -3,6 +3,17 @@ div.filtros_char div.selectize-input {
     overflow-y: auto;
 }
 
+h3.control-sidebar-heading {
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+aside.control-sidebar.control-sidebar-dark {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
 div[class^="tooltip_svg_"] {
   padding: 0 0 0 0 ;
   height: 0 !important;
