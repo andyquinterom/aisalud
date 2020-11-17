@@ -91,7 +91,8 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
   datos <- reactiveValues(
     "data_table" = data.table(),
     "data_original" = data.table(),
-    "colnames" = NULL
+    "colnames" = NULL,
+    "pacientes_excluir" = "Ninguno"
   )
   
   observeEvent(input$file_options_open, {
