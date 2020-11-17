@@ -4,7 +4,7 @@ prepara_ui <- function(id) {
   
   tagList(
     box(
-      width = 12,
+      width = 6,
       fileInput(
         inputId = ns("file"),
         label = "", 
@@ -20,7 +20,7 @@ prepara_ui <- function(id) {
         label = "Opciones")
       ),
     box(
-      width = 12,
+      width = 6,
       dateRangeInput(
         inputId = ns("fecha_rango"),
         label = "Fechas:",
@@ -50,7 +50,12 @@ prepara_ui <- function(id) {
       DT::dataTableOutput(
         outputId = ns("preview"),
         width = "100%")
-      )
+      ),
+    box(
+      width = 12,
+      height = "300px",
+      plotOutput(outputId = ns("valor_con_tiempo"), height = "280px")
+    )
     )
 }
 
@@ -177,6 +182,23 @@ prepara_server <- function(input, output, session, nombre_id) {
         columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
         datos$colnames_num <- datos$colnames[columnas_num]
       }
+    }
+  })
+  
+  output$valor_con_tiempo <- renderPlot({
+    if(!is.null(datos$colnames)) {
+      columnas <- intersect(
+        x = c(
+          "VALOR",
+          "COSTO"),
+        y = names(datos$data_original[1])
+      )
+      ggplot(data = datos$data_original, 
+             aes(cut(FECHA_PRESTACION, "1 month"), VALOR)) +
+        geom_col() +
+        xlab("Fecha") +
+        scale_x_discrete(labels = function(x) mes_spanish(month(x))) +
+        scale_y_continuous(labels = formatAsCurrency)
     }
   })
   
