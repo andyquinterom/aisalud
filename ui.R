@@ -70,10 +70,6 @@ shinyUI(
             text = "Paquetes",
             icon = icon("chart-pie", lib = "font-awesome"),
             tabName = "paquetes_modulo",
-            radioButtons("paquetes_valor_costo",
-                         "Graficar:",
-                         choices = c("VALOR", "COSTO")),
-            actionButton("paquetes_actualizar", "Actualizar"),
             menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
             menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
             tags$br()
@@ -205,8 +201,12 @@ shinyUI(
             }
           ),
           tabItem(
+            tabName = "paquetes_modulo_indice",
+            paquetes_indice_ui("paquetes_modulo_indice")
+          ),
+          tabItem(
             tabName = "paquetes_modulo_dashboard",
-            paquetes_dashboard_ui("paquetes_modulo_indice")
+            paquetes_dashboard_ui("paquetes_modulo_dashboard")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
