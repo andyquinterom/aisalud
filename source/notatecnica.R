@@ -66,7 +66,7 @@ crear_notatecnica_escenarios <- function(
 }
 
 crear_notatecnica <- function(x = NULL, columnas, poblacion = 1, meses = 1) {
-  x <- as.data.table(x)
+  x <- copy(x)
   frecP25 <- quantile(x$Frecuencia, probs = 0.25)/meses
   notatecnica <- x[, list(
     "Primer escenario P75" = round0(P75*Frecuencia),
@@ -136,6 +136,6 @@ crear_notatecnica <- function(x = NULL, columnas, poblacion = 1, meses = 1) {
     "CME" = round0(Media)),
     by = c(columnas)]
   
-  return(as.data.table(notatecnica))
+  return(notatecnica)
 
 }

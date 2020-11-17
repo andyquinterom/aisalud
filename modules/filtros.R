@@ -28,7 +28,7 @@ filtros_ui <- function(id) {
   )
 }
 
-filtros_server <- function(input, output, session, datos) {
+filtros_server <- function(input, output, session, datos, opciones) {
 
   n_num = 3
   n_char = 5

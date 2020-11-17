@@ -5,7 +5,7 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
   setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR"))
   data$VALOR <- numerize(data$VALOR)
-  data <- data.table(data, key= 'NRO_IDENTIFICACION')
+  data <- data.table(data, key = 'NRO_IDENTIFICACION')
   data <- data[, list("VALOR" = sum(VALOR)),
                by = c('NRO_IDENTIFICACION', columna)]
   datapacientes <- data

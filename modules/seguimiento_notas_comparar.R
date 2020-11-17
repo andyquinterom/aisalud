@@ -120,7 +120,7 @@ seguimiento_notas_comparar_ui <- function(id) {
 
 
 seguimiento_notas_comparar_server <- function(
-  input, output, session, datos, nota_tecnica, indice, nombre_id) {
+  input, output, session, datos, nota_tecnica, indice, nombre_id, opciones) {
   
   ns <- NS(nombre_id)
   
@@ -269,7 +269,7 @@ seguimiento_notas_comparar_server <- function(
             descriptiva_basica_tabla <- descriptiva_basica_jerarquia(
               data = datos$data_table,
               columnas = comparar$agrupador,
-              columna_valor = "VALOR",
+              columna_valor = opciones$valor_costo,
               columna_suma = comparar$col_valor,
               nivel_1 = input$comparar_jerarquia_nivel_1_order,
               nivel_2 = input$comparar_jerarquia_nivel_2_order,
@@ -280,7 +280,7 @@ seguimiento_notas_comparar_server <- function(
             descriptiva_basica_tabla <- descriptiva_basica(
               data = datos$data_table,
               agrupador = comparar$agrupador,
-              columna_valor = "VALOR",
+              columna_valor = opciones$valor_costo,
               columna_suma = input$descriptiva_unidades,
               prestaciones = (input$descriptiva_unidades == "prestacion"),
               columna_fecha = "FECHA_PRESTACION"

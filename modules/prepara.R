@@ -4,7 +4,8 @@ prepara_ui <- function(id) {
   
   tagList(
     box(
-      width = 6,
+      width = 5,
+      height = "240px",
       fileInput(
         inputId = ns("file"),
         label = "", 
@@ -20,7 +21,8 @@ prepara_ui <- function(id) {
         label = "Opciones")
       ),
     box(
-      width = 6,
+      width = 3,
+      height = "240px",
       dateRangeInput(
         inputId = ns("fecha_rango"),
         label = "Fechas:",
@@ -35,6 +37,21 @@ prepara_ui <- function(id) {
         value = "%d/%m/%Y"),
       actionButton(inputId = ns("file_load"), label = "Aplicar")
       ),
+    box(
+      width = 4,
+      height = "240px",
+      selectizeInput(
+        inputId = ns("columna_valor"),
+        label = "Columna de valor:",
+        width = "100%",
+        choices = "VALOR",
+        selected = "VALOR"
+      ),
+      actionButton(
+        inputId = ns("columna_valor_cambiar"),
+        label = "Cambiar"
+      )
+    ),
     box(
       width = 12,
       fluidRow(
@@ -59,12 +76,12 @@ prepara_ui <- function(id) {
     )
 }
 
-prepara_server <- function(input, output, session, nombre_id) {
+prepara_server <- function(input, output, session, opciones, nombre_id) {
   
   id <- nombre_id
   ns <- NS(id)
   
-  opciones <- reactiveValues(
+  opciones_prepara <- reactiveValues(
     "value_decimal" = ".",
     "value_delimitador" = ",",
     "value_sheet" = NULL,
@@ -87,11 +104,11 @@ prepara_server <- function(input, output, session, nombre_id) {
         datos_opciones_ui(
           id = id,
           file_type = input$file_type,
-          value_decimal = opciones$value_decimal,
-          value_delimitador = opciones$value_delimitador,
-          value_range = opciones$value_range,
-          value_sheet = opciones$value_sheet,
-          value_file = opciones$value_file),
+          value_decimal = opciones_prepara$value_decimal,
+          value_delimitador = opciones_prepara$value_delimitador,
+          value_range = opciones_prepara$value_range,
+          value_sheet = opciones_prepara$value_sheet,
+          value_file = opciones_prepara$value_file),
         footer = actionButton(
           inputId = ns("datos_opciones_guardar"),
           label = "Guardar")
@@ -100,20 +117,20 @@ prepara_server <- function(input, output, session, nombre_id) {
   })
   
   observeEvent(input$datos_opciones_guardar, {
-    opciones$value_decimal <- input$value_decimal
-    opciones$value_delimitador <- input$value_delimitador
-    opciones$value_sheet <- input$value_sheet
-    opciones$value_range <- input$value_range
-    opciones$value_file <- input$value_file
+    opciones_prepara$value_decimal <- input$value_decimal
+    opciones_prepara$value_delimitador <- input$value_delimitador
+    opciones_prepara$value_sheet <- input$value_sheet
+    opciones_prepara$value_range <- input$value_range
+    opciones_prepara$value_file <- input$value_file
     removeModal(session = session)
   })
   
   observeEvent(input$file_load, {
     if (input$file_type == "almacenado en la nube" &&
-        !is.null(opciones$value_file)) {
+        !is.null(opciones_prepara$value_file)) {
       datos$data_original <- as.data.table(
         read_feather(
-          path = paste0("datos/saved/", opciones$value_file))
+          path = paste0("datos/saved/", opciones_prepara$value_file))
       )
       datos$data_original[, "FECHA_PRESTACION" := as.Date(
         FECHA_PRESTACION, 
@@ -131,8 +148,8 @@ prepara_server <- function(input, output, session, nombre_id) {
       if (input$file_type == "csv") {
         datos$data_original <- fread(
           input = input$file$datapath, 
-          sep = opciones$value_delimitador, 
-          dec = opciones$value_decimal,
+          sep = opciones_prepara$value_delimitador, 
+          dec = opciones_prepara$value_decimal,
           data.table = TRUE)
         datos$data_original[, "FECHA_PRESTACION" := as.Date(
           FECHA_PRESTACION, 
@@ -167,8 +184,8 @@ prepara_server <- function(input, output, session, nombre_id) {
         datos$data_original <- as.data.table(
           read_excel(
             path = input$file$datapath, 
-            sheet = opciones$value_sheet, 
-            range = opciones$value_range)
+            sheet = opciones_prepara$value_sheet, 
+            range = opciones_prepara$value_range)
         )
         datos$data_original[, "FECHA_PRESTACION" := as.Date(
           FECHA_PRESTACION, 
@@ -185,25 +202,38 @@ prepara_server <- function(input, output, session, nombre_id) {
     }
   })
   
+  observeEvent(datos$colnames, {
+    updateSelectizeInput(
+      session = session,
+      inputId = "columna_valor",
+      choices = datos$colnames_num,
+      selected = "VALOR"
+    )
+  })
+  
+  observeEvent(input$columna_valor_cambiar, {
+    if (!is.null(datos$colnames)) {
+      opciones$valor_costo <- input$columna_valor
+    }
+  })
+  
   output$valor_con_tiempo <- renderPlot({
-    if(!is.null(datos$colnames)) {
-      columnas <- intersect(
-        x = c(
-          "VALOR",
-          "COSTO"),
-        y = names(datos$data_original[1])
-      )
-      ggplot(data = datos$data_original, 
-             aes(cut(FECHA_PRESTACION, "1 month"), VALOR)) +
-        geom_col() +
-        xlab("Fecha") +
-        scale_x_discrete(labels = function(x) mes_spanish(month(x))) +
-        scale_y_continuous(labels = formatAsCurrency)
+    if (!is.null(datos$colnames)) {
+      if (opciones$valor_costo %in% datos$colnames) {
+        ggplot(data = datos$data_original, 
+               aes(cut(FECHA_PRESTACION, "1 month"), 
+                   get(opciones$valor_costo))) +
+          geom_col() +
+          xlab("Fecha") +
+          ylab(opciones$valor_costo) +
+          scale_x_discrete(labels = function(x) mes_spanish(month(x))) +
+          scale_y_continuous(labels = formatAsCurrency)
+      }
     }
   })
   
   output$preview <- DT::renderDataTable({
-    if(is.null(datos$colnames)) {
+    if (is.null(datos$colnames)) {
       data.table()
     } else {
       tryCatch(
@@ -212,8 +242,7 @@ prepara_server <- function(input, output, session, nombre_id) {
             x = c(
               "NRO_IDENTIFICACION",
               "FECHA_PRESTACION",
-              "VALOR",
-              "COSTO"),
+              "VALOR"),
             y = names(datos$data_original[1])
           )
           DT::datatable(

@@ -467,7 +467,7 @@ shinyUI(
                       width = 10,
                       br(),
                       tags$a(
-                        "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: NRO_IDENTIFICACION, FECHA_PRESTACION, VALOR o COSTO.",
+                        "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: NRO_IDENTIFICACION, FECHA_PRESTACION o VALOR.",
                         style = "color: black;"))),
                   DT::dataTableOutput(
                     outputId = "preview",
