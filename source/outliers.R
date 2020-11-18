@@ -3,10 +3,10 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
   
   data <- as.data.frame(data)
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
-  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR"))
+  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR_CALCULOS"))
   data$VALOR <- numerize(data$VALOR)
   data <- data.table(data, key = 'NRO_IDENTIFICACION')
-  data <- data[, list("VALOR" = sum(VALOR)),
+  data <- data[, list("VALOR_CALCULOS" = sum(VALOR)),
                by = c('NRO_IDENTIFICACION', columna)]
   datapacientes <- data
   data <- data[, list("Condicion" = quantile(VALOR,
@@ -25,7 +25,7 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
   
   data <- data[, list(get(columna), NRO_IDENTIFICACION, VALOR)]
   
-  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR"))
+  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR_CALCULOS"))
   
   return(data)
   
@@ -37,10 +37,10 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
   multiplicativo <- numerize(multiplicativo)
   data <- as.data.frame(data)
   data <- data[, c('NRO_IDENTIFICACION', columna, columna_valor)]
-  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR"))
+  setnames(data, c('NRO_IDENTIFICACION', columna, "VALOR_CALCULOS"))
   data$VALOR <- numerize(data$VALOR)
   data <- data.table(data, key= 'NRO_IDENTIFICACION')
-  data <- data[, list("VALOR" = sum(VALOR, na.rm = TRUE)),
+  data <- data[, list("VALOR_CALCULOS" = sum(VALOR, na.rm = TRUE)),
                by = c('NRO_IDENTIFICACION', columna)]
   datapacientes <- data
   data <- data[, list(
@@ -69,7 +69,7 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
   
   data <- data[, list(get(columna), NRO_IDENTIFICACION, VALOR)]
   
-  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR"))
+  setnames(data, c(columna, "NRO_IDENTIFICACION", "VALOR_CALCULOS"))
   
   return(data)
 

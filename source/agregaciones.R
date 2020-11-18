@@ -1,10 +1,10 @@
 agregar <- function(data, columna_valor, columnas, columna_suma,
                     prestaciones) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR")
-  data[, "VALOR" := numerize(VALOR)]
+  setnames(data, columna_valor, "VALOR_CALCULOS")
+  data[, "VALOR_CALCULOS" := numerize(VALOR)]
   if (!prestaciones) {
-    data <- data[, list("VALOR" = sum(VALOR)),
+    data <- data[, list("VALOR_CALCULOS" = sum(VALOR)),
                  by = c(columna_suma,
                         columnas[columnas != columna_suma])]
   }

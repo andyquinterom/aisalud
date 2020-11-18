@@ -327,7 +327,7 @@ episodios_server <- function(input, output, session, datos, opciones,
           x = episodios$lista_agrupadores[
             input$histograma_select_agrupador_rows_selected],
           y = episodios$tabla[["data"]]
-        )[[opciones$valor_costo]]
+        )[["VALOR_CALCULOS"]]
       )
     }
   })

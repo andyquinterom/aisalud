@@ -1,10 +1,10 @@
 episodios_descriptiva <- function(data, columnas, columna_valor, columna_suma,
                                   columna_sep) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR")
-  data[, "VALOR" := numerize(VALOR)]
+  setnames(data, columna_valor, "VALOR_CALCULOS")
+  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma" = sum(VALOR, na.rm = TRUE),
+                      "Suma" = sum(VALOR_CALCULOS, na.rm = TRUE),
                       "VAR_COLUMNAS" = unique(get(columnas))),
                       by = c(columna_suma, columna_sep)]
   setnames(data, "VAR_COLUMNAS", columnas)
@@ -114,7 +114,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_4 <- data_temp[["descriptiva"]][get(columnas) %in% nivel_4]
     columnas_select <- c(columnas, columna_sep)
     episodios_nivel_4_data <- data_temp[["data"]][
-      get(columnas) %in% nivel_4][, c(columnas_select, "VALOR"), with = FALSE]
+      get(columnas) %in% nivel_4][, c(columnas_select, "VALOR_CALCULOS"), with = FALSE]
     data_temp <- NULL
   }
   
