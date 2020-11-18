@@ -68,7 +68,6 @@ shinyServer(function(input, output, session) {
   )
   
 
- 
   # Modulo paquete -------------------------------------------------
   
   callModule(

@@ -21,6 +21,7 @@ caja_de_bigotes_agrupador <- function(
   return(box_plot %>%
            layout(xaxis = list(title = "Agrupador"),
                   yaxis = list(title = "Valor"),
-                  showlegend = FALSE))
+                  showlegend = FALSE) %>%
+           config(locale = "es"))
 }
 
