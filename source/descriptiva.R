@@ -18,7 +18,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
                 by = c(columna_suma, 
                        columnas[columnas != columna_suma])]
   }
-  data <- data[, list(
+  data_descriptiva <- data[, list(
     "Frecuencia" = length(VALOR),
      "Suma" = sum(VALOR, na.rm = TRUE),
      "Media" = round(mean(VALOR, na.rm = TRUE),2),
@@ -34,7 +34,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
      "Rango" = rango(VALOR)
   ), by = c(columnas)]
   
-  setnames(data,
+  setnames(data_descriptiva,
            c(columnas, 
              "Frecuencia", 
              "Suma", "Media", 
@@ -48,7 +48,10 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
              "Max.",
              "Rango"))
 
-  return(data)
+  return(list(
+    "descriptiva" = data_descriptiva,
+    "data" = data
+  ))
   data <- NULL
 }
 

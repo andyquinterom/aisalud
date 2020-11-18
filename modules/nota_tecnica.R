@@ -407,7 +407,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order,
             nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order,
             nivel_4 = input$nota_tecnica_jerarquia_nivel_4_order,
-            return_list = TRUE)
+            return_list = TRUE)[["descriptiva"]]
         } else {
           descriptiva_escenarios <- list(
             factura = if (test_factura) {
@@ -418,7 +418,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica_cols_sep), 
                 columna_valor = opciones$valor_costo, 
                 columna_suma =  input$descriptiva_unidades, 
-                prestaciones = FALSE)
+                prestaciones = FALSE)[["descriptiva"]]
             },
             paciente = if (test_paciente) {
               descriptiva(
@@ -428,7 +428,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica_cols_sep), 
                 columna_valor = opciones$valor_costo, 
                 columna_suma =  input$descriptiva_unidades, 
-                prestaciones = FALSE)
+                prestaciones = FALSE)[["descriptiva"]]
             },
             prestacion = if (test_prestacion) {
               descriptiva(
@@ -438,7 +438,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
                   nota_tecnica_cols_sep), 
                 columna_valor = opciones$valor_costo, 
                 columna_suma =  input$descriptiva_unidades, 
-                prestaciones = test_prestacion)
+                prestaciones = test_prestacion)[["descriptiva"]]
             }
           )
         }

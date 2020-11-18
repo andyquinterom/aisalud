@@ -47,9 +47,35 @@ episodios_ui <- function(id) {
           style = "width:100%;")),
     box(
       width = 9,
-      div(
-        DT::dataTableOutput(outputId = ns("episodios_tabla")),
-        style = "font-size:90%")))
+      tabsetPanel(
+        tabPanel(
+          title = "Tabla",
+          tags$br(),
+          div(
+            DT::dataTableOutput(outputId = ns("episodios_tabla")),
+            style = "font-size:90%")
+        ),
+        tabPanel(
+          title = "Histogramas",
+          tags$br(),
+          fluidRow(
+            column(
+              width = 8,
+              plotlyOutput(
+                outputId = ns("histograma_render")
+              )
+            ),
+            column(
+              width = 4,
+              DT::dataTableOutput(
+                outputId = ns("histograma_select_agrupador")
+              )
+            )
+          )
+        )
+      )
+      )
+    )
   )
 }
 
@@ -59,7 +85,7 @@ episodios_server <- function(input, output, session, datos, opciones,
   ns <- NS(nombre_id)
   
   episodios <- reactiveValues(
-    tabla = data.table(),
+    tabla = list("descriptiva" = data.table(), "data" = data.table()),
     agrupadores_items = NULL)
   
   observeEvent(datos$colnames, {
@@ -229,9 +255,13 @@ episodios_server <- function(input, output, session, datos, opciones,
                 )
               }
               
+              episodios$lista_agrupadores <- 
+                episodios$tabla[["descriptiva"]][, c(
+                  episodios_cols, episodios_cols_sep), with = FALSE]
+              
               output$episodios_tabla <- DT::renderDataTable({
                 DT::datatable(
-                  episodios$tabla,
+                  episodios$tabla[["descriptiva"]],
                   options = list(
                     language = list(
                       url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
@@ -250,10 +280,31 @@ episodios_server <- function(input, output, session, datos, opciones,
                                  digits=0,
                                  mark = ".",
                                  dec.mark = ",")
-              })   
+              })
+              
+              output$histograma_select_agrupador <- DT::renderDataTable({
+                DT::datatable(
+                  episodios$tabla[["descriptiva"]][, c(
+                    episodios_cols, episodios_cols_sep), with = FALSE],
+                  options = list(
+                    language = list(
+                      url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                    pageLength = 10000,
+                    dom = 'ft',
+                    autoWidth = FALSE,
+                    ordering=T, 
+                    scrollX = TRUE,
+                    scrollY = "370px"),
+                  rownames= FALSE) %>%
+                  formatStyle(
+                    columns = 1:length(c(episodios_cols, episodios_cols_sep)),
+                    fontSize = '95%')
+              })
+              
             })
           },
           error = function(e) {
+            print(e)
             sendSweetAlert(
               session = session,
               title = "Error", 
@@ -268,13 +319,28 @@ episodios_server <- function(input, output, session, datos, opciones,
     }
   })
   
+  output$histograma_render <- renderPlotly({
+    if (!is.null(input$histograma_select_agrupador_rows_selected)) {
+      histograma_agrupador(
+        titulo = "Histograma",
+        data = merge.data.table(
+          x = episodios$lista_agrupadores[
+            input$histograma_select_agrupador_rows_selected],
+          y = episodios$tabla[["data"]]
+        )[[opciones$valor_costo]]
+      )
+    }
+  })
+  
+
+  
   output$descriptiva_sumas_valor <- renderText({
     if (!is.null(datos$colnames)) {
-      if(nrow(episodios$tabla) > 1) {
+      if(nrow(episodios$tabla[["descriptiva"]]) > 1) {
         paste("Total",
               paste0(tolower(opciones$valor_costo), ":"), 
               formatAsCurrency(
-                sum(episodios$tabla[["Suma"]],
+                sum(episodios$tabla[["descriptiva"]][["Suma"]],
                   na.rm = TRUE)),
               sep = " "
         )
@@ -334,7 +400,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     },
     content = function(file) {
       write.csv(
-        x = episodios$tabla,
+        x = episodios$tabla[["descriptiva"]],
         file = file, 
         row.names = FALSE,
         na="")
@@ -349,7 +415,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     },
     content = function(file) {
       write_xlsx(
-        x = episodios$tabla,
+        x = episodios$tabla[["descriptiva"]],
         path = file)
     }, 
     contentType = "xlsx"
