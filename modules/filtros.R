@@ -19,7 +19,8 @@ filtros_ui <- function(id) {
       ),
       tags$div(
         class = "filtros_char",
-          filtro_discreto_ui_insert(ns = ns, n = 5)
+          filtro_discreto_ui_insert(ns = ns, n = 5),
+          filtros_pacientes_ui_fila(ns)
         ),
       filtro_numerico_ui_insert(ns = ns, n = 3),
       actionButton(ns("aplicar_filtros"), "Aplicar")
@@ -27,7 +28,7 @@ filtros_ui <- function(id) {
   )
 }
 
-filtros_server <- function(input, output, session, datos) {
+filtros_server <- function(input, output, session, datos, opciones) {
 
   n_num = 3
   n_char = 5
@@ -39,7 +40,7 @@ filtros_server <- function(input, output, session, datos) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_char_columna", x, sep = "_"),
-          choices = c("NA", datos$colnames)
+          choices = c("Ninguno", datos$colnames)
         )
       }
     )
@@ -49,9 +50,42 @@ filtros_server <- function(input, output, session, datos) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_num_columna", x, sep = "_"),
-          choices = c("NA", datos$colnames_num)
+          choices = c("Ninguno", datos$colnames_num)
         )
       }
+    )
+  })
+  
+  observeEvent(datos$pacientes_excluir_exe, {
+    if (is.null(input$filtros_paciente_valor) && 
+        length(datos$pacientes_excluir) > 1) {
+      pacientes_excluir <- unique(datos$pacientes_excluir[-1])
+    } else {
+      pacientes_excluir <- unique(datos$pacientes_excluir)
+    }
+    updateSelectizeInput(
+      session = session,
+      inputId = "filtros_paciente_valor",
+      choices = pacientes_excluir,
+      selected = pacientes_excluir,
+      server = TRUE
+    )
+  })
+  
+  observeEvent(input$filtros_paciente_valor,{
+    if (!all(datos$pacientes_excluir %in% input$filtros_paciente_valor)) {
+      datos$pacientes_excluir <- input$filtros_paciente_valor
+    }
+  })
+  
+  observeEvent(input$filtro_paciente_vaciar, {
+    datos$pacientes_excluir <- datos$pacientes_excluir[1]
+    updateSelectizeInput(
+      session = session,
+      inputId = "filtros_paciente_valor",
+      choices = NULL,
+      selected = NULL,
+      server = TRUE
     )
   })
   
@@ -74,7 +108,7 @@ filtros_server <- function(input, output, session, datos) {
     X = 1:n_num,
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_num_columna_", i)]], {
-        if (input[[paste0("filtro_num_columna_", i)]] != "NA") {
+        if (input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_min_", i),
@@ -103,7 +137,7 @@ filtros_server <- function(input, output, session, datos) {
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_num_min_", i)]], {
         if (is.na(input[[paste0("filtro_num_min_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_min_", i),
@@ -117,7 +151,7 @@ filtros_server <- function(input, output, session, datos) {
       })
       observeEvent(input[[paste0("filtro_num_max_", i)]], {
         if (is.na(input[[paste0("filtro_num_max_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "NA") {
+            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
           updateNumericInput(
             session = session,
             inputId = paste0("filtro_num_max_", i),
@@ -139,7 +173,7 @@ filtros_server <- function(input, output, session, datos) {
       lapply(
         X = 1:n_char,
         FUN = function(i) {
-          return(input[[paste0("filtro_char_columna_", i)]] != "NA")
+          return(input[[paste0("filtro_char_columna_", i)]] != "Ninguno")
         }
       )
     )
@@ -170,7 +204,7 @@ filtros_server <- function(input, output, session, datos) {
       lapply(
         X = 1:n_char,
         FUN = function(i) {
-          return(input[[paste0("filtro_num_columna_", i)]] != "NA")
+          return(input[[paste0("filtro_num_columna_", i)]] != "Ninguno")
         }
       )
     )
@@ -197,10 +231,28 @@ filtros_server <- function(input, output, session, datos) {
     ),
     collapse = "")
     
+    inputs_filtros_pacientes_arguments <- paste(unlist(
+      if (!is.null(input$filtros_paciente_valor)) {
+        paste0(
+          "[NRO_IDENTIFICACION",
+          ifelse(
+            test = input[["filtro_paciente_incluir"]],
+            yes = " %in% ",
+            no = " %notin% "
+          ),
+          "input$filtros_paciente_valor]"
+        )
+      } else {
+        "[]"
+      }
+      ),
+      collapse = "")
+    
     filtros_parse <- paste0(
       "datos$data_table",
       inputs_filtros_char_arguments,
-      inputs_filtros_num_arguments
+      inputs_filtros_num_arguments,
+      inputs_filtros_pacientes_arguments
     )
 
 
@@ -228,8 +280,8 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
       pickerInput(
         inputId = ns(paste("filtro_char_columna", position, sep = "_")),
         label = NULL,
-        choices = "NA",
-        selected = "NA",
+        choices = "Ninguno",
+        selected = "Ninguno",
         multiple = FALSE
       )),
     column(
@@ -246,8 +298,8 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
       selectizeInput(
         inputId = ns(paste("filtro_char_valor", position, sep = "_")),
         label = NULL,
-        choices = "NA",
-        selected = "NA",
+        choices = "Ninguno",
+        selected = "Ninguno",
         multiple = TRUE
       ))
   )
@@ -273,7 +325,7 @@ filtro_numerico_ui_fila <- function(ns, position = 1) {
       width = 5,
       pickerInput(
         inputId = ns(paste("filtro_num_columna", position, sep = "_")),
-        choices = c("NA"),
+        choices = c("Ninguno"),
         width = "100%")),
     column(
       width = 2
@@ -308,12 +360,69 @@ filtro_numerico_ui_insert <- function(ns, n) {
   
   filtros_filas <- list()
   
-  for (i in 1:n) {
+  filtros_filas[[1]] <-  fluidRow(
+    column(width = 7),
+    column(
+      width = 5,
+      fluidRow(
+        column(
+          width = 6,
+          tags$p("Mínimo", style = "font-size: 100%;")),
+        column(
+          width = 6,
+          tags$p("Máximo", style = "font-size: 100%;"))
+      )
+    )
+  )
+    
+  
+  for (i in 1:n + 1) {
     filtros_filas[[i]] <- filtro_numerico_ui_fila(
       ns = ns, 
-      position = i)
+      position = i - 1)
   }
   
   return(filtros_filas)
   
+}
+
+filtros_pacientes_ui_fila <- function(ns) {
+  fluidRow(
+    column(
+      width = 3,
+      pickerInput(
+        inputId = ns("filtro_paciente"),
+        label = NULL,
+        choices = "Pacientes",
+        selected = "Pacientes",
+        multiple = FALSE
+      )),
+    column(
+      width = 2,
+      actionButton(
+        inputId = ns("filtro_paciente_vaciar"),
+        label = "Vaciar",
+        width = "100%"
+      )
+    ),
+    column(
+      width = 2,
+      shinyWidgets::switchInput(
+        inputId = ns("filtro_paciente_incluir"),
+        onLabel = "Incluir",
+        offLabel = "Excluir",
+        value = FALSE
+      )
+    ),
+    column(
+      width = 5,
+      selectizeInput(
+        inputId = ns("filtros_paciente_valor"),
+        label = NULL,
+        choices = NULL,
+        selected = NULL,
+        multiple = TRUE
+      )
+    )
+  )
 }

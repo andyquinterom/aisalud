@@ -1,11 +1,3 @@
-require("maps")
-require(scales)
-require(plotly)
-require(colmaps2)
-require(withr)
-require(data.table)
-require(stringr)
-
 mapaValoresNT <- function(INDICE, ...) {
   
   INDICE_SUM <- NULL

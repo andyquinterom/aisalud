@@ -23,7 +23,10 @@ episodios_ui <- function(id) {
           label = "Separar por:",
           choices = NULL,
           multiple = TRUE),
-        textOutput(outputId = ns("episodios_sumas_valor")),
+        textOutput(outputId = ns("descriptiva_sumas_registros")),
+        textOutput(outputId = ns("descriptiva_sumas_pacientes")),
+        textOutput(outputId = ns("descriptiva_sumas_facturas")),
+        textOutput(outputId = ns("descriptiva_sumas_valor")),
         tags$br(),
         uiOutput(
           outputId = ns("episodios_jerarquia")
@@ -265,28 +268,68 @@ episodios_server <- function(input, output, session, datos, opciones,
     }
   })
   
-  output$episodios_sumas_valor <- renderText({
+  output$descriptiva_sumas_valor <- renderText({
     if (!is.null(datos$colnames)) {
       if(nrow(episodios$tabla) > 1) {
         paste("Total",
               paste0(tolower(opciones$valor_costo), ":"), 
-              formatC(
-                sum(
-                  episodios$tabla[["Suma"]],
-                  na.rm = TRUE), 
-                big.mark = ".", 
-                decimal.mark = ",", 
-                format = "f", 
-                digits = 0),
+              formatAsCurrency(
+                sum(episodios$tabla[["Suma"]],
+                  na.rm = TRUE)),
               sep = " "
         )
       }
     }
   })
   
+  output$descriptiva_sumas_registros <- renderText({
+    if (!is.null(datos$colnames)) {
+      paste("Número de registros:", 
+            formatC(
+              length(datos$data_table[["NRO_IDENTIFICACION"]]),
+              big.mark = ".", 
+              decimal.mark = ",", 
+              format = "f", 
+              digits = 0
+            ),
+            sep = " "
+      )
+    }
+  })
+  
+  output$descriptiva_sumas_pacientes <- renderText({
+    if (!is.null(datos$colnames)) {
+      paste("Número de pacientes:", 
+            formatC(
+              uniqueN(datos$data_table[["NRO_IDENTIFICACION"]]),
+              big.mark = ".", 
+              decimal.mark = ",", 
+              format = "f", 
+              digits = 0
+            ),
+            sep = " "
+      )
+    }
+  })
+  
+  output$descriptiva_sumas_facturas <- renderText({
+    if (!is.null(datos$colnames) && "NRO_FACTURA" %in% datos$colnames) {
+      paste("Número de facturas:", 
+            formatC(
+              uniqueN(datos$data_table[["NRO_FACTURA"]]),
+              big.mark = ".", 
+              decimal.mark = ",", 
+              format = "f", 
+              digits = 0
+            ),
+            sep = " "
+      )
+    }
+  })
+  
   output$episodios_descargar_csv <- downloadHandler(
     filename = function() {
-      paste("Episodios",
+      paste("Descriptiva",
             ".csv", sep="")
     },
     content = function(file) {
@@ -301,7 +344,7 @@ episodios_server <- function(input, output, session, datos, opciones,
   
   output$episodios_descargar_xlsx <- downloadHandler(
     filename = function() {
-      paste("Episodios",
+      paste("Descriptiva",
             ".xlsx", sep="")
     },
     content = function(file) {

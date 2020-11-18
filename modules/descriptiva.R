@@ -25,7 +25,8 @@ descriptiva_ui <- function(id) {
         ),
         actionButton(
           inputId = ns("descriptiva_exe"),
-          label = "Confirmar"),
+          label = "Confirmar",
+          width = "100%"),
         tags$br(),
         tags$br(),
         downloadButton(

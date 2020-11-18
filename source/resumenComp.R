@@ -1,6 +1,6 @@
 resumenComp <- function(tabla, columna, colsum) {
   
-  tabla <- as.data.table(tabla)
+  tabla <- copy(tabla)
   total <- sum(tabla[, list(get(colsum))], na.rm = TRUE)
   totales <- data.table("x" = "TOTAL",
                         "SUMA" = formatAsCurrency(total),

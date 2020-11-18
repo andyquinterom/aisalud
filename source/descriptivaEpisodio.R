@@ -1,5 +1,6 @@
 episodios_descriptiva <- function(data, columnas, columna_valor, columna_suma,
                                   columna_sep) {
+  data <- copy(data)
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),

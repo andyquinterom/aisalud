@@ -34,15 +34,15 @@ shinyUI(
             text = "Prepara",
             icon = icon("cog", lib = "font-awesome"),
             tabName = "prepara"),
+          # menuItem(
+          #   text = tags$b("- Modulos -")
+          # ),
+          # menuItem(
+          #   text = "Descriptiva clásica",
+          #   tabName = "descriptiva_modulo",
+          #    icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = tags$b("- Modulos -")
-          ),
-          menuItem(
-            text = "Descriptiva clásica",
-            tabName = "descriptiva_modulo",
-             icon = icon("table", lib = "font-awesome")),
-          menuItem(
-            text = "Descriptiva con episodios",
+            text = "Descriptiva",
             tabName = "episodios_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
@@ -50,7 +50,7 @@ shinyUI(
             tabName = "nota_tecnica_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = "Outliers modulo",
+            text = "Outliers",
             icon = icon("search-minus", lib = "font-awesome"),
             tabName = "outliers_modulo"),
           menuItem(
@@ -67,72 +67,79 @@ shinyUI(
               tabName = "seguimiento_modulo_comparar")
           ),
           menuItem(
-            text = tags$b("- Normal -")
-          ),
-          menuItem(
-            text = "Opciones",
-            icon = icon("cog", lib = "font-awesome"),
-            tabName = "opciones"),
-          menuItem(
-            text = "Descriptiva",
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "descriptiva_eventos"),
-          menuItem(
-            text = "Episodios", 
-            icon = icon("table", lib = "font-awesome"),
-            tabName = "episodios"),
-          menuItem(
-            text = "Pacientes Outliers",
-            icon = icon("search-minus", lib = "font-awesome"),
-            tabName = "outliers"),
-          menuItem(
-            text = "Gráficos",
-            icon = icon("chart-area", lib = "font-awesome"), 
-            tabName = "graficos",
-            menuSubItem(text = "Histogramas y barras",
-                        tabName = "histogramas_barras"), 
-            menuSubItem(text = "Caja de bigotes", 
-                        tabName = "cajadebigotes")),
-          menuItem(
-            text = "Nota técnica",
-            icon = icon("search-dollar", lib = "font-awesome"),
-            tabName = "nota_tecnica"),
-          (
-          if (PAQUETES_INCLUIDO) {
-            menuItem(
-              text = "Paquetes",
-              icon = icon("chart-pie", lib = "font-awesome"),
-              tabName = "paquetes",
-              radioButtons("paquetes_valor_costo", 
-                           "Graficar:",
-                           choices = c("VALOR", "COSTO")),
-              actionButton("paquetes_actualizar", "Actualizar"),
-              menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
-              menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
-              tags$br()
-            )
-          }
-          ),
-          (
-          if (PRICING_INCLUIDO) {
-            menuItem(
-              text = "Pricing", 
-              icon = icon("tags", lib = "font-awesome"),
-              tabName = "pricingOpciones", 
-              tags$br(),
-              actionButton("pricing_actualizar", "Actualizar"),
-              menuSubItem(text = "Informes", tabName = "pricing"),
-              tags$br()
-            )
-            }
+            text = "Paquetes",
+            icon = icon("chart-pie", lib = "font-awesome"),
+            tabName = "paquetes_modulo",
+            menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
+            menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
+            tags$br()
           )
+          # menuItem(
+          #   text = tags$b("- Normal -")
+          # ),
+          # menuItem(
+          #   text = "Opciones",
+          #   icon = icon("cog", lib = "font-awesome"),
+          #   tabName = "opciones"),
+          # menuItem(
+          #   text = "Descriptiva",
+          #   icon = icon("table", lib = "font-awesome"),
+          #   tabName = "descriptiva_eventos"),
+          # menuItem(
+          #   text = "Episodios", 
+          #   icon = icon("table", lib = "font-awesome"),
+          #   tabName = "episodios"),
+          # menuItem(
+          #   text = "Pacientes Outliers",
+          #   icon = icon("search-minus", lib = "font-awesome"),
+          #   tabName = "outliers"),
+          # menuItem(
+          #   text = "Gráficos",
+          #   icon = icon("chart-area", lib = "font-awesome"), 
+          #   tabName = "graficos",
+          #   menuSubItem(text = "Histogramas y barras",
+          #               tabName = "histogramas_barras"), 
+          #   menuSubItem(text = "Caja de bigotes", 
+          #               tabName = "cajadebigotes")),
+          # menuItem(
+          #   text = "Nota técnica",
+          #   icon = icon("search-dollar", lib = "font-awesome"),
+          #   tabName = "nota_tecnica"),
+          # (
+          # if (PAQUETES_INCLUIDO) {
+          #   menuItem(
+          #     text = "Paquetes",
+          #     icon = icon("chart-pie", lib = "font-awesome"),
+          #     tabName = "paquetes",
+          #     radioButtons("paquetes_valor_costo", 
+          #                  "Graficar:",
+          #                  choices = c("VALOR", "COSTO")),
+          #     actionButton("paquetes_actualizar", "Actualizar"),
+          #     menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
+          #     menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
+          #     tags$br()
+          #   )
+          # }
+          # ),
+          # (
+          # if (PRICING_INCLUIDO) {
+          #   menuItem(
+          #     text = "Pricing", 
+          #     icon = icon("tags", lib = "font-awesome"),
+          #     tabName = "pricingOpciones", 
+          #     tags$br(),
+          #     actionButton("pricing_actualizar", "Actualizar"),
+          #     menuSubItem(text = "Informes", tabName = "pricing"),
+          #     tags$br()
+          #   )
+          #   }
+          # )
         )
       ),
       rightsidebar = rightSidebar(
         width = 700,
         rightSidebarTabContent(
           id = "filtros_sideBar",
-          icon = "filter",
           active = TRUE,
           filtros_ui("filtros_sideBar")
         )
@@ -192,6 +199,14 @@ shinyUI(
             if (NT_INCLUIDO) {
               seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
             }
+          ),
+          tabItem(
+            tabName = "paquetes_modulo_indice",
+            paquetes_indice_ui("paquetes_modulo_indice")
+          ),
+          tabItem(
+            tabName = "paquetes_modulo_dashboard",
+            paquetes_dashboard_ui("paquetes_modulo_dashboard")
           ),
   # Opciones -------------------------------------------------------------------
           tabItem(
@@ -452,166 +467,12 @@ shinyUI(
                       width = 10,
                       br(),
                       tags$a(
-                        "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: NRO_IDENTIFICACION, FECHA_PRESTACION, VALOR o COSTO.",
+                        "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: NRO_IDENTIFICACION, FECHA_PRESTACION o VALOR.",
                         style = "color: black;"))),
                   DT::dataTableOutput(
                     outputId = "preview",
                     width = "100%"))))),
-  # Descriptiva ---------------------------------------------------------------
-          tabItem(
-            tabName = "descriptiva_eventos",
-            fluidRow(
-              column(
-                width = 3,
-                box(width = "100%",
-                    pickerInput(
-                      inputId = "descriptiva_cols",
-                      label = "Agrupar por:",
-                      choices = c("NA"),
-                      multiple = TRUE,
-                      options = list(
-                        `actions-box` = TRUE,
-                        `deselect-all-text` = "Deseleccionar todos",
-                        `select-all-text` = "Seleccionar todos",
-                        `live-search` = TRUE)),
-                    actionButton(
-                      inputId = "descriptiva_exe",
-                      label = "Confirmar"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "descriptiva_descargar_csv",
-                      label = "CSV",
-                      style = "width:100%;"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "descriptiva_descargar_xlsx", 
-                      label = "Excel",
-                      style = "width:100%;"),
-                    br(),
-                    br(),
-                    textOutput(outputId = "descriptiva_sumas_registros"),
-                    textOutput(outputId = "descriptiva_sumas_pacientes"),
-                    textOutput(outputId = "descriptiva_sumas_valor"))),
-              column(
-                width = 9,
-                box(
-                  width = "100%",
-                  div(
-                    DT::dataTableOutput(outputId = "descriptiva_tabla"),
-                    style = "font-size:90%"))))),
- # Descriptiva episodios ------------------------------------------------------
-          tabItem(
-            tabName = "episodios",
-            fluidRow(
-              column(
-                width = 3,
-                box(width = "100%",
-                    pickerInput(
-                      inputId = "episodios_col_valor",
-                      label = "Sumar valor por:",
-                      choices = c("NA"),
-                      multiple = FALSE,
-                      options = list(
-                        `actions-box` = TRUE,
-                        `live-search` = TRUE)),
-                    pickerInput(
-                      inputId = "episodios_cols",
-                      label = "Agrupar por:",
-                      choices = c("NA"),
-                      multiple = FALSE,
-                      options = list(
-                        `actions-box` = TRUE,
-                        `live-search` = TRUE)),
-                    pickerInput(
-                      inputId = "episodios_cols_sep",
-                      label = "Separar por:",
-                      choices = c("NA"),
-                      multiple = TRUE,
-                      options = list(
-                        `actions-box` = TRUE,
-                        `live-search` = TRUE,
-                        `select-all-text` = "Seleccionar todos",
-                        `deselect-all-text` = "Deseleccionar todos")),
-                    actionButton("episodios_exe", "Confirmar"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "episodios_descargar_csv",
-                      label = "CSV",
-                      style = "width:100%;"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "episodios_descargar_xlsx",
-                      label = "Excel",
-                      style = "width:100%;"))),
-              column(
-                width = 9,
-                box(
-                  width = "100%",
-                  div(
-                    DT::dataTableOutput(outputId = "episodios_tabla"),
-                    style = "font-size:90%"))))),
- # Outliers --------------------------------------------------------------------
-          tabItem(
-            tabName = "outliers",
-            fluidRow(
-              column(
-                width = 3,
-                box(width = "12",
-                    pickerInput(
-                      inputId = "outliers_cols",
-                      label = "Agrupar por:",
-                      choices = c("NA"),
-                      options = list(
-                        `actions-box` = TRUE,
-                        `live-search` = TRUE)),
-                    sliderInput(
-                      inputId = "outliers_percentil",
-                      label = "Outliers por percentil:",
-                      min = 0.75, 
-                      max = 0.99, 
-                      value = c(0.9)),
-                    radioButtons(
-                      inputId = "outliers_iqr",
-                      "Outliers por IQR",
-                      choiceNames = list("1.5","3.0"),
-                      choiceValues = list(1.5, 3.0),
-                      inline = TRUE,
-                      width='75%'),
-                    numericInput(
-                      inputId = "outliers_frecuencia",
-                      label = "Frecuencia Mínima",
-                      min = 0,
-                      step = 1, 
-                      value = 0),
-                    actionButton(
-                      inputId = "outliers_percentil_exe",
-                      label = "Calcular por percentil",
-                      width = "100%"),
-                    actionButton(
-                      inputId = "outliers_iqr_exe",
-                      label = "Calcular por IQR",
-                      width = "100%"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "outliers_descargar_csv",
-                      label = "CSV", 
-                      style = "width:100%;"),
-                    tags$br(),
-                    tags$br(),
-                    downloadButton(
-                      outputId = "outliers_descargar_xlsx",
-                      label = "Excel",
-                      style = "width:100%;"))),
-              column(
-                width = 9,
-                box(width = "100%",
-                    div(DT::dataTableOutput("outliers_tabla"),
-                        style = "font-size:90%"))))),
+  
  # Histogramas ----------------------------------------------------------------
           tabItem(
             tabName = "histogramas_barras",
@@ -710,227 +571,7 @@ shinyUI(
                   plotlyOutput(
                     outputId = "bigotes_render",
                     height = "800px"))))),
- # Nota técnica --------------------------------------------------------------
-          tabItem(
-            tabName = "nota_tecnica",
-            fluidRow(
-              column(
-                width = 3,
-                box(
-                  width = "100%",
-                  numericInput(
-                    inputId = "crear_nt_poblacion",
-                    min = 1,
-                    value = 1,
-                    label = "Población:", 
-                    step = 1),
-                  numericInput(
-                    inputId = "crear_nt_meses", 
-                    min = 1,
-                    value = 1,
-                    label = "Numero de meses:",
-                    step = 1),
-                  actionButton(
-                    inputId = "crear_nt_remove",
-                    label = "Remover filas seleccionadas",
-                    width = "100%"),
-                  br(),
-                  br(),
-                  actionButton(
-                    inputId = "crear_nt_exe",
-                    label = "Crear nota técnica",
-                    width = "100%"),
-                  br(),
-                  br(),
-                  downloadButton(
-                    outputId = "nt_descargar_xlsx",
-                    "Excel", 
-                    style="width:100%;"),
-                  br(),
-                  downloadButton(
-                    outputId = "nt_descargar_csv",
-                    "CSV", 
-                    style="width:100%;"),
-                  br(),
-                  tags$b("Primer escenario P75:"),
-                  textOutput(outputId = "sumasNtEsc1"),
-                  textOutput(outputId = "sumasNtEsc1Mes"),
-                  textOutput(outputId = "porcNtEsc1"),
-                  br(),
-                  tags$b("Segundo escenario media:"),
-                  textOutput(outputId = "sumasNtEsc2"),
-                  textOutput(outputId = "sumasNtEsc2Mes"),
-                  textOutput(outputId = "porcNtEsc2"),
-                  br(),
-                  tags$b("Tercer escenario media truncada 10%:"),
-                  textOutput(outputId = "sumasNtEsc3"),
-                  textOutput(outputId = "sumasNtEsc3Mes"),
-                  textOutput(outputId = "porcNtEsc3"),
-                  br(),
-                  tags$b("Cuarto escenario media truncada 5%:"),
-                  textOutput(outputId = "sumasNtEsc4"),
-                  textOutput(outputId = "sumasNtEsc4Mes"),
-                  textOutput(outputId = "porcNtEsc4"),
-                  br(),
-                  tags$b("Escenario combiando mayor:"),
-                  textOutput(outputId = "sumasNtEsc5"),
-                  textOutput(outputId = "sumasNtEsc5Mes"),
-                  textOutput(outputId = "porcNtEsc5"),
-                  br(),
-                  tags$b("Escenario combiando variabilidad y frecuencia:"),
-                  textOutput(outputId = "sumasNtEsc6"),
-                  textOutput(outputId = "sumasNtEsc6Mes"),
-                  textOutput(outputId = "porcNtEsc6"),
-                  br(),
-                  br(),
-                  br(),
-                  br())),
-              column(
-                width = 9,
-                box(width = "100%",
-                    DT::dataTableOutput(outputId = "crear_nt_tabla"))))),
-          # Paquetes ---------------------------------------------------------
-          
-          tabItem(
-            tabName = "paquetes_indice",
-            fluidRow(
-              box(
-                width = 12,
-                DT::dataTableOutput(outputId = "paquetes_indice_tabla")))),
-          tabItem(
-            tabName = "paquetes_dash",
-            fluidRow(
-              column(
-                width = 12,
-                valueBoxOutput(outputId = "paquetes_especialidad", width = "100%"))),
-            fluidRow(
-              column(
-                width = 4,
-                valueBoxOutput(outputId = "paquetes_valortotal", width = "100%")),
-              column(
-                width = 4,
-                valueBoxOutput(outputId = "paquetes_costototal", width = "100%")),
-              column(
-                width = 4,
-                valueBoxOutput(outputId = "paquetes_codpaquete", width = "100%"))),
-            fluidRow(
-              column(
-                width = 12,
-                valueBoxOutput(outputId = "paquetes_descripcion", width = "100%"))),
-            fluidRow(
-              column(
-                width = 9,
-                box(
-                  width = 12,
-                  height = "100%",
-                  selectInput(
-                    inputId = "paquetes_select",
-                    label = "Paquete:",
-                    choices = na.omit(
-                      unique(paquetes$`CODIGO PAQUETE`))),
-                  ggiraph::ggiraphOutput(
-                    outputId = "paquetes_plot_ref",
-                    width = "100%",
-                    height = "100%"),
-                  tags$p(style = "text-align: justify;",
-                         tags$em("Este gráfico corresponde a la comparación del valor o costo de la institución para el paquete seleccionado comparado con paquetes ofertados en otras instituciones hospitalarias. También, muestra la media del mercado, el valor mínimo y el máximo, que permite evaluar la diferencia entre el valor o costo ofertado por la institución frente a otros paquetes que existan actualmente en el mercado."
-                                 )))),
-              column(
-                width = 3,
-                box(
-                  title = "Servicio:",
-                  width = "100%",
-                  tags$h3(textOutput(outputId = "paquetes_servicios"))),
-                box(
-                  title = "Inclusiones:",
-                  width = "100%",
-                  height = "100%",
-                  tags$p(textOutput(outputId = "paquetes_inclusiones"))),
-                box(
-                  title = "Exclusiones:",
-                  width = "100%",
-                  height = "100%",
-                  tags$p(textOutput("paquetes_exclusiones"))))),
-            fluidRow(
-              column(
-                width = 6,
-                box(
-                  width = "100%",
-                  selectInput(
-                    inputId = "paquetes_componenete_select",
-                    label = "Componente:",
-                    choices = unique(paquetes_cups$COMPONENTE),
-                    multiple = T),
-                  selectInput(
-                    inputId = "paquetes_componenete_datos",
-                    label = "Datos:",
-                    choices = c("PRESTACION", "TIPO DE COSTO")),
-                  ggiraph::ggiraphOutput(
-                    outputId = "paquetes_componenete_plot",
-                    width = "100%"),
-                  dataTableOutput(outputId = "paquetes_componenete_tabla"),
-                  br(),
-                  tags$p(style = "text-align: justify;",
-                         tags$em(
-                           "En la sección de componentes se podrán seleccionar uno o varios de los componentes que conforman el paquete. Al escoger varios, se pueden observar las prestaciones o los tipos de costo que hacen parte de esta categoría."
-                           )))),
-              column(
-                width = 6,
-                box(
-                  width = "100%",
-                  selectInput(
-                    inputId = "paquetes_tipo_costo_select",
-                    label = "Tipo de costo:",
-                    choices = unique(paquetes_cups$`TIPO DE COSTO`),
-                    multiple = T),
-                  selectInput(
-                    inputId = "paquetes_tipo_costo_datos",
-                    label = "Datos:",
-                    choices = c("PRESTACION", "COMPONENTE")),
-                  ggiraph::ggiraphOutput(
-                    outputId = "paquetes_tipo_costo_plot",
-                    width = "100%"),
-                  dataTableOutput(outputId = "paquetes_tipo_costo_tabla"),
-                  br(),
-                  tags$p(style = "text-align: justify;",
-                         tags$em(
-                           "En la sección de tipos de costo se podrán seleccionar todos los tipos de costo que conforman el paquete. Al escoger varios, se pueden observar las prestaciones o los componentes que hacen parte de esta categoría."
-                           ))))),
-            fluidRow(
-              column(
-                width = 7,
-                box(
-                  width = "100%",
-                  DT::dataTableOutput(
-                    outputId = "paquetes_tabla",
-                    width = "100%"))),
-              column(
-                width = 5,
-                box(
-                  width = "100%",
-                  ggiraph::girafeOutput(
-                    outputId = "paquetes_ref_cups",
-                    width = "100%"),
-                  tags$p(style = "text-align: justify;",
-                         tags$em(
-                           "La tabla de prestaciones discriminada permite seleccionar cada prestación que hace parte del paquete generando un gráfico comparativo de cada prestación individual con los valores de referencia de los cuales se tenga información en el análisis del mercado."
-                           ))),
-                box(width = "100%",
-                    selectInput(
-                      inputId = "paquetes_resumen_select",
-                      label = "",
-                      choices = c("COMPONENTE", "TIPO DE COSTO")),
-                    ggiraph::girafeOutput(
-                      outputId = "paquetes_resumen_plot",
-                      width = "100%"),
-                    dataTableOutput(outputId = "paquetes_resumen_tabla"),
-                    br(),
-                    tags$p(style = "text-align: justify;",
-                           tags$em(
-                             'Al seleccionar "Tipo de cost" o "Componente" se genera un gráfico circular mostrando las diferentes partes de la categoría y sus proporciones.'
-                             )))))),
-          
-          # Pricing -----------------------------------------------------------
+         # Pricing -----------------------------------------------------------
           
           tabItem(
             tabName = "pricing",

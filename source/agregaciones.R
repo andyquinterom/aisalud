@@ -1,8 +1,6 @@
-require(data.table)
-
 agregar <- function(data, columna_valor, columnas, columna_suma,
                     prestaciones) {
-
+  data <- copy(data)
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   if (!prestaciones) {

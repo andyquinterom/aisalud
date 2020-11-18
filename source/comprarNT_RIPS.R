@@ -32,6 +32,7 @@ mes_spanish <- function(x) {
 
 descriptiva_basica <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
+  data <- copy(data)
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   if (!prestaciones) {
@@ -68,6 +69,7 @@ descriptiva_basica <- function(
 
 descriptiva_basica_episodios <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
+  data <- copy(data)
   setnames(data, columna_valor, "VALOR")
   data[, "VALOR" := numerize(VALOR)]
   data[, "MES_ANIO_NUM" := min(lubridate::year(
@@ -96,6 +98,7 @@ descriptiva_basica_episodios <- function(
 
 
 descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
+  data <- copy(data)
   meses <- as.list(unique(data$MES_ANIO))
   agrupCompletos <- data.table(agrupador = unique(data[[agrupador]]))
   setnames(agrupCompletos, agrupador)
@@ -125,6 +128,8 @@ descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) 
 }
 
 multiplicar_cme <- function(frecs, nota_tecnica) {
+  frecs <- copy(frecs)
+  nota_tecnica <- copy(nota_tecnica)
   setnames(frecs, 1, "AGRUPADOR")
   agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]], 
                                 frecs[["AGRUPADOR"]])
@@ -142,6 +147,8 @@ multiplicar_cme <- function(frecs, nota_tecnica) {
 }
 
 diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
+  sumas <- copy(sumas)
+  nota_tecnica <- copy(nota_tecnica)
   setnames(sumas, 1, "AGRUPADOR")
   agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
                                 sumas[["AGRUPADOR"]])
@@ -178,6 +185,8 @@ diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
 }
 
 diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
+  frecs <- copy(frecs)
+  nota_tecnica <- copy(nota_tecnica)
   setnames(frecs, 1, "AGRUPADOR")
   agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
                                 frecs[["AGRUPADOR"]])
@@ -213,7 +222,10 @@ diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
 }
 
 diferencias_totales <- function(frecs, sumas, nota_tecnica) {
-
+  frecs <- copy(frecs)
+  sumas <- copy(sumas)
+  nota_tecnica <- copy(nota_tecnica)
+  
   setnames(frecs, 1, "AGRUPADOR")
   setnames(sumas, 1, "AGRUPADOR")
   agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
@@ -302,6 +314,8 @@ diferencias_totales <- function(frecs, sumas, nota_tecnica) {
 descriptiva_basica_jerarquia <- function(
   data, columnas, columna_valor, columna_suma, nivel_1, nivel_2, 
   nivel_3, nivel_4, return_list = FALSE) {
+  
+  data <- copy(data)
   
   data[, "ASIGNACION_NIVEL" := ""]
   
