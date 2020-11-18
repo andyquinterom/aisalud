@@ -9,7 +9,7 @@ caja_de_bigotes_agrupador <- function(
       data_temp <- merge.data.table(
         x = columnas_sep[i],
         y = data
-      )[["VALOR"]]
+      )[[columna_numeros]]
       box_plot <<- box_plot %>%
         add_trace(y = data_temp, name = paste(
           unlist(columnas_sep[i]), collapse = "\n"
@@ -18,6 +18,9 @@ caja_de_bigotes_agrupador <- function(
     }
   )
   
-  return(box_plot)
+  return(box_plot %>%
+           layout(xaxis = list(title = "Agrupador"),
+                  yaxis = list(title = "Valor"),
+                  showlegend = FALSE))
 }
 

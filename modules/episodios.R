@@ -72,6 +72,24 @@ episodios_ui <- function(id) {
               )
             )
           )
+        ),
+        tabPanel(
+          title = "Caja de bigotes",
+          tags$br(),
+          fluidRow(
+            column(
+              width = 8,
+              plotlyOutput(
+                outputId = ns("caja_de_bigotes_render")
+              )
+            ),
+            column(
+              width = 4,
+              DT::dataTableOutput(
+                outputId = ns("caja_de_bigotes_select_agrupador")
+              )
+            )
+          )
         )
       )
       )
@@ -301,6 +319,26 @@ episodios_server <- function(input, output, session, datos, opciones,
                     fontSize = '95%')
               })
               
+              output$caja_de_bigotes_select_agrupador <- 
+                DT::renderDataTable({
+                  DT::datatable(
+                    episodios$tabla[["descriptiva"]][, c(
+                      episodios_cols, episodios_cols_sep), with = FALSE],
+                    options = list(
+                      language = list(
+                        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                      pageLength = 10000,
+                      dom = 'ft',
+                      autoWidth = FALSE,
+                      ordering=T, 
+                      scrollX = TRUE,
+                      scrollY = "370px"),
+                    rownames= FALSE) %>%
+                    formatStyle(
+                      columns = 1:length(c(episodios_cols, episodios_cols_sep)),
+                      fontSize = '95%')
+              })
+              
             })
           },
           error = function(e) {
@@ -332,7 +370,16 @@ episodios_server <- function(input, output, session, datos, opciones,
     }
   })
   
-
+  output$caja_de_bigotes_render <- renderPlotly({
+    if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
+      caja_de_bigotes_agrupador(
+        data = episodios$tabla[["data"]],
+        columna_numeros = "VALOR_CALCULOS", 
+        columnas_sep = episodios$lista_agrupadores[
+          input$caja_de_bigotes_select_agrupador_rows_selected]
+      )
+    }
+  })
   
   output$descriptiva_sumas_valor <- renderText({
     if (!is.null(datos$colnames)) {
