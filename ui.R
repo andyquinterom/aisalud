@@ -46,7 +46,6 @@ shinyUI(
           menuItem(
             text = "Análisis",
             icon = icon("chart-area", lib = "font-awesome"),
-            tabName = "analisis_modulo",
             menuSubItem(
               text = "Descriptiva",
               tabName = "episodios_modulo", 
@@ -76,7 +75,6 @@ shinyUI(
           menuItem(
             text = "Paquetes",
             icon = icon("chart-pie", lib = "font-awesome"),
-            tabName = "paquetes_modulo",
             menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
             menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
             tags$br()
