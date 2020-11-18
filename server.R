@@ -112,18 +112,19 @@ shinyServer(function(input, output, session) {
             get(opciones$histograma_col) <= opciones$histograma_x[2]]
         }
         
-        histograma <- ggplot(
-          data = histograma_datos,
-          mapping = aes(x = get(opciones$histograma_col)))
         
         output$histograma_render = renderPlotly({
+          
           if(is.null(opciones$histograma_fill) || 
              opciones$histograma_fill %in% c(opciones$histograma_col,
                                              "VALOR",
                                              "COSTO")) {
+            
             if(opciones$histograma_col %in% datos$colnames_num) {
+              
               variable <- as.data.table(histograma_datos)[ 
                 , get(opciones$histograma_col)]
+              
               densidad <- density(variable)
               
               plot_ly() %>% 
@@ -137,33 +138,40 @@ shinyServer(function(input, output, session) {
                                      showgrid = FALSE),
                        xaxis = list(title = opciones$histograma_col),
                        yaxis = list(title = "Conteo"),
-                       showlegend = FALSE)
+                       showlegend = FALSE) %>% 
+                config(locale = "es")
             } else {
+              
+              datos_grafico <- histograma_datos[
+                ,
+                .(conteo = .N),
+                by = c(opciones$histograma_col)]
+              
               ggplotly(
-                tooltip = NULL,
-                p = histograma +
-                  stat_count(width = opciones$histograma_width,
-                             color="black") +
-                  xlab(opciones$histograma_col) +
-                  ylab("Frecuencia") +
+                ggplot(datos_grafico,
+                       aes_string(x = opciones$histograma_col, 
+                                  y = "conteo")) +
+                  geom_bar(stat = "identity", width = opciones$histograma_width,
+                           fill = "#8a2be2") +
+                  coord_flip()+
+                  labs(x = opciones$histograma_col, y = "Frecuencia") +
                   scale_y_continuous(labels = scales::comma) +
-                  theme(
-                    axis.text.x = element_text(
-                      angle = 90,
-                      hjust = 1,
-                      size = 12),
-                    legend.title = element_blank())
-              ) %>% 
+                  theme_minimal() +
+                  theme(legend.title = element_blank())) %>% 
                 config(locale = "es") %>%
                 layout(legend = list(x= 1, y = 0.5))
             }
+            
           } else {
+            
             if(opciones$histograma_col %in% datos$colnames_num) {
               
               variable <- as.data.table(histograma_datos)[ 
                 ,
                 get(opciones$histograma_col)]
+              
               densidad <- density(variable)
+              
               agrupador <- as.data.table(histograma_datos)[ 
                 ,
                 get(opciones$histograma_fill)]
@@ -181,28 +189,32 @@ shinyServer(function(input, output, session) {
                        xaxis = list(title = opciones$histograma_col),
                        yaxis = list(title = "Conteo"),
                        showlegend = TRUE,
-                       barmode = "stack")
+                       barmode = "stack") %>% 
+                config(locale = "es")
               
             } else {
-              ggplotly(
-                tooltip = NULL,
-                p = histograma +
-                  stat_count(width = opciones$histograma_width,
-                             color="black",
-                             aes(fill = get(opciones$histograma_fill))) +
-                  xlab(opciones$histograma_col) +
-                  ylab("Frecuencia") +
-                  scale_y_continuous(labels = scales::comma) +
-                  theme(
-                    axis.text.x = element_text(
-                      angle = 90,
-                      hjust = 1,
-                      size = 12),
-                    legend.title = element_blank())
-              ) %>% 
-                config(locale = "es") %>%
-                layout(legend = list(x= 1, y = 0.5))
               
+              datos_grafico <- histograma_datos[
+                ,
+                .(conteo = .N),
+                by = c(opciones$histograma_col, opciones$histograma_fill)]
+              
+              
+              ggplotly(
+                ggplot(datos_grafico,  
+                       aes_string(x = opciones$histograma_col, 
+                                  y = "conteo",
+                                  fill = opciones$histograma_fill)) +
+                  geom_bar(stat = "identity",
+                           width = opciones$histograma_width) +
+                  coord_flip()+
+                  labs(x = opciones$histograma_col, y = "Frecuencia") +
+                  scale_fill_brewer(palette = "Set1") +
+                  scale_y_continuous(labels = scales::comma) +
+                  theme_minimal() +
+                  theme(legend.title = element_blank())) %>% 
+                config(locale = "es") %>%
+                layout(legend = list(x= 1, y = 0.5)) 
             }
           }
         })
