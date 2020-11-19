@@ -33,8 +33,8 @@ mes_spanish <- function(x) {
 descriptiva_basica <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR")
-  data[, "VALOR" := numerize(VALOR)]
+  setnames(data, columna_valor, "VALOR_CALCULOS")
+  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
   if (!prestaciones) {
     data[, "MES_ANIO_NUM" := min(lubridate::year(
       get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
@@ -46,7 +46,7 @@ descriptiva_basica <- function(
       sep = " - "),
       by = c(columna_suma)]
     columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
-    data <- data[, list("VALOR" = sum(VALOR)),
+    data <- data[, list("VALOR_CALCULOS" = sum(VALOR_CALCULOS)),
                  by = c(columna_suma,
                         columnas[columnas != columna_suma])]
   } else {
@@ -58,8 +58,8 @@ descriptiva_basica <- function(
       sep = " - ")]
     columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
   }
-  data <- data[, list("Frecuencia" = length(VALOR),
-                      "Suma" = sum(VALOR, na.rm = TRUE)),
+  data <- data[, list("Frecuencia" = length(VALOR_CALCULOS),
+                      "Suma" = sum(VALOR_CALCULOS, na.rm = TRUE)),
                       by = c(columnas)]
   setnames(data, c(columnas, "Frecuencia", "Suma"))
   
@@ -70,8 +70,8 @@ descriptiva_basica <- function(
 descriptiva_basica_episodios <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR")
-  data[, "VALOR" := numerize(VALOR)]
+  setnames(data, columna_valor, "VALOR_CALCULOS")
+  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
   data[, "MES_ANIO_NUM" := min(lubridate::year(
     get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
     na.rm = TRUE),
@@ -83,7 +83,7 @@ descriptiva_basica_episodios <- function(
     by = c(columna_suma)]
   columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma_ep" = sum(VALOR, na.rm = TRUE),
+                      "Suma_ep" = sum(VALOR_CALCULOS, na.rm = TRUE),
                       "VAR_COLUMNAS" = unique(get(agrupador))),
                by = c(columna_suma, "MES_ANIO_NUM", "MES_ANIO")]
   setnames(data, "VAR_COLUMNAS", agrupador)

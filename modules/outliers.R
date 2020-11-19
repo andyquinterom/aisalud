@@ -139,6 +139,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
           
           output$outliers_tabla <- DT::renderDataTable({
             DT::datatable(
+              colnames = c('Valor' = 'VALOR_CALCULOS'),
               outliers$tabla,
               options = list(
                 language = list(
@@ -149,7 +150,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
                 scrollX = TRUE,
                 scrollY = "500px"),
               rownames = FALSE) %>%
-              formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
+              formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
           })
         } else {
           outliers$tabla <- outliers_iqr(
@@ -161,6 +162,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
           
           output$outliers_tabla <- DT::renderDataTable({
             DT::datatable(
+              colnames = c('Valor' = 'VALOR_CALCULOS'),
               outliers$tabla,
               options = list(
                 language = list(
@@ -171,7 +173,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
                 scrollX = TRUE,
                 scrollY = "500px"),
               rownames = FALSE) %>%
-              formatCurrency(c('VALOR'), mark = ".", dec.mark = ",")
+              formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
           })
         }
         

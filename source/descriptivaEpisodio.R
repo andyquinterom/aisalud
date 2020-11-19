@@ -1,18 +1,18 @@
 episodios_descriptiva <- function(data, columnas, columna_valor, columna_suma,
                                   columna_sep) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR")
-  data[, "VALOR" := numerize(VALOR)]
+  setnames(data, columna_valor, "VALOR_CALCULOS")
+  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma" = sum(VALOR, na.rm = TRUE),
+                      "Suma" = sum(VALOR_CALCULOS, na.rm = TRUE),
                       "VAR_COLUMNAS" = unique(get(columnas))),
                       by = c(columna_suma, columna_sep)]
   setnames(data, "VAR_COLUMNAS", columnas)
-  data <- descriptiva(data,
+  data_descriptiva <- descriptiva(data,
                       columnas = c(columnas, columna_sep),
                       columna_suma = columna_suma,
                       columna_valor = "Suma", prestaciones = FALSE)
-  return(data)
+  return(data_descriptiva)
   data <- NULL
 }
 
@@ -27,18 +27,28 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   episodios_nivel_3 <- data.table()
   episodios_nivel_4 <- data.table()
   
+  episodios_nivel_1_data <- data.table()
+  episodios_nivel_2_data <- data.table()
+  episodios_nivel_3_data <- data.table()
+  episodios_nivel_4_data <- data.table()
+  
   if (!is.null(nivel_1)) {
     episodios_nivel_1 <- list()
+    episodios_nivel_1_data <- list()
     lapply(
       X = nivel_1,
       FUN = function(i) {
-        episodios_nivel_1[[i]] <<- episodios_descriptiva(
+        data_temp <- episodios_descriptiva(
           data = data,
           columnas = columnas,
           columna_valor = columna_valor,
           columna_suma = columna_suma,
-          columna_sep = columna_sep
-        )[get(columnas) %in% i]
+          columna_sep = columna_sep)
+        episodios_nivel_1[[i]] <<- data_temp[["descriptiva"]][
+          get(columnas) %in% i]
+        episodios_nivel_1_data[[i]] <<- data_temp[["data"]][
+          get(columnas) %in% i]
+        data_temp <- NULL
         registros_procesados <- unique(data[
           get(columnas) %in% i][[columna_suma]])
         data[get(columna_suma) %in% registros_procesados,
@@ -47,18 +57,24 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
         registros_procesados <- NULL
       }
     )
+    episodios_nivel_1_data <- rbindlist(episodios_nivel_1_data)
     episodios_nivel_1 <- rbindlist(episodios_nivel_1)
   }
   
   
   if (!is.null(nivel_2)) {
-    episodios_nivel_2 <- descriptiva(
+    data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
       columna_suma = "NRO_FACTURA",
       prestaciones = FALSE
-    )[get(columnas) %in% nivel_2]
+    )
+    episodios_nivel_2 <- data_temp[["descriptiva"]][
+      get(columnas) %in% nivel_2]
+    episodios_nivel_2_data <- data_temp[["data"]][
+      get(columnas) %in% nivel_2]
+    data_temp <- NULL
     registros_procesados <- unique(data[
       get(columnas) %in% i][["NRO_FACTURA"]])
     data[get(columna_suma) %in% registros_procesados,
@@ -68,13 +84,18 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
   
   if (!is.null(nivel_3)) {
-    episodios_nivel_3 <- descriptiva(
+    data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
       columna_suma = "NRO_IDENTIFICACION",
       prestaciones = FALSE
-    )[get(columnas) %in% nivel_3]
+    )
+    episodios_nivel_3 <- data_temp[["descriptiva"]][
+      get(columnas) %in% nivel_3]
+    episodios_nivel_3_data <- data_temp[["data"]][
+      get(columnas) %in% nivel_3]
+    data_temp <- NULL
     registros_procesados <- unique(data[
       get(columnas) %in% i][["NRO_IDENTIFICACION"]])
     data[get(columna_suma) %in% registros_procesados,
@@ -83,29 +104,45 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
   
   if (!is.null(nivel_4)) {
-    episodios_nivel_4 <- descriptiva(
+    data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
       columna_suma = "",
       prestaciones = TRUE
-    )[get(columnas) %in% nivel_4]
+    )
+    episodios_nivel_4 <- data_temp[["descriptiva"]][get(columnas) %in% nivel_4]
+    columnas_select <- c(columnas, columna_sep)
+    episodios_nivel_4_data <- data_temp[["data"]][
+      get(columnas) %in% nivel_4][, c(columnas_select, "VALOR_CALCULOS"), with = FALSE]
+    data_temp <- NULL
   }
   
   return(
     if (return_list) {
       list(
-        "episodio" = episodios_nivel_1,
-        "factura"   = episodios_nivel_2,
-        "paciente"  = episodios_nivel_3,
-        "prestacion"= episodios_nivel_4
+        "descriptiva" = list(
+          "episodio" = episodios_nivel_1,
+          "factura"   = episodios_nivel_2,
+          "paciente"  = episodios_nivel_3,
+          "prestacion"= episodios_nivel_4
+        )
       )
     } else {
-      rbind(
-        episodios_nivel_1,
-        episodios_nivel_2,
-        episodios_nivel_3,
-        episodios_nivel_4
+      list(
+        "descriptiva" = rbind(
+          episodios_nivel_1,
+          episodios_nivel_2,
+          episodios_nivel_3,
+          episodios_nivel_4
+        ),
+        "data" = rbind(
+          fill = TRUE,
+          episodios_nivel_1_data,
+          episodios_nivel_2_data,
+          episodios_nivel_3_data,
+          episodios_nivel_4_data
+        )
       )
     }
   )

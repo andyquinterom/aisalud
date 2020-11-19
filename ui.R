@@ -20,12 +20,14 @@ shinyUI(
          });"
       ))),
     dashboardPagePlus(
+      collapse_sidebar = TRUE,
       skin = "black",
       dashboardHeaderPlus(
         fixed = TRUE,
-        title = "Salud - Analítica",
+        title = "",
         enable_rightsidebar = TRUE),
       sidebar = dashboardSidebar(
+        collapsed = TRUE,
         sidebarMenu(
           HTML('
                <img src="logoblanco.png" width="100%"/>
@@ -42,17 +44,21 @@ shinyUI(
           #   tabName = "descriptiva_modulo",
           #    icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = "Descriptiva",
-            tabName = "episodios_modulo",
-            icon = icon("table", lib = "font-awesome")),
-          menuItem(
-            text = "Nota técnica",
-            tabName = "nota_tecnica_modulo",
-            icon = icon("table", lib = "font-awesome")),
-          menuItem(
-            text = "Outliers",
-            icon = icon("search-minus", lib = "font-awesome"),
-            tabName = "outliers_modulo"),
+            text = "Análisis",
+            icon = icon("chart-area", lib = "font-awesome"),
+            menuSubItem(
+              text = "Descriptiva",
+              tabName = "episodios_modulo", 
+              icon = icon("table", lib = "font-awesome")),
+            menuSubItem(
+              text = "Nota técnica", 
+              tabName = "nota_tecnica_modulo",
+              icon = icon("tags", lib = "font-awesome")),
+            menuSubItem(
+              text = "Outliers",
+              icon = icon("search-minus", lib = "font-awesome"),
+              tabName = "outliers_modulo")
+          ),
           menuItem(
             text = "Seguimiento",
             icon = icon("dollar-sign", lib = "font-awesome"),
@@ -69,7 +75,6 @@ shinyUI(
           menuItem(
             text = "Paquetes",
             icon = icon("chart-pie", lib = "font-awesome"),
-            tabName = "paquetes_modulo",
             menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
             menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
             tags$br()
