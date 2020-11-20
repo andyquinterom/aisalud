@@ -32,11 +32,12 @@ paquetes_dashboard_ui <- function(id) {
             inputId = ns("paquetes_select"),
             label = "Paquete:",
             choices = na.omit(
-              unique(paquetes$`CODIGO PAQUETE`))),
+              unique(paquetes$codigo_paquete))),
           radioButtons(
             inputId = ns("paquetes_valor_costo"),
             label = NULL,
-            choices = c("VALOR", "COSTO")
+            choiceNames = c("Valor", "Costo"),
+            choiceValues = c("valor", "costo")
           ),
           ggiraph::ggiraphOutput(
             outputId = ns("paquetes_plot_ref"),
@@ -69,12 +70,13 @@ paquetes_dashboard_ui <- function(id) {
           selectInput(
             inputId = ns("paquetes_componenete_select"),
             label = "Componente:",
-            choices = unique(paquetes_cups$COMPONENTE),
+            choices = unique(paquetes_cups$componente),
             multiple = T),
           selectInput(
             inputId = ns("paquetes_componenete_datos"),
             label = "Datos:",
-            choices = c("PRESTACION", "TIPO DE COSTO")),
+            choices = c("PRESTACIÓN" = "prestacion",
+                        "TIPO DE COSTO" = "tipo_de_costo")),
           ggiraph::ggiraphOutput(
             outputId = ns("paquetes_componenete_plot"),
             width = "100%"),
@@ -91,12 +93,13 @@ paquetes_dashboard_ui <- function(id) {
           selectInput(
             inputId = ns("paquetes_tipo_costo_select"),
             label = "Tipo de costo:",
-            choices = unique(paquetes_cups$`TIPO DE COSTO`),
+            choices = unique(paquetes_cups$tipo_de_costo),
             multiple = T),
           selectInput(
             inputId = ns("paquetes_tipo_costo_datos"),
             label = "Datos:",
-            choices = c("PRESTACION", "COMPONENTE")),
+            choice = c("PRESTACION" = "prestacion", 
+                       "COMPONENTE" = "componente")),
           ggiraph::ggiraphOutput(
             outputId = ns("paquetes_tipo_costo_plot"),
             width = "100%"),
@@ -129,7 +132,8 @@ paquetes_dashboard_ui <- function(id) {
             selectInput(
               inputId = ns("paquetes_resumen_select"),
               label = "",
-              choices = c("COMPONENTE", "TIPO DE COSTO")),
+              choices = c("COMPONENTE" = "componente",
+                          "TIPO DE COSTO" = "tipo_de_costo")),
             ggiraph::girafeOutput(
               outputId = ns("paquetes_resumen_plot"),
               width = "100%"),
@@ -152,29 +156,6 @@ paquetes_dashboard_server <- function(
   input, output, session, paquetes, paquetes_ref_cups, paquetes_ref, 
   paquetes_paquetes, paquetes_cups) {
   
-  output$paquetes_indice_tabla <- DT::renderDataTable(
-    datatable(
-      unique(paquetes[, list(`CODIGO PAQUETE`,
-                             ESPECIALIDAD,
-                             SERVICIO,
-                             DESCRIPCION,
-                             INCLUSIONES,
-                             EXCLUSIONES)]),
-      rownames = F,
-      options = list(
-        dom = 'ft',
-        ordering = FALSE,
-        scrollX = TRUE,
-        scrollY = "80vh",
-        pageLength = nrow(
-          unique(paquetes[, list(`CODIGO PAQUETE`,
-                                 ESPECIALIDAD, SERVICIO,
-                                 DESCRIPCION, INCLUSIONES,
-                                 EXCLUSIONES)]))
-      )) %>%
-      DT::formatStyle(1:6, backgroundColor = 'white')
-  )
-  
   observeEvent(input$paquetes_actualizar, {
     confirmSweetAlert(
       session,
@@ -196,20 +177,20 @@ paquetes_dashboard_server <- function(
           write_feather(
             x = sheets_read(
               paquete_path,
-              sheet = "PAQUETES",
+              sheet = "paquetes",
               col_types = "cccdcccccccdd"),
             "datos/paquetes/paquetes.feather")
           incProgress(0.3)
           write_feather(
             sheets_read(
               paquete_path,
-              sheet = "REFERENTE-PAQUETES"),
+              sheet = "referente_paquetes"),
             "datos/paquetes/referente-paquetes.feather")
           incProgress(0.3)
           write_feather(
             sheets_read(
               paquete_path,
-              sheet = "REFERENTE"),
+              sheet = "referente"),
             "datos/paquetes/referente.feather")
           incProgress(0.3)
         })
@@ -237,45 +218,52 @@ paquetes_dashboard_server <- function(
       paquetes_valores$paquete <- input$paquetes_select
       
       paquetes_valores$paquete_datos <- paquetes_paquetes[
-        `CODIGO PAQUETE` == input$paquetes_select]
+        codigo_paquete == input$paquetes_select]
       paquetes_valores$paquete_cups <- paquetes_cups[
-        `CODIGO PAQUETE` == input$paquetes_select]
+        codigo_paquete == input$paquetes_select]
       
       paquetes_valores$servicio <-
-        paquetes_valores$paquete_datos$SERVICIO
+        paquetes_valores$paquete_datos$servicio
       paquetes_valores$especialidad <-
-        paquetes_valores$paquete_datos$ESPECIALIDAD
+        paquetes_valores$paquete_datos$especialidad
       paquetes_valores$descripcion <-
-        paquetes_valores$paquete_datos$`DESCRIPCION`
+        paquetes_valores$paquete_datos$descripcion
       paquetes_valores$inclusiones <- 
-        paquetes_valores$paquete_datos$`INCLUSIONES`
+        paquetes_valores$paquete_datos$inclusiones
       paquetes_valores$exclusiones <- 
-        paquetes_valores$paquete_datos$`EXCLUSIONES`
+        paquetes_valores$paquete_datos$exclusiones
     }
   })
   
   output$paquetes_tabla <- DT::renderDataTable({
     if(!is.null(paquetes)) {
       datatable(
-        paquetes_valores$paquete_datos[,
-                                       c("CUMS/CUPS",
-                                         "PRESTACION",
-                                         "COMPONENTE", 
-                                         "TIPO DE COSTO",
-                                         "VALOR",
-                                         "COSTO")],
+        paquetes_valores$paquete_cups[,
+                                       c("cums_cups",
+                                         "prestacion",
+                                         "componente", 
+                                         "tipo_de_costo",
+                                         "valor",
+                                         "costo")],
+        colnames = c(
+          "CUMS/CUPS",
+          "Prestación",
+          "Componente",
+          "Tipo de costo",
+          "Valor",
+          "Costo"),
         rownames = F,
         selection = 'single',
         options = list(
           dom='ft',
           language = list(
             url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(paquetes_valores$paquete_datos),
+          pageLength = nrow(paquetes_valores$paquete_cups),
           ordering = FALSE,
           scrollX = TRUE,
           scrollY = "60vh")) %>%
         DT::formatCurrency(
-          columns = c("VALOR", "COSTO"),
+          columns = c("valor", "costo"),
           digits = 0,
           mark = ".",
           dec.mark = "," )
@@ -296,7 +284,7 @@ paquetes_dashboard_server <- function(
   output$paquetes_valortotal <- renderValueBox({
     if(!is.null(paquetes)) {
       valueBox(
-        value = formatAsCurrency(paquetes_valores$paquete_datos$VALOR),
+        value = formatAsCurrency(paquetes_valores$paquete_datos$valor),
         subtitle = "Valor del paquete", 
         icon = icon("tags", lib = "font-awesome"), 
         color = "green"
@@ -307,7 +295,7 @@ paquetes_dashboard_server <- function(
   output$paquetes_costototal <- renderValueBox({
     if(!is.null(paquetes)) {
       valueBox(
-        value = formatAsCurrency(paquetes_valores$paquete_datos$COSTO),
+        value = formatAsCurrency(paquetes_valores$paquete_datos$costo),
         subtitle = "Costo del paquete", 
         icon = icon("money-check", lib = "font-awesome"),
         color = "red"
@@ -369,10 +357,10 @@ paquetes_dashboard_server <- function(
       ref_plot(
         paquetes = paquetes_valores$paquete_cups,
         referente = paquetes_ref[
-          `CODIGO PAQUETE` == paquetes_valores$paquete],
+          codigo_paquete == paquetes_valores$paquete],
         cups = paquetes_valores$paquete_cups[
           input$paquetes_tabla_rows_selected,
-          "CUMS/CUPS"],
+          cums_cups],
         valor_costo = input$paquetes_valor_costo)
   })
   
@@ -381,7 +369,12 @@ paquetes_dashboard_server <- function(
       pie_chart(
         paquetes = paquetes_valores$paquete_cups,
         columna = input$paquetes_resumen_select,
-        valor_costo = input$paquetes_valor_costo)
+        valor_costo = input$paquetes_valor_costo,
+        nombre_legend = ifelse(
+          test = input$paquetes_resumen_select == "componente",
+          yes = "Componente",
+          no = "Tipo de costo"
+        ))
   })
   
   output$paquetes_resumen_tabla <- DT::renderDataTable({
@@ -414,9 +407,14 @@ paquetes_dashboard_server <- function(
     if(!is.null(input$paquetes_componenete_select))
       pie_chart(
         paquetes = paquetes_valores$paquete_cups[
-          COMPONENTE %in% input$paquetes_componenete_select],
+          componente %in% input$paquetes_componenete_select],
         columna = input$paquetes_componenete_datos,
-        valor_costo = input$paquetes_valor_costo)
+        valor_costo = input$paquetes_valor_costo,
+        nombre_legend = ifelse(
+          test = input$paquetes_componenete_datos == "prestacion",
+          yes = "Prestación",
+          no = "Tipo de costo"
+        ))
   })
   
   output$paquetes_componenete_tabla <- DT::renderDataTable({
@@ -424,7 +422,7 @@ paquetes_dashboard_server <- function(
       datatable(
         resumenComp(
           tabla = paquetes_valores$paquete_cups[
-            COMPONENTE %in% input$paquetes_componenete_select],
+            componente %in% input$paquetes_componenete_select],
           columna = input$paquetes_componenete_datos,
           colsum = input$paquetes_valor_costo),
         rownames = F, 
@@ -447,9 +445,14 @@ paquetes_dashboard_server <- function(
     if(!is.null(input$paquetes_tipo_costo_select))
       pie_chart(
         paquetes = paquetes_valores$paquete_cups[
-          `TIPO DE COSTO` %in% input$paquetes_tipo_costo_select],
+          tipo_de_costo %in% input$paquetes_tipo_costo_select],
         columna = input$paquetes_tipo_costo_datos,
-        valor_costo = input$paquetes_valor_costo)
+        valor_costo = input$paquetes_valor_costo,
+        nombre_legend = ifelse(
+          test = input$paquetes_tipo_costo_datos == "componente",
+          yes = "Componente",
+          no = "Prestación"
+        ))
   })
   
   output$paquetes_tipo_costo_tabla <- DT::renderDataTable({
@@ -457,7 +460,7 @@ paquetes_dashboard_server <- function(
       datatable(
         resumenComp(
           tabla = paquetes_valores$paquete_cups[
-            `TIPO DE COSTO` %in% input$paquetes_tipo_costo_select],
+            tipo_de_costo %in% input$paquetes_tipo_costo_select],
           columna = input$paquetes_tipo_costo_datos,
           colsum = input$paquetes_valor_costo),
         rownames = F,

@@ -1,7 +1,7 @@
 resumenComp <- function(tabla, columna, colsum) {
   
   tabla <- copy(tabla)
-  total <- sum(tabla[, list(get(colsum))], na.rm = TRUE)
+  total <- sum(tabla[, c(colsum), with = FALSE], na.rm = TRUE)
   totales <- data.table("x" = "TOTAL",
                         "SUMA" = formatAsCurrency(total),
                         "PARTICIPACIÓN (%)" = "100%")
@@ -13,7 +13,7 @@ resumenComp <- function(tabla, columna, colsum) {
       tabla[,
         list("SUMA" = formatAsCurrency(sum(get(colsum), na.rm = T)), 
              "PARTICIPACIÓN (%)" = formatAsPerc(
-               sum(get(colsum), na.rm = T)/total)),
+               sum(get(colsum), na.rm = T)*100/total)),
         by = columna],
       totales
     )

@@ -66,10 +66,10 @@ if (file.exists("datos/paquetes/paquetes.feather") &&
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 
-    paquetes[`COMPONENTE` == "PAQUETE"]
+    paquetes[componente == "PAQUETE"]
   
   paquetes_cups <- 
-    paquetes[`COMPONENTE` != "PAQUETE"]
+    paquetes[componente != "PAQUETE"]
   
 }
 
@@ -105,7 +105,7 @@ if (Sys.getenv("pricing_path") == "") {
 
 if (Sys.getenv("paquete_path") == "") {
   
-  paquete_path <- "1-_uwyGQspW--DhG6PAC4DUi6NTjMzGqy5ldzhcvkO0U"
+  paquete_path <- "1xR5w_c8puXRqqMtPIphRUogF7q5AAeExUrCb6U5s4i8"
   
 } else {
   
@@ -137,14 +137,14 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
         file.exists("datos/paquetes/referente-paquetes.feather") && 
         file.exists("datos/paquetes/referente.feather"))) {
     
-    write_feather(sheets_read(paquete_path, sheet = "PAQUETES",
+    write_feather(sheets_read(paquete_path, sheet = "paquetes",
                               col_types = "cccdcccccccdd"), 
                   path = "datos/paquetes/paquetes.feather")
     
-    write_feather(sheets_read(paquete_path, sheet = "REFERENTE-PAQUETES"),
+    write_feather(sheets_read(paquete_path, sheet = "referente_paquetes"),
                   path = "datos/paquetes/referente-paquetes.feather")
     
-    write_feather(sheets_read(paquete_path, sheet = "REFERENTE"),
+    write_feather(sheets_read(paquete_path, sheet = "referente"),
                   path = "datos/paquetes/referente.feather")
     
   }
@@ -160,10 +160,10 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 
-    paquetes[`COMPONENTE` == "PAQUETE"]
+    paquetes[componente == "PAQUETE"]
   
   paquetes_cups <- 
-    paquetes[`COMPONENTE` != "PAQUETE"]
+    paquetes[componente != "PAQUETE"]
 }
 
 # Pricing  -------------------------------------------------------------------- 
