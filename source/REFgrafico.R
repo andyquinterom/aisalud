@@ -10,8 +10,6 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
           cbind(referente, data.frame(
             "TIPO" = rep("REFERENTE", nrow(referente))))))
   
-  print(referente.completo)
-      
   promedios <- referente.completo[cums_cups %in% cups, list(
     p,
     costomean = mean(ref_costo, na.rm = T), 

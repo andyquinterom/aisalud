@@ -13,10 +13,10 @@ seguimiento_notas_comparar_ui <- function(id) {
         width = 12,
         box(
           width = 4,
-          pickerInput(
+          selectizeInput(
             inputId = ns("comparar_select"),
             width = "100%",
-            choices = dash_nt_codigos, 
+            choices = "Ninguno", 
             label = "Nota técnica"),
           checkboxInput(
             inputId = ns("comparar_episodios"),
@@ -29,7 +29,7 @@ seguimiento_notas_comparar_ui <- function(id) {
           selectizeInput(
             inputId = ns("comparar_agrupador"),
             label = "Agrupar por:",
-            choices = c("NA"),
+            choices = c("Ninguno"),
             multiple = FALSE),
           actionButton(
             inputId = ns("comparar_exe"),
@@ -124,9 +124,18 @@ seguimiento_notas_comparar_server <- function(
   
   ns <- NS(nombre_id)
   
+  observeEvent(comparar$indice, {
+    updateSelectizeInput(
+      session = session,
+      choices = comparar$indice$cod_nt,
+      inputId = "comparar_select"
+    )
+  })
+  
   comparar <- reactiveValues(
     datos = data.table(),
-    agrupadores_items = NULL
+    agrupadores_items = NULL,
+    indice = indice
   )
   
   observeEvent(datos$colnames, {
@@ -254,7 +263,7 @@ seguimiento_notas_comparar_server <- function(
   })
   
   observeEvent(input$comparar_exe, {
-    if(!is.null(datos$colnames) && input$comparar_select != "NA") {
+    if(!is.null(datos$colnames) && input$comparar_select != "Ninguno") {
       comparar$select <- input$comparar_select
       comparar$agrupador <- input$comparar_agrupador
       comparar$col_valor <- input$comparar_col_valor
@@ -263,7 +272,7 @@ seguimiento_notas_comparar_server <- function(
         expr = {
           
           comparar$datos <- nota_tecnica[
-            COD_NT == input$comparar_select]
+            cod_nt == input$comparar_select]
           
           if (!is.null(comparar$agrupadores_items)) {
             descriptiva_basica_tabla <- descriptiva_basica_jerarquia(

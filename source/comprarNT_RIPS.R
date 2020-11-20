@@ -334,7 +334,7 @@ descriptiva_basica_jerarquia <- function(
           agrupador = columnas,  
           columna_valor = columna_valor,
           columna_suma = columna_suma,
-          columna_fecha = "FECHA_PRESTACION",
+          columna_fecha = "fecha_prestacion",
           prestaciones = FALSE
         )[get(columnas) %in% i]
         registros_procesados <- unique(data[
@@ -354,12 +354,12 @@ descriptiva_basica_jerarquia <- function(
       data = data,
       agrupador = columnas,  
       columna_valor = columna_valor,
-      columna_suma = "NRO_FACTURA",
-      columna_fecha = "FECHA_PRESTACION",
+      columna_suma = "nro_factura",
+      columna_fecha = "fecha_prestacion",
       prestaciones = FALSE
     )[get(columnas) %in% nivel_2]
     registros_procesados <- unique(data[
-      get(columnas) %in% i][["NRO_FACTURA"]])
+      get(columnas) %in% i][["nro_factura"]])
     data[get(columna_suma) %in% registros_procesados,
          "ASIGNACION_NIVEL" := "nivel_2"]
     data <- data[ASIGNACION_NIVEL != "nivel_2"]
@@ -371,12 +371,12 @@ descriptiva_basica_jerarquia <- function(
       data = data,
       agrupador = columnas,  
       columna_valor = columna_valor,
-      columna_suma = "NRO_IDENTIFICACION",
-      columna_fecha = "FECHA_PRESTACION",
+      columna_suma = "nro_identificacion",
+      columna_fecha = "fecha_prestacion",
       prestaciones = FALSE
     )[get(columnas) %in% nivel_3]
     registros_procesados <- unique(data[
-      get(columnas) %in% i][["NRO_IDENTIFICACION"]])
+      get(columnas) %in% i][["nro_identificacion"]])
     data[get(columna_suma) %in% registros_procesados,
          "ASIGNACION_NIVEL" := "nivel_3"]
     data <- data[ASIGNACION_NIVEL != "nivel_3"]
@@ -388,7 +388,7 @@ descriptiva_basica_jerarquia <- function(
       agrupador = columnas,  
       columna_valor = columna_valor,
       columna_suma = "",
-      columna_fecha = "FECHA_PRESTACION",
+      columna_fecha = "fecha_prestacion",
       prestaciones = TRUE
     )[get(columnas) %in% nivel_4]
   }

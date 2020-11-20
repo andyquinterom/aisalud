@@ -31,8 +31,7 @@ paquetes_dashboard_ui <- function(id) {
           selectInput(
             inputId = ns("paquetes_select"),
             label = "Paquete:",
-            choices = na.omit(
-              unique(paquetes$codigo_paquete))),
+            choices = "Ninguno"),
           radioButtons(
             inputId = ns("paquetes_valor_costo"),
             label = NULL,
@@ -67,10 +66,10 @@ paquetes_dashboard_ui <- function(id) {
         width = 6,
         box(
           width = 12,
-          selectInput(
+          selectizeInput(
             inputId = ns("paquetes_componenete_select"),
             label = "Componente:",
-            choices = unique(paquetes_cups$componente),
+            choices = "Ninguno",
             multiple = T),
           selectInput(
             inputId = ns("paquetes_componenete_datos"),
@@ -90,10 +89,10 @@ paquetes_dashboard_ui <- function(id) {
         width = 6,
         box(
           width = 12,
-          selectInput(
+          selectizeInput(
             inputId = ns("paquetes_tipo_costo_select"),
             label = "Tipo de costo:",
-            choices = unique(paquetes_cups$tipo_de_costo),
+            choices = "Ninguno",
             multiple = T),
           selectInput(
             inputId = ns("paquetes_tipo_costo_datos"),
@@ -155,6 +154,28 @@ paquetes_dashboard_ui <- function(id) {
 paquetes_dashboard_server <- function(
   input, output, session, paquetes, paquetes_ref_cups, paquetes_ref, 
   paquetes_paquetes, paquetes_cups) {
+  
+  
+#unique(paquetes_cups$componente)     paquetes_componenete_select
+# unique(paquetes_cups$tipo_de_costo) paquetes_tipo_costo_select
+  observeEvent(paquetes, {
+    updateSelectizeInput(
+      session = session,
+      inputId = "paquetes_select",
+      choices = na.omit(
+        unique(paquetes$codigo_paquete))
+    )
+    updateSelectizeInput(
+      session = session,
+      inputId = "paquetes_tipo_costo_select",
+      choices = unique(paquetes_cups$tipo_de_costo)
+    )
+    updateSelectizeInput(
+      session = session,
+      inputId = "paquetes_componenete_select",
+      choices = unique(paquetes_cups$componente)
+    )
+  })
   
   observeEvent(input$paquetes_actualizar, {
     confirmSweetAlert(

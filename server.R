@@ -1,9 +1,5 @@
 shinyServer(function(input, output, session) {
   
-  session$onSessionEnded(function() {
-    stopApp()
-  })
-  
   opciones <- reactiveValues(
     "valor_costo" = "valor"
   )
