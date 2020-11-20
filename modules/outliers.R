@@ -105,7 +105,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
         datos$pacientes_excluir, 
         unlist(
           outliers$tabla[
-            input$outliers_tabla_rows_selected, "NRO_IDENTIFICACION"])
+            input$outliers_tabla_rows_selected, "nro_identificacion"])
       ))
       datos$pacientes_excluir_exe <- TRUE
       datos$pacientes_excluir_exe <- FALSE
@@ -139,7 +139,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
           
           output$outliers_tabla <- DT::renderDataTable({
             DT::datatable(
-              colnames = c('Valor' = 'VALOR_CALCULOS'),
+              colnames = c('Valor' = 'valor_calculos'),
               outliers$tabla,
               options = list(
                 language = list(
@@ -162,7 +162,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
           
           output$outliers_tabla <- DT::renderDataTable({
             DT::datatable(
-              colnames = c('Valor' = 'VALOR_CALCULOS'),
+              colnames = c('Valor' = 'valor_calculos'),
               outliers$tabla,
               options = list(
                 language = list(
@@ -180,7 +180,7 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
         lista_pacientes <- agregar(
           data = datos$data_table,
           columna_valor = opciones$valor_costo,
-          columnas = "NRO_IDENTIFICACION",
+          columnas = "nro_identificacion",
           columna_suma = "",
           prestaciones = TRUE
         )

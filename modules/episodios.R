@@ -112,7 +112,7 @@ episodios_server <- function(input, output, session, datos, opciones,
         session = session,
         inputId = "episodios_col_valor",
         choices = datos$colnames,
-        selected = "NRO_IDENTIFICACION"
+        selected = "nro_identificacion"
       )
     }
     updateSelectizeInput(
@@ -134,7 +134,7 @@ episodios_server <- function(input, output, session, datos, opciones,
           inputId = ns("episodios_col_valor"),
           label = "Sumar valor por:",
           choices = datos$colnames,
-          selected = "NRO_IDENTIFICACION",
+          selected = "nro_identificacion",
           multiple = FALSE)
       })
     } else {
@@ -174,8 +174,8 @@ episodios_server <- function(input, output, session, datos, opciones,
                 ),
                 choiceValues = c(
                   "prestacion",
-                  "NRO_IDENTIFICACION",
-                  "NRO_FACTURA"
+                  "nro_identificacion",
+                  "nro_factura"
                 )
               )
             })
@@ -365,7 +365,7 @@ episodios_server <- function(input, output, session, datos, opciones,
           x = episodios$lista_agrupadores[
             input$histograma_select_agrupador_rows_selected],
           y = episodios$tabla[["data"]]
-        )[["VALOR_CALCULOS"]]
+        )[["valor_calculos"]]
       )
     }
   })
@@ -374,7 +374,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
       caja_de_bigotes_agrupador(
         data = episodios$tabla[["data"]],
-        columna_numeros = "VALOR_CALCULOS", 
+        columna_numeros = "valor_calculos", 
         columnas_sep = episodios$lista_agrupadores[
           input$caja_de_bigotes_select_agrupador_rows_selected]
       )
@@ -399,7 +399,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(datos$colnames)) {
       paste("Número de registros:", 
             formatC(
-              length(datos$data_table[["NRO_IDENTIFICACION"]]),
+              length(datos$data_table[["nro_identificacion"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -414,7 +414,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(datos$colnames)) {
       paste("Número de pacientes:", 
             formatC(
-              uniqueN(datos$data_table[["NRO_IDENTIFICACION"]]),
+              uniqueN(datos$data_table[["nro_identificacion"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -426,10 +426,10 @@ episodios_server <- function(input, output, session, datos, opciones,
   })
   
   output$descriptiva_sumas_facturas <- renderText({
-    if (!is.null(datos$colnames) && "NRO_FACTURA" %in% datos$colnames) {
+    if (!is.null(datos$colnames) && "nro_factura" %in% datos$colnames) {
       paste("Número de facturas:", 
             formatC(
-              uniqueN(datos$data_table[["NRO_FACTURA"]]),
+              uniqueN(datos$data_table[["nro_factura"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 

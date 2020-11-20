@@ -150,7 +150,7 @@ seguimiento_notas_comparar_server <- function(
         selectizeInput(
           inputId = ns("comparar_col_valor"),
           label = "Sumar valor por:",
-          selected = "NRO_IDENTIFICACION",
+          selected = "nro_identificacion",
           choices = datos$colnames,
           multiple = FALSE)
       })
@@ -205,8 +205,8 @@ seguimiento_notas_comparar_server <- function(
             ),
             choiceValues = c(
               "prestacion",
-              "NRO_IDENTIFICACION",
-              "NRO_FACTURA"
+              "nro_identificacion",
+              "nro_factura"
             )
           ))
       })
@@ -283,7 +283,7 @@ seguimiento_notas_comparar_server <- function(
               columna_valor = opciones$valor_costo,
               columna_suma = input$descriptiva_unidades,
               prestaciones = (input$descriptiva_unidades == "prestacion"),
-              columna_fecha = "FECHA_PRESTACION"
+              columna_fecha = "fecha_prestacion"
             )
           }
           

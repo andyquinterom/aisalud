@@ -115,7 +115,7 @@ if (Sys.getenv("paquete_path") == "") {
 
 if (Sys.getenv("nts_path") == "") {
   
-  nts_path <- "1zTmNGV5mgFqvNJK-g68D9sBTOTmhYBTvz8ECuDuSjmU"
+  nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
   
 } else {
   
@@ -213,17 +213,17 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
         file.exists("datos/nts/nt_mapa.rds"))) {
     
     write_feather(sheets_read(nts_path,
-                              sheet = "NTs",
+                              sheet = "notas_tecnicas",
                               col_types = "ccddd"),
                   "datos/nts/notas_tecnicas.feather")
     
     write_feather(sheets_read(nts_path, 
-                              sheet = "INDICE", 
+                              sheet = "indice", 
                               col_types = "ccdcccd"),
                   "datos/nts/indice.feather")
     
     write_feather(sheets_read(nts_path, 
-                              sheet = "INCLUSIONES", 
+                              sheet = "inclusiones", 
                               col_types = "ccdc") ,
                   "datos/nts/inclusiones.feather")
     
@@ -231,7 +231,7 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
       mapaValoresNT(
         as.data.table(
           sheets_read(nts_path,
-                      sheet = "INDICE",
+                      sheet = "indice",
                       col_types = "ccdcccd"
           )
         )

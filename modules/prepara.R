@@ -44,8 +44,8 @@ prepara_ui <- function(id) {
         inputId = ns("columna_valor"),
         label = "Columna de valor:",
         width = "100%",
-        choices = "VALOR",
-        selected = "VALOR"
+        choices = "valor",
+        selected = "valor"
       ),
       actionButton(
         inputId = ns("columna_valor_cambiar"),
@@ -62,7 +62,7 @@ prepara_ui <- function(id) {
           width = 10,
           br(),
           tags$a(
-            "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: NRO_IDENTIFICACION, FECHA_PRESTACION, VALOR o COSTO.",
+            "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: nro_identificacion, fecha_prestacion o valor.",
             style = "color: black;"))),
       DT::dataTableOutput(
         outputId = ns("preview"),
@@ -133,12 +133,13 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
         read_feather(
           path = paste0("datos/saved/", opciones_prepara$value_file))
       )
-      datos$data_original[, "FECHA_PRESTACION" := as.Date(
-        FECHA_PRESTACION, 
+      setnames(datos$data_original, tolower(colnames(datos$data_original)))
+      datos$data_original[, "fecha_prestacion" := as.Date(
+        fecha_prestacion, 
         format = input$formato_fecha)]
       datos$data_original <- datos$data_original[
-        FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
-          FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+        fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+          fecha_prestacion <= as.Date(input$fecha_rango[2])]
       datos$data_table <- datos$data_original
       datos$valores_unicos <- lapply(datos$data_table, unique)
       datos$colnames <- colnames(datos$data_table)
@@ -152,12 +153,13 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
           sep = opciones_prepara$value_delimitador, 
           dec = opciones_prepara$value_decimal,
           data.table = TRUE)
-        datos$data_original[, "FECHA_PRESTACION" := as.Date(
-          FECHA_PRESTACION, 
+        setnames(datos$data_original, tolower(colnames(datos$data_original)))
+        datos$data_original[, "fecha_prestacion" := as.Date(
+          fecha_prestacion, 
           format = input$formato_fecha)]
         datos$data_original <- datos$data_original[
-          FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
-            FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+          fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+            fecha_prestacion <= as.Date(input$fecha_rango[2])]
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
@@ -169,12 +171,13 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
           read_feather(
             path = input$file$datapath)
         )
-        datos$data_original[, "FECHA_PRESTACION" := as.Date(
-          FECHA_PRESTACION, 
+        setnames(datos$data_original, tolower(colnames(datos$data_original)))
+        datos$data_original[, "fecha_prestacion" := as.Date(
+          fecha_prestacion, 
           format = input$formato_fecha)]
         datos$data_original <- datos$data_original[
-          FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
-            FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+          fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+            fecha_prestacion <= as.Date(input$fecha_rango[2])]
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
@@ -188,12 +191,13 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
             sheet = opciones_prepara$value_sheet, 
             range = opciones_prepara$value_range)
         )
-        datos$data_original[, "FECHA_PRESTACION" := as.Date(
-          FECHA_PRESTACION, 
+        setnames(datos$data_original, tolower(colnames(datos$data_original)))
+        datos$data_original[, "fecha_prestacion" := as.Date(
+          fecha_prestacion, 
           format = input$formato_fecha)]
         datos$data_original <- datos$data_original[
-          FECHA_PRESTACION >= as.Date(input$fecha_rango[1]) &
-            FECHA_PRESTACION <= as.Date(input$fecha_rango[2])]
+          fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+            fecha_prestacion <= as.Date(input$fecha_rango[2])]
         datos$data_table <- datos$data_original
         datos$valores_unicos <- lapply(datos$data_table, unique)
         datos$colnames <- colnames(datos$data_table)
@@ -208,7 +212,7 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
       session = session,
       inputId = "columna_valor",
       choices = datos$colnames_num,
-      selected = "VALOR"
+      selected = "valor"
     )
   })
   
@@ -222,7 +226,7 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
     if (!is.null(datos$colnames)) {
       if (opciones$valor_costo %in% datos$colnames) {
         ggplot(data = datos$data_original, 
-               aes(cut(FECHA_PRESTACION, "1 month"), 
+               aes(cut(fecha_prestacion, "1 month"), 
                    get(opciones$valor_costo))) +
           geom_col() +
           xlab("Fecha") +
@@ -241,9 +245,9 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
         expr = {
           columnas <- intersect(
             x = c(
-              "NRO_IDENTIFICACION",
-              "FECHA_PRESTACION",
-              "VALOR"),
+              "nro_identificacion",
+              "fecha_prestacion",
+              "valor"),
             y = names(datos$data_original[1])
           )
           DT::datatable(

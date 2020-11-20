@@ -33,8 +33,8 @@ mes_spanish <- function(x) {
 descriptiva_basica <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR_CALCULOS")
-  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
+  setnames(data, columna_valor, "valor_calculos")
+  data[, "valor_calculos" := numerize(valor_calculos)]
   if (!prestaciones) {
     data[, "MES_ANIO_NUM" := min(lubridate::year(
       get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
@@ -46,7 +46,7 @@ descriptiva_basica <- function(
       sep = " - "),
       by = c(columna_suma)]
     columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
-    data <- data[, list("VALOR_CALCULOS" = sum(VALOR_CALCULOS)),
+    data <- data[, list("valor_calculos" = sum(valor_calculos)),
                  by = c(columna_suma,
                         columnas[columnas != columna_suma])]
   } else {
@@ -58,8 +58,8 @@ descriptiva_basica <- function(
       sep = " - ")]
     columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
   }
-  data <- data[, list("Frecuencia" = length(VALOR_CALCULOS),
-                      "Suma" = sum(VALOR_CALCULOS, na.rm = TRUE)),
+  data <- data[, list("Frecuencia" = length(valor_calculos),
+                      "Suma" = sum(valor_calculos, na.rm = TRUE)),
                       by = c(columnas)]
   setnames(data, c(columnas, "Frecuencia", "Suma"))
   
@@ -70,8 +70,8 @@ descriptiva_basica <- function(
 descriptiva_basica_episodios <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR_CALCULOS")
-  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
+  setnames(data, columna_valor, "valor_calculos")
+  data[, "valor_calculos" := numerize(valor_calculos)]
   data[, "MES_ANIO_NUM" := min(lubridate::year(
     get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
     na.rm = TRUE),
@@ -83,7 +83,7 @@ descriptiva_basica_episodios <- function(
     by = c(columna_suma)]
   columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma_ep" = sum(VALOR_CALCULOS, na.rm = TRUE),
+                      "Suma_ep" = sum(valor_calculos, na.rm = TRUE),
                       "VAR_COLUMNAS" = unique(get(agrupador))),
                by = c(columna_suma, "MES_ANIO_NUM", "MES_ANIO")]
   setnames(data, "VAR_COLUMNAS", agrupador)
@@ -102,7 +102,7 @@ descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) 
   meses <- as.list(unique(data$MES_ANIO))
   agrupCompletos <- data.table(agrupador = unique(data[[agrupador]]))
   setnames(agrupCompletos, agrupador)
-  dataSep <- lapply(
+  data_sep <- lapply(
     meses,
     data = data,
     agrupador = agrupador,
@@ -123,25 +123,25 @@ descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) 
       
   })
 
-  return(cbind.fill(dataSep, agrupador = agrupador)[[1]])
+  return(cbind.fill(data_sep, agrupador = agrupador)[[1]])
   
 }
 
 multiplicar_cme <- function(frecs, nota_tecnica) {
   frecs <- copy(frecs)
   nota_tecnica <- copy(nota_tecnica)
-  setnames(frecs, 1, "AGRUPADOR")
-  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]], 
-                                frecs[["AGRUPADOR"]])
-  nota_tecnica <- nota_tecnica[AGRUPADOR %in% agrupadores_compartidos]
-  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos]
+  setnames(frecs, 1, "agrupador")
+  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]], 
+                                frecs[["agrupador"]])
+  nota_tecnica <- nota_tecnica[agrupador %in% agrupadores_compartidos]
+  frecs <- frecs[agrupador %in% agrupadores_compartidos]
   
-  nota_tecnica <- nota_tecnica[order(AGRUPADOR)]
-  frecs <- frecs[order(AGRUPADOR)]
+  nota_tecnica <- nota_tecnica[order(agrupador)]
+  frecs <- frecs[order(agrupador)]
   
   return(
-    as.matrix(apply(frecs[, -c("AGRUPADOR")], 2, as.numeric)) * 
-      numerize(nota_tecnica[["CME"]])
+    as.matrix(apply(frecs[, -c("agrupador")], 2, as.numeric)) * 
+      numerize(nota_tecnica[["cm"]])
     )
   
 }
@@ -149,15 +149,15 @@ multiplicar_cme <- function(frecs, nota_tecnica) {
 diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
   sumas <- copy(sumas)
   nota_tecnica <- copy(nota_tecnica)
-  setnames(sumas, 1, "AGRUPADOR")
-  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
-                                sumas[["AGRUPADOR"]])
+  setnames(sumas, 1, "agrupador")
+  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
+                                sumas[["agrupador"]])
   nota_tecnica <- nota_tecnica[
-    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
-  sumas <- sumas[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+    agrupador %in% agrupadores_compartidos][order(agrupador)]
+  sumas <- sumas[agrupador %in% agrupadores_compartidos][order(agrupador)]
   
-  nota_tecnica[, "CME" := numerize(CME)]
-  nota_tecnica[, "VALOR_MES" := numerize(VALOR_MES)]
+  nota_tecnica[, "cm" := numerize(cm)]
+  nota_tecnica[, "valor_mes" := numerize(valor_mes)]
   
   numero_meses <- 2:ncol(sumas)
   
@@ -167,19 +167,19 @@ diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
     return(
       as.data.table(
         append(
-          list(AGRUPADOR = sumas$AGRUPADOR),
+          list(agrupador = sumas$agrupador),
           as.data.frame(
             sumas[, c(numero_meses) , with = FALSE] / 
-              nota_tecnica[["VALOR_MES"]])))
+              nota_tecnica[["valor_mes"]])))
     )
   } else {
     return(
       as.data.table(
         append(
-          list(AGRUPADOR = sumas$AGRUPADOR),
+          list(agrupador = sumas$agrupador),
           as.data.frame(
             sumas[, c(numero_meses), with = FALSE] -
-              nota_tecnica[["VALOR_MES"]])))
+              nota_tecnica[["valor_mes"]])))
     )
   }
 }
@@ -187,15 +187,15 @@ diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
 diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
   frecs <- copy(frecs)
   nota_tecnica <- copy(nota_tecnica)
-  setnames(frecs, 1, "AGRUPADOR")
-  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
-                                frecs[["AGRUPADOR"]])
+  setnames(frecs, 1, "agrupador")
+  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
+                                frecs[["agrupador"]])
   nota_tecnica <- nota_tecnica[
-    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
-  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+    agrupador %in% agrupadores_compartidos][order(agrupador)]
+  frecs <- frecs[agrupador %in% agrupadores_compartidos][order(agrupador)]
   
-  nota_tecnica[["CME"]] <- numerize(nota_tecnica[["CME"]])
-  nota_tecnica[["VALOR_MES"]] <- numerize(nota_tecnica[["VALOR_MES"]])
+  nota_tecnica[["cm"]] <- numerize(nota_tecnica[["cm"]])
+  nota_tecnica[["valor_mes"]] <- numerize(nota_tecnica[["valor_mes"]])
   
   numero_meses <- 2:ncol(frecs)
   frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
@@ -203,20 +203,20 @@ diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
   if (porcentaje) {
     return(
       as.data.table(
-        append(list(AGRUPADOR = frecs$AGRUPADOR),
+        append(list(agrupador = frecs$agrupador),
                as.data.frame((
                  frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(nota_tecnica[["CME"]])/
-                   nota_tecnica[["VALOR_MES"]]))))
+                   numerize(nota_tecnica[["cm"]])/
+                   nota_tecnica[["valor_mes"]]))))
     )
   } else {
      return(
       as.data.table(
-        append(list(AGRUPADOR = frecs$AGRUPADOR), 
+        append(list(agrupador = frecs$agrupador), 
                as.data.frame((
                  frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(nota_tecnica[["CME"]]) - 
-                   nota_tecnica[["VALOR_MES"]]))))
+                   numerize(nota_tecnica[["cm"]]) - 
+                   nota_tecnica[["valor_mes"]]))))
     )
   }
 }
@@ -226,18 +226,18 @@ diferencias_totales <- function(frecs, sumas, nota_tecnica) {
   sumas <- copy(sumas)
   nota_tecnica <- copy(nota_tecnica)
   
-  setnames(frecs, 1, "AGRUPADOR")
-  setnames(sumas, 1, "AGRUPADOR")
-  agrupadores_compartidos <- intersect(nota_tecnica[["AGRUPADOR"]],
-                                frecs[["AGRUPADOR"]])
-  valor_ejecutar_mes <- sum(nota_tecnica[["VALOR_MES"]], na.rm = TRUE)
+  setnames(frecs, 1, "agrupador")
+  setnames(sumas, 1, "agrupador")
+  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
+                                frecs[["agrupador"]])
+  valor_ejecutar_mes <- sum(nota_tecnica[["valor_mes"]], na.rm = TRUE)
   nota_tecnica <- nota_tecnica[
-    AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
-  frecs <- frecs[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
-  sumas <- sumas[AGRUPADOR %in% agrupadores_compartidos][order(AGRUPADOR)]
+    agrupador %in% agrupadores_compartidos][order(agrupador)]
+  frecs <- frecs[agrupador %in% agrupadores_compartidos][order(agrupador)]
+  sumas <- sumas[agrupador %in% agrupadores_compartidos][order(agrupador)]
   
-  nota_tecnica[, "CME" := numerize(CME)]
-  nota_tecnica[, "VALOR_MES" := numerize(VALOR_MES)]
+  nota_tecnica[, "cm" := numerize(cm)]
+  nota_tecnica[, "valor_mes" := numerize(valor_mes)]
   
   total_mes_rips <- data.table(
     "Mes" = c(colnames(sumas[, -c(1)])),
@@ -249,19 +249,19 @@ diferencias_totales <- function(frecs, sumas, nota_tecnica) {
   )
   
   total_agrupador_rips <- data.table(
-    "Agrupador" = c(sumas[["AGRUPADOR"]]),
+    "Agrupador" = c(sumas[["agrupador"]]),
     "Total" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE))),
     "Diferencia" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) -
-                       (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
+                       (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)]))),
     "%" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) /
-              (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
+              (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)])))
   )
   
   numero_meses <- 2:ncol(frecs)
   frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
   
   sumas_cme <- frecs[, c(numero_meses) , with = FALSE] * 
-    numerize(nota_tecnica[["CME"]])
+    numerize(nota_tecnica[["cm"]])
   
   total_mes_cme <- data.table(
     "Mes" = c(colnames(sumas[, -c(1)])),
@@ -273,12 +273,12 @@ diferencias_totales <- function(frecs, sumas, nota_tecnica) {
   )
   
   total_agrupador_cme <- data.table(
-    "Mes" = c(sumas[["AGRUPADOR"]]),
+    "Mes" = c(sumas[["agrupador"]]),
     "Total" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE))),
     "Diferencia" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) -
-                       (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)]))),
+                       (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)]))),
     "%" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) /
-              (nota_tecnica[["VALOR_MES"]] * ncol(sumas[, -c(1)])))
+              (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)])))
   )
   
   valor_ejecutar <- valor_ejecutar_mes * ncol(sumas[, -c(1)])
@@ -286,7 +286,7 @@ diferencias_totales <- function(frecs, sumas, nota_tecnica) {
   valor_ejecutado_cme <- sum(sumas_cme, na.rm = TRUE)
   
   totales <- data.table(
-    "Detalle" = c("Valor a ejecutar", "Ejecutado RIPS", "Ejecutado CME"),
+    "Detalle" = c("Valor a ejecutar", "Ejecutado RIPS", "Ejecutado CM"),
     "Valor" = c(valor_ejecutar, valor_ejecutado_rips, valor_ejecutado_cme),
     "Diferencias" = c(NA,
                       valor_ejecutado_rips - valor_ejecutar,

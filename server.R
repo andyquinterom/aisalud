@@ -5,7 +5,7 @@ shinyServer(function(input, output, session) {
   })
   
   opciones <- reactiveValues(
-    "valor_costo" = "VALOR"
+    "valor_costo" = "valor"
   )
   
  # Modulo prepara ---------------------------------------------
@@ -340,7 +340,8 @@ shinyServer(function(input, output, session) {
       module = seguimiento_notas_indice_server,
       id = "seguimiento_notas_indice",
       indice = dash_nt_indice,
-      mapa = dash_nt_mapa
+      mapa = dash_nt_mapa,
+      nombre_id = "seguimiento_notas_indice"
     )
     
     callModule(

@@ -179,16 +179,6 @@ shinyUI(
             tabName = "seguimiento_modulo_indice",
             if (NT_INCLUIDO) {
               tagList(
-                fluidRow(
-                  column(
-                    width = 12,
-                    box(
-                      width = 12,
-                      actionButton(
-                        "dash_nt_actualizar",
-                        "Actualizar",
-                        width = "100%")))
-                ),
                 seguimiento_notas_indice_ui("seguimiento_notas_indice")
               )
             }

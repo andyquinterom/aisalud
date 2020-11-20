@@ -1,10 +1,10 @@
 episodios_descriptiva <- function(data, columnas, columna_valor, columna_suma,
                                   columna_sep) {
   data <- copy(data)
-  setnames(data, columna_valor, "VALOR_CALCULOS")
-  data[, "VALOR_CALCULOS" := numerize(VALOR_CALCULOS)]
+  setnames(data, columna_valor, "valor_calculos")
+  data[, "valor_calculos" := numerize(valor_calculos)]
   data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma" = sum(VALOR_CALCULOS, na.rm = TRUE),
+                      "Suma" = sum(valor_calculos, na.rm = TRUE),
                       "VAR_COLUMNAS" = unique(get(columnas))),
                       by = c(columna_suma, columna_sep)]
   setnames(data, "VAR_COLUMNAS", columnas)
@@ -67,7 +67,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       data = data,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
-      columna_suma = "NRO_FACTURA",
+      columna_suma = "nro_factura",
       prestaciones = FALSE
     )
     episodios_nivel_2 <- data_temp[["descriptiva"]][
@@ -76,7 +76,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       get(columnas) %in% nivel_2]
     data_temp <- NULL
     registros_procesados <- unique(data[
-      get(columnas) %in% i][["NRO_FACTURA"]])
+      get(columnas) %in% i][["nro_factura"]])
     data[get(columna_suma) %in% registros_procesados,
          "ASIGNACION_NIVEL" := "nivel_2"]
     data <- data[ASIGNACION_NIVEL != "nivel_2"]
@@ -88,7 +88,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       data = data,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
-      columna_suma = "NRO_IDENTIFICACION",
+      columna_suma = "nro_identificacion",
       prestaciones = FALSE
     )
     episodios_nivel_3 <- data_temp[["descriptiva"]][
@@ -97,7 +97,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       get(columnas) %in% nivel_3]
     data_temp <- NULL
     registros_procesados <- unique(data[
-      get(columnas) %in% i][["NRO_IDENTIFICACION"]])
+      get(columnas) %in% i][["nro_identificacion"]])
     data[get(columna_suma) %in% registros_procesados,
          "ASIGNACION_NIVEL" := "nivel_3"]
     data <- data[ASIGNACION_NIVEL != "nivel_3"]
@@ -114,7 +114,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_4 <- data_temp[["descriptiva"]][get(columnas) %in% nivel_4]
     columnas_select <- c(columnas, columna_sep)
     episodios_nivel_4_data <- data_temp[["data"]][
-      get(columnas) %in% nivel_4][, c(columnas_select, "VALOR_CALCULOS"), with = FALSE]
+      get(columnas) %in% nivel_4][, c(columnas_select, "valor_calculos"), with = FALSE]
     data_temp <- NULL
   }
   
