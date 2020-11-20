@@ -46,6 +46,8 @@ outliers_ui <- function(id) {
           style = "width:100%;")),
       box(
         width = 9,
+        tags$h2(textOutput(ns("outliers_titulo")), class = "titulo_center"),
+        tags$br(),
         column(
           width = 9,
           div(
@@ -54,7 +56,7 @@ outliers_ui <- function(id) {
         column(
           width = 3,
           plotOutput(
-            height = "550px",
+            height = "600px",
             outputId = ns("outliers_box_plot")))
       )
     )
@@ -81,10 +83,10 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
         sliderInput(
           inputId = ns("outliers_percentil"),
           label = "Outliers mayores que % de los usuarios:",
-          min = 0.75,
-          max = 0.99,
-          value = c(0.9),
-          step = 0.01,
+          min = 75,
+          max = 99,
+          value = c(90),
+          step = 1,
           post = "%")
       } else {
         radioButtons(
@@ -134,24 +136,14 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
             data =          datos$data_table,
             columna =       input$outliers_cols,
             columna_valor = opciones$valor_costo,
-            percentil =     input$outliers_percentil,
+            percentil =     input$outliers_percentil/100,
             frecuencia =    input$outliers_frecuencia)
-          
-          output$outliers_tabla <- DT::renderDataTable({
-            DT::datatable(
-              colnames = c('Valor' = 'valor_calculos'),
-              outliers$tabla,
-              options = list(
-                language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                pageLength = 50, 
-                autoWidth = FALSE,
-                ordering = T, 
-                scrollX = TRUE,
-                scrollY = "500px"),
-              rownames = FALSE) %>%
-              formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
-          })
+          outliers$titulo <- paste(
+            "Pacientes con un valor mayor que el",
+            formatAsPerc(input$outliers_percentil),
+            "del total por",
+            input$outliers_cols
+          )
         } else {
           outliers$tabla <- outliers_iqr(
             data =           datos$data_table,
@@ -159,23 +151,33 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
             columna_valor =  opciones$valor_costo,
             multiplicativo = input$outliers_iqr,
             frecuencia =     input$outliers_frecuencia)
-          
-          output$outliers_tabla <- DT::renderDataTable({
-            DT::datatable(
-              colnames = c('Valor' = 'valor_calculos'),
-              outliers$tabla,
-              options = list(
-                language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                pageLength = 50, 
-                autoWidth = FALSE, 
-                ordering = T,
-                scrollX = TRUE,
-                scrollY = "500px"),
-              rownames = FALSE) %>%
-              formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
-          })
+          outliers$titulo <- paste(
+            "Pacientes por fuera de",
+            input$outliers_iqr,
+            "veces el rango intercuartil por",
+            input$outliers_cols
+          )
         }
+        
+        output$outliers_tabla <- DT::renderDataTable({
+          DT::datatable(
+            colnames = c('Valor' = 'valor_calculos'),
+            outliers$tabla,
+            options = list(
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 50, 
+              autoWidth = FALSE,
+              ordering = T, 
+              scrollX = TRUE,
+              scrollY = "500px"),
+            rownames = FALSE) %>%
+            formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
+        })
+        
+        output$outliers_titulo <- renderText({
+          outliers$titulo
+        })
         
         lista_pacientes <- agregar(
           data = datos$data_table,
