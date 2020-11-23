@@ -13,6 +13,14 @@ shinyServer(function(input, output, session) {
     opciones = opciones
   )
   
+  callModule(
+    module = base_de_datos_server,
+    id = "prepara_base_de_datos",
+    nombre_id = "prepara_base_de_datos",
+    datos = datos_modulos,
+    opciones = opciones
+  )
+  
   # Modulo filtros --------------------------------------------
   
   callModule(

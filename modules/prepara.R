@@ -15,7 +15,7 @@ prepara_ui <- function(id) {
         inputId = ns("file_type"),
         label = "Tipo de archivo",
         inline = TRUE, 
-        choices = c("feather", "csv", "xlsx", "almacenado en la nube")),
+        choices = c("feather", "csv", "xlsx", "datos didacticos")),
       actionButton(
         inputId = ns("file_options_open"),
         label = "Opciones")
@@ -127,7 +127,7 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
   })
   
   observeEvent(input$file_load, {
-    if (input$file_type == "almacenado en la nube" &&
+    if (input$file_type == "datos didacticos" &&
         !is.null(opciones_prepara$value_file)) {
       datos$data_original <- as.data.table(
         read_feather(
@@ -314,7 +314,7 @@ datos_opciones_ui <- function(
     )
   }
   
-  if (file_type == "almacenado en la nube") {
+  if (file_type == "datos didacticos") {
     return(
       datos_opciones_cloud_ui(
         id = id,

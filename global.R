@@ -26,6 +26,10 @@ library(withr)
 library(shinydashboardPlus)
 library(shinyjqui)
 library(googledrive)
+library(DBI)
+library(RPostgres)
+library(dplyr)
+library(dbplyr)
 
 enableBookmarking(store = "server")
 
