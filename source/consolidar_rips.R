@@ -2,39 +2,39 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   
   # Los diferentes archivos se transforman a un objecto de tipo data.table
   # Se filtran para solo obtener datos de los prestadores seleccionados
-  ac <- as.data.table(ac)[COD_PRESTADOR %in% prestadores]
-  af <- as.data.table(af)[COD_PRESTADOR %in% prestadores]
-  ah <- as.data.table(ah)[COD_PRESTADOR %in% prestadores]
-  am <- as.data.table(am)[COD_PRESTADOR %in% prestadores]
-  ap <- as.data.table(ap)[COD_PRESTADOR %in% prestadores]
-  at <- as.data.table(at)[COD_PRESTADOR %in% prestadores]
-  au <- as.data.table(au)[COD_PRESTADOR %in% prestadores]
+  ac <- as.data.table(ac)[cod_prestador %in% prestadores]
+  af <- as.data.table(af)[cod_prestador %in% prestadores]
+  ah <- as.data.table(ah)[cod_prestador %in% prestadores]
+  am <- as.data.table(am)[cod_prestador %in% prestadores]
+  ap <- as.data.table(ap)[cod_prestador %in% prestadores]
+  at <- as.data.table(at)[cod_prestador %in% prestadores]
+  au <- as.data.table(au)[cod_prestador %in% prestadores]
   
   # El ambito de consultas siempre es ambulatorio
-  ac$AMBITO <- "1"
+  ac$ambito <- "1"
   
   # EL ambito de medicamentos sera su tipo
-  am$AMBITO <- am$TIPO_MEDICAMENTO
+  am$ambito <- am$tipo_medicamento
   
   # La cantidad de consultas y procedimientos siemore es 1
-  ac$CANTIDAD <- 1
-  ap$CANTIDAD <- 1
+  ac$cantidad <- 1
+  ap$cantidad <- 1
   
   # Consultas y procedimientos no incluyen nombre de prestación
-  ac$NOMBRE_PRESTACION <- ""
-  ap$NOMBRE_PRESTACION <- ""
+  ac$nombre_prestacion <- ""
+  ap$nombre_prestacion <- ""
   
   # Se eliminan columnas innecesarias
-  ah$TIPO_IDENTIFICACION <- NULL
-  au$TIPO_IDENTIFICACION <- NULL
-  us$TIPO_IDENTIFICACION <- NULL
-  us$COD_EAPB            <- NULL
+  ah$tipo_identificacion <- NULL
+  au$tipo_identificacion <- NULL
+  us$tipo_identificacion <- NULL
+  us$cod_eapb            <- NULL
   
   # Conversión de tipo de servicio númerico a valor correspondiente
   
   tryCatch(
     expr = {
-      at$TIPO_SERVICIO <- conversion_tiposervicio(at$TIPO_SERVICIO)
+      at$tipo_servicio <- conversion_tiposervicio(at$tipo_servicio)
     },
     error = function(e) {
       print(e)
@@ -45,7 +45,7 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   
   tryCatch(
     expr = {
-      am$AMBITO <- conversion_tipomedicamento(am$AMBITO)
+      am$ambito <- conversion_tipomedicamento(am$ambito)
     },
     error = function(e) {
       print(e)
@@ -53,32 +53,32 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   )
   
   # Se cambian nombres de columnas para merge
-  setnames(ac, 7, "COD_PRESTACION")
+  setnames(ac, 7, "cod_prestacion")
   
-  setnames(ap, 7, "COD_PRESTACION")
-  setnames(at, 7, "COD_PRESTACION")
-  setnames(am, 6, "COD_PRESTACION")
-  setnames(at, 8, "NOMBRE_PRESTACION")
-  setnames(am, 8, "NOMBRE_PRESTACION")
-  setnames(at, 6, "AMBITO")
+  setnames(ap, 7, "cod_prestacion")
+  setnames(at, 7, "cod_prestacion")
+  setnames(am, 6, "cod_prestacion")
+  setnames(at, 8, "nombre_prestacion")
+  setnames(am, 8, "nombre_prestacion")
+  setnames(at, 6, "ambito")
   
   # Se hace merge entre el archivo de transacciones y los de prestaciones
   
-  columnas_merge_af <- c("NRO_FACTURA",
-                         "NRO_IDENTIFICACION",
-                         "VALOR", "COD_PRESTACION",
-                         "NOMBRE_PRESTACION",
-                         "AMBITO",
-                         "CANTIDAD")
+  columnas_merge_af <- c("nro_factura",
+                         "nro_identificacion",
+                         "valor", "cod_prestacion",
+                         "nombre_prestacion",
+                         "ambito",
+                         "cantidad")
   
   merge_af_ac <- merge(af, ac[, columnas_merge_af, with = FALSE],
-                       by = "NRO_FACTURA")
+                       by = "nro_factura")
   merge_af_ap <- merge(af, ap[, columnas_merge_af, with = FALSE],
-                       by = "NRO_FACTURA")
+                       by = "nro_factura")
   merge_af_at <- merge(af, at[, columnas_merge_af, with = FALSE],
-                       by = "NRO_FACTURA")
+                       by = "nro_factura")
   merge_af_am <- merge(af, am[, columnas_merge_af, with = FALSE],
-                       by = "NRO_FACTURA")
+                       by = "nro_factura")
   
   merge_af <- rbind(
     merge_af_ac,
@@ -89,7 +89,7 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   
   # Conversión de ambito a valor correspondiente
   
-  merge_af$AMBITO <- conversion_ambito(merge_af$AMBITO)
+  merge_af$ambito <- conversion_ambito(merge_af$ambito)
   
   # Encontrar duplicados y eliminar
   
@@ -122,8 +122,8 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   
   # Quitar fechas innecesarias
   
-  au$FECHA_PRESTACION <- NULL
-  ah$FECHA_PRESTACION <- NULL
+  au$fecha_prestacion <- NULL
+  ah$fecha_prestacion <- NULL
   
   # Merge archivo de urgencias y hospotilización con el de prestaciones
   
@@ -131,9 +131,9 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   if (nrow(au) == 0 & nrow(ah) != 0) {
     merge_prestaciones <- merge.data.table(x = merge_af,
                                            y = ah,
-                                           by = c("NRO_FACTURA",
-                                                  "NRO_IDENTIFICACION",
-                                                  "COD_PRESTADOR"),
+                                           by = c("nro_factura",
+                                                  "nro_identificacion",
+                                                  "cod_prestador"),
                                            all.x = TRUE
                                            )
   }
@@ -142,9 +142,9 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
   if (nrow(au) != 0 & nrow(ah) == 0) {
     merge_prestaciones <- merge.data.table(x = merge_af,
                                            y = au,
-                                           by = c("NRO_FACTURA",
-                                                  "NRO_IDENTIFICACION",
-                                                  "COD_PRESTADOR"),
+                                           by = c("nro_factura",
+                                                  "nro_identificacion",
+                                                  "cod_prestador"),
                                            all.x = TRUE
     )
   }
@@ -159,23 +159,23 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
     # Prestaciones de hospitalización
     merge_prestaciones_ah <- merge.data.table(x = merge_af,
                                              y = ah,
-                                             by = c("NRO_FACTURA",
-                                                    "NRO_IDENTIFICACION",
-                                                    "COD_PRESTADOR"))
+                                             by = c("nro_factura",
+                                                    "nro_identificacion",
+                                                    "cod_prestador"))
     
     # Prestaciones que no son hospitalizaciones
     merge_prestaciones_sin_ah <- ajoin(x = merge_af,
                                        y = merge_prestaciones_ah,
-                                       by = c("NRO_FACTURA",
-                                              "NRO_IDENTIFICACION",
-                                              "COD_PRESTADOR"))
+                                       by = c("nro_factura",
+                                              "nro_identificacion",
+                                              "cod_prestador"))
     
     # Prestaciones de urgencias que no se encuentran en hospitalizaciones
     merge_prestaciones_au <- merge.data.table(x = merge_prestaciones_sin_ah,
                                               y = au,
-                                              by = c("NRO_FACTURA",
-                                                     "NRO_IDENTIFICACION",
-                                                     "COD_PRESTADOR"),
+                                              by = c("nro_factura",
+                                                     "nro_identificacion",
+                                                     "cod_prestador"),
                                               all.x = TRUE)
     
     # Juntar hospitalizaciones con urgencias
@@ -185,48 +185,48 @@ consolidar_rips <- function(prestadores, ac, af, ah, am, ap, at, au, us, cups) {
     
   }
   
-  # Cambiar nombres de columnas VALOR.x y VALOR.y después del merge
-  setnames(merge_prestaciones, "VALOR.x", "VALOR_FACTURA")
-  setnames(merge_prestaciones, "VALOR.y", "VALOR")
+  # Cambiar nombres de columnas valor.x y valor.y después del merge
+  setnames(merge_prestaciones, "valor.x", "valor_factura")
+  setnames(merge_prestaciones, "valor.y", "valor")
   
   # Juntar datos de usuarios con las prestaciones
   if (nrow(us) != 0) {
     
     merge_prestaciones <- merge(x = merge_prestaciones,
                                 y = us,
-                                by = "NRO_IDENTIFICACION",
+                                by = "nro_identificacion",
                                 all.x = TRUE
                                 )
     
     # Conversión de tipo de usuario a su valor correspondiente
-    merge_prestaciones$TIPO_USUARIO <- 
-      conversion_tipousuario(merge_prestaciones$TIPO_USUARIO)
+    merge_prestaciones$tipo_usuario <- 
+      conversion_tipousuario(merge_prestaciones$tipo_usuario)
     
   }
   
   # Generar nombres de prestación faltantes
   
   # Encontrar y marcar los valores solo numéricos
-  prestacion_numerica <- !grepl("\\D", merge_prestaciones$COD_PRESTACION)
+  prestacion_numerica <- !grepl("\\D", merge_prestaciones$cod_prestacion)
   
   # Convertir de character a numerico y devuelta
-  cod_prestacion_num <- merge_prestaciones$COD_PRESTACION[prestacion_numerica]
+  cod_prestacion_num <- merge_prestaciones$cod_prestacion[prestacion_numerica]
   cod_prestacion_num <- as.character(
     as.numeric(as.character(cod_prestacion_num))
   )
   
-  merge_prestaciones$COD_PRESTACION[prestacion_numerica] <- cod_prestacion_num
+  merge_prestaciones$cod_prestacion[prestacion_numerica] <- cod_prestacion_num
   
   # Merge codigo de prestación con indice de cups
 
   merge_prestaciones <- rbind(
     merge(
-      merge_prestaciones[NOMBRE_PRESTACION == ""][, -c("NOMBRE_PRESTACION")],
+      merge_prestaciones[nombre_prestacion == ""][, -c("nombre_prestacion")],
       cups,
-      by = c("COD_PRESTACION"),
+      by = c("cod_prestacion"),
       all.x = TRUE
       )[, union(names(merge_prestaciones), names(cups)), with = FALSE],
-    merge_prestaciones[NOMBRE_PRESTACION != ""]
+    merge_prestaciones[nombre_prestacion != ""]
   )
   
   return(merge_prestaciones)

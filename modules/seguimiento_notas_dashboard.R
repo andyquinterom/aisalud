@@ -60,7 +60,7 @@ seguimiento_notas_dashboard_server <- function(
     updatePickerInput(
       session = session,
       inputId = "board_select",
-      choices = indice$COD_NT
+      choices = indice$cod_nt
     )
   })
   
@@ -72,17 +72,17 @@ seguimiento_notas_dashboard_server <- function(
   
   observeEvent(input$board_select, {
     dash_nt_valores$datos <- nota_tecnica[
-      COD_NT == input$board_select]
+      cod_nt == input$board_select]
     dash_nt_valores$indice <- indice[
-      COD_NT == input$board_select]
+      cod_nt == input$board_select]
     dash_nt_valores$inclusiones <- inclusiones[
-      COD_NT == input$board_select]
+      cod_nt == input$board_select]
   })
   
   output$entidad <- renderValueBox({
     if(!is.null(dash_nt_valores$indice)) {
       valueBox(
-        value = dash_nt_valores$indice$NOM_PRESTADOR,
+        value = dash_nt_valores$indice$nom_prestador,
         subtitle = "Prestador", 
         icon = icon("stethoscope", lib = "font-awesome"), 
         color = "yellow"
@@ -93,7 +93,7 @@ seguimiento_notas_dashboard_server <- function(
   output$valor_mes <- renderValueBox({
     if(!is.null(dash_nt_valores$indice)) {
       valueBox(
-        value = formatAsCurrency(dash_nt_valores$indice$VALOR_MES),
+        value = formatAsCurrency(dash_nt_valores$indice$valor_mes),
         subtitle = "Valor total a mes", 
         icon = icon("dollar-sign", lib = "font-awesome"),
         color = "green"
@@ -105,7 +105,7 @@ seguimiento_notas_dashboard_server <- function(
     if(!is.null(dash_nt_valores$indice)) {
       valueBox(
         value = format(
-          dash_nt_valores$indice$POBLACION,
+          dash_nt_valores$indice$poblacion,
           scientific = F,
           big.mark = ".", 
           decimal.mark = ","),
@@ -119,8 +119,8 @@ seguimiento_notas_dashboard_server <- function(
   output$departamento <- renderValueBox({
     if(!is.null(dash_nt_valores$indice)) {
       valueBox(
-        value = dash_nt_valores$indice$DEPARTAMENTO,
-        subtitle = dash_nt_valores$indice$CIUDADES, 
+        value = dash_nt_valores$indice$departamento,
+        subtitle = dash_nt_valores$indice$ciudades, 
         icon = icon("city", lib = "font-awesome"),
         color = "aqua"
       )
@@ -130,7 +130,7 @@ seguimiento_notas_dashboard_server <- function(
   output$inclusiones <- DT::renderDataTable({
     if(!is.null(dash_nt_valores$inclusiones)) {
       datatable(
-        dash_nt_valores$inclusiones[INCLUIDO == 1, c("OBJETO", "NOTAS")],
+        dash_nt_valores$inclusiones[incluido == 1, c("objeto", "notas")],
         rownames = F,
         selection = 'none',
         colnames = c("Observación", "Notas"),
@@ -152,7 +152,7 @@ seguimiento_notas_dashboard_server <- function(
   output$exclusiones <- DT::renderDataTable({
     if(!is.null(dash_nt_valores$inclusiones)) {
       datatable(
-        dash_nt_valores$inclusiones[INCLUIDO == 0, c("OBJETO", "NOTAS")],
+        dash_nt_valores$inclusiones[incluido == 0, c("objeto", "notas")],
         rownames = F,
         selection = 'none',
         colnames = c("Observación", "Notas"),
@@ -174,17 +174,17 @@ seguimiento_notas_dashboard_server <- function(
   output$plot_agrupadores <- renderGirafe({
     pie_chart(
       paquetes = dash_nt_valores$datos,
-      columna = "AGRUPADOR",
-      valor_costo = "VALOR_MES")
+      columna = "agrupador",
+      valor_costo = "valor_mes")
   })
   
   output$board_datos <- DT::renderDataTable({
     if(!is.null(dash_nt_valores$datos)) {
       datatable(
-        dash_nt_valores$datos[, c("AGRUPADOR", "FREC_MES", "CME", "VALOR_MES")],
+        dash_nt_valores$datos[, c("agrupador", "frec_mes", "cm", "valor_mes")],
         rownames = F, 
         selection = 'none',
-        colnames = c("Agrupador", "Frecuencia a mes", "CME", "Valor a mes"),
+        colnames = c("Agrupador", "Frecuencia a mes", "cm", "Valor a mes"),
         options = list(
           dom='ft', 
           language = list(
@@ -194,7 +194,7 @@ seguimiento_notas_dashboard_server <- function(
           scrollX = TRUE,
           scrollY = "60vh")) %>%
         DT::formatCurrency(
-          columns = c("CME", "VALOR_MES")
+          columns = c("cm", "valor_mes")
           , digits = 0, mark = ".", dec.mark = ","
         ) %>%
         DT::formatStyle(

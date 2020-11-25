@@ -40,20 +40,20 @@ paquetes_indice_server <- function(
           write_feather(
             x = sheets_read(
               paquete_path,
-              sheet = "PAQUETES",
+              sheet = "paquetes",
               col_types = "cccdcccccccdd"),
             "datos/paquetes/paquetes.feather")
           incProgress(0.3)
           write_feather(
             sheets_read(
               paquete_path,
-              sheet = "REFERENTE-PAQUETES"),
+              sheet = "referente_paquetes"),
             "datos/paquetes/referente-paquetes.feather")
           incProgress(0.3)
           write_feather(
             sheets_read(
               paquete_path,
-              sheet = "REFERENTE"),
+              sheet = "referente"),
             "datos/paquetes/referente.feather")
           incProgress(0.3)
         })
@@ -70,12 +70,19 @@ paquetes_indice_server <- function(
   output$paquetes_indice_tabla <- DT::renderDataTable(
     datatable(
       unique(paquetes[, list(
-        `CODIGO PAQUETE`,
-        ESPECIALIDAD,
-        SERVICIO,
-        DESCRIPCION,
-        INCLUSIONES,
-        EXCLUSIONES)]),
+        codigo_paquete,
+        especialidad,
+        servicio,
+        descripcion,
+        inclusiones,
+        exclusiones)]),
+      colnames = c(
+        "Código",
+        "Especialidad",
+        "Servicio",
+        "Descripción",
+        "Inclusiones",
+        "Exclusiones"),
       rownames = F,
       options = list(
         dom = 'ft',
@@ -84,10 +91,12 @@ paquetes_indice_server <- function(
         scrollY = "80vh",
         pageLength = nrow(
           unique(paquetes[, list(
-            `CODIGO PAQUETE`,
-            ESPECIALIDAD, SERVICIO,
-            DESCRIPCION, INCLUSIONES,
-            EXCLUSIONES)]))
+            codigo_paquete,
+            especialidad,
+            servicio,
+            descripcion,
+            inclusiones,
+            exclusiones)]))
       )) %>%
       DT::formatStyle(1:6, backgroundColor = 'white')
   )

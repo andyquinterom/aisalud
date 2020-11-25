@@ -1,11 +1,7 @@
 shinyServer(function(input, output, session) {
   
-  session$onSessionEnded(function() {
-    stopApp()
-  })
-  
   opciones <- reactiveValues(
-    "valor_costo" = "VALOR"
+    "valor_costo" = "valor"
   )
   
  # Modulo prepara ---------------------------------------------
@@ -14,6 +10,14 @@ shinyServer(function(input, output, session) {
     module = prepara_server,
     id = "prepara_modulo",
     nombre_id = "prepara_modulo",
+    opciones = opciones
+  )
+  
+  callModule(
+    module = base_de_datos_server,
+    id = "prepara_base_de_datos",
+    nombre_id = "prepara_base_de_datos",
+    datos = datos_modulos,
     opciones = opciones
   )
   
@@ -340,7 +344,8 @@ shinyServer(function(input, output, session) {
       module = seguimiento_notas_indice_server,
       id = "seguimiento_notas_indice",
       indice = dash_nt_indice,
-      mapa = dash_nt_mapa
+      mapa = dash_nt_mapa,
+      nombre_id = "seguimiento_notas_indice"
     )
     
     callModule(

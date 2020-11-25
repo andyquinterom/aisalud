@@ -1,41 +1,41 @@
-mapaValoresNT <- function(INDICE, ...) {
+mapaValoresNT <- function(indice, ...) {
   
-  INDICE_SUM <- NULL
-  tablaDep <- NULL
+  indice_sum <- NULL
+  tabla_dep <- NULL
   p <- NULL
   
-  INDICE_SUM <- INDICE[, list(
-    "Valor" = sum(VALOR_MES, na.rm = TRUE),
-    "Contratos" = length(COD_NT)),
-    by = c("COD_DEPARTAMENTO")]
-  INDICE_SUM$id = numerize(INDICE_SUM$COD_DEPARTAMENTO)
-  INDICE_SUM$Contratos = numerize(INDICE_SUM$Contratos)
-  INDICE_SUM <- INDICE_SUM[order(COD_DEPARTAMENTO)]
+  indice_sum <- indice[, list(
+    "Valor" = sum(valor_mes, na.rm = TRUE),
+    "Contratos" = length(cod_nt)),
+    by = c("cod_departamento")]
+  indice_sum$id = numerize(indice_sum$cod_departamento)
+  indice_sum$Contratos = numerize(indice_sum$Contratos)
+  indice_sum <- indice_sum[order(cod_departamento)]
   
-  tablaDep <- data.table(
+  tabla_dep <- data.table(
     id = numerize(colmaps::departamentos@data[["id"]]),
     depto = colmaps::departamentos@data[["depto"]],
     ID = str_pad(colmaps::departamentos@data[["id"]], pad = "0", width = 2)
   )
   
-  tablaDep <- merge(tablaDep, INDICE_SUM, all.x = TRUE, sort = FALSE)
-  tablaDep[is.na(Valor), Valor:=0]
-  tablaDep[is.na(Contratos), Contratos:=0]
-  tablaDep[, c("id", "COD_DEPARTAMENTO") := NULL]
+  tabla_dep <- merge(tabla_dep, indice_sum, all.x = TRUE, sort = FALSE)
+  tabla_dep[is.na(Valor), Valor:=0]
+  tabla_dep[is.na(Contratos), Contratos:=0]
+  tabla_dep[, c("id", "cod_departamento") := NULL]
 
-  tablaDep$ValorFormato <- paste0(
+  tabla_dep$ValorFormato <- paste0(
     "Valor: ",
     "$",
-    format(tablaDep$Valor,
+    format(tabla_dep$Valor,
            scientific = FALSE,
            big.mark = ".",
            decimal.mark = ","))
-  tablaDep$Departamento <- tablaDep$depto
+  tabla_dep$Departamento <- tabla_dep$depto
 
   p <- ggplotly(
     p = colmaps2::colmap(
       departamentos,
-      data = tablaDep,
+      data = tabla_dep,
       data_id = "ID",
       var = "Valor",
       legend = TRUE,

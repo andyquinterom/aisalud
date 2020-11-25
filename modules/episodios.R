@@ -51,6 +51,8 @@ episodios_ui <- function(id) {
         tabPanel(
           title = "Tabla",
           tags$br(),
+          tags$h2(textOutput(ns("tabla_titulo")), class = "titulo_center"),
+          tags$br(),
           div(
             DT::dataTableOutput(outputId = ns("episodios_tabla")),
             style = "font-size:90%")
@@ -61,6 +63,8 @@ episodios_ui <- function(id) {
           fluidRow(
             column(
               width = 8,
+              tags$h3(
+                textOutput(ns("histograma_titulo")), class = "titulo_center"),
               plotlyOutput(
                 outputId = ns("histograma_render")
               )
@@ -79,6 +83,8 @@ episodios_ui <- function(id) {
           fluidRow(
             column(
               width = 8,
+              tags$h3(
+                textOutput(ns("caja_de_bigotes_titulo")), class = "titulo_center"),
               plotlyOutput(
                 outputId = ns("caja_de_bigotes_render")
               )
@@ -112,7 +118,7 @@ episodios_server <- function(input, output, session, datos, opciones,
         session = session,
         inputId = "episodios_col_valor",
         choices = datos$colnames,
-        selected = "NRO_IDENTIFICACION"
+        selected = "nro_identificacion"
       )
     }
     updateSelectizeInput(
@@ -134,7 +140,7 @@ episodios_server <- function(input, output, session, datos, opciones,
           inputId = ns("episodios_col_valor"),
           label = "Sumar valor por:",
           choices = datos$colnames,
-          selected = "NRO_IDENTIFICACION",
+          selected = "nro_identificacion",
           multiple = FALSE)
       })
     } else {
@@ -174,8 +180,8 @@ episodios_server <- function(input, output, session, datos, opciones,
                 ),
                 choiceValues = c(
                   "prestacion",
-                  "NRO_IDENTIFICACION",
-                  "NRO_FACTURA"
+                  "nro_identificacion",
+                  "nro_factura"
                 )
               )
             })
@@ -273,6 +279,46 @@ episodios_server <- function(input, output, session, datos, opciones,
                 )
               }
               
+              episodios$histograma_titulo <- paste(
+                "Histograma de valores por",
+                separar_spanish(
+                  if (!is.null(episodios$agrupadores_items)) {
+                    c("episodio", "factura", "paciente", "prestación")[
+                      !c(is.null(input$episodios_jerarquia_nivel_1_order),
+                         is.null(input$episodios_jerarquia_nivel_2_order),
+                         is.null(input$episodios_jerarquia_nivel_3_order),
+                         is.null(input$episodios_jerarquia_nivel_4_order))
+                    ]
+                  } else {
+                    c("prestación", "paciente", "factura")[
+                      c(input$descriptiva_unidades == "prestacion",
+                        input$descriptiva_unidades == "nro_identificacion",
+                        input$descriptiva_unidades == "nro_factura")
+                    ]
+                  }
+                )
+              )
+              
+              episodios$caja_de_bigotes_titulo <- paste(
+                "Distribución del valor por",
+                separar_spanish(
+                  if (!is.null(episodios$agrupadores_items)) {
+                    c("episodio", "factura", "paciente", "prestación")[
+                      !c(is.null(input$episodios_jerarquia_nivel_1_order),
+                         is.null(input$episodios_jerarquia_nivel_2_order),
+                         is.null(input$episodios_jerarquia_nivel_3_order),
+                         is.null(input$episodios_jerarquia_nivel_4_order))
+                    ]
+                  } else {
+                    c("prestación", "paciente", "factura")[
+                      c(input$descriptiva_unidades == "prestacion",
+                        input$descriptiva_unidades == "nro_identificacion",
+                        input$descriptiva_unidades == "nro_factura")
+                    ]
+                  }
+                )
+              )
+              
               episodios$lista_agrupadores <- 
                 episodios$tabla[["descriptiva"]][, c(
                   episodios_cols, episodios_cols_sep), with = FALSE]
@@ -298,6 +344,20 @@ episodios_server <- function(input, output, session, datos, opciones,
                                  digits=0,
                                  mark = ".",
                                  dec.mark = ",")
+              })
+              
+              output$tabla_titulo <- renderText({
+                paste(
+                  "Descriptiva de",
+                  episodios_cols,
+                  ifelse(
+                    test = is.null(episodios_cols_sep),
+                    yes = "",
+                    no = "separada por"
+                  ),
+                  separar_spanish(episodios_cols_sep),
+                  collapse = " "
+                )
               })
               
               output$histograma_select_agrupador <- DT::renderDataTable({
@@ -357,6 +417,18 @@ episodios_server <- function(input, output, session, datos, opciones,
     }
   })
   
+  output$histograma_titulo <- renderText({
+    if (!is.null(input$histograma_select_agrupador_rows_selected)) {
+      episodios$histograma_titulo
+    }
+  })
+  
+  output$caja_de_bigotes_titulo <- renderText({
+    if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
+      episodios$caja_de_bigotes_titulo
+    }
+  })
+  
   output$histograma_render <- renderPlotly({
     if (!is.null(input$histograma_select_agrupador_rows_selected)) {
       histograma_agrupador(
@@ -365,7 +437,7 @@ episodios_server <- function(input, output, session, datos, opciones,
           x = episodios$lista_agrupadores[
             input$histograma_select_agrupador_rows_selected],
           y = episodios$tabla[["data"]]
-        )[["VALOR_CALCULOS"]]
+        )[["valor_calculos"]]
       )
     }
   })
@@ -374,7 +446,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
       caja_de_bigotes_agrupador(
         data = episodios$tabla[["data"]],
-        columna_numeros = "VALOR_CALCULOS", 
+        columna_numeros = "valor_calculos", 
         columnas_sep = episodios$lista_agrupadores[
           input$caja_de_bigotes_select_agrupador_rows_selected]
       )
@@ -399,7 +471,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(datos$colnames)) {
       paste("Número de registros:", 
             formatC(
-              length(datos$data_table[["NRO_IDENTIFICACION"]]),
+              length(datos$data_table[["nro_identificacion"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -414,7 +486,7 @@ episodios_server <- function(input, output, session, datos, opciones,
     if (!is.null(datos$colnames)) {
       paste("Número de pacientes:", 
             formatC(
-              uniqueN(datos$data_table[["NRO_IDENTIFICACION"]]),
+              uniqueN(datos$data_table[["nro_identificacion"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 
@@ -426,10 +498,10 @@ episodios_server <- function(input, output, session, datos, opciones,
   })
   
   output$descriptiva_sumas_facturas <- renderText({
-    if (!is.null(datos$colnames) && "NRO_FACTURA" %in% datos$colnames) {
+    if (!is.null(datos$colnames) && "nro_factura" %in% datos$colnames) {
       paste("Número de facturas:", 
             formatC(
-              uniqueN(datos$data_table[["NRO_FACTURA"]]),
+              uniqueN(datos$data_table[["nro_factura"]]),
               big.mark = ".", 
               decimal.mark = ",", 
               format = "f", 

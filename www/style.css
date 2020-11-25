@@ -1,3 +1,8 @@
+.titulo_center {
+  text-align: center;
+  font-weight: bold;
+}
+
 div.filtros_char div.selectize-input {
     max-height: 102px;
     overflow-y: auto;

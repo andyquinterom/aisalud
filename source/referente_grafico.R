@@ -1,40 +1,40 @@
 ref_plot <- function(paquetes, referente, cups, valor_costo) {
   
-  referente.completo <- as.data.table(  
+  referente.completo <- as.data.table(
     rbind(fill = TRUE,
-          paquetes[, list(`CUMS/CUPS`, `CODIGO PAQUETE`,
-                          "P" = "I",
-                          `REF VALOR` = VALOR,
-                          `REF COSTO` = COSTO,
+          paquetes[, list("cums_cups" = cums_cups,
+                          "p" = "I",
+                          ref_valor = valor,
+                          ref_costo = costo,
                           "TIPO" = "INSTITUCIONAL")],
           cbind(referente, data.frame(
             "TIPO" = rep("REFERENTE", nrow(referente))))))
-      
-  promedios <- referente.completo[`CUMS/CUPS` %in% cups, list(
-    P,
-    costomean = mean(`REF COSTO`, na.rm = T), 
-    costomin = min(`REF COSTO`, na.rm = T),
-    costomax = max(`REF COSTO`, na.rm = T),
-    valormean = mean(`REF VALOR`, na.rm = T),
-    valormin = min(`REF VALOR`, na.rm = T),
-    valormax = max(`REF VALOR`, na.rm = T),
-    VALORMEDIA = paste0("MEDIA: ",
-                        formatAsCurrency(mean(`REF VALOR`, na.rm = T))),
-    VALORMIN = paste0("MÍNIMO: ",
-                      formatAsCurrency(min(`REF VALOR`, na.rm = T))),
-    VALORMAX = paste0("MÁXIMO: ",
-                      formatAsCurrency(max(`REF VALOR`, na.rm = T))),
-    COSTOMEDIA = paste0("MEDIA: ",
-                        formatAsCurrency(mean(`REF COSTO`, na.rm = T))),
-    COSTOMIN = paste0("MÍNIMO: ",
-                      formatAsCurrency(min(`REF COSTO`, na.rm = T))),
-    COSTOMAX = paste0("MÁXIMO: ",
-                      formatAsCurrency(max(`REF COSTO`, na.rm = T)))
-    ),
-    by=c("TIPO")]
   
-  if (valor_costo == "VALOR") {
-    REF <-   "REF VALOR"
+  promedios <- referente.completo[cums_cups %in% cups, list(
+    p,
+    costomean = mean(ref_costo, na.rm = T), 
+    costomin = min(ref_costo, na.rm = T),
+    costomax = max(ref_costo, na.rm = T),
+    valormean = mean(ref_valor, na.rm = T),
+    valormin = min(ref_valor, na.rm = T),
+    valormax = max(ref_valor, na.rm = T),
+    VALORMEDIA = paste0("MEDIA: ",
+                        formatAsCurrency(mean(ref_valor, na.rm = T))),
+    VALORMIN = paste0("MÍNIMO: ",
+                      formatAsCurrency(min(ref_valor, na.rm = T))),
+    VALORMAX = paste0("MÁXIMO: ",
+                      formatAsCurrency(max(ref_valor, na.rm = T))),
+    COSTOMEDIA = paste0("MEDIA: ",
+                        formatAsCurrency(mean(ref_costo, na.rm = T))),
+    COSTOMIN = paste0("MÍNIMO: ",
+                      formatAsCurrency(min(ref_costo, na.rm = T))),
+    COSTOMAX = paste0("MÁXIMO: ",
+                      formatAsCurrency(max(ref_costo, na.rm = T)))
+  ),
+  by = c("TIPO")]
+  
+  if (valor_costo == "valor") {
+    REF <-   "ref_valor"
     MEDIA <- "VALORMEDIA"
     MAX <-   "VALORMAX"
     MIN <-   "VALORMIN"
@@ -42,8 +42,8 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
     ymin <-  "valormin"
     ymax <-  "valormax"
   }
-  else if (valor_costo == "COSTO") {
-    REF <-   "REF COSTO"
+  else if (valor_costo == "costo") {
+    REF <-   "ref_costo"
     MEDIA <- "COSTOMEDIA"
     MAX <-   "COSTOMAX"
     MIN <-   "COSTOMIN"
@@ -54,8 +54,8 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
   
   plot1 <-
     ggplot(
-      data = referente.completo[`CUMS/CUPS` %in% cups],
-      aes(x = P,
+      data = referente.completo[cums_cups %in% cups],
+      aes(x = p,
           y = get(REF),
           fill = TIPO,
           tooltip = format(get(REF),
@@ -63,11 +63,11 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
                            big.mark = ".",
                            decimal.mark = ",",
                            scientific = F),
-          data_id = P)) +
+          data_id = p)) +
     geom_col_interactive() +
     geom_errorbar_interactive(
       data = promedios[TIPO == "REFERENTE"],
-      aes(P, ymax = get(ymean), 
+      aes(p, ymax = get(ymean), 
           ymin = get(ymean),
           color = get(MEDIA), 
           tooltip = format(get(ymean),
@@ -82,7 +82,7 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
     geom_errorbar_interactive(
       data = promedios[TIPO == "REFERENTE"],
       aes(
-        P,
+        p,
         ymax = get(ymax),
         ymin = get(ymax),
         color = get(MAX),
@@ -98,7 +98,7 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
     geom_errorbar_interactive(
       data = promedios[TIPO == "REFERENTE"],
       aes(
-        P,
+        p,
         ymax = get(ymin),
         ymin = get(ymin),
         color = get(MIN),
@@ -111,7 +111,7 @@ ref_plot <- function(paquetes, referente, cups, valor_costo) {
       linetype = "longdash",
       inherit.aes = F,
       width = 1) +
-    scale_y_continuous(labels = scales::comma, name = valor_costo) +
+    scale_y_continuous(labels = scales::comma, name = toupper(valor_costo)) +
     scale_x_discrete(name = "") + 
     scale_fill_manual(breaks = c("INSTITUCIONAL", "REFERENTE"),
                       values = c("blue", "dark grey")) +

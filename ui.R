@@ -32,10 +32,24 @@ shinyUI(
           HTML('
                <img src="logoblanco.png" width="100%"/>
                '),
-          menuItem(
-            text = "Prepara",
-            icon = icon("cog", lib = "font-awesome"),
-            tabName = "prepara"),
+          if (Sys.getenv("DATABASE_ACCESS") != "") {
+            menuItem(
+              text = "Prepara",
+              icon = icon("cog", lib = "font-awesome"),
+              menuSubItem(
+                text = "Subir datos",
+                tabName = "prepara",
+                icon = icon("upload", lib = "font-awesome")),
+              menuItem(
+                text = "Cargar de la nube",
+                tabName = "prepara_base_de_datos",
+                icon = icon("cloud", lib = "font-awesome")))
+          } else {
+            menuItem(
+              text = "Prepara",
+              icon = icon("cog", lib = "font-awesome"),
+              tabName = "prepara")
+          },
           # menuItem(
           #   text = tags$b("- Modulos -")
           # ),
@@ -160,6 +174,10 @@ shinyUI(
             prepara_ui("prepara_modulo")
           ),
           tabItem(
+            tabName = "prepara_base_de_datos",
+            base_de_datos_ui("prepara_base_de_datos")
+          ),
+          tabItem(
             tabName = "descriptiva_modulo",
             descriptiva_ui("descriptiva_modulo")
           ),
@@ -179,16 +197,6 @@ shinyUI(
             tabName = "seguimiento_modulo_indice",
             if (NT_INCLUIDO) {
               tagList(
-                fluidRow(
-                  column(
-                    width = 12,
-                    box(
-                      width = 12,
-                      actionButton(
-                        "dash_nt_actualizar",
-                        "Actualizar",
-                        width = "100%")))
-                ),
                 seguimiento_notas_indice_ui("seguimiento_notas_indice")
               )
             }

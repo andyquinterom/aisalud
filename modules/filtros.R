@@ -234,7 +234,7 @@ filtros_server <- function(input, output, session, datos, opciones) {
     inputs_filtros_pacientes_arguments <- paste(unlist(
       if (!is.null(input$filtros_paciente_valor)) {
         paste0(
-          "[NRO_IDENTIFICACION",
+          "[nro_identificacion",
           ifelse(
             test = input[["filtro_paciente_incluir"]],
             yes = " %in% ",

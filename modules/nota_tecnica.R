@@ -157,7 +157,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
     updateNumericInput(
       session = session,
       inputId = "nota_tecnica_meses",
-      value = uniqueN(month(datos$valores_unicos[["FECHA_PRESTACION"]]))
+      value = uniqueN(month(datos$valores_unicos[["fecha_prestacion"]]))
     )
   })
   
@@ -167,7 +167,7 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
         selectizeInput(
           inputId = ns("nota_tecnica_col_valor"),
           label = "Sumar valor por:",
-          selected = "NRO_IDENTIFICACION",
+          selected = "nro_identificacion",
           choices = datos$colnames,
           multiple = FALSE)
       })
@@ -222,8 +222,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
             ),
             choiceValues = c(
               "prestacion",
-              "NRO_IDENTIFICACION",
-              "NRO_FACTURA"
+              "nro_identificacion",
+              "nro_factura"
             )
           ))
       })
@@ -286,8 +286,8 @@ nota_tecnica_server <- function(input, output, session, datos, opciones,
           test_paciente <- !is.null(input$nota_tecnica_jerarquia_nivel_3_order)
           test_prestacion <- !is.null(input$nota_tecnica_jerarquia_nivel_4_order)
         } else {
-          test_factura <- "NRO_FACTURA" == input$descriptiva_unidades
-          test_paciente <- "NRO_IDENTIFICACION" == input$descriptiva_unidades
+          test_factura <- "nro_factura" == input$descriptiva_unidades
+          test_paciente <- "nro_identificacion" == input$descriptiva_unidades
           test_prestacion <- "prestacion" == input$descriptiva_unidades
         }
         

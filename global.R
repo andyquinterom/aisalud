@@ -26,6 +26,11 @@ library(withr)
 library(shinydashboardPlus)
 library(shinyjqui)
 library(googledrive)
+library(DBI)
+library(RPostgres)
+library(dplyr)
+library(dbplyr)
+library(readxl)
 
 enableBookmarking(store = "server")
 
@@ -66,10 +71,10 @@ if (file.exists("datos/paquetes/paquetes.feather") &&
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 
-    paquetes[`COMPONENTE` == "PAQUETE"]
+    paquetes[componente == "PAQUETE"]
   
   paquetes_cups <- 
-    paquetes[`COMPONENTE` != "PAQUETE"]
+    paquetes[componente != "PAQUETE"]
   
 }
 
@@ -105,7 +110,7 @@ if (Sys.getenv("pricing_path") == "") {
 
 if (Sys.getenv("paquete_path") == "") {
   
-  paquete_path <- "1-_uwyGQspW--DhG6PAC4DUi6NTjMzGqy5ldzhcvkO0U"
+  paquete_path <- "1xR5w_c8puXRqqMtPIphRUogF7q5AAeExUrCb6U5s4i8"
   
 } else {
   
@@ -115,7 +120,7 @@ if (Sys.getenv("paquete_path") == "") {
 
 if (Sys.getenv("nts_path") == "") {
   
-  nts_path <- "1zTmNGV5mgFqvNJK-g68D9sBTOTmhYBTvz8ECuDuSjmU"
+  nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
   
 } else {
   
@@ -137,14 +142,14 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
         file.exists("datos/paquetes/referente-paquetes.feather") && 
         file.exists("datos/paquetes/referente.feather"))) {
     
-    write_feather(sheets_read(paquete_path, sheet = "PAQUETES",
+    write_feather(sheets_read(paquete_path, sheet = "paquetes",
                               col_types = "cccdcccccccdd"), 
                   path = "datos/paquetes/paquetes.feather")
     
-    write_feather(sheets_read(paquete_path, sheet = "REFERENTE-PAQUETES"),
+    write_feather(sheets_read(paquete_path, sheet = "referente_paquetes"),
                   path = "datos/paquetes/referente-paquetes.feather")
     
-    write_feather(sheets_read(paquete_path, sheet = "REFERENTE"),
+    write_feather(sheets_read(paquete_path, sheet = "referente"),
                   path = "datos/paquetes/referente.feather")
     
   }
@@ -160,10 +165,10 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 
-    paquetes[`COMPONENTE` == "PAQUETE"]
+    paquetes[componente == "PAQUETE"]
   
   paquetes_cups <- 
-    paquetes[`COMPONENTE` != "PAQUETE"]
+    paquetes[componente != "PAQUETE"]
 }
 
 # Pricing  -------------------------------------------------------------------- 
@@ -213,17 +218,17 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
         file.exists("datos/nts/nt_mapa.rds"))) {
     
     write_feather(sheets_read(nts_path,
-                              sheet = "NTs",
+                              sheet = "notas_tecnicas",
                               col_types = "ccddd"),
                   "datos/nts/notas_tecnicas.feather")
     
     write_feather(sheets_read(nts_path, 
-                              sheet = "INDICE", 
+                              sheet = "indice", 
                               col_types = "ccdcccd"),
                   "datos/nts/indice.feather")
     
     write_feather(sheets_read(nts_path, 
-                              sheet = "INCLUSIONES", 
+                              sheet = "inclusiones", 
                               col_types = "ccdc") ,
                   "datos/nts/inclusiones.feather")
     
@@ -231,7 +236,7 @@ if (Sys.getenv("NT_INCLUIDO") == "") {
       mapaValoresNT(
         as.data.table(
           sheets_read(nts_path,
-                      sheet = "INDICE",
+                      sheet = "indice",
                       col_types = "ccdcccd"
           )
         )
