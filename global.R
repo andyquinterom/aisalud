@@ -30,6 +30,7 @@ library(DBI)
 library(RPostgres)
 library(dplyr)
 library(dbplyr)
+library(readxl)
 
 enableBookmarking(store = "server")
 
