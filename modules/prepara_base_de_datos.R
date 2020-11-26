@@ -103,31 +103,48 @@ base_de_datos_server <- function(input, output, session, opciones, nombre_id,
   observeEvent(input$establecer_conexion, {
     withProgress(
       message = "Estableciendo conexión con base de datos...", {
-      base_de_datos_con <<- dbConnect(
-        RPostgres::Postgres(),
-        dbname = Sys.getenv("DATABASE_NAME"),
-        user = Sys.getenv("DATABASE_USER"),
-        password = Sys.getenv("DATABASE_PW"),
-        host = Sys.getenv("DATABASE_HOST"),
-        port = Sys.getenv("DATABASE_PORT"),
-        sslmode = "require",
-        options = paste0("-c search_path=", Sys.getenv("DATABASE_SCHEMA")))
-      base_de_datos$schema <- Sys.getenv("DATABASE_SCHEMA")
-      tables_query <- dbGetQuery(
-        base_de_datos_con,
-        paste0(
-          "SELECT table_name FROM information_schema.tables
-      WHERE table_schema='", base_de_datos$schema, "'"))[[1]]
-      updateSelectizeInput(
-        session = session,
-        inputId = "tabla",
-        choices = tables_query
-      )
+        tryCatch(
+          expr = {
+            if (is.null(base_de_datos_con)) {
+              base_de_datos_con <<- dbConnect(
+                RPostgres::Postgres(),
+                dbname = Sys.getenv("DATABASE_NAME"),
+                user = Sys.getenv("DATABASE_USER"),
+                password = Sys.getenv("DATABASE_PW"),
+                host = Sys.getenv("DATABASE_HOST"),
+                port = Sys.getenv("DATABASE_PORT"),
+                sslmode = "require",
+                options = paste0("-c search_path=", Sys.getenv("DATABASE_SCHEMA")))
+            }
+            base_de_datos$schema <- Sys.getenv("DATABASE_SCHEMA")
+            tables_query <- dbGetQuery(
+              base_de_datos_con,
+              paste0("SELECT table_name FROM information_schema.tables
+               WHERE table_schema='", 
+               Sys.getenv("DATABASE_SCHEMA"), "'")) %>%
+              unlist() %>%
+              unname()
+            if (identical(character(0), tables_query)) {
+              tables_query <- NULL
+              updateSelectizeInput(
+                session = session,
+                inputId = "tabla",
+                choices = "Ninguno"
+              )
+            } else {
+              updateSelectizeInput(
+                session = session,
+                inputId = "tabla",
+                choices = tables_query
+              )
+            }
+          }
+        )
     })
   })
   
   observeEvent(input$tabla, {
-    if (!is.null(base_de_datos_con)) {
+    if (!is.null(base_de_datos_con) && input$tabla != "Ninguno") {
       prepara_opciones$colnames <- dbListFields(
         base_de_datos_con,
         input$tabla)
@@ -144,7 +161,7 @@ base_de_datos_server <- function(input, output, session, opciones, nombre_id,
       expr = {
         withProgress(
           message = "Cargando datos...", {
-            if (!is.null(base_de_datos_con)) {
+            if (!is.null(base_de_datos_con) && input$tabla != "Ninguno") {
               if (input$tabla_columnas_todos) {
                 datos$data_original <- as.data.table(
                   tbl(base_de_datos_con, input$tabla))
