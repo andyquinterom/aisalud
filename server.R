@@ -29,16 +29,6 @@ shinyServer(function(input, output, session) {
     datos = datos_modulos
   )
   
-  # Modulo descriptiva clasica ----------------------------------------
-  
-  callModule(
-    module = descriptiva_server,
-    id = "descriptiva_modulo",
-    datos = datos_modulos,
-    opciones = opciones
-  )
-  
- 
   # Modulo descriptiva y episodios --------------------------------------------
   
   callModule(

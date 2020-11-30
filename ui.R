@@ -178,10 +178,6 @@ shinyUI(
             base_de_datos_ui("prepara_base_de_datos")
           ),
           tabItem(
-            tabName = "descriptiva_modulo",
-            descriptiva_ui("descriptiva_modulo")
-          ),
-          tabItem(
             tabName = "outliers_modulo",
             outliers_ui("outliers_modulo")
           ),

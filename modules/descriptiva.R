@@ -96,6 +96,36 @@ episodios_ui <- function(id) {
               )
             )
           )
+        ),
+        tabPanel(
+          title = "Gráfico de barras",
+          tags$br(),
+          fluidRow(
+            column(
+              width = 8,
+              tags$h3(
+                textOutput(ns("grafico_barras_titulo")), class = "titulo_center"),
+              plotlyOutput(
+                outputId = ns("grafico_barras_render")
+              )
+            ),
+            column(
+              width = 4,
+              selectizeInput(
+                width = "100%",
+                inputId = ns("grafico_barras_indicador"),
+                label = "Indicador:",
+                choices = c("Suma" = "Suma",
+                            "Frecuencia" = "Frecuencia",
+                            "Media" = "Media", 
+                            "Mediana" = "P50",
+                            "Variación" = "Coef.var")
+              ),
+              DT::dataTableOutput(
+                outputId = ns("grafico_barras_select_agrupador")
+              )
+            )
+          )
         )
       )
       )
@@ -399,6 +429,26 @@ episodios_server <- function(input, output, session, datos, opciones,
                       fontSize = '95%')
               })
               
+              output$grafico_barras_select_agrupador <- 
+                DT::renderDataTable({
+                  DT::datatable(
+                    episodios$tabla[["descriptiva"]][, c(
+                      episodios_cols, episodios_cols_sep), with = FALSE],
+                    options = list(
+                      language = list(
+                        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                      pageLength = 10000,
+                      dom = 'ft',
+                      autoWidth = FALSE,
+                      ordering=T, 
+                      scrollX = TRUE,
+                      scrollY = "370px"),
+                    rownames= FALSE) %>%
+                    formatStyle(
+                      columns = 1:length(c(episodios_cols, episodios_cols_sep)),
+                      fontSize = '95%')
+                })
+              
             })
           },
           error = function(e) {
@@ -450,6 +500,20 @@ episodios_server <- function(input, output, session, datos, opciones,
         columnas_sep = episodios$lista_agrupadores[
           input$caja_de_bigotes_select_agrupador_rows_selected]
       )
+    }
+  })
+  
+  output$grafico_barras_render <- renderPlotly({
+    if (!is.null(input$grafico_barras_select_agrupador_rows_selected)) {
+      suppressMessages({
+        grafico_barras_descriptiva(
+          data = episodios$tabla[["descriptiva"]],
+          columna_numeros = input$grafico_barras_indicador,
+          columnas_sep = episodios$lista_agrupadores[
+            input$grafico_barras_select_agrupador_rows_selected
+          ]
+        )
+      })
     }
   })
   
