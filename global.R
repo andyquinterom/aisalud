@@ -47,7 +47,7 @@ options(shiny.maxRequestSize = maxRequestSize)
 
 source("config.R")
 
-for (i in paste0("source/", list.files("source/"))) {
+for (i in paste0("r/", list.files("r/"))) {
   source(i)
 }
 
