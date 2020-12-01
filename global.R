@@ -59,27 +59,6 @@ for (i in paste0("modules/", list.files("modules/"))) {
 
 # Carga de datos ---------------------------------------------------------------
 
-if (file.exists("datos/paquetes/paquetes.feather") &&
-    file.exists("datos/paquetes/referente-paquetes.feather") && 
-    file.exists("datos/paquetes/referente.feather")) {
-  
-  paquetes <- 
-    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
-  
-  paquetes_ref <- 
-    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
-  
-  paquetes_ref_cups <- 
-    as.data.table(read_feather("datos/paquetes/referente.feather"))
-  
-  paquetes_paquetes <- 
-    paquetes[componente == "PAQUETE"]
-  
-  paquetes_cups <- 
-    paquetes[componente != "PAQUETE"]
-  
-}
-
 # Authentication google -------------------------------------------------------
 googledrive::drive_auth(path = "secrets/serviceAccount.json")
 googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
@@ -160,10 +139,10 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
   paquetes <- 
     as.data.table(read_feather("datos/paquetes/paquetes.feather"))
   
-  paquetes_ref_cups <- 
+  paquetes_ref <- 
     as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
   
-  paquetes_ref <- 
+  paquetes_ref_cups <- 
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 

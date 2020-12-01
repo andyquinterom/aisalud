@@ -78,26 +78,29 @@ shinyUI(
               tabName = "otros_graficos_modulo"
             )
           ),
-          menuItem(
-            text = "Seguimiento",
-            icon = icon("dollar-sign", lib = "font-awesome"),
-            menuSubItem(
-              text = "Índice",
-              tabName = "seguimiento_modulo_indice"),
-            menuSubItem(
-              text = "Dashboard",
-              tabName = "seguimiento_modulo_dash"),
-            menuSubItem(
-              text = "Comparación",
-              tabName = "seguimiento_modulo_comparar")
-          ),
-          menuItem(
-            text = "Paquetes",
-            icon = icon("chart-pie", lib = "font-awesome"),
-            menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
-            menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard"),
-            tags$br()
-          )
+          if (NT_INCLUIDO) {
+            menuItem(
+              text = "Seguimiento",
+              icon = icon("dollar-sign", lib = "font-awesome"),
+              menuSubItem(
+                text = "Índice",
+                tabName = "seguimiento_modulo_indice"),
+              menuSubItem(
+                text = "Dashboard",
+                tabName = "seguimiento_modulo_dash"),
+              menuSubItem(
+                text = "Comparación",
+                tabName = "seguimiento_modulo_comparar")
+            )
+          },
+          if (PAQUETES_INCLUIDO) {
+            menuItem(
+              text = "Paquetes",
+              icon = icon("chart-pie", lib = "font-awesome"),
+              menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
+              menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard")
+            )
+          }
           # menuItem(
           #   text = tags$b("- Normal -")
           # ),
@@ -200,23 +203,15 @@ shinyUI(
           ),
           tabItem(
             tabName = "seguimiento_modulo_indice",
-            if (NT_INCLUIDO) {
-              tagList(
-                seguimiento_notas_indice_ui("seguimiento_notas_indice")
-              )
-            }
+            seguimiento_notas_indice_ui("seguimiento_notas_indice")
           ),
           tabItem(
             tabName = "seguimiento_modulo_dash",
-            if (NT_INCLUIDO) {
-              seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
-            }
+            seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
           ),
           tabItem(
             tabName = "seguimiento_modulo_comparar",
-            if (NT_INCLUIDO) {
-              seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
-            }
+            seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
           ),
           tabItem(
             tabName = "paquetes_modulo_indice",

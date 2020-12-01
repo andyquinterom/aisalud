@@ -7,9 +7,6 @@ otros_graficos_ui <- function(id) {
         width = 12,
         tabsetPanel(
           tabPanel(
-            title = "Inicio"
-          ),
-          tabPanel(
             title = "Distribución de edades",
             tags$br(),
             fluidRow(
@@ -70,28 +67,45 @@ otros_graficos_server <- function(input, output, session, datos) {
   })
   
   observeEvent(input$edades_ejecutar, {
-    if (input$edades_segmentacion_select_columna == "Ninguno") {
-      edades_pacientes <- copy(datos$data_table)[, c(
-        input$edades_select_columna, 
-        "nro_identificacion"),
-        with = FALSE] %>%
-        unique()
-      graficos$edades <- histograma_edades(
-        data = edades_pacientes,
-        columna_numero = input$edades_select_columna,
-        columna_sep = NULL)
-    } else {
-      edades_pacientes <- copy(datos$data_table)[, c(
-        input$edades_select_columna, 
-        input$edades_segmentacion_select_columna,
-        "nro_identificacion"),
-        with = FALSE] %>%
-        unique()
-      graficos$edades <- histograma_edades(
-        data = edades_pacientes,
-        columna_numero = input$edades_select_columna,
-        columna_sep = input$edades_segmentacion_select_columna)
-    }
+    tryCatch(
+      expr = {
+        if (input$edades_select_columna != "" && 
+            input$edades_select_columna != "Ninguno") {
+          if (input$edades_segmentacion_select_columna == "Ninguno" ||
+              input$edades_segmentacion_select_columna == "") {
+            edades_pacientes <- copy(datos$data_table)[, c(
+              input$edades_select_columna, 
+              "nro_identificacion"),
+              with = FALSE] %>%
+              unique()
+            graficos$edades <- histograma_edades(
+              data = edades_pacientes,
+              columna_numero = input$edades_select_columna,
+              columna_sep = NULL)
+          } else {
+            edades_pacientes <- copy(datos$data_table)[, c(
+              input$edades_select_columna, 
+              input$edades_segmentacion_select_columna,
+              "nro_identificacion"),
+              with = FALSE] %>%
+              unique()
+            graficos$edades <- histograma_edades(
+              data = edades_pacientes,
+              columna_numero = input$edades_select_columna,
+              columna_sep = input$edades_segmentacion_select_columna)
+          }
+        }
+      }, error = function(e) {
+        sendSweetAlert(
+          session = session,
+          title = "Error", 
+          type = "error",
+          text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+        )
+      }
+    )
   })
   
   output$edades_render <- renderPlotly({
