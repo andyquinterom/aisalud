@@ -125,6 +125,11 @@ seguimiento_notas_comparar_server <- function(
   
   ns <- NS(nombre_id)
   
+  style_interval <-ifelse(
+    test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
+    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
+    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
+  
   observeEvent(comparar$indice, {
     updateSelectizeInput(
       session = session,
@@ -268,7 +273,7 @@ seguimiento_notas_comparar_server <- function(
       comparar$select <- input$comparar_select
       comparar$agrupador <- input$comparar_agrupador
       comparar$col_valor <- input$comparar_col_valor
-      
+      print(style_interval)
       tryCatch(
         expr = {
           
@@ -371,15 +376,12 @@ seguimiento_notas_comparar_server <- function(
           columns = 3,
           backgroundColor = styleInterval(
             cuts = c(0),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatStyle(
           columns = 4,
           backgroundColor = styleInterval(
             cuts = c(1),
-            values = c("rgb(255, 145, 145)",
-                       "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         formatCurrency(
           columns = c(2,3),
           mark = ".",
@@ -416,16 +418,12 @@ seguimiento_notas_comparar_server <- function(
           columns = 3, 
           backgroundColor = styleInterval(
             cuts = c(0), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatStyle(
           columns = 4, 
           backgroundColor = styleInterval(
             cuts = c(1), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         formatCurrency(
           columns = c(2,3), 
           mark = ".",
@@ -462,16 +460,12 @@ seguimiento_notas_comparar_server <- function(
           columns = 3, 
           backgroundColor = styleInterval(
             cuts = c(0),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatStyle(
           columns = 4, 
           backgroundColor = styleInterval(
             cuts = c(1), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         formatCurrency(
           columns = c(2,3),
           mark = ".", 
@@ -508,16 +502,12 @@ seguimiento_notas_comparar_server <- function(
           columns = 3,
           backgroundColor = styleInterval(
             cuts = c(0), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatStyle(
           columns = 4,
           backgroundColor = styleInterval(
             cuts = c(1), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         formatCurrency(
           columns = c(2,3),
           mark = ".", 
@@ -554,16 +544,12 @@ seguimiento_notas_comparar_server <- function(
           columns = 3, 
           backgroundColor = styleInterval(
             cuts = c(0), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatStyle(
           columns = 4, 
           backgroundColor = styleInterval(
             cuts = c(1),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         formatCurrency(
           columns = c(2,3),
           mark = ".", 
@@ -650,9 +636,7 @@ seguimiento_notas_comparar_server <- function(
           columns = -c(1),
           backgroundColor = styleInterval(
             cuts = c(0),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatCurrency(
           columns = -c(1),
           mark = ".",
@@ -683,9 +667,7 @@ seguimiento_notas_comparar_server <- function(
           columns = -c(1),
           backgroundColor = styleInterval(
             cuts = c(1),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatPercentage(
           columns = -c(1),
           mark = ".",
@@ -716,9 +698,7 @@ seguimiento_notas_comparar_server <- function(
           columns = -c(1),
           backgroundColor = styleInterval(
             cuts = c(0),
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatCurrency(
           columns = -c(1),
           mark = ".",
@@ -749,9 +729,7 @@ seguimiento_notas_comparar_server <- function(
           columns = -c(1),
           backgroundColor = styleInterval(
             cuts = c(1), 
-            values = c(
-              "rgb(255, 145, 145)",
-              "rgb(145, 255, 145)"))) %>%
+            values = style_interval)) %>%
         DT::formatPercentage(
           columns = -c(1),
           mark = ".", 
