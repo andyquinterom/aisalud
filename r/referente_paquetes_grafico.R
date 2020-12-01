@@ -4,8 +4,8 @@ paquete_ref_plot <- function(paquetes, referente, cups, valor_costo) {
     rbind(fill = TRUE,
           paquetes[, list("cums_cups" = codigo_paquete,
                           "p" = "I",
-                          ref_valor = valor,
-                          ref_costo = costo,
+                          "ref_valor" = valor,
+                          "ref_costo" = costo,
                           "TIPO" = "INSTITUCIONAL")],
           cbind(referente, data.frame(
             "TIPO" = rep("REFERENTE", nrow(referente))))))

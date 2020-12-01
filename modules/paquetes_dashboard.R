@@ -368,7 +368,7 @@ paquetes_dashboard_server <- function(
     if(!is.null(paquetes)) {
       paquete_ref_plot(
         paquetes = paquetes_valores$paquete_datos,
-        referente = paquetes_ref,
+        referente = paquetes_ref_cups,
         cups = paquetes_valores$paquete,
         valor_costo = input$paquetes_valor_costo)
     }

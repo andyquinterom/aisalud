@@ -57,7 +57,7 @@ seguimiento_notas_indice_server <- function(input, output, session, indice,
         DT::formatCurrency(
           columns = c("valor_mes")
           , digits = 0, mark = ".", dec.mark = ",") %>%
-        DT::formatRound(columns = "poblacion", mark = ".")
+        DT::formatRound(columns = "poblacion", mark = ".", dec.mark = ",")
     }
   })
   
