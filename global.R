@@ -49,7 +49,7 @@ options(spinner.color = "#222d32")
 
 source("config.R")
 
-for (i in paste0("r/", list.files("r/"))) {
+for (i in paste0("R/", list.files("R/"))) {
   source(i)
 }
 
