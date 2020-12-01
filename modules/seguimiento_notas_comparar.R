@@ -273,7 +273,6 @@ seguimiento_notas_comparar_server <- function(
       comparar$select <- input$comparar_select
       comparar$agrupador <- input$comparar_agrupador
       comparar$col_valor <- input$comparar_col_valor
-      print(style_interval)
       tryCatch(
         expr = {
           
