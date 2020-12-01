@@ -138,7 +138,7 @@ seguimiento_notas_dashboard_server <- function(
           dom='ft',
           language = list(
             url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(paquetes),
+          pageLength = nrow(dash_nt_valores$inclusiones),
           ordering = FALSE, 
           scrollX = TRUE,
           scrollY = "60vh")) %>%
@@ -160,7 +160,7 @@ seguimiento_notas_dashboard_server <- function(
           dom='ft',
           language = list(
             url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(paquetes),
+          pageLength = nrow(dash_nt_valores$inclusiones),
           ordering = FALSE, 
           scrollX = TRUE,
           scrollY = "60vh")) %>%
@@ -189,13 +189,13 @@ seguimiento_notas_dashboard_server <- function(
           dom='ft', 
           language = list(
             url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(paquetes),
+          pageLength = nrow(dash_nt_valores$datos),
           ordering = FALSE,
           scrollX = TRUE,
           scrollY = "60vh")) %>%
         DT::formatCurrency(
-          columns = c("cm", "valor_mes")
-          , digits = 0, mark = ".", dec.mark = ","
+          columns = c("cm", "valor_mes"),
+          digits = 0, mark = ".", dec.mark = ","
         ) %>%
         DT::formatStyle(
           columns = 1:4,

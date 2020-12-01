@@ -41,7 +41,8 @@ paquetes_dashboard_ui <- function(id) {
           ggiraph::ggiraphOutput(
             outputId = ns("paquetes_plot_ref"),
             width = "100%",
-            height = "100%"),
+            height = "100%") %>%
+            withSpinner(),
           tags$p(style = "text-align: justify;",
                  tags$em("Este gráfico corresponde a la comparación del valor o costo de la institución para el paquete seleccionado comparado con paquetes ofertados en otras instituciones hospitalarias. También, muestra la media del mercado, el valor mínimo y el máximo, que permite evaluar la diferencia entre el valor o costo ofertado por la institución frente a otros paquetes que existan actualmente en el mercado."
                  )))),
@@ -377,7 +378,7 @@ paquetes_dashboard_server <- function(
     if(!is.null(input$paquetes_tabla_rows_selected))
       ref_plot(
         paquetes = paquetes_valores$paquete_cups,
-        referente = paquetes_ref[
+        referente = paquetes_ref_cups[
           codigo_paquete == paquetes_valores$paquete],
         cups = paquetes_valores$paquete_cups[
           input$paquetes_tabla_rows_selected,

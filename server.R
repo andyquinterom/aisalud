@@ -29,16 +29,6 @@ shinyServer(function(input, output, session) {
     datos = datos_modulos
   )
   
-  # Modulo descriptiva clasica ----------------------------------------
-  
-  callModule(
-    module = descriptiva_server,
-    id = "descriptiva_modulo",
-    datos = datos_modulos,
-    opciones = opciones
-  )
-  
- 
   # Modulo descriptiva y episodios --------------------------------------------
   
   callModule(
@@ -74,22 +64,34 @@ shinyServer(function(input, output, session) {
 
   # Modulo paquete -------------------------------------------------
   
+  if (PAQUETES_INCLUIDO) {
+    
+    callModule(
+      module = paquetes_dashboard_server,
+      id = "paquetes_modulo_dashboard",
+      paquetes = paquetes,
+      paquetes_ref_cups = paquetes_ref_cups,
+      paquetes_ref = paquetes_ref,
+      paquetes_paquetes = paquetes_paquetes,
+      paquetes_cups = paquetes_cups
+    )
+    
+    callModule(
+      module = paquetes_indice_server,
+      id = "paquetes_modulo_indice",
+      paquetes = paquetes,
+      paquete_path = paquete_path,
+      nombre_id = "paquetes_modulo_indice"
+    )
+    
+  }
+  
+  # Modulo otros gráficos
+  
   callModule(
-    module = paquetes_dashboard_server,
-    id = "paquetes_modulo_dashboard",
-    paquetes = paquetes,
-    paquetes_ref_cups = paquetes_ref_cups,
-    paquetes_ref = paquetes_ref,
-    paquetes_paquetes = paquetes_paquetes,
-    paquetes_cups = paquetes_cups
-  )
-
-  callModule(
-    module = paquetes_indice_server,
-    id = "paquetes_modulo_indice",
-    paquetes = paquetes,
-    paquete_path = paquete_path,
-    nombre_id = "paquetes_modulo_indice"
+    module = otros_graficos_server,
+    id = "otros_graficos_modulo",
+    datos = datos_modulos
   )
   
 

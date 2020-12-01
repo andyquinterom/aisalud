@@ -51,13 +51,15 @@ outliers_ui <- function(id) {
         column(
           width = 9,
           div(
-            DT::dataTableOutput(ns("outliers_tabla")),
+            DT::dataTableOutput(ns("outliers_tabla")) %>%
+              withSpinner(),
               style = "font-size:90%")),
         column(
           width = 3,
           plotOutput(
             height = "600px",
-            outputId = ns("outliers_box_plot")))
+            outputId = ns("outliers_box_plot")) %>%
+            withSpinner())
       )
     )
   )

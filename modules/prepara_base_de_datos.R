@@ -79,7 +79,8 @@ base_de_datos_ui <- function(id) {
     box(
       width = 12,
       height = "300px",
-      plotOutput(outputId = ns("valor_con_tiempo"), height = "280px")
+      plotOutput(outputId = ns("valor_con_tiempo"), height = "280px") %>%
+        withSpinner()
     )
   )
 }
@@ -219,7 +220,7 @@ base_de_datos_server <- function(input, output, session, opciones, nombre_id,
   output$valor_con_tiempo <- renderPlot({
     if (!is.null(datos$colnames)) {
       if (opciones$valor_costo %in% datos$colnames) {
-        ggplot(data = datos$data_original, 
+        ggplot(data = datos$data_table, 
                aes(cut(fecha_prestacion, "1 month"), 
                    get(opciones$valor_costo))) +
           geom_col() +

@@ -31,6 +31,7 @@ library(RPostgres)
 library(dplyr)
 library(dbplyr)
 library(readxl)
+library(shinycssloaders)
 
 enableBookmarking(store = "server")
 
@@ -42,12 +43,13 @@ if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 30 * 1024 ^ 3
 }
 options(shiny.maxRequestSize = maxRequestSize)
+options(spinner.color = "#222d32")
 
 # Carga de funciones -----------------------------------------------------------
 
 source("config.R")
 
-for (i in paste0("source/", list.files("source/"))) {
+for (i in paste0("r/", list.files("r/"))) {
   source(i)
 }
 
@@ -56,27 +58,6 @@ for (i in paste0("modules/", list.files("modules/"))) {
 }
 
 # Carga de datos ---------------------------------------------------------------
-
-if (file.exists("datos/paquetes/paquetes.feather") &&
-    file.exists("datos/paquetes/referente-paquetes.feather") && 
-    file.exists("datos/paquetes/referente.feather")) {
-  
-  paquetes <- 
-    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
-  
-  paquetes_ref_cups <- 
-    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
-  
-  paquetes_ref <- 
-    as.data.table(read_feather("datos/paquetes/referente.feather"))
-  
-  paquetes_paquetes <- 
-    paquetes[componente == "PAQUETE"]
-  
-  paquetes_cups <- 
-    paquetes[componente != "PAQUETE"]
-  
-}
 
 # Authentication google -------------------------------------------------------
 googledrive::drive_auth(path = "secrets/serviceAccount.json")
@@ -158,10 +139,10 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
   paquetes <- 
     as.data.table(read_feather("datos/paquetes/paquetes.feather"))
   
-  paquetes_ref_cups <- 
+  paquetes_ref <- 
     as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
   
-  paquetes_ref <- 
+  paquetes_ref_cups <- 
     as.data.table(read_feather("datos/paquetes/referente.feather"))
   
   paquetes_paquetes <- 

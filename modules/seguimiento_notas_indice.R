@@ -16,10 +16,12 @@ seguimiento_notas_indice_ui <- function(id) {
           width = 7,
           DT::dataTableOutput(
             outputId = ns("indice_tabla"),
-            height = "auto")),
+            height = "auto") %>%
+            withSpinner()),
         box(width = 5, plotlyOutput(
           outputId = ns("indice_mapa"),
-          height = "auto"))
+          height = "auto") %>%
+            withSpinner())
       )
     )
   )
@@ -55,7 +57,7 @@ seguimiento_notas_indice_server <- function(input, output, session, indice,
         DT::formatCurrency(
           columns = c("valor_mes")
           , digits = 0, mark = ".", dec.mark = ",") %>%
-        DT::formatRound(columns = "poblacion", mark = ".")
+        DT::formatRound(columns = "poblacion", mark = ".", dec.mark = ",")
     }
   })
   

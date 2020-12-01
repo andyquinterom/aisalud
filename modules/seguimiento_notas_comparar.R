@@ -46,7 +46,8 @@ seguimiento_notas_comparar_ui <- function(id) {
           DT::dataTableOutput(
             outputId = ns("comparar_totales"),
             width = "100%",
-            height = "100%")))),
+            height = "100%") %>%
+            withSpinner()))),
     
     fluidRow(
       column(
