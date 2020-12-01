@@ -16,10 +16,12 @@ seguimiento_notas_indice_ui <- function(id) {
           width = 7,
           DT::dataTableOutput(
             outputId = ns("indice_tabla"),
-            height = "auto")),
+            height = "auto") %>%
+            withSpinner()),
         box(width = 5, plotlyOutput(
           outputId = ns("indice_mapa"),
-          height = "auto"))
+          height = "auto") %>%
+            withSpinner())
       )
     )
   )

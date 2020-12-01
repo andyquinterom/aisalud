@@ -82,6 +82,14 @@ shinyServer(function(input, output, session) {
     nombre_id = "paquetes_modulo_indice"
   )
   
+  # Modulo otros gráficos
+  
+  callModule(
+    module = otros_graficos_server,
+    id = "otros_graficos_modulo",
+    datos = datos_modulos
+  )
+  
 
   # Pricing ------------------------------------------------------------------
   

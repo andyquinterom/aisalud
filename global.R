@@ -31,6 +31,7 @@ library(RPostgres)
 library(dplyr)
 library(dbplyr)
 library(readxl)
+library(shinycssloaders)
 
 enableBookmarking(store = "server")
 
@@ -42,6 +43,7 @@ if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 30 * 1024 ^ 3
 }
 options(shiny.maxRequestSize = maxRequestSize)
+options(spinner.color = "#222d32")
 
 # Carga de funciones -----------------------------------------------------------
 

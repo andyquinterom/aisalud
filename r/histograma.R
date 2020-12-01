@@ -1,5 +1,9 @@
-histograma_agrupador <- function(data, titulo = "Valor") {
-  numero_bins <- round(6.6*log10(length(data)), digits = 0)
+histograma_agrupador <- function(data, titulo = "Valor", numero_bins = NULL) {
+  numero_bins <- ifelse(
+    test = is.null(numero_bins),
+    yes = round(6.6*log10(length(data)), digits = 0),
+    no = numero_bins)
+  
   histogram <- hist(
     x = data,
     breaks = numero_bins,
@@ -12,6 +16,47 @@ histograma_agrupador <- function(data, titulo = "Valor") {
            yaxis = list(title = "Conteo",
                         tickformat = ",.2f"),
            showlegend = FALSE)
+}
+
+histograma_edades <- function(data, columna_numero, columna_sep) {
+  numero_bins <- range(data[[columna_numero]], na.rm = TRUE)
+  
+  grafico <- plot_ly(alpha = 0.7, type = "histogram")
+  
+  if (is.null(columna_sep)) {
+    grafico <- grafico %>% 
+      add_histogram(
+        x = data[[columna_numero]],
+        name = "") %>%
+      config(locale = "es") %>%
+      layout(barmode = "overlay",
+             xaxis = list(title = "Edad"),
+             yaxis = list(title = "Conteo",
+                          tickformat = ",.2f"),
+             showlegend = FALSE)
+  } else {
+    lapply(
+      X = unique(data[[columna_sep]]),
+      FUN = function(i) {
+        grafico <<- grafico %>%
+          add_histogram(
+            x = data[get(columna_sep) == i][[columna_numero]],
+            name = i
+          )
+      }
+    )
+    
+    grafico <- grafico %>%
+      config(locale = "es") %>%
+      layout(barmode = "overlay",
+             xaxis = list(title = "Edad"),
+             yaxis = list(title = "Conteo",
+                          tickformat = ",.2f"),
+             showlegend = TRUE)
+  }
+  
+  return(grafico)
+  
 }
 
 grafico_barras <- function(data, columna) {

@@ -71,7 +71,12 @@ shinyUI(
             menuSubItem(
               text = "Outliers",
               icon = icon("search-minus", lib = "font-awesome"),
-              tabName = "outliers_modulo")
+              tabName = "outliers_modulo"),
+            menuSubItem(
+              text = "Otros gráficos",
+              icon = icon("chart-bar", lib = "font-awesome"),
+              tabName = "otros_graficos_modulo"
+            )
           ),
           menuItem(
             text = "Seguimiento",
@@ -188,6 +193,10 @@ shinyUI(
           tabItem(
             tabName = "nota_tecnica_modulo",
             nota_tecnica_ui("nota_tecnica_modulo")
+          ),
+          tabItem(
+            tabName = "otros_graficos_modulo",
+            otros_graficos_ui("otros_graficos_modulo")
           ),
           tabItem(
             tabName = "seguimiento_modulo_indice",

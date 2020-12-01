@@ -54,7 +54,8 @@ episodios_ui <- function(id) {
           tags$h2(textOutput(ns("tabla_titulo")), class = "titulo_center"),
           tags$br(),
           div(
-            DT::dataTableOutput(outputId = ns("episodios_tabla")),
+            DT::dataTableOutput(outputId = ns("episodios_tabla")) %>%
+              withSpinner(),
             style = "font-size:90%")
         ),
         tabPanel(
@@ -67,7 +68,8 @@ episodios_ui <- function(id) {
                 textOutput(ns("histograma_titulo")), class = "titulo_center"),
               plotlyOutput(
                 outputId = ns("histograma_render")
-              )
+              ) %>%
+                withSpinner()
             ),
             column(
               width = 4,
@@ -87,7 +89,8 @@ episodios_ui <- function(id) {
                 textOutput(ns("caja_de_bigotes_titulo")), class = "titulo_center"),
               plotlyOutput(
                 outputId = ns("caja_de_bigotes_render")
-              )
+              ) %>%
+                withSpinner()
             ),
             column(
               width = 4,
@@ -107,7 +110,8 @@ episodios_ui <- function(id) {
                 textOutput(ns("grafico_barras_titulo")), class = "titulo_center"),
               plotlyOutput(
                 outputId = ns("grafico_barras_render")
-              )
+              ) %>%
+                withSpinner()
             ),
             column(
               width = 4,
