@@ -3,8 +3,7 @@ shinyUI(
   tagList(
     tags$head(
       tags$script(type = "text/javascript", src = "code.js"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-      includeHTML("googleanalytics.html")),
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
     dashboardPagePlus(
       collapse_sidebar = TRUE,
       skin = "black",

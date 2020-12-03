@@ -33,9 +33,6 @@ library(dbplyr)
 library(readxl)
 library(shinycssloaders)
 
-enableBookmarking(store = "server")
-
-
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
     as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
@@ -46,8 +43,6 @@ options(shiny.maxRequestSize = maxRequestSize)
 options(spinner.color = "#222d32")
 
 # Carga de funciones -----------------------------------------------------------
-
-source("config.R")
 
 for (i in paste0("R/", list.files("R/"))) {
   source(i)
