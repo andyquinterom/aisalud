@@ -62,16 +62,7 @@ base_de_datos_ui <- function(id) {
     ),
     box(
       width = 12,
-      fluidRow(
-        column(
-          width = 2,
-          tags$h3("Prevista:")),
-        column(
-          width = 10,
-          br(),
-          tags$a(
-            "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: nro_identificacion, fecha_prestacion o valor.",
-            style = "color: black;"))),
+      tags$h3("Prevista:"),
       DT::dataTableOutput(
         outputId = ns("preview"),
         width = "100%")

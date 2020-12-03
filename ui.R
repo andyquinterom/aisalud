@@ -34,7 +34,7 @@ shinyUI(
                '),
           if (Sys.getenv("DATABASE_ACCESS") != "") {
             menuItem(
-              text = "Prepara",
+              text = "Carga de datos",
               icon = icon("cog", lib = "font-awesome"),
               menuSubItem(
                 text = "Subir datos",
@@ -101,66 +101,6 @@ shinyUI(
               menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard")
             )
           }
-          # menuItem(
-          #   text = tags$b("- Normal -")
-          # ),
-          # menuItem(
-          #   text = "Opciones",
-          #   icon = icon("cog", lib = "font-awesome"),
-          #   tabName = "opciones"),
-          # menuItem(
-          #   text = "Descriptiva",
-          #   icon = icon("table", lib = "font-awesome"),
-          #   tabName = "descriptiva_eventos"),
-          # menuItem(
-          #   text = "Episodios", 
-          #   icon = icon("table", lib = "font-awesome"),
-          #   tabName = "episodios"),
-          # menuItem(
-          #   text = "Pacientes Outliers",
-          #   icon = icon("search-minus", lib = "font-awesome"),
-          #   tabName = "outliers"),
-          # menuItem(
-          #   text = "Gráficos",
-          #   icon = icon("chart-area", lib = "font-awesome"), 
-          #   tabName = "graficos",
-          #   menuSubItem(text = "Histogramas y barras",
-          #               tabName = "histogramas_barras"), 
-          #   menuSubItem(text = "Caja de bigotes", 
-          #               tabName = "cajadebigotes")),
-          # menuItem(
-          #   text = "Nota técnica",
-          #   icon = icon("search-dollar", lib = "font-awesome"),
-          #   tabName = "nota_tecnica"),
-          # (
-          # if (PAQUETES_INCLUIDO) {
-          #   menuItem(
-          #     text = "Paquetes",
-          #     icon = icon("chart-pie", lib = "font-awesome"),
-          #     tabName = "paquetes",
-          #     radioButtons("paquetes_valor_costo", 
-          #                  "Graficar:",
-          #                  choices = c("VALOR", "COSTO")),
-          #     actionButton("paquetes_actualizar", "Actualizar"),
-          #     menuSubItem(text = "Índice", tabName = "paquetes_indice"), 
-          #     menuSubItem(text = "Dashboard", tabName = "paquetes_dash"),
-          #     tags$br()
-          #   )
-          # }
-          # ),
-          # (
-          # if (PRICING_INCLUIDO) {
-          #   menuItem(
-          #     text = "Pricing", 
-          #     icon = icon("tags", lib = "font-awesome"),
-          #     tabName = "pricingOpciones", 
-          #     tags$br(),
-          #     actionButton("pricing_actualizar", "Actualizar"),
-          #     menuSubItem(text = "Informes", tabName = "pricing"),
-          #     tags$br()
-          #   )
-          #   }
-          # )
         )
       ),
       rightsidebar = rightSidebar(
