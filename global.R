@@ -79,33 +79,33 @@ if (!dir.exists("datos/nts")) {
 
 
 
-if (Sys.getenv("pricing_path") == "") {
+if (Sys.getenv("PRICING_PATH") == "") {
   
   pricing_path <- "1qUG1yQpF5vPDGE4KUDOK5lx8S7ZoRiJP"
   
 } else {
   
-  pricing_path <- Sys.getenv("pricing_path")
+  pricing_path <- Sys.getenv("PRICING_PATH")
   
 }
 
-if (Sys.getenv("paquete_path") == "") {
+if (Sys.getenv("PAQUETES_PATH") == "") {
   
   paquete_path <- "1xR5w_c8puXRqqMtPIphRUogF7q5AAeExUrCb6U5s4i8"
   
 } else {
   
-  paquete_path <- Sys.getenv("paquete_path")
+  paquete_path <- Sys.getenv("PAQUETES_PATH")
   
 }
 
-if (Sys.getenv("nts_path") == "") {
+if (Sys.getenv("NTS_PATH") == "") {
   
   nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
   
 } else {
   
-  nts_path <- Sys.getenv("nts_path")
+  nts_path <- Sys.getenv("NTS_PATH")
   
 }
 
@@ -185,13 +185,13 @@ if (Sys.getenv("PRICING_INCLUIDO") == "") {
 
 # Notas técnicas  ------------------------------------------------------------- 
 
-if (Sys.getenv("NT_INCLUIDO") == "") {
+if (Sys.getenv("NTS_INCLUIDO") == "") {
   
-  NT_INCLUIDO <- FALSE
+  NTS_INCLUIDO <- FALSE
   
 } else {
   
-  NT_INCLUIDO <- TRUE
+  NTS_INCLUIDO <- TRUE
   
   if (!(file.exists("datos/nts/notas_tecnicas.feather") &&
         file.exists("datos/nts/indice.feather") && 
