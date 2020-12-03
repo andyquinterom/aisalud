@@ -4,21 +4,7 @@ shinyUI(
     tags$head(
       tags$script(type = "text/javascript", src = "code.js"),
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-      includeHTML("googleanalytics.html"),
-      tags$script(HTML(
-      "$(document).one('shiny:idle', 
-          function() {
-            ga('set','userId', Shiny.user);
-            ga('send', 'pageview');
-          }
-         );"
-      )),
-      tags$script(HTML(
-        "$(document).on('shiny:inputchanged', function(event) {
-             ga('send','event', 'input', 
-                'updates', event.name, event.value);
-         });"
-      ))),
+      includeHTML("googleanalytics.html")),
     dashboardPagePlus(
       collapse_sidebar = TRUE,
       skin = "black",
