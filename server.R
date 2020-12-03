@@ -340,7 +340,7 @@ shinyServer(function(input, output, session) {
   
   # Modulos seguimiento NT ---------------------------------------------
   
-  if (NT_INCLUIDO) {
+  if (NTS_INCLUIDO) {
     
     callModule(
       module = seguimiento_notas_indice_server,

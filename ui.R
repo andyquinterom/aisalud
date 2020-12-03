@@ -78,7 +78,7 @@ shinyUI(
               tabName = "otros_graficos_modulo"
             )
           ),
-          if (NT_INCLUIDO) {
+          if (NTS_INCLUIDO) {
             menuItem(
               text = "Seguimiento",
               icon = icon("dollar-sign", lib = "font-awesome"),
