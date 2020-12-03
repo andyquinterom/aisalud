@@ -10,7 +10,18 @@ shinyUI(
       dashboardHeaderPlus(
         fixed = TRUE,
         title = "",
-        enable_rightsidebar = TRUE),
+        dropdownMenu(
+          icon = icon("info-circle"),
+          type = "notifications",
+          badgeStatus = "info",
+          notificationItem(
+            text = "Version: ------",
+            icon = icon("code-branch"),
+            status = "info"
+          )
+        ),
+        enable_rightsidebar = TRUE,
+        rightSidebarIcon = "filter"),
       sidebar = dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
