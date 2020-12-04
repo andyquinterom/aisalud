@@ -206,8 +206,15 @@ pricing_server <- function(input, output, session, pricing_path, nombre_id) {
           min(pricing$filtrado$MINIMO, na.rm = T),
           max(pricing$filtrado$MAXIMO, na.rm = T),
           max(pricing$filtrado$MEDIA, na.rm = TRUE))
-        
-        pricing$descriptiva[, "y" := pricing_descriptiva_y]
+        pricing$descriptiva <- data.table(
+          "x" = c("Valor Unitario Mínimo",
+                  "Valor Unitario Máximo",
+                  "Valor Unitario Promedio",
+                  "Mínimo",
+                  "Máximo", 
+                  "Media"),
+          "y" = pricing_descriptiva_y)
+
       },
       error = function(e) {
         print(e)
