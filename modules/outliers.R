@@ -132,74 +132,88 @@ outliers_server <- function(input, output, session, datos, opciones, nombre_id) 
   
   observeEvent(input$outliers_exe, {
     if(!is.null(datos$colnames)) {
-      if(!is.null(input$outliers_cols) && input$outliers_cols != "Ninguno") {
-        if (input$outliers_modo == "percentil") {
-          outliers$tabla <- outliers_percentil(
-            data =          datos$data_table,
-            columna =       input$outliers_cols,
-            columna_valor = opciones$valor_costo,
-            percentil =     input$outliers_percentil/100,
-            frecuencia =    input$outliers_frecuencia)
-          outliers$titulo <- paste(
-            "Pacientes con un valor mayor que el",
-            formatAsPerc(input$outliers_percentil),
-            "del total por",
-            input$outliers_cols
-          )
-        } else {
-          outliers$tabla <- outliers_iqr(
-            data =           datos$data_table,
-            columna =        input$outliers_cols,
-            columna_valor =  opciones$valor_costo,
-            multiplicativo = input$outliers_iqr,
-            frecuencia =     input$outliers_frecuencia)
-          outliers$titulo <- paste(
-            "Pacientes por fuera de",
-            input$outliers_iqr,
-            "veces el rango intercuartil por",
-            input$outliers_cols
-          )
-        }
-        
-        output$outliers_tabla <- DT::renderDataTable({
-          DT::datatable(
-            colnames = c('Valor' = 'valor_calculos'),
-            outliers$tabla,
-            options = list(
-              language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              pageLength = 50, 
-              autoWidth = FALSE,
-              ordering = T, 
-              scrollX = TRUE,
-              scrollY = "500px"),
-            rownames = FALSE) %>%
-            formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
-        })
-        
-        output$outliers_titulo <- renderText({
-          outliers$titulo
-        })
-        
-        lista_pacientes <- agregar(
-          data = datos$data_table,
-          columna_valor = opciones$valor_costo,
-          columnas = "nro_identificacion",
-          columna_suma = "",
-          prestaciones = TRUE
+      if(!is.null(input$outliers_cols) && input$outliers_cols %notin% c("Ninguno", "")) {
+        tryCatch(
+          expr = {
+            if (input$outliers_modo == "percentil") {
+              outliers$tabla <- outliers_percentil(
+                data =          datos$data_table,
+                columna =       input$outliers_cols,
+                columna_valor = opciones$valor_costo,
+                percentil =     input$outliers_percentil/100,
+                frecuencia =    input$outliers_frecuencia)
+              outliers$titulo <- paste(
+                "Pacientes con un valor mayor que el",
+                formatAsPerc(input$outliers_percentil),
+                "del total por",
+                input$outliers_cols
+              )
+            } else {
+              outliers$tabla <- outliers_iqr(
+                data =           datos$data_table,
+                columna =        input$outliers_cols,
+                columna_valor =  opciones$valor_costo,
+                multiplicativo = input$outliers_iqr,
+                frecuencia =     input$outliers_frecuencia)
+              outliers$titulo <- paste(
+                "Pacientes por fuera de",
+                input$outliers_iqr,
+                "veces el rango intercuartil por",
+                input$outliers_cols
+              )
+            }
+            
+            output$outliers_tabla <- DT::renderDataTable({
+              DT::datatable(
+                colnames = c('Valor' = 'valor_calculos'),
+                outliers$tabla,
+                options = list(
+                  language = list(
+                    url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                  pageLength = 50, 
+                  autoWidth = FALSE,
+                  ordering = T, 
+                  scrollX = TRUE,
+                  scrollY = "500px"),
+                rownames = FALSE) %>%
+                formatCurrency(c('Valor'), mark = ".", dec.mark = ",")
+            })
+            
+            output$outliers_titulo <- renderText({
+              outliers$titulo
+            })
+            
+            lista_pacientes <- agregar(
+              data = datos$data_table,
+              columna_valor = opciones$valor_costo,
+              columnas = "nro_identificacion",
+              columna_suma = "",
+              prestaciones = TRUE
+            )
+            
+            output$outliers_box_plot <- renderPlot({
+              ggplot(
+                data = lista_pacientes,
+                aes(y = get(opciones$valor_costo))
+              ) +
+                geom_boxplot() +
+                scale_y_continuous(labels = function(x) number(
+                  x, big.mark = ".", decimal.mark = ",")) +
+                ylab(label = opciones$valor_costo)
+            })
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error", 
+              type = "error",
+              text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+            )
+          }
         )
-        
-        output$outliers_box_plot <- renderPlot({
-          ggplot(
-            data = lista_pacientes,
-            aes(y = get(opciones$valor_costo))
-          ) +
-            geom_boxplot() +
-            scale_y_continuous(labels = function(x) number(
-              x, big.mark = ".", decimal.mark = ",")) +
-            ylab(label = opciones$valor_costo)
-        })
-        
       }
     }
   })

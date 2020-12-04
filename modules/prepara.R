@@ -4,8 +4,8 @@ prepara_ui <- function(id) {
   
   tagList(
     box(
-      width = 5,
-      height = "240px",
+      width = 4,
+      height = "420px",
       fileInput(
         inputId = ns("file"),
         label = "", 
@@ -18,11 +18,10 @@ prepara_ui <- function(id) {
         choices = c("feather", "csv", "datos didacticos")),
       actionButton(
         inputId = ns("file_options_open"),
-        label = "Opciones")
-      ),
-    box(
-      width = 3,
-      height = "240px",
+        label = "Opciones",
+        width = "100%"),
+      tags$br(),
+      tags$br(),
       dateRangeInput(
         inputId = ns("fecha_rango"),
         label = "Fechas:",
@@ -35,11 +34,11 @@ prepara_ui <- function(id) {
         inputId = ns("formato_fecha"),
         label = "Formato de Fecha",
         value = "%d/%m/%Y"),
-      actionButton(inputId = ns("file_load"), label = "Aplicar")
+      actionButton(inputId = ns("file_load"), label = "Aplicar", width = "100%")
       ),
     box(
-      width = 4,
-      height = "240px",
+      width = 3,
+      height = "420px",
       selectizeInput(
         inputId = ns("columna_valor"),
         label = "Columna de valor:",
@@ -53,21 +52,13 @@ prepara_ui <- function(id) {
       )
     ),
     box(
-      width = 12,
-      fluidRow(
-        column(
-          width = 2,
-          tags$h3("Prevista:")),
-        column(
-          width = 10,
-          br(),
-          tags$a(
-            "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: nro_identificacion, fecha_prestacion o valor.",
-            style = "color: black;"))),
+      width = 5,
+      height = "420px",
+      tags$h3("Prevista:"),
       DT::dataTableOutput(
         outputId = ns("preview"),
         width = "100%")
-      ),
+    ),
     box(
       width = 12,
       height = "300px",

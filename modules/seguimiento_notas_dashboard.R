@@ -37,10 +37,10 @@ seguimiento_notas_dashboard_ui <- function(id) {
               DT::dataTableOutput(outputId = ns("board_datos"))),
             column(
               width = 7,
-              ggiraph::ggiraphOutput(
+              plotlyOutput(
                 outputId = ns("plot_agrupadores"),
                 width = "100%",
-                height = "100%")))),
+                height = "600px")))),
         box(
           title = "Inclusiones:",
           width = 6,
@@ -171,7 +171,7 @@ seguimiento_notas_dashboard_server <- function(
     }
   })
   
-  output$plot_agrupadores <- renderGirafe({
+  output$plot_agrupadores <- renderPlotly({
     pie_chart(
       paquetes = dash_nt_valores$datos,
       columna = "agrupador",
@@ -192,7 +192,7 @@ seguimiento_notas_dashboard_server <- function(
           pageLength = nrow(dash_nt_valores$datos),
           ordering = FALSE,
           scrollX = TRUE,
-          scrollY = "60vh")) %>%
+          scrollY = "600px")) %>%
         DT::formatCurrency(
           columns = c("cm", "valor_mes"),
           digits = 0, mark = ".", dec.mark = ","

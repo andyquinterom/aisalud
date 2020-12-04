@@ -4,8 +4,8 @@ base_de_datos_ui <- function(id) {
   
   tagList(
     box(
-      style = "min-height: 500px;",
-      width = 3,
+      style = "min-height: 450px;",
+      width = 4,
       actionButton(
         inputId = ns("establecer_conexion"),
         label = "Establecer conexión",
@@ -46,8 +46,8 @@ base_de_datos_ui <- function(id) {
       actionButton(inputId = ns("file_load"), label = "Aplicar")
     ),
     box(
-      width = 4,
-      height = "240px",
+      width = 3,
+      style = "min-height: 450px;",
       selectizeInput(
         inputId = ns("columna_valor"),
         label = "Columna de valor:",
@@ -61,17 +61,9 @@ base_de_datos_ui <- function(id) {
       )
     ),
     box(
-      width = 12,
-      fluidRow(
-        column(
-          width = 2,
-          tags$h3("Prevista:")),
-        column(
-          width = 10,
-          br(),
-          tags$a(
-            "Si se genera un error, el archivo no es feather o tu base de datos no contiene las columnas: nro_identificacion, fecha_prestacion o valor.",
-            style = "color: black;"))),
+      width = 5,
+      style = "min-height: 450px;",
+      tags$h3("Prevista:"),
       DT::dataTableOutput(
         outputId = ns("preview"),
         width = "100%")

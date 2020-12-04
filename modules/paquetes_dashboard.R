@@ -77,9 +77,10 @@ paquetes_dashboard_ui <- function(id) {
             label = "Datos:",
             choices = c("PRESTACIÓN" = "prestacion",
                         "TIPO DE COSTO" = "tipo_de_costo")),
-          ggiraph::ggiraphOutput(
+          plotlyOutput(
             outputId = ns("paquetes_componenete_plot"),
-            width = "100%"),
+            width = "100%",
+            height = "100%"),
           dataTableOutput(outputId = ns("paquetes_componenete_tabla")),
           br(),
           tags$p(style = "text-align: justify;",
@@ -100,9 +101,10 @@ paquetes_dashboard_ui <- function(id) {
             label = "Datos:",
             choice = c("PRESTACION" = "prestacion", 
                        "COMPONENTE" = "componente")),
-          ggiraph::ggiraphOutput(
+          plotlyOutput(
             outputId = ns("paquetes_tipo_costo_plot"),
-            width = "100%"),
+            width = "100%",
+            height = "100%"),
           dataTableOutput(outputId = ns("paquetes_tipo_costo_tabla")),
           br(),
           tags$p(style = "text-align: justify;",
@@ -134,9 +136,10 @@ paquetes_dashboard_ui <- function(id) {
               label = "",
               choices = c("COMPONENTE" = "componente",
                           "TIPO DE COSTO" = "tipo_de_costo")),
-            ggiraph::girafeOutput(
+            plotlyOutput(
               outputId = ns("paquetes_resumen_plot"),
-              width = "100%"),
+              width = "100%",
+              height = "100%"),
             dataTableOutput(outputId = ns("paquetes_resumen_tabla")),
             br(),
             tags$p(style = "text-align: justify;",
@@ -386,7 +389,7 @@ paquetes_dashboard_server <- function(
         valor_costo = input$paquetes_valor_costo)
   })
   
-  output$paquetes_resumen_plot <- renderggiraph({
+  output$paquetes_resumen_plot <- renderPlotly({
     if(!is.null(paquetes)) 
       pie_chart(
         paquetes = paquetes_valores$paquete_cups,
@@ -425,7 +428,7 @@ paquetes_dashboard_server <- function(
     }
   })
   
-  output$paquetes_componenete_plot <- renderggiraph({
+  output$paquetes_componenete_plot <- renderPlotly({
     if(!is.null(input$paquetes_componenete_select))
       pie_chart(
         paquetes = paquetes_valores$paquete_cups[
@@ -463,7 +466,7 @@ paquetes_dashboard_server <- function(
     }
   })
   
-  output$paquetes_tipo_costo_plot <- renderggiraph({
+  output$paquetes_tipo_costo_plot <- renderPlotly({
     if(!is.null(input$paquetes_tipo_costo_select))
       pie_chart(
         paquetes = paquetes_valores$paquete_cups[
