@@ -33,6 +33,14 @@ library(dbplyr)
 library(readxl)
 library(shinycssloaders)
 
+dir.create("datos")
+dir.create("secrets")
+dir.create(file.path("datos", "saved"))
+dir.create(file.path("datos", "pricing"))
+dir.create(file.path("datos", "paquetes"))
+dir.create(file.path("datos", "nts"))
+
+
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
     as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
@@ -55,24 +63,21 @@ for (i in paste0("modules/", list.files("modules/"))) {
 # Carga de datos ---------------------------------------------------------------
 
 # Authentication google -------------------------------------------------------
+if (!file.exists(file.path("secrets", "serviceAccount.json"))) {
+  write_lines(
+    x = Sys.getenv("SERVICE_ACCOUNT"),
+    path = file.path("secrets", "serviceAccount.json")
+  )
+}
+
 googledrive::drive_auth(path = "secrets/serviceAccount.json")
 googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
 
-
-
-if (!dir.exists("datos/paquetes")) {
-  dir.create("datos/paquetes")
+if (!file.exists(file.path("datos", "saved", "oncologia.feather"))) {
+  googledrive::drive_download(
+    file = as_id("1h6T9p3Di5vNmL2wPkFq5HzR8sAdun7ef"),
+    path = file.path("datos", "saved", "oncologia.feather"))
 }
-
-if (!dir.exists("datos/pricing")) {
-  dir.create("datos/pricing")
-}
-
-if (!dir.exists("datos/nts")) {
-  dir.create("datos/nts")
-}
-
-
 
 if (Sys.getenv("PRICING_PATH") == "") {
   

@@ -119,25 +119,38 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
   })
   
   observeEvent(input$file_load, {
-    if (input$file_type == "datos didacticos" &&
-        !is.null(opciones_prepara$value_file)) {
-      datos$data_original <- as.data.table(
-        read_feather(
-          path = paste0("datos/saved/", opciones_prepara$value_file))
-      )
-      setnames(datos$data_original, tolower(colnames(datos$data_original)))
-      datos$data_original[, "fecha_prestacion" := as.Date(
-        fecha_prestacion, 
-        format = input$formato_fecha)]
-      datos$data_original <- datos$data_original[
-        fecha_prestacion >= as.Date(input$fecha_rango[1]) &
-          fecha_prestacion <= as.Date(input$fecha_rango[2])]
-      datos$data_table <- datos$data_original
-      datos$valores_unicos <- lapply(datos$data_table, unique)
-      datos$colnames <- colnames(datos$data_table)
-      columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-      datos$colnames_num <- datos$colnames[columnas_num]
-    }
+    tryCatch(
+      expr = {
+        if (input$file_type == "datos didacticos" &&
+            !is.null(opciones_prepara$value_file)) {
+          datos$data_original <- as.data.table(
+            read_feather(
+              path = paste0("datos/saved/", opciones_prepara$value_file))
+          )
+          setnames(datos$data_original, tolower(colnames(datos$data_original)))
+          datos$data_original[, "fecha_prestacion" := as.Date(
+            fecha_prestacion, 
+            format = input$formato_fecha)]
+          datos$data_original <- datos$data_original[
+            fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+              fecha_prestacion <= as.Date(input$fecha_rango[2])]
+          datos$data_table <- datos$data_original
+          datos$valores_unicos <- lapply(datos$data_table, unique)
+          datos$colnames <- colnames(datos$data_table)
+          columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+          datos$colnames_num <- datos$colnames[columnas_num]
+        }
+      },
+      error = function(e) {
+        print(e[1])
+        sendSweetAlert(
+          session = session,
+          title = "Error",
+          text = e[1],
+          type = "error"
+        )
+      }
+    )
     if (!is.null(input$file)) {
       tryCatch(
         expr = {
