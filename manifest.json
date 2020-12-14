@@ -650,6 +650,30 @@
         "Built": "R 3.6.0; ; 2019-07-24 12:46:00 UTC; unix"
       }
     },
+    "codetools": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "codetools",
+        "Version": "0.2-16",
+        "Priority": "recommended",
+        "Author": "Luke Tierney <luke-tierney@uiowa.edu>",
+        "Description": "Code analysis tools for R.",
+        "Title": "Code Analysis Tools for R",
+        "Depends": "R (>= 2.1)",
+        "Maintainer": "Luke Tierney <luke-tierney@uiowa.edu>",
+        "License": "GPL",
+        "NeedsCompilation": "no",
+        "Packaged": "2018-12-22 14:48:17 UTC; luke",
+        "Repository": "CRAN",
+        "Date/Publication": "2018-12-24 12:40:05 UTC",
+        "Built": "R 3.6.0; ; 2019-04-26 16:32:29 UTC; unix"
+      }
+    },
     "colmaps": {
       "Source": "github",
       "Repository": null,
@@ -912,41 +936,6 @@
         "Repository": "CRAN",
         "Date/Publication": "2019-12-09 10:30:10 UTC",
         "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-12-10 15:41:08 UTC; unix"
-      }
-    },
-    "dbplyr": {
-      "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com/",
-      "GithubRepo": null,
-      "GithubUsername": null,
-      "GithubRef": null,
-      "GithubSha1": null,
-      "description": {
-        "Type": "Package",
-        "Package": "dbplyr",
-        "Title": "A 'dplyr' Back End for Databases",
-        "Version": "1.4.2",
-        "Authors@R": "\n    c(person(given = \"Hadley\",\n             family = \"Wickham\",\n             role = c(\"aut\", \"cre\"),\n             email = \"hadley@rstudio.com\"),\n      person(given = \"Edgar\",\n             family = \"Ruiz\",\n             role = \"aut\"),\n      person(given = \"RStudio\",\n             role = c(\"cph\", \"fnd\")))",
-        "Description": "A 'dplyr' back end for databases that allows you to\n    work with remote database tables as if they are in-memory data frames.\n    Basic features works with any database that has a 'DBI' back end; more\n    advanced features require 'SQL' translation to be provided by the\n    package author.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://dbplyr.tidyverse.org/, https://github.com/tidyverse/dbplyr",
-        "BugReports": "https://github.com/tidyverse/dbplyr/issues",
-        "Depends": "R (>= 3.1)",
-        "Imports": "assertthat (>= 0.2.0), DBI (>= 1.0.0), dplyr (>= 0.8.0), glue\n(>= 1.2.0), methods, purrr (>= 0.2.5), R6 (>= 2.2.2), rlang (>=\n0.2.0), tibble (>= 1.4.2), tidyselect (>= 0.2.4), utils",
-        "Suggests": "bit64, covr, knitr, Lahman, nycflights13, RMariaDB (>=\n1.0.2), rmarkdown, RMySQL (>= 0.10.11), RPostgreSQL (>= 0.4.1),\nRSQLite (>= 2.1.0), testthat (>= 2.0.0), withr (>= 2.1.2)",
-        "VignetteBuilder": "knitr",
-        "Encoding": "UTF-8",
-        "Language": "en-gb",
-        "LazyData": "yes",
-        "RoxygenNote": "6.1.1",
-        "Collate": "'utils.R' 'sql.R' 'escape.R' 'translate-sql-quantile.R'\n'translate-sql-string.R' 'translate-sql-paste.R'\n'translate-sql-helpers.R' 'translate-sql-window.R'\n'translate-sql-conditional.R' 'backend-.R' 'backend-access.R'\n'backend-hive.R' 'backend-impala.R' 'backend-mssql.R'\n'backend-mysql.R' 'backend-odbc.R' 'backend-oracle.R'\n'backend-postgres.R' 'backend-sqlite.R' 'backend-teradata.R'\n'build-sql.R' 'data-cache.R' 'data-lahman.R'\n'data-nycflights13.R' 'dbplyr.R' 'explain.R' 'ident.R'\n'lazy-ops.R' 'memdb.R' 'partial-eval.R' 'query-join.R'\n'query-select.R' 'query-semi-join.R' 'query-set-op.R' 'query.R'\n'remote.R' 'schema.R' 'simulate.R' 'sql-build.R' 'sql-expr.R'\n'src-sql.R' 'src_dbi.R' 'tbl-lazy.R' 'tbl-sql.R' 'test-frame.R'\n'testthat.R' 'translate-sql-clause.R' 'translate-sql.R'\n'utils-format.R' 'verb-arrange.R' 'verb-compute.R'\n'verb-copy-to.R' 'verb-distinct.R' 'verb-do-query.R'\n'verb-do.R' 'verb-filter.R' 'verb-group_by.R' 'verb-head.R'\n'verb-joins.R' 'verb-mutate.R' 'verb-pull.R' 'verb-select.R'\n'verb-set-ops.R' 'verb-summarise.R' 'verb-window.R' 'zzz.R'",
-        "NeedsCompilation": "no",
-        "Packaged": "2019-06-17 19:32:57 UTC; hadley",
-        "Author": "Hadley Wickham [aut, cre],\n  Edgar Ruiz [aut],\n  RStudio [cph, fnd]",
-        "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2019-06-17 20:00:04 UTC",
-        "Built": "R 3.6.0; ; 2019-06-18 12:28:08 UTC; unix"
       }
     },
     "desc": {
@@ -1264,6 +1253,37 @@
         "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-08-01 06:59:29 UTC; unix"
       }
     },
+    "future": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "future",
+        "Version": "1.20.1",
+        "Title": "Unified Parallel and Distributed Processing in R for Everyone",
+        "Imports": "digest, globals (>= 0.13.1), listenv (>= 0.8.0), parallel,\nparallelly (>= 1.21.0), tools, utils",
+        "Suggests": "RhpcBLASctl, R.rsp, markdown",
+        "VignetteBuilder": "R.rsp",
+        "Authors@R": "c(person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"),\n                                          email = \"henrikb@braju.com\"))",
+        "Description": "The purpose of this package is to provide a lightweight and\n    unified Future API for sequential and parallel processing of R\n    expression via futures.  The simplest way to evaluate an expression\n    in parallel is to use `x %<-% { expression }` with `plan(multiprocess)`.\n    This package implements sequential, multicore, multisession, and\n    cluster futures.  With these, R expressions can be evaluated on the\n    local machine, in parallel a set of local machines, or distributed\n    on a mix of local and remote machines.\n    Extensions to this package implement additional backends for\n    processing futures via compute cluster schedulers etc.\n    Because of its unified API, there is no need to modify any code in order\n    switch from sequential on the local machine to, say, distributed\n    processing on a remote compute cluster.\n    Another strength of this package is that global variables and functions\n    are automatically identified and exported as needed, making it\n    straightforward to tweak existing code to make use of futures.",
+        "License": "LGPL (>= 2.1)",
+        "LazyLoad": "TRUE",
+        "ByteCompile": "TRUE",
+        "URL": "https://github.com/HenrikBengtsson/future",
+        "BugReports": "https://github.com/HenrikBengtsson/future/issues",
+        "RoxygenNote": "7.1.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-10-31 06:44:08 UTC; hb",
+        "Author": "Henrik Bengtsson [aut, cre, cph]",
+        "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-11-03 06:40:10 UTC",
+        "Built": "R 3.6.2; ; 2020-11-04 06:09:27 UTC; unix"
+      }
+    },
     "gargle": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -1425,6 +1445,36 @@
         "Repository": "CRAN",
         "Date/Publication": "2020-03-05 16:00:02 UTC",
         "Built": "R 3.6.0; ; 2020-03-06 15:44:05 UTC; unix"
+      }
+    },
+    "globals": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "globals",
+        "Version": "0.14.0",
+        "Depends": "R (>= 3.1.2)",
+        "Imports": "codetools",
+        "Title": "Identify Global Objects in R Expressions",
+        "Authors@R": "c(\n    person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"),\n           email=\"henrikb@braju.com\"),\n    person(\"Davis\",\"Vaughan\", role=\"ctb\",\n           email=\"davis@rstudio.com\"))",
+        "Description": "Identifies global (\"unknown\" or \"free\") objects in R expressions\n    by code inspection using various strategies (ordered, liberal, or\n    conservative).  The objective of this package is to make it as simple as\n    possible to identify global objects for the purpose of exporting them in\n    parallel, distributed compute environments.",
+        "License": "LGPL (>= 2.1)",
+        "LazyLoad": "TRUE",
+        "ByteCompile": "TRUE",
+        "URL": "https://github.com/HenrikBengtsson/globals",
+        "BugReports": "https://github.com/HenrikBengtsson/globals/issues",
+        "RoxygenNote": "7.1.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-11-22 16:11:06 UTC; hb",
+        "Author": "Henrik Bengtsson [aut, cre, cph],\n  Davis Vaughan [ctb]",
+        "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-11-22 17:00:02 UTC",
+        "Built": "R 3.6.2; ; 2020-11-23 13:25:30 UTC; unix"
       }
     },
     "glue": {
@@ -2016,6 +2066,36 @@
         "Built": "R 3.6.0; ; 2020-03-07 21:03:05 UTC; unix"
       }
     },
+    "listenv": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "listenv",
+        "Version": "0.8.0",
+        "Depends": "R (>= 3.1.2)",
+        "Suggests": "R.utils, R.rsp, markdown",
+        "VignetteBuilder": "R.rsp",
+        "Title": "Environments Behaving (Almost) as Lists",
+        "Authors@R": "c(person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"),\n                                          email = \"henrikb@braju.com\"))",
+        "Description": "List environments are environments that have list-like properties.  For instance, the elements of a list environment are ordered and can be accessed and iterated over using index subsetting, e.g. 'x <- listenv(a = 1, b = 2); for (i in seq_along(x)) x[[i]] <- x[[i]] ^ 2; y <- as.list(x)'.",
+        "License": "LGPL (>= 2.1)",
+        "LazyLoad": "TRUE",
+        "URL": "https://github.com/HenrikBengtsson/listenv",
+        "BugReports": "https://github.com/HenrikBengtsson/listenv/issues",
+        "RoxygenNote": "7.0.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2019-12-05 19:44:24 UTC; hb",
+        "Author": "Henrik Bengtsson [aut, cre, cph]",
+        "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2019-12-05 21:40:02 UTC",
+        "Built": "R 3.6.0; ; 2019-12-06 15:32:02 UTC; unix"
+      }
+    },
     "lubridate": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -2311,6 +2391,35 @@
         "Repository": "CRAN",
         "Date/Publication": "2020-09-18 12:00:02 UTC",
         "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-09-22 09:30:54 UTC; unix"
+      }
+    },
+    "parallelly": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "parallelly",
+        "Version": "1.21.0",
+        "Title": "Enhancing the 'parallel' Package",
+        "Imports": "parallel, tools, utils",
+        "Authors@R": "c(person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"),\n                                          email = \"henrikb@braju.com\"))",
+        "Description": "Utility functions that enhance the 'parallel' package and support the built-in parallel backends of the 'future' package.  For example, availableCores() gives the number of CPU cores available to your R process as given by R options and environment variables, including those set by job schedulers on high-performance compute clusters. If none is set, it will fall back to parallel::detectCores(). Another example is makeClusterPSOCK(), which is backward compatible with parallel::makePSOCKcluster() while doing a better job in setting up remote cluster workers without the need for configuring the firewall to do port-forwarding to your local computer.",
+        "License": "LGPL (>= 2.1)",
+        "LazyLoad": "TRUE",
+        "ByteCompile": "TRUE",
+        "URL": "https://github.com/HenrikBengtsson/parallelly",
+        "BugReports": "https://github.com/HenrikBengtsson/parallelly/issues",
+        "RoxygenNote": "7.1.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-10-26 23:32:18 UTC; hb",
+        "Author": "Henrik Bengtsson [aut, cre, cph]",
+        "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-10-27 15:30:02 UTC",
+        "Built": "R 3.6.2; ; 2020-10-28 13:42:50 UTC; unix"
       }
     },
     "pillar": {
@@ -3905,25 +4014,28 @@
   },
   "files": {
     ".gitattributes": {
-      "checksum": "673a2ed8da37f1c26ed41af7e3698678"
+      "checksum": "60928855a80cb1826986205fe62acdc8"
     },
     ".Renviron": {
-      "checksum": "85ad8b2a95f104bdd1f481c6cba52dac"
+      "checksum": "a469d822b2f529463fe2bdfe6dcac021"
     },
-    "datos/pruebas.feather": {
-      "checksum": "f582a350ef065c148019f3eb8a166d0d"
+    "datos/saved/oncologia.feather": {
+      "checksum": "7faf307f793cdce8eb8fa1335dfe315a"
     },
     "global.R": {
-      "checksum": "403b1fe80e392cf03d5f3b42d380518b"
-    },
-    "modules/.Rapp.history": {
-      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+      "checksum": "27fbe027058033fc5cddfc7802b7b730"
     },
     "modules/descriptiva.R": {
-      "checksum": "42051a587a5ad54ebd1c1cb696ae4d5d"
+      "checksum": "d3c2e40c67bf35a47494c710b7572fe2"
     },
     "modules/filtros.R": {
       "checksum": "2f4e69d1d674f92de257f564802c50b8"
+    },
+    "modules/frecuencias.R": {
+      "checksum": "c44961421d0f058a6085fc514e7cd9da"
+    },
+    "modules/jerarquia_ui.R": {
+      "checksum": "26b8e2f1e9b9615103136a09fdb2a8f3"
     },
     "modules/nota_tecnica.R": {
       "checksum": "30d788761a27f7c21dd165552870ba21"
@@ -3935,28 +4047,28 @@
       "checksum": "a541fca67848f61cff5b3509b471e985"
     },
     "modules/paquetes_dashboard.R": {
-      "checksum": "136f8e251164f68ff47f78ec5dc88dde"
+      "checksum": "6ec247bf940653b20627d660e5c05b3c"
     },
     "modules/paquetes_indice.R": {
-      "checksum": "73f051acf69d97e007409daf3517f494"
+      "checksum": "280c40962a664acdf07a301ab8dbd465"
     },
     "modules/prepara_base_de_datos.R": {
-      "checksum": "1180cc85c78ae4b230156c978a04ac4b"
+      "checksum": "c90fa0ad0cc6359ea1848b835f49aae4"
     },
     "modules/prepara.R": {
-      "checksum": "a1706f08c75e7b4246510a2f429c16ee"
+      "checksum": "46f1ae8cdfeec8d6815695782300f03d"
     },
     "modules/pricing.R": {
       "checksum": "a5a91ad812d5909d41924a755b935edd"
     },
     "modules/seguimiento_notas_comparar.R": {
-      "checksum": "e2429e40a0a358b6f44c076388908958"
+      "checksum": "c2b38f108308cddf532235d9694435fc"
     },
     "modules/seguimiento_notas_dashboard.R": {
       "checksum": "55665cbb3b1a51b8090166d2623ef3cf"
     },
     "modules/seguimiento_notas_indice.R": {
-      "checksum": "97bab4c1c265994809ca2f1affc6c129"
+      "checksum": "d81bd3595d9aaa67b02c0a846da3304c"
     },
     "packrat/desc/askpass": {
       "checksum": "94189e2591613758acecb70968843b7e"
@@ -3997,6 +4109,9 @@
     "packrat/desc/clipr": {
       "checksum": "bef51ac0391e0a299a4c98d398f0babc"
     },
+    "packrat/desc/codetools": {
+      "checksum": "df5b76770483cb4fb46c010428aacea0"
+    },
     "packrat/desc/colmaps": {
       "checksum": "c50e4bf039e4821e836818ef93e310ba"
     },
@@ -4023,9 +4138,6 @@
     },
     "packrat/desc/DBI": {
       "checksum": "2051121a086b30dd6f277d44762a7b17"
-    },
-    "packrat/desc/dbplyr": {
-      "checksum": "b0a57b61e9b1f01ee1bbe39583c8793f"
     },
     "packrat/desc/desc": {
       "checksum": "fdb6f8d87dd61af33249b52e639c394e"
@@ -4060,6 +4172,9 @@
     "packrat/desc/fs": {
       "checksum": "7db89f336eec946d2ef0c9797abb6e75"
     },
+    "packrat/desc/future": {
+      "checksum": "73675d6efbbef50ab2e640d789fec7f4"
+    },
     "packrat/desc/gargle": {
       "checksum": "e29528cd2df99f7d3df5361f946ee966"
     },
@@ -4074,6 +4189,9 @@
     },
     "packrat/desc/ggplot2": {
       "checksum": "4784bd1e415f84013d06c5ccd02733f9"
+    },
+    "packrat/desc/globals": {
+      "checksum": "8e4c2f6eddc0bd5e02f984d0a8cd7f4c"
     },
     "packrat/desc/glue": {
       "checksum": "00d3604f0f2f78b24db3629d6dd532a9"
@@ -4132,6 +4250,9 @@
     "packrat/desc/lifecycle": {
       "checksum": "8e519fe3176c925dc152b1595a5ab181"
     },
+    "packrat/desc/listenv": {
+      "checksum": "b99661981e2bc27f05049c917f107a44"
+    },
     "packrat/desc/lubridate": {
       "checksum": "b243b535cf51df551192163bdc306cfa"
     },
@@ -4167,6 +4288,9 @@
     },
     "packrat/desc/openssl": {
       "checksum": "b1d8d6720dd89fd643778a303504fe7c"
+    },
+    "packrat/desc/parallelly": {
+      "checksum": "87bad1ae8ef26afd948f57cbf3eed879"
     },
     "packrat/desc/pillar": {
       "checksum": "068a8a53968b3ae62f4729cfc5846f27"
@@ -4337,10 +4461,7 @@
       "checksum": "a5c8026f8dbd6fdbfb913829911a4ed8"
     },
     "packrat/packrat.lock": {
-      "checksum": "8533899bd4444d28cb24f02ac975b153"
-    },
-    "R/.Rapp.history": {
-      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+      "checksum": "222320ccbea2fa8515b2c7d89aa4af45"
     },
     "R/agregaciones.R": {
       "checksum": "807189188cc19fa969c3f845520157fe"
@@ -4399,11 +4520,14 @@
     "R/separar_spanish.R": {
       "checksum": "e28e6e74cd02226d4edff6758b825a7c"
     },
+    "secrets/serviceAccount.json": {
+      "checksum": "5ca081ea6e9d486db2947ec29e5bc383"
+    },
     "server.R": {
-      "checksum": "ab235217179b7f02754d74c6fa37b275"
+      "checksum": "cb9a96445ae970d4d040b1c409b4eae5"
     },
     "ui.R": {
-      "checksum": "4e97a1013c681ead02e40b7831c0673a"
+      "checksum": "13040c753c1585f00f883798d9a376ec"
     },
     "www/code.js": {
       "checksum": "79b901cfdc04d05bbbd1880d86f99676"
