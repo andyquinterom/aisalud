@@ -15,7 +15,7 @@ shinyUI(
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.0.1",
+            text = "Version: 2.0.2.9000",
             icon = icon("code-branch"),
             status = "info"
           )
@@ -52,6 +52,10 @@ shinyUI(
             menuSubItem(
               text = "Descriptiva",
               tabName = "episodios_modulo", 
+              icon = icon("table", lib = "font-awesome")),
+            menuSubItem(
+              text = "Frecuencias",
+              tabName = "frecuencias_modulo", 
               icon = icon("table", lib = "font-awesome")),
             menuSubItem(
               text = "Nota técnica", 
@@ -128,6 +132,10 @@ shinyUI(
           tabItem(
             tabName = "episodios_modulo",
             episodios_ui("episodios_modulo")
+          ),
+          tabItem(
+            tabName = "frecuencias_modulo",
+            frecuencias_ui("frecuencias_modulo")
           ),
           tabItem(
             tabName = "nota_tecnica_modulo",
