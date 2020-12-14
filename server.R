@@ -68,18 +68,12 @@ shinyServer(function(input, output, session) {
     
     callModule(
       module = paquetes_dashboard_server,
-      id = "paquetes_modulo_dashboard",
-      paquetes = paquetes,
-      paquetes_ref_cups = paquetes_ref_cups,
-      paquetes_ref = paquetes_ref,
-      paquetes_paquetes = paquetes_paquetes,
-      paquetes_cups = paquetes_cups
+      id = "paquetes_modulo_dashboard"
     )
     
     callModule(
       module = paquetes_indice_server,
       id = "paquetes_modulo_indice",
-      paquetes = paquetes,
       paquete_path = paquete_path,
       nombre_id = "paquetes_modulo_indice"
     )
@@ -114,7 +108,6 @@ shinyServer(function(input, output, session) {
       module = seguimiento_notas_indice_server,
       id = "seguimiento_notas_indice",
       indice = dash_nt_indice,
-      mapa = dash_nt_mapa,
       nombre_id = "seguimiento_notas_indice"
     )
     

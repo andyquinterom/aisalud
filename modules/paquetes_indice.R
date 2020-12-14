@@ -15,7 +15,21 @@ paquetes_indice_ui <- function(id) {
 }
 
 paquetes_indice_server <- function(
-  input, output, session, paquetes, nombre_id, paquete_path) {
+  input, output, session, nombre_id, paquete_path) {
+  
+  paquetes <- reactive({
+    future(
+      expr = as.data.table(
+        read_feather("datos/paquetes/paquetes.feather"))[, list(
+          codigo_paquete,
+          especialidad,
+          servicio,
+          descripcion,
+          inclusiones,
+          exclusiones)]
+    ) %...>% 
+      unique()
+  })
   
   ns <- NS(nombre_id)
   
@@ -68,37 +82,24 @@ paquetes_indice_server <- function(
   })
   
   output$paquetes_indice_tabla <- DT::renderDataTable(
-    datatable(
-      unique(paquetes[, list(
-        codigo_paquete,
-        especialidad,
-        servicio,
-        descripcion,
-        inclusiones,
-        exclusiones)]),
-      colnames = c(
-        "Código",
-        "Especialidad",
-        "Servicio",
-        "Descripción",
-        "Inclusiones",
-        "Exclusiones"),
-      rownames = F,
-      options = list(
-        dom = 'ft',
-        ordering = FALSE,
-        scrollX = TRUE,
-        scrollY = "80vh",
-        pageLength = nrow(
-          unique(paquetes[, list(
-            codigo_paquete,
-            especialidad,
-            servicio,
-            descripcion,
-            inclusiones,
-            exclusiones)]))
-      )) %>%
-      DT::formatStyle(1:6, backgroundColor = 'white')
+    paquetes() %...>%
+      datatable(
+        colnames = c(
+          "Código",
+          "Especialidad",
+          "Servicio",
+          "Descripción",
+          "Inclusiones",
+          "Exclusiones"),
+        rownames = F,
+        options = list(
+          dom = 'ft',
+          ordering = FALSE,
+          scrollX = TRUE,
+          scrollY = "80vh",
+          pageLength = nrow(.)
+        )) %...>%
+        DT::formatStyle(1:6, backgroundColor = 'white')
   )
   
 }

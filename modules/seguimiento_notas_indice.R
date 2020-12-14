@@ -29,7 +29,7 @@ seguimiento_notas_indice_ui <- function(id) {
 
 
 seguimiento_notas_indice_server <- function(input, output, session, indice,
-                                            mapa, nombre_id) {
+                                            nombre_id) {
   
   ns <- NS(nombre_id)
   
@@ -61,9 +61,9 @@ seguimiento_notas_indice_server <- function(input, output, session, indice,
     }
   })
   
-  output$indice_mapa <- renderPlotly(
-    mapa
-  )
+  output$indice_mapa <- renderPlotly({
+    future(readRDS("datos/nts/nt_mapa.rds"))
+  })
   
   observeEvent(input$dash_nt_actualizar, {
     confirmSweetAlert(
