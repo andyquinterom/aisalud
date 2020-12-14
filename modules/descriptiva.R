@@ -288,7 +288,7 @@ episodios_server <- function(input, output, session, datos, opciones,
               episodios_col_valor <- input$episodios_col_valor
             }
             episodios_cols_sep <- input$episodios_cols_sep
-            withProgress(message = "Calculando descriptiva por episodio",{
+            withProgress(message = "Calculando descriptiva...",{
               if (!is.null(episodios$agrupadores_items)) {
                 episodios$tabla <- episodios_jerarquia(
                   data = datos$data_table,
