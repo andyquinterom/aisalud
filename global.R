@@ -29,7 +29,6 @@ library(googledrive)
 library(DBI)
 library(RPostgres)
 library(dplyr)
-library(dbplyr)
 library(readxl)
 library(shinycssloaders)
 library(promises)
@@ -142,17 +141,6 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
     
   }
   
-  paquetes_ref <- 
-    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
-  
-  paquetes_ref_cups <- 
-    as.data.table(read_feather("datos/paquetes/referente.feather"))
-  
-  paquetes_paquetes <- 
-    paquetes[componente == "PAQUETE"]
-  
-  paquetes_cups <- 
-    paquetes[componente != "PAQUETE"]
 }
 
 # Pricing  -------------------------------------------------------------------- 

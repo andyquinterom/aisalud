@@ -156,8 +156,7 @@ paquetes_dashboard_ui <- function(id) {
 }
 
 paquetes_dashboard_server <- function(
-  input, output, session, paquetes, paquetes_ref_cups, paquetes_ref, 
-  paquetes_paquetes, paquetes_cups) {
+  input, output, session) {
   
   
 #unique(paquetes_cups$componente)     paquetes_componenete_select
@@ -165,6 +164,18 @@ paquetes_dashboard_server <- function(
   
   paquetes <- 
     as.data.table(read_feather("datos/paquetes/paquetes.feather"))
+  
+  paquetes_ref <- 
+    as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
+  
+  paquetes_ref_cups <- 
+    as.data.table(read_feather("datos/paquetes/referente.feather"))
+  
+  paquetes_paquetes <- 
+    paquetes[componente == "PAQUETE"]
+  
+  paquetes_cups <- 
+    paquetes[componente != "PAQUETE"]
   
   observeEvent(paquetes, {
     updateSelectizeInput(
