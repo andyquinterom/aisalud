@@ -137,7 +137,9 @@ base_de_datos_server <- function(input, output, session, opciones, nombre_id,
   })
   
   observeEvent(input$tabla, {
-    if (!is.null(base_de_datos_con) && input$tabla != "Ninguno") {
+    if (!is.null(base_de_datos_con) && 
+        input$tabla != "Ninguno" &&
+        input$tabla != "") {
       prepara_opciones$colnames <- dbListFields(
         base_de_datos_con,
         input$tabla)
@@ -154,7 +156,9 @@ base_de_datos_server <- function(input, output, session, opciones, nombre_id,
       expr = {
         withProgress(
           message = "Cargando datos...", {
-            if (!is.null(base_de_datos_con) && input$tabla != "Ninguno") {
+            if (!is.null(base_de_datos_con) && 
+                input$tabla != "Ninguno" &&
+                input$tabla != "") {
               if (input$tabla_columnas_todos) {
                 datos$data_original <- as.data.table(
                   tbl(base_de_datos_con, input$tabla))
