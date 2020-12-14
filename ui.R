@@ -54,6 +54,10 @@ shinyUI(
               tabName = "episodios_modulo", 
               icon = icon("table", lib = "font-awesome")),
             menuSubItem(
+              text = "Frecuencias",
+              tabName = "frecuencias_modulo", 
+              icon = icon("table", lib = "font-awesome")),
+            menuSubItem(
               text = "Nota técnica", 
               tabName = "nota_tecnica_modulo",
               icon = icon("tags", lib = "font-awesome")),
@@ -128,6 +132,10 @@ shinyUI(
           tabItem(
             tabName = "episodios_modulo",
             episodios_ui("episodios_modulo")
+          ),
+          tabItem(
+            tabName = "frecuencias_modulo",
+            frecuencias_ui("frecuencias_modulo")
           ),
           tabItem(
             tabName = "nota_tecnica_modulo",

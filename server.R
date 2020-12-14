@@ -39,6 +39,16 @@ shinyServer(function(input, output, session) {
     datos = datos_modulos
   )
   
+  # Modulo Frecuencias --------------------------------------------
+  
+  callModule(
+    module = frecuencias_server, 
+    id = "frecuencias_modulo",
+    opciones = opciones,
+    nombre_id = "frecuencias_modulo",
+    datos = datos_modulos
+  )
+  
  
   # Modulo outliers -----------------------------------------------------------
   
