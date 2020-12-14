@@ -18,11 +18,6 @@ frecuencias_ui <- function(id) {
           label = "Agrupar por:",
           choices = NULL, 
           multiple = FALSE),
-        selectizeInput(
-          inputId = ns("agrupador_cols_sep"),
-          label = "Separar por:",
-          choices = NULL,
-          multiple = TRUE),
         tags$br(),
         uiOutput(
           outputId = ns("episodios_jerarquia")
@@ -81,11 +76,6 @@ frecuencias_server <- function(input, output, session, datos, opciones,
     updateSelectizeInput(
       session = session,
       inputId = "agrupador_cols",
-      choices = datos$colnames
-    )
-    updateSelectizeInput(
-      session = session,
-      inputId = "agrupador_cols_sep",
       choices = datos$colnames
     )
   })
@@ -210,7 +200,6 @@ frecuencias_server <- function(input, output, session, datos, opciones,
             if (input$episodios_enable) {
               episodios_col_valor <- input$episodios_col_valor
             }
-            agrupador_cols_sep <- input$agrupador_cols_sep
             withProgress(message = "Calculando descriptiva...",{
               if (!is.null(frecuencias$agrupadores_items)) {
                 frecuencias$descriptiva_basica <- descriptiva_basica_jerarquia(
@@ -239,6 +228,8 @@ frecuencias_server <- function(input, output, session, datos, opciones,
                 suma = FALSE
               )
               
+              frecuencias$tabla[is.na(frecuencias$tabla)] <- 0
+              
               output$frecuencias_tabla <- DT::renderDataTable({
                 DT::datatable(
                   frecuencias$tabla,
@@ -250,90 +241,21 @@ frecuencias_server <- function(input, output, session, datos, opciones,
                     ordering=T, 
                     scrollX = TRUE,
                     scrollY = "60vh"),
-                  rownames= FALSE)
-                  # formatCurrency(
-                  #   c('P50','P75','P90','Media','Media truncada 10%',
-                  #     'Media truncada 5%','Desv.tipica'),
-                  #   mark = ".",
-                  #   dec.mark = ",") %>%
-                  # formatCurrency(c('Suma','Min.','Max.','Rango'),
-                  #                digits=0,
-                  #                mark = ".",
-                  #                dec.mark = ",")
+                  rownames= FALSE) %>%
+                  DT::formatRound(
+                    2:ncol(frecuencias$tabla),
+                    mark = ".",
+                    dec.mark = ",",
+                    digits = 0)
               })
               
               output$tabla_titulo <- renderText({
                 paste(
-                  "Descriptiva de",
+                  "Frecuencias de",
                   agrupador_cols,
-                  ifelse(
-                    test = is.null(agrupador_cols_sep),
-                    yes = "",
-                    no = "separada por"
-                  ),
-                  separar_spanish(agrupador_cols_sep),
                   collapse = " "
                 )
               })
-              
-              # output$histograma_select_agrupador <- DT::renderDataTable({
-              #   DT::datatable(
-              #     frecuencias$tabla[["descriptiva"]][, c(
-              #       agrupador_cols, agrupador_cols_sep), with = FALSE],
-              #     options = list(
-              #       language = list(
-              #         url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              #       pageLength = 10000,
-              #       dom = 'ft',
-              #       autoWidth = FALSE,
-              #       ordering=T, 
-              #       scrollX = TRUE,
-              #       scrollY = "370px"),
-              #     rownames= FALSE) %>%
-              #     formatStyle(
-              #       columns = 1:length(c(agrupador_cols, agrupador_cols_sep)),
-              #       fontSize = '95%')
-              # })
-              # 
-              # output$caja_de_bigotes_select_agrupador <- 
-              #   DT::renderDataTable({
-              #     DT::datatable(
-              #       frecuencias$tabla[["descriptiva"]][, c(
-              #         agrupador_cols, agrupador_cols_sep), with = FALSE],
-              #       options = list(
-              #         language = list(
-              #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              #         pageLength = 10000,
-              #         dom = 'ft',
-              #         autoWidth = FALSE,
-              #         ordering=T, 
-              #         scrollX = TRUE,
-              #         scrollY = "370px"),
-              #       rownames= FALSE) %>%
-              #       formatStyle(
-              #         columns = 1:length(c(agrupador_cols, agrupador_cols_sep)),
-              #         fontSize = '95%')
-              #   })
-              # 
-              # output$grafico_barras_select_agrupador <- 
-              #   DT::renderDataTable({
-              #     DT::datatable(
-              #       frecuencias$tabla[["descriptiva"]][, c(
-              #         agrupador_cols, agrupador_cols_sep), with = FALSE],
-              #       options = list(
-              #         language = list(
-              #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              #         pageLength = 10000,
-              #         dom = 'ft',
-              #         autoWidth = FALSE,
-              #         ordering=T, 
-              #         scrollX = TRUE,
-              #         scrollY = "370px"),
-              #       rownames= FALSE) %>%
-              #       formatStyle(
-              #         columns = 1:length(c(agrupador_cols, agrupador_cols_sep)),
-              #         fontSize = '95%')
-              #   })
               
             })
           },
@@ -353,14 +275,14 @@ frecuencias_server <- function(input, output, session, datos, opciones,
     }
   })
   
-  output$episodios_descargar_csv <- downloadHandler(
+  output$frecuencias_descargar_csv <- downloadHandler(
     filename = function() {
-      paste("Descriptiva",
+      paste("Frecuencias",
             ".csv", sep="")
     },
     content = function(file) {
       write.csv(
-        x = frecuencias$tabla[["descriptiva"]],
+        x = frecuencias$tabla,
         file = file, 
         row.names = FALSE,
         na="")
@@ -368,68 +290,16 @@ frecuencias_server <- function(input, output, session, datos, opciones,
     contentType = "text/csv"
   )
   
-  output$episodios_descargar_xlsx <- downloadHandler(
+  output$frecuencias_descargar_xlsx <- downloadHandler(
     filename = function() {
-      paste("Descriptiva",
+      paste("Frecuencias",
             ".xlsx", sep="")
     },
     content = function(file) {
       write_xlsx(
-        x = frecuencias$tabla[["descriptiva"]],
+        x = frecuencias$tabla,
         path = file)
     }, 
     contentType = "xlsx"
-  )
-}
-
-descriptiva_jerarquia <- function(
-  ns,
-  items_nivel_1 = NULL,
-  items_nivel_2 = NULL,
-  items_nivel_3 = NULL, 
-  items_nivel_4 = NULL) {
-  return(
-    tagList(
-      orderInput(
-        inputId = ns("episodios_jerarquia_nivel_1"),
-        label = actionLink(ns("seleccionar_episodio"), label = "Episodio"),
-        items = items_nivel_1,
-        width = "100%", 
-        height = "100%",
-        connect = c(
-          ns("episodios_jerarquia_nivel_2"),
-          ns("episodios_jerarquia_nivel_3"),
-          ns("episodios_jerarquia_nivel_4"))),
-      orderInput(
-        inputId = ns("episodios_jerarquia_nivel_2"),
-        label = actionLink(ns("seleccionar_factura"), label = "Factura"),
-        items = items_nivel_2,
-        width = "100%",
-        height = "100%",
-        connect = c(
-          ns("episodios_jerarquia_nivel_1"),
-          ns("episodios_jerarquia_nivel_3"),
-          ns("episodios_jerarquia_nivel_4"))),
-      orderInput(
-        inputId = ns("episodios_jerarquia_nivel_3"),
-        label = actionLink(ns("seleccionar_paciente"), label = "Paciente"),
-        items = items_nivel_3,
-        width = "100%",
-        height = "100%",
-        connect = c(
-          ns("episodios_jerarquia_nivel_1"),
-          ns("episodios_jerarquia_nivel_2"),
-          ns("episodios_jerarquia_nivel_4"))),
-      orderInput(
-        inputId = ns("episodios_jerarquia_nivel_4"),
-        label = actionLink(ns("seleccionar_prestacion"), label = "Prestación"),
-        items = items_nivel_4,
-        width = "100%",
-        height = "100%",
-        connect = c(
-          ns("episodios_jerarquia_nivel_1"),
-          ns("episodios_jerarquia_nivel_2"),
-          ns("episodios_jerarquia_nivel_3")))
-    )
   )
 }
