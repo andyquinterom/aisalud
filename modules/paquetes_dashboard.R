@@ -162,6 +162,10 @@ paquetes_dashboard_server <- function(
   
 #unique(paquetes_cups$componente)     paquetes_componenete_select
 # unique(paquetes_cups$tipo_de_costo) paquetes_tipo_costo_select
+  
+  paquetes <- 
+    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
+  
   observeEvent(paquetes, {
     updateSelectizeInput(
       session = session,

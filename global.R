@@ -32,6 +32,10 @@ library(dplyr)
 library(dbplyr)
 library(readxl)
 library(shinycssloaders)
+library(promises)
+library(future)
+
+plan(multisession)
 
 dir.create("datos")
 dir.create("secrets")
@@ -138,10 +142,6 @@ if (Sys.getenv("PAQUETES_INCLUIDO") == "") {
     
   }
   
-  
-  paquetes <- 
-    as.data.table(read_feather("datos/paquetes/paquetes.feather"))
-  
   paquetes_ref <- 
     as.data.table(read_feather("datos/paquetes/referente-paquetes.feather"))
   
@@ -230,7 +230,6 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
     
   }
   
-  dash_nt_mapa <- readRDS("datos/nts/nt_mapa.rds")
   dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
   dash_nt_inclusiones <- as.data.table(
     read_feather("datos/nts/inclusiones.feather"))
