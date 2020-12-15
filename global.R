@@ -20,8 +20,6 @@ library(googlesheets4)
 library(DT)
 library(markdown)
 library(tableHTML)
-library(colmaps2)
-library(maps)
 library(withr)
 library(shinydashboardPlus)
 library(shinyjqui)
@@ -33,6 +31,9 @@ library(readxl)
 library(shinycssloaders)
 library(promises)
 library(future)
+library(leaflet)
+library(maps)
+library(htmltools)
 
 plan(multisession)
 
@@ -186,8 +187,7 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
   
   if (!(file.exists("datos/nts/notas_tecnicas.feather") &&
         file.exists("datos/nts/indice.feather") && 
-        file.exists("datos/nts/inclusiones.feather") &&
-        file.exists("datos/nts/nt_mapa.rds"))) {
+        file.exists("datos/nts/inclusiones.feather"))) {
     
     write_feather(sheets_read(nts_path,
                               sheet = "notas_tecnicas",
@@ -203,18 +203,6 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
                               sheet = "inclusiones", 
                               col_types = "ccdc") ,
                   "datos/nts/inclusiones.feather")
-    
-    saveRDS(
-      mapaValoresNT(
-        as.data.table(
-          sheets_read(nts_path,
-                      sheet = "indice",
-                      col_types = "ccdcccd"
-          )
-        )
-      ) %>% 
-        layout(autosize = TRUE),
-      "datos/nts/nt_mapa.rds")
     
   }
   
