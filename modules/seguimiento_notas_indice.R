@@ -18,9 +18,8 @@ seguimiento_notas_indice_ui <- function(id) {
             outputId = ns("indice_tabla"),
             height = "auto") %>%
             withSpinner()),
-        box(width = 5, plotlyOutput(
-          outputId = ns("indice_mapa"),
-          height = "auto") %>%
+        box(width = 5, leafletOutput(
+          outputId = ns("indice_mapa")) %>%
             withSpinner())
       )
     )
@@ -61,8 +60,8 @@ seguimiento_notas_indice_server <- function(input, output, session, indice,
     }
   })
   
-  output$indice_mapa <- renderPlotly({
-    future(readRDS("datos/nts/nt_mapa.rds"))
+  output$indice_mapa <- renderLeaflet({
+    mapa_valores(indice)
   })
   
   observeEvent(input$dash_nt_actualizar, {
@@ -98,17 +97,6 @@ seguimiento_notas_indice_server <- function(input, output, session, indice,
                                     col_types = "ccdc") ,
                         "datos/nts/inclusiones.feather")
           incProgress(0.1)
-          saveRDS(
-            mapaValoresNT(
-              as.data.table(
-                sheets_read(nts_path,
-                            sheet = "indice",
-                            col_types = "ccdcccd"
-                )
-              )
-            ) %>% 
-              layout(autosize = TRUE),
-            "datos/nts/nt_mapa.rds")
           incProgress(0.3)
           
           sendSweetAlert(
