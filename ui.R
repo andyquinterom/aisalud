@@ -86,14 +86,6 @@ shinyUI(
                 tabName = "seguimiento_modulo_comparar")
             )
           },
-          if (PAQUETES_INCLUIDO) {
-            menuItem(
-              text = "Paquetes",
-              icon = icon("chart-pie", lib = "font-awesome"),
-              menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
-              menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard")
-            )
-          },
           if (PRICING_INCLUIDO) {
             menuItem(
               text = "Pricing",
@@ -157,15 +149,6 @@ shinyUI(
             tabName = "seguimiento_modulo_comparar",
             seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
           ),
-          tabItem(
-            tabName = "paquetes_modulo_indice",
-            paquetes_indice_ui("paquetes_modulo_indice")
-          ),
-          tabItem(
-            tabName = "paquetes_modulo_dashboard",
-            paquetes_dashboard_ui("paquetes_modulo_dashboard")
-          ),
-          
          # Pricing -----------------------------------------------------------
           tabItem(
             tabName = "pricing",
