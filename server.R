@@ -71,26 +71,7 @@ shinyServer(function(input, output, session) {
     opciones = opciones
   )
   
-
-  # Modulo paquete -------------------------------------------------
-  
-  if (PAQUETES_INCLUIDO) {
-    
-    callModule(
-      module = paquetes_dashboard_server,
-      id = "paquetes_modulo_dashboard"
-    )
-    
-    callModule(
-      module = paquetes_indice_server,
-      id = "paquetes_modulo_indice",
-      paquete_path = paquete_path,
-      nombre_id = "paquetes_modulo_indice"
-    )
-    
-  }
-  
-  # Modulo otros gráficos
+  # Modulo otros gráficos -----------------------------------------------------
   
   callModule(
     module = otros_graficos_server,

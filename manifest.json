@@ -3597,12 +3597,6 @@
     "modules/outliers.R": {
       "checksum": "a541fca67848f61cff5b3509b471e985"
     },
-    "modules/paquetes_dashboard.R": {
-      "checksum": "6ec247bf940653b20627d660e5c05b3c"
-    },
-    "modules/paquetes_indice.R": {
-      "checksum": "280c40962a664acdf07a301ab8dbd465"
-    },
     "modules/prepara_base_de_datos.R": {
       "checksum": "2af5e1230b5a6595674c661b9aea8d45"
     },
@@ -4081,10 +4075,10 @@
       "checksum": "5ca081ea6e9d486db2947ec29e5bc383"
     },
     "server.R": {
-      "checksum": "cb9a96445ae970d4d040b1c409b4eae5"
+      "checksum": "bb2447e5a4342b275c4693ed3b200ae6"
     },
     "ui.R": {
-      "checksum": "13040c753c1585f00f883798d9a376ec"
+      "checksum": "1332bff3708399792cd32d0d5c607e96"
     },
     "www/code.js": {
       "checksum": "79b901cfdc04d05bbbd1880d86f99676"
