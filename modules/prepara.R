@@ -122,23 +122,77 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
     withProgress(
       min = 0, max = 1, value = 0.2, message = "Cargando datos...",
       expr = {
-        tryCatch(
-          expr = {
-            if (input$file_type == "datos didacticos" &&
-                !is.null(opciones_prepara$value_file)) {
-              datos$data_original <- as.data.table(
-                read_feather(
-                  path = paste0("datos/saved/", opciones_prepara$value_file))
-              )
-              setnames(datos$data_original, tolower(colnames(datos$data_original)))
-              datos$data_original[, "fecha_prestacion" := as.Date(
-                fecha_prestacion, 
-                format = input$formato_fecha)]
-              datos$data_original <- datos$data_original[
-                fecha_prestacion >= as.Date(input$fecha_rango[1]) &
-                  fecha_prestacion <= as.Date(input$fecha_rango[2])]
-            }
-          },
+        tryCatch(expr = {
+          if (input$file_type == "datos didacticos" &&
+              !is.null(opciones_prepara$value_file)) {
+            datos$data_original <- as.data.table(
+              read_feather(
+                path = paste0("datos/saved/", opciones_prepara$value_file))
+            )
+            setnames(datos$data_original, 
+                     tolower(colnames(datos$data_original)))
+            datos$data_original[, "fecha_prestacion" := as.Date(
+              fecha_prestacion, 
+              format = input$formato_fecha)]
+            datos$data_original <- datos$data_original[
+              fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+                fecha_prestacion <= as.Date(input$fecha_rango[2])]
+          }
+          if (!is.null(input$file)) {
+                value_delimitador <- ifelse(
+                  test = opciones_prepara$value_delimitador == "Espacios",
+                  yes = "\t",
+                  no = opciones_prepara$value_delimitador
+                )
+                if (input$file_type == "csv") {
+                  datos$data_original <- fread(
+                    input = input$file$datapath, 
+                    sep = value_delimitador, 
+                    dec = opciones_prepara$value_decimal,
+                    data.table = TRUE)
+                  setnames(datos$data_original, 
+                           tolower(colnames(datos$data_original)))
+                  datos$data_original[, "fecha_prestacion" := as.Date(
+                    fecha_prestacion, 
+                    format = input$formato_fecha)]
+                  datos$data_original <- datos$data_original[
+                    fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+                      fecha_prestacion <= as.Date(input$fecha_rango[2])]
+                } 
+                if (input$file_type == "feather") {
+                  datos$data_original <- as.data.table(
+                    read_feather(
+                      path = input$file$datapath)
+                  )
+                  setnames(datos$data_original,
+                           tolower(colnames(datos$data_original)))
+                  datos$data_original[, "fecha_prestacion" := as.Date(
+                    fecha_prestacion, 
+                    format = input$formato_fecha)]
+                  datos$data_original <- datos$data_original[
+                    fecha_prestacion >= as.Date(input$fecha_rango[1]) &
+                      fecha_prestacion <= as.Date(input$fecha_rango[2])]
+                }
+          }
+          datos$data_table <- datos$data_original
+          datos$valores_unicos <- lapply(datos$data_table, unique)
+          datos$colnames <- colnames(datos$data_table)
+          columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+          colnames_num <- datos$colnames[columnas_num]
+          opciones$valor_costo <- "columna_no_incluida"
+          if ("valor" %notin% colnames_num && "valor" %in% datos$colnames) {
+            confirmSweetAlert(
+              session = session,
+              inputId = ns("valor_a_numerico"),
+              title = "Convertir columna valor.",
+              text = "Se ha encontrado la columna valor cómo carácter. \n
+                    ¿Desea convertirla a numérico?",
+              btn_labels = c("No", "Sí")
+            )
+          } else {
+            datos$colnames_num <- colnames_num
+            opciones$valor_costo <- "valor"
+          }},
           error = function(e) {
             print(e[1])
             sendSweetAlert(
@@ -147,76 +201,8 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
               text = e[1],
               type = "error"
             )
-          }
-        )
-        if (!is.null(input$file)) {
-          tryCatch(
-            expr = {
-              value_delimitador <- ifelse(
-                test = opciones_prepara$value_delimitador == "Espacios",
-                yes = "\t",
-                no = opciones_prepara$value_delimitador
-              )
-              if (input$file_type == "csv") {
-                datos$data_original <- fread(
-                  input = input$file$datapath, 
-                  sep = value_delimitador, 
-                  dec = opciones_prepara$value_decimal,
-                  data.table = TRUE)
-                setnames(datos$data_original, tolower(colnames(datos$data_original)))
-                datos$data_original[, "fecha_prestacion" := as.Date(
-                  fecha_prestacion, 
-                  format = input$formato_fecha)]
-                datos$data_original <- datos$data_original[
-                  fecha_prestacion >= as.Date(input$fecha_rango[1]) &
-                    fecha_prestacion <= as.Date(input$fecha_rango[2])]
-              } 
-              if (input$file_type == "feather") {
-                datos$data_original <- as.data.table(
-                  read_feather(
-                    path = input$file$datapath)
-                )
-                setnames(datos$data_original, tolower(colnames(datos$data_original)))
-                datos$data_original[, "fecha_prestacion" := as.Date(
-                  fecha_prestacion, 
-                  format = input$formato_fecha)]
-                datos$data_original <- datos$data_original[
-                  fecha_prestacion >= as.Date(input$fecha_rango[1]) &
-                    fecha_prestacion <= as.Date(input$fecha_rango[2])]
-              } 
-              datos$data_table <- datos$data_original
-              datos$valores_unicos <- lapply(datos$data_table, unique)
-              datos$colnames <- colnames(datos$data_table)
-              columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-              colnames_num <- datos$colnames[columnas_num]
-              opciones$valor_costo <- "columna_no_incluida"
-              if ("valor" %notin% colnames_num && "valor" %in% datos$colnames) {
-                confirmSweetAlert(
-                  session = session,
-                  inputId = ns("valor_a_numerico"),
-                  title = "Convertir columna valor.",
-                  text = "Se ha encontrado la columna valor cómo carácter. \n
-                  ¿Desea convertirla a numérico?",
-                  btn_labels = c("No", "Sí")
-                )
-              } else {
-                datos$colnames_num <- colnames_num
-                opciones$valor_costo <- "valor"
-              }
-            },
-            error = function(e) {
-              print(e[1])
-              sendSweetAlert(
-                session = session,
-                title = "Error",
-                text = e[1],
-                type = "error"
-              )
-            }
-          )
-        }
-      }
-    )
+          })
+      })
   })
   
   observeEvent(input$valor_a_numerico, {
