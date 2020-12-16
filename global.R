@@ -1,6 +1,7 @@
 # Carga de paquetes y opciones -------------------------------------------------
 
 library(shiny)
+library(dbplyr)
 library(shinydashboard)
 library(shinyWidgets)
 library(shinythemes)
