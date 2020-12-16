@@ -105,7 +105,7 @@ grafico_barras_descriptiva <- function(data, columna_numeros, columnas_sep) {
   )
   
   yaxis <- c(
-    "Suma de valor", "Frecuencia", "Media", "MEdiana", "Coeficiente de variación"
+    "Suma de valor", "Frecuencia", "Media", "Mediana", "Coeficiente de variación"
   )[c("Suma", "Frecuencia", "Media", "P50", "Coef.var") == columna_numeros] %>%
     unname()
   

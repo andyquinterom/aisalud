@@ -62,7 +62,7 @@ prepara_ui <- function(id) {
     box(
       width = 12,
       height = "300px",
-      plotOutput(outputId = ns("valor_con_tiempo"), height = "280px") %>%
+      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "280px") %>%
         withSpinner()
     )
     )
@@ -137,11 +137,6 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
               datos$data_original <- datos$data_original[
                 fecha_prestacion >= as.Date(input$fecha_rango[1]) &
                   fecha_prestacion <= as.Date(input$fecha_rango[2])]
-              datos$data_table <- datos$data_original
-              datos$valores_unicos <- lapply(datos$data_table, unique)
-              datos$colnames <- colnames(datos$data_table)
-              columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-              datos$colnames_num <- datos$colnames[columnas_num]
             }
           },
           error = function(e) {
@@ -175,11 +170,6 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
                 datos$data_original <- datos$data_original[
                   fecha_prestacion >= as.Date(input$fecha_rango[1]) &
                     fecha_prestacion <= as.Date(input$fecha_rango[2])]
-                datos$data_table <- datos$data_original
-                datos$valores_unicos <- lapply(datos$data_table, unique)
-                datos$colnames <- colnames(datos$data_table)
-                columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-                datos$colnames_num <- datos$colnames[columnas_num]
               } 
               if (input$file_type == "feather") {
                 datos$data_original <- as.data.table(
@@ -193,12 +183,26 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
                 datos$data_original <- datos$data_original[
                   fecha_prestacion >= as.Date(input$fecha_rango[1]) &
                     fecha_prestacion <= as.Date(input$fecha_rango[2])]
-                datos$data_table <- datos$data_original
-                datos$valores_unicos <- lapply(datos$data_table, unique)
-                datos$colnames <- colnames(datos$data_table)
-                columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-                datos$colnames_num <- datos$colnames[columnas_num]
               } 
+              datos$data_table <- datos$data_original
+              datos$valores_unicos <- lapply(datos$data_table, unique)
+              datos$colnames <- colnames(datos$data_table)
+              columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+              colnames_num <- datos$colnames[columnas_num]
+              opciones$valor_costo <- "columna_no_incluida"
+              if ("valor" %notin% colnames_num && "valor" %in% datos$colnames) {
+                confirmSweetAlert(
+                  session = session,
+                  inputId = ns("valor_a_numerico"),
+                  title = "Convertir columna valor.",
+                  text = "Se ha encontrado la columna valor cómo carácter. \n
+                  ¿Desea convertirla a numérico?",
+                  btn_labels = c("No", "Sí")
+                )
+              } else {
+                datos$colnames_num <- colnames_num
+                opciones$valor_costo <- "valor"
+              }
             },
             error = function(e) {
               print(e[1])
@@ -213,6 +217,16 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
         }
       }
     )
+  })
+  
+  observeEvent(input$valor_a_numerico, {
+    if (input$valor_a_numerico) {
+      datos$data_table[, "valor" := numerize(valor)]
+      datos$data_original[, "valor" := numerize(valor)]
+    }
+    columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
+    datos$colnames_num <- datos$colnames[columnas_num]
+    opciones$valor_costo <- "valor"
   })
   
   observeEvent(datos$colnames, {
@@ -230,17 +244,29 @@ prepara_server <- function(input, output, session, opciones, nombre_id) {
     }
   })
   
-  output$valor_con_tiempo <- renderPlot({
+  output$valor_con_tiempo <- renderPlotly({
     if (!is.null(datos$colnames)) {
-      if (opciones$valor_costo %in% datos$colnames) {
-        ggplot(data = datos$data_table, 
-               aes(cut(fecha_prestacion, "1 month"), 
-                   get(opciones$valor_costo))) +
-          geom_col() +
-          xlab("Fecha") +
-          ylab(opciones$valor_costo) +
-          scale_x_discrete(labels = function(x) mes_spanish(month(x))) +
-          scale_y_continuous(labels = formatAsCurrency)
+      if (opciones$valor_costo %in% datos$colnames_num) {
+        datos <- datos$data_table[, list(
+          "mes_temporal" = year(fecha_prestacion)* 100 + month(fecha_prestacion),
+          "suma" = sum(get(opciones$valor_costo), na.rm = TRUE),
+          "mes_label_temporal" = mes_spanish(month(fecha_prestacion))),
+          by = "fecha_prestacion"][, list(
+            "Suma" = sum(suma, na.rm = TRUE)),
+            by = c("mes_label_temporal", "mes_temporal")][
+              order(mes_temporal)] %>%
+          plot_ly(x = ~mes_label_temporal,
+                  y = ~Suma,
+                  type = "bar") %>%
+          config(locale = "es") %>%
+          layout(
+            title = "Suma del valor a mes",
+            xaxis = list(
+              title = "Mes",
+              categoryorder = "array",
+              categoryarray = ~mes_temporal),
+            yaxis = list(title = "Suma",
+                         tickformat = ",.2f")) 
       }
     }
   })

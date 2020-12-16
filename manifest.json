@@ -3598,10 +3598,10 @@
       "checksum": "a541fca67848f61cff5b3509b471e985"
     },
     "modules/prepara_base_de_datos.R": {
-      "checksum": "c90fa0ad0cc6359ea1848b835f49aae4"
+      "checksum": "2af5e1230b5a6595674c661b9aea8d45"
     },
     "modules/prepara.R": {
-      "checksum": "46f1ae8cdfeec8d6815695782300f03d"
+      "checksum": "3c9568f07c4777f16f9717a26f0362f1"
     },
     "modules/pricing.R": {
       "checksum": "a5a91ad812d5909d41924a755b935edd"
@@ -4039,7 +4039,7 @@
       "checksum": "8053748990a637e11d8a69cb968189a2"
     },
     "R/histograma.R": {
-      "checksum": "e7aae9b6a43ee1afb2e657786bf8fcc2"
+      "checksum": "a93c966a042ffd9d8eeb196b2b6729ef"
     },
     "R/mapa_valor_nota_tecnica.R": {
       "checksum": "659d24898ddf3ec84c6f0308516835b1"
