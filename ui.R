@@ -85,14 +85,7 @@ shinyUI(
                 text = "Comparación",
                 tabName = "seguimiento_modulo_comparar")
             )
-          },
-          if (PRICING_INCLUIDO) {
-            menuItem(
-              text = "Pricing",
-              icon = icon("tags", lib = "font-awesome"),
-              tabName = "pricing"
-            )
-          }
+          }  
         )
       ),
       rightsidebar = rightSidebar(
@@ -148,11 +141,6 @@ shinyUI(
           tabItem(
             tabName = "seguimiento_modulo_comparar",
             seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
-          ),
-         # Pricing -----------------------------------------------------------
-          tabItem(
-            tabName = "pricing",
-            pricing_ui("pricing_modulo")
           )
         )
       )
