@@ -78,19 +78,7 @@ shinyServer(function(input, output, session) {
     id = "otros_graficos_modulo",
     datos = datos_modulos
   )
-  
 
-  # Pricing ------------------------------------------------------------------
-  
-  if (PRICING_INCLUIDO) {
-    callModule(
-      module = pricing_server,
-      id = "pricing_modulo", 
-      pricing_path = pricing_path,
-      nombre_id = "pricing_modulo"
-    )
-  }
- 
   # Modulos seguimiento NT ---------------------------------------------
   
   if (NTS_INCLUIDO) {
