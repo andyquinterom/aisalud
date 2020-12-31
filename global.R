@@ -135,3 +135,24 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
   
 }
 
+
+conn <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = Sys.getenv("DATABASE_NAME"),
+  user = Sys.getenv("DATABASE_USER"),
+  password = Sys.getenv("DATABASE_PW"),
+  host = Sys.getenv("DATABASE_HOST"),
+  port = Sys.getenv("DATABASE_PORT"),
+  options = paste0("-c search_path=", Sys.getenv("DATABASE_SCHEMA")),
+  sslmode = "require")
+
+dbSendQuery(
+  conn,
+  str_replace_all("SET search_path = public, ######;",
+                  "######", Sys.getenv("DATABASE_SCHEMA"))
+)
+
+print(dbGetQuery(
+  conn,
+  "SHOW client_encoding;"
+))
