@@ -4,110 +4,108 @@ shinyServer(function(input, output, session) {
     "valor_costo" = "valor"
   )
   
+  
  # Modulo prepara ---------------------------------------------
   
-  datos_modulos <- callModule(
-    module = prepara_server,
-    id = "prepara_modulo",
-    nombre_id = "prepara_modulo",
-    opciones = opciones
-  )
+  # datos_modulos <- callModule(
+  #   module = prepara_server,
+  #   id = "prepara_modulo",
+  #   nombre_id = "prepara_modulo",
+  #   opciones = opciones
+  # )
   
   base_de_datos_server(
     id = "prepara_base_de_datos",
-    datos = datos_modulos,
     opciones = opciones,
     conn = conn
   )
   
   # Modulo filtros --------------------------------------------
   
-  callModule(
-    module = filtros_server,
-    id = "filtros_sideBar",
-    datos = datos_modulos
-  )
+  # callModule(
+  #   module = filtros_server,
+  #   id = "filtros_sideBar",
+  #   datos = datos_modulos
+  # )
   
   # Modulo descriptiva y episodios --------------------------------------------
   
-  callModule(
-    module = episodios_server, 
+  episodios_server(
     id = "episodios_modulo",
     opciones = opciones,
-    nombre_id = "episodios_modulo",
-    datos = datos_modulos
+    conn = conn
   )
   
-  # Modulo Frecuencias --------------------------------------------
-  
-  callModule(
-    module = frecuencias_server, 
-    id = "frecuencias_modulo",
-    opciones = opciones,
-    nombre_id = "frecuencias_modulo",
-    datos = datos_modulos
-  )
-  
- 
-  # Modulo outliers -----------------------------------------------------------
-  
-  callModule(
-    module = outliers_server,
-    id = "outliers_modulo",
-    datos = datos_modulos,
-    opciones = opciones,
-    nombre_id = "outliers_modulo"
-  )
-  
- 
-  # Modulo generar nota técnica -----------------------------------------------
-  
-  callModule(
-    module = nota_tecnica_server,
-    id = "nota_tecnica_modulo",
-    nombre_id = "nota_tecnica_modulo",
-    datos = datos_modulos,
-    opciones = opciones
-  )
-  
-  # Modulo otros gráficos -----------------------------------------------------
-  
-  callModule(
-    module = otros_graficos_server,
-    id = "otros_graficos_modulo",
-    datos = datos_modulos
-  )
-
-  # Modulos seguimiento NT ---------------------------------------------
-  
-  if (NTS_INCLUIDO) {
-    
-    callModule(
-      module = seguimiento_notas_indice_server,
-      id = "seguimiento_notas_indice",
-      indice = dash_nt_indice,
-      nombre_id = "seguimiento_notas_indice"
-    )
-    
-    callModule(
-      module = seguimiento_notas_dashboard_server,
-      id = "seguimiento_notas_dash",
-      indice = dash_nt_indice,
-      nota_tecnica = dash_nt_datos,
-      inclusiones = dash_nt_inclusiones
-    )
-    
-    callModule(
-      module = seguimiento_notas_comparar_server,
-      id = "seguimiento_notas_comparar",
-      datos = datos_modulos,
-      indice = dash_nt_indice,
-      nota_tecnica = dash_nt_datos,
-      nombre_id = "seguimiento_notas_comparar",
-      opciones = opciones
-    )
-    
-  }
+  # # Modulo Frecuencias --------------------------------------------
+  # 
+  # callModule(
+  #   module = frecuencias_server, 
+  #   id = "frecuencias_modulo",
+  #   opciones = opciones,
+  #   nombre_id = "frecuencias_modulo",
+  #   datos = datos_modulos
+  # )
+  # 
+  # 
+  # # Modulo outliers -----------------------------------------------------------
+  # 
+  # callModule(
+  #   module = outliers_server,
+  #   id = "outliers_modulo",
+  #   datos = datos_modulos,
+  #   opciones = opciones,
+  #   nombre_id = "outliers_modulo"
+  # )
+  # 
+  # 
+  # # Modulo generar nota técnica -----------------------------------------------
+  # 
+  # callModule(
+  #   module = nota_tecnica_server,
+  #   id = "nota_tecnica_modulo",
+  #   nombre_id = "nota_tecnica_modulo",
+  #   datos = datos_modulos,
+  #   opciones = opciones
+  # )
+  # 
+  # # Modulo otros gráficos -----------------------------------------------------
+  # 
+  # callModule(
+  #   module = otros_graficos_server,
+  #   id = "otros_graficos_modulo",
+  #   datos = datos_modulos
+  # )
+  # 
+  # # Modulos seguimiento NT ---------------------------------------------
+  # 
+  # if (NTS_INCLUIDO) {
+  #   
+  #   callModule(
+  #     module = seguimiento_notas_indice_server,
+  #     id = "seguimiento_notas_indice",
+  #     indice = dash_nt_indice,
+  #     nombre_id = "seguimiento_notas_indice"
+  #   )
+  #   
+  #   callModule(
+  #     module = seguimiento_notas_dashboard_server,
+  #     id = "seguimiento_notas_dash",
+  #     indice = dash_nt_indice,
+  #     nota_tecnica = dash_nt_datos,
+  #     inclusiones = dash_nt_inclusiones
+  #   )
+  #   
+  #   callModule(
+  #     module = seguimiento_notas_comparar_server,
+  #     id = "seguimiento_notas_comparar",
+  #     datos = datos_modulos,
+  #     indice = dash_nt_indice,
+  #     nota_tecnica = dash_nt_datos,
+  #     nombre_id = "seguimiento_notas_comparar",
+  #     opciones = opciones
+  #   )
+  #   
+  # }
   
  
 })

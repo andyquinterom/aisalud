@@ -39,7 +39,7 @@ base_de_datos_ui <- function(id) {
   )
 }
 
-base_de_datos_server <- function(id, opciones, conn, datos) {
+base_de_datos_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -96,29 +96,34 @@ base_de_datos_server <- function(id, opciones, conn, datos) {
       })
       
       observe({
-        opciones$fecha_rango <- input$fecha_rango
-        opciones$valor_costo <- ifelse(
-          test = input$columna_valor != "",
-          yes = input$columna_valor,
-          no = opciones$valor_costo)
-        opciones$tabla <- input$tabla
+        if (input$tabla != "Ninguno") {
+          opciones$fecha_rango <- input$fecha_rango
+          opciones$valor_costo <- ifelse(
+            test = input$columna_valor != "",
+            yes = input$columna_valor,
+            no = opciones$valor_costo)
+          opciones$tabla <- input$tabla
+          opciones$colnames <- dbListFields(
+            conn,
+            opciones$tabla)
+        }
       })
       
       observeEvent(input$valor_a_numerico, {
         if (input$valor_a_numerico) {
-          datos$data_table[, "valor" := numerize(valor)]
-          datos$data_original[, "valor" := numerize(valor)]
+          opciones$data_table[, "valor" := numerize(valor)]
+          opciones$data_original[, "valor" := numerize(valor)]
         }
-        columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-        datos$colnames_num <- datos$colnames[columnas_num]
+        columnas_num <- unlist(lapply(opciones$data_table[1,], is.numeric))
+        opciones$colnames_num <- opciones$colnames[columnas_num]
         opciones$valor_costo <- "valor"
       })
       
-      observeEvent(datos$colnames, {
+      observeEvent(opciones$colnames, {
         updateSelectizeInput(
           session = session,
           inputId = "columna_valor",
-          choices = datos$colnames_num,
+          choices = opciones$colnames_num,
           selected = "valor"
         )
       })
@@ -161,9 +166,6 @@ base_de_datos_server <- function(id, opciones, conn, datos) {
                              tickformat = ",.2f"))
         }
       })
-      
-      return(datos)
-      
     }
   )
 }
