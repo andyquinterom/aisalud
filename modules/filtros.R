@@ -59,6 +59,39 @@ filtros_server <- function(id, opciones) {
         )
       })
       
+      observeEvent(opciones$pacientes_excluir_exe, {
+        if (is.null(input$filtros_paciente_valor) && 
+            length(opciones$pacientes_excluir) > 1) {
+          pacientes_excluir <- unique(opciones$pacientes_excluir[-1])
+        } else {
+          pacientes_excluir <- unique(opciones$pacientes_excluir)
+        }
+        updateSelectizeInput(
+          session = session,
+          inputId = "filtros_paciente_valor",
+          choices = pacientes_excluir,
+          selected = pacientes_excluir,
+          server = TRUE
+        )
+      })
+      
+      observeEvent(input$filtros_paciente_valor,{
+        if (!all(opciones$pacientes_excluir %in% input$filtros_paciente_valor)) {
+          opciones$pacientes_excluir <- input$filtros_paciente_valor
+        }
+      })
+      
+      observeEvent(input$filtro_paciente_vaciar, {
+        opciones$pacientes_excluir <- opciones$pacientes_excluir[1]
+        updateSelectizeInput(
+          session = session,
+          inputId = "filtros_paciente_valor",
+          choices = NULL,
+          selected = NULL,
+          server = TRUE
+        )
+      })
+      
       lapply(
         X = 1:n_char,
         FUN = function(i) {
@@ -152,6 +185,17 @@ filtros_server <- function(id, opciones) {
             }
           )
         )
+        
+        if (!is.null(input$filtros_paciente_valor)) {
+          valores_filtro <- input$filtros_paciente_valor
+          if (input$filtro_paciente_incluir) {
+            opciones$tabla <<- opciones$tabla %>%
+              filter(nro_identificacion %in% valores_filtro)
+          } else {
+            opciones$tabla <<- opciones$tabla %>%
+              filter(!(nro_identificacion %in% valores_filtro))
+          }
+        }
         
         lapply(
           X = (1:n_char)[inputs_filtros_char],
