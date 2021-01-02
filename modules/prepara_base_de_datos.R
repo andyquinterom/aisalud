@@ -44,10 +44,6 @@ base_de_datos_server <- function(id, opciones, conn) {
     id = id,
     module = function(input, output, session) {
       
-      session$onSessionEnded(function() {
-        dbDisconnect(conn)
-      })
-      
       ns <- NS(id)
       
       base_de_datos <- reactiveValues()

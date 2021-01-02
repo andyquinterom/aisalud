@@ -73,6 +73,13 @@ episodios_ui <- function(id) {
             ),
             column(
               width = 4,
+              actionButton(
+                inputId = ns("histograma_ejecutar"),
+                label = "Generar histograma",
+                width = "100%"
+              ),
+              tags$br(),
+              tags$br(),
               DT::dataTableOutput(
                 outputId = ns("histograma_select_agrupador")
               )
@@ -94,6 +101,13 @@ episodios_ui <- function(id) {
             ),
             column(
               width = 4,
+              actionButton(
+                inputId = ns("caja_de_bigotes_ejecutar"),
+                label = "Generar caja de bigotes",
+                width = "100%"
+              ),
+              tags$br(),
+              tags$br(),
               DT::dataTableOutput(
                 outputId = ns("caja_de_bigotes_select_agrupador")
               )
@@ -125,6 +139,13 @@ episodios_ui <- function(id) {
                             "Mediana" = "P50",
                             "Variación" = "Coef.var")
               ),
+              actionButton(
+                inputId = ns("grafico_barras_ejecutar"),
+                label = "Generar gráfico",
+                width = "100%"
+              ),
+              tags$br(),
+              tags$br(),
               DT::dataTableOutput(
                 outputId = ns("grafico_barras_select_agrupador")
               )
@@ -190,10 +211,18 @@ episodios_server <- function(id, opciones, conn) {
       
       observeEvent(cambio_columnas(), {
         if (!is.null(opciones$colnames) && 
-            !is.null(input$episodios_cols)) {
+            input$episodios_cols != "") {
           tryCatch(
             expr = {
-              if (length(opciones$valores_unicos[[input$episodios_cols]]) <= 60 &&
+              agrupadores_items_length <- conn %>%
+                tbl(opciones$tabla) %>%
+                select(!!as.name(input$episodios_cols)) %>%
+                distinct() %>%
+                transmute(count = n()) %>%
+                distinct() %>%
+                collect() %>%
+                unlist()
+              if (agrupadores_items_length <= 60 &&
                   input$episodios_enable) {
                 agrupadores_items <- conn %>%
                   tbl(opciones$tabla) %>%
@@ -215,6 +244,7 @@ episodios_server <- function(id, opciones, conn) {
                   radioButtons(
                     inputId = ns("descriptiva_unidades"),
                     label = "Unidad de descriptiva",
+                    selected = episodios$unidad_descriptiva,
                     choiceNames = c(
                       "Prestación",
                       "Paciente",
@@ -227,6 +257,7 @@ episodios_server <- function(id, opciones, conn) {
                     )
                   )
                 })
+                episodios$unidad_descriptiva <- input$descriptiva_unidades
               }
             },
             error = function(e) {
@@ -288,7 +319,7 @@ episodios_server <- function(id, opciones, conn) {
         
         if(!is.null(opciones$colnames)) {
           if(!is.null(input$episodios_cols) &&
-             input$episodios_cols != "NA") {
+             input$episodios_cols != "") {
             tryCatch(
               expr = {
                 episodios_cols <- input$episodios_cols
@@ -296,6 +327,8 @@ episodios_server <- function(id, opciones, conn) {
                   episodios_col_valor <- input$episodios_col_valor
                 }
                 episodios_cols_sep <- input$episodios_cols_sep
+                episodios$cols <- episodios_cols
+                episodios$cols_sep <- episodios_cols_sep
                 withProgress(message = "Calculando descriptiva...",{
                   if (!is.null(episodios$agrupadores_items)) {
                     episodios$tabla <- episodios_jerarquia(
@@ -319,73 +352,15 @@ episodios_server <- function(id, opciones, conn) {
                       columna_suma = input$descriptiva_unidades,
                       prestaciones = (input$descriptiva_unidades == "prestacion")
                     )
+                    episodios$tabla[["data"]] <- 
+                      list("temporal" = episodios$tabla[["data"]])
+                    names(episodios$tabla[["data"]]) <-
+                      input$descriptiva_unidades
                   }
-                  
-                  episodios$histograma_titulo <- paste(
-                    "Histograma de valores por",
-                    separar_spanish(
-                      if (!is.null(episodios$agrupadores_items)) {
-                        c("episodio", "factura", "paciente", "prestación")[
-                          !c(is.null(input$episodios_jerarquia_nivel_1_order),
-                             is.null(input$episodios_jerarquia_nivel_2_order),
-                             is.null(input$episodios_jerarquia_nivel_3_order),
-                             is.null(input$episodios_jerarquia_nivel_4_order))
-                        ]
-                      } else {
-                        c("prestación", "paciente", "factura")[
-                          c(input$descriptiva_unidades == "prestacion",
-                            input$descriptiva_unidades == "nro_identificacion",
-                            input$descriptiva_unidades == "nro_factura")
-                        ]
-                      }
-                    )
-                  )
-                  
-                  episodios$caja_de_bigotes_titulo <- paste(
-                    "Distribución del valor por",
-                    separar_spanish(
-                      if (!is.null(episodios$agrupadores_items)) {
-                        c("episodio", "factura", "paciente", "prestación")[
-                          !c(is.null(input$episodios_jerarquia_nivel_1_order),
-                             is.null(input$episodios_jerarquia_nivel_2_order),
-                             is.null(input$episodios_jerarquia_nivel_3_order),
-                             is.null(input$episodios_jerarquia_nivel_4_order))
-                        ]
-                      } else {
-                        c("prestación", "paciente", "factura")[
-                          c(input$descriptiva_unidades == "prestacion",
-                            input$descriptiva_unidades == "nro_identificacion",
-                            input$descriptiva_unidades == "nro_factura")
-                        ]
-                      }
-                    )
-                  )
                   
                   episodios$lista_agrupadores <- 
                     episodios$tabla[["descriptiva"]][, c(
                       episodios_cols, episodios_cols_sep), with = FALSE]
-                  
-                  output$episodios_tabla <- DT::renderDataTable({
-                    DT::datatable(
-                      episodios$tabla[["descriptiva"]],
-                      options = list(
-                        language = list(
-                          url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                        pageLength = 50,
-                        autoWidth = FALSE,
-                        ordering=T, 
-                        scrollX = TRUE,
-                        scrollY = "60vh"),
-                      rownames= FALSE) %>%
-                      formatCurrency(
-                        c('P50','P75','P90','Media','Desv.tipica'),
-                        mark = ".",
-                        dec.mark = ",") %>%
-                      formatCurrency(c('Suma','Min.','Max.','Rango'),
-                                     digits=0,
-                                     mark = ".",
-                                     dec.mark = ",")
-                  })
                   
                   output$tabla_titulo <- renderText({
                     paste(
@@ -400,65 +375,6 @@ episodios_server <- function(id, opciones, conn) {
                       collapse = " "
                     )
                   })
-                  
-                  output$histograma_select_agrupador <- DT::renderDataTable({
-                    DT::datatable(
-                      episodios$tabla[["descriptiva"]][, c(
-                        episodios_cols, episodios_cols_sep), with = FALSE],
-                      options = list(
-                        language = list(
-                          url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                        pageLength = 10000,
-                        dom = 'ft',
-                        autoWidth = FALSE,
-                        ordering=T, 
-                        scrollX = TRUE,
-                        scrollY = "370px"),
-                      rownames= FALSE) %>%
-                      formatStyle(
-                        columns = 1:length(c(episodios_cols, episodios_cols_sep)),
-                        fontSize = '95%')
-                  })
-                  
-                  output$caja_de_bigotes_select_agrupador <- 
-                    DT::renderDataTable({
-                      DT::datatable(
-                        episodios$tabla[["descriptiva"]][, c(
-                          episodios_cols, episodios_cols_sep), with = FALSE],
-                        options = list(
-                          language = list(
-                            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                          pageLength = 10000,
-                          dom = 'ft',
-                          autoWidth = FALSE,
-                          ordering=T, 
-                          scrollX = TRUE,
-                          scrollY = "370px"),
-                        rownames= FALSE) %>%
-                        formatStyle(
-                          columns = 1:length(c(episodios_cols, episodios_cols_sep)),
-                          fontSize = '95%')
-                    })
-                  
-                  output$grafico_barras_select_agrupador <- 
-                    DT::renderDataTable({
-                      DT::datatable(
-                        episodios$tabla[["descriptiva"]][, c(
-                          episodios_cols, episodios_cols_sep), with = FALSE],
-                        options = list(
-                          language = list(
-                            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                          pageLength = 10000,
-                          dom = 'ft',
-                          autoWidth = FALSE,
-                          ordering=T, 
-                          scrollX = TRUE,
-                          scrollY = "370px"),
-                        rownames= FALSE) %>%
-                        formatStyle(
-                          columns = 1:length(c(episodios_cols, episodios_cols_sep)),
-                          fontSize = '95%')
-                    })
                   
                 })
               },
@@ -478,54 +394,141 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
-      output$histograma_titulo <- renderText({
-        if (!is.null(input$histograma_select_agrupador_rows_selected)) {
-          episodios$histograma_titulo
+      output$episodios_tabla <- DT::renderDataTable({
+        if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
+          DT::datatable(
+            episodios$tabla[["descriptiva"]],
+            options = list(
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 50,
+              autoWidth = FALSE,
+              ordering=T, 
+              scrollX = TRUE,
+              scrollY = "60vh"),
+            rownames= FALSE) %>%
+            formatCurrency(
+              c('P25','P50','P75','P90','Media','Desv.tipica'),
+              mark = ".",
+              dec.mark = ",") %>%
+            formatCurrency(c('Suma','Min.','Max.','Rango'),
+                           digits=0,
+                           mark = ".",
+                           dec.mark = ",")
         }
+      })
+      
+      output$grafico_barras_select_agrupador <- 
+        DT::renderDataTable({
+          DT::datatable(
+            episodios$tabla[["descriptiva"]][, c(
+              episodios$cols, episodios$cols_sep), with = FALSE],
+            options = list(
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 10000,
+              dom = 'ft',
+              autoWidth = FALSE,
+              ordering=T, 
+              scrollX = TRUE,
+              scrollY = "370px"),
+            rownames= FALSE) %>%
+            formatStyle(
+              columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+              fontSize = '95%')
+      })
+      
+      output$histograma_select_agrupador <- DT::renderDataTable({
+        DT::datatable(
+          episodios$tabla[["descriptiva"]][, c(
+            episodios$cols, episodios$cols_sep), with = FALSE],
+          options = list(
+            language = list(
+              url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+            pageLength = 10000,
+            dom = 'ft',
+            autoWidth = FALSE,
+            ordering=T, 
+            scrollX = TRUE,
+            scrollY = "370px"),
+          rownames= FALSE) %>%
+          formatStyle(
+            columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+            fontSize = '95%')
+      })
+      
+      output$caja_de_bigotes_select_agrupador <- 
+        DT::renderDataTable({
+          DT::datatable(
+            episodios$tabla[["descriptiva"]][, c(
+              episodios$cols, episodios$cols_sep), with = FALSE],
+            options = list(
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 10000,
+              dom = 'ft',
+              autoWidth = FALSE,
+              ordering=T, 
+              scrollX = TRUE,
+              scrollY = "370px"),
+            rownames= FALSE) %>%
+            formatStyle(
+              columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+              fontSize = '95%')
+        })
+      
+      output$histograma_titulo <- renderText({
+        "Histograma de valores"
       })
       
       output$caja_de_bigotes_titulo <- renderText({
-        if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
-          episodios$caja_de_bigotes_titulo
-        }
+        "Distribución de valores"
       })
       
-      output$histograma_render <- renderPlotly({
+      observeEvent(input$histograma_ejecutar, {
         if (!is.null(input$histograma_select_agrupador_rows_selected)) {
-          histograma_agrupador(
+          episodios$histograma_plot <- histograma_agrupador(
             titulo = "Histograma",
-            data = merge.data.table(
-              x = episodios$lista_agrupadores[
-                input$histograma_select_agrupador_rows_selected],
-              y = episodios$tabla[["data"]]
-            )[["valor_calculos"]]
+            data = episodios$tabla[["data"]],
+            columnas_sep = episodios$lista_agrupadores[
+              input$histograma_select_agrupador_rows_selected],
+            numero_bins = 10
           )
         }
       })
       
-      output$caja_de_bigotes_render <- renderPlotly({
+      output$histograma_render <- renderPlotly({
+        episodios$histograma_plot
+      })
+      
+      observeEvent(input$caja_de_bigotes_ejecutar, {
         if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
-          caja_de_bigotes_agrupador(
-            data = episodios$tabla[["data"]],
-            columna_numeros = "valor_calculos", 
+          episodios$caja_de_bigotes_plot <- caja_de_bigotes_agrupador(
+            data = episodios$tabla[["descriptiva"]],
             columnas_sep = episodios$lista_agrupadores[
               input$caja_de_bigotes_select_agrupador_rows_selected]
           )
         }
       })
       
-      output$grafico_barras_render <- renderPlotly({
+      output$caja_de_bigotes_render <- renderPlotly({
+        episodios$caja_de_bigotes_plot
+      })
+      
+      observeEvent(input$grafico_barras_ejecutar, {
         if (!is.null(input$grafico_barras_select_agrupador_rows_selected)) {
-          suppressMessages({
-            grafico_barras_descriptiva(
-              data = episodios$tabla[["descriptiva"]],
-              columna_numeros = input$grafico_barras_indicador,
-              columnas_sep = episodios$lista_agrupadores[
-                input$grafico_barras_select_agrupador_rows_selected
-              ]
-            )
-          })
+          episodios$grafico_barras_plot <- grafico_barras_descriptiva(
+            data = episodios$tabla[["descriptiva"]],
+            columna_numeros = input$grafico_barras_indicador,
+            columnas_sep = episodios$lista_agrupadores[
+              input$grafico_barras_select_agrupador_rows_selected
+            ]
+          )
         }
+      })
+      
+      output$grafico_barras_render <- renderPlotly({
+        episodios$grafico_barras_plot
       })
       
       output$descriptiva_sumas_valor <- renderText({
@@ -543,10 +546,15 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_registros <- renderText({
-        if (!is.null(opciones$colnames)) {
+        if (opciones$tabla != "Ninguno") {
           paste("Número de registros:", 
                 formatC(
-                  length(opciones$data_table[["nro_identificacion"]]),
+                  {tbl(conn, opciones$tabla) %>% 
+                      transmute(count = n()) %>% 
+                      distinct() %>%
+                      collect() %>%
+                      unlist() %>% 
+                      unname()},
                   big.mark = ".", 
                   decimal.mark = ",", 
                   format = "f", 
@@ -558,10 +566,18 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_pacientes <- renderText({
-        if (!is.null(opciones$colnames)) {
+        if (opciones$tabla != "Ninguno" && 
+            "nro_identificacion" %in% opciones$colnames) {
           paste("Número de pacientes:", 
                 formatC(
-                  uniqueN(opciones$data_table[["nro_identificacion"]]),
+                  {tbl(conn, opciones$tabla) %>% 
+                      select(nro_identificacion) %>% 
+                      distinct() %>%
+                      transmute(count = n()) %>% 
+                      distinct() %>% 
+                      collect() %>%
+                      unlist() %>% 
+                      unname()},
                   big.mark = ".", 
                   decimal.mark = ",", 
                   format = "f", 
@@ -573,10 +589,18 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_facturas <- renderText({
-        if (!is.null(opciones$colnames) && "nro_factura" %in% opciones$colnames) {
+        if (opciones$tabla != "Ninguno" && 
+            "nro_factura" %in% opciones$colnames) {
           paste("Número de facturas:", 
                 formatC(
-                  uniqueN(opciones$data_table[["nro_factura"]]),
+                  {tbl(conn, opciones$tabla) %>% 
+                      select(nro_factura) %>% 
+                      distinct() %>%
+                      transmute(count = n()) %>% 
+                      distinct() %>% 
+                      collect() %>%
+                      unlist() %>% 
+                      unname()},
                   big.mark = ".", 
                   decimal.mark = ",", 
                   format = "f", 
