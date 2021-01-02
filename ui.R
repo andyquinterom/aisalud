@@ -28,24 +28,10 @@ shinyUI(
           HTML('
                <img src="logoblanco.png" width="100%"/>
                '),
-          if (Sys.getenv("DATABASE_ACCESS") != "") {
-            menuItem(
-              text = "Carga de datos",
-              icon = icon("cog", lib = "font-awesome"),
-              menuSubItem(
-                text = "Subir datos",
-                tabName = "prepara",
-                icon = icon("upload", lib = "font-awesome")),
-              menuItem(
-                text = "Cargar de la nube",
-                tabName = "prepara_base_de_datos",
-                icon = icon("cloud", lib = "font-awesome")))
-          } else {
-            menuItem(
-              text = "Prepara",
-              icon = icon("cog", lib = "font-awesome"),
-              tabName = "prepara")
-          },
+          menuItem(
+            text = "Cargar de la nube",
+            tabName = "prepara_base_de_datos",
+            icon = icon("cloud", lib = "font-awesome")),
           menuItem(
             text = "Análisis",
             icon = icon("chart-area", lib = "font-awesome"),
