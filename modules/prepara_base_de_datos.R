@@ -176,7 +176,7 @@ base_de_datos_server <- function(id, opciones, conn) {
 # Funciones --------------------------------------------------------------------
 
 dbListNumericFields <- function(conn, table_name) {
-  query <- "select
+  sql <- "select
        col.column_name
 from information_schema.columns col
 join information_schema.tables tab on tab.table_schema = col.table_schema
@@ -186,10 +186,11 @@ where col.data_type in ('smallint', 'integer', 'bigint',
                         'decimal', 'numeric', 'real', 'double precision',
                         'smallserial', 'serial', 'bigserial', 'money')
       and col.table_schema not in ('information_schema', 'pg_catalog')
-      and col.table_name in ('#####')
+      and col.table_name in (?id)
 order by col.table_schema,
          col.table_name,
          col.ordinal_position"
+  query <- sqlInterpolate(conn, sql, id = table_name)
   dbGetQuery(conn, str_replace_all(query, "#####", table_name)) %>%
     unlist() %>%
     unname()
