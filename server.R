@@ -8,13 +8,6 @@ shinyServer(function(input, output, session) {
   
  # Modulo prepara ---------------------------------------------
   
-  # datos_modulos <- callModule(
-  #   module = prepara_server,
-  #   id = "prepara_modulo",
-  #   nombre_id = "prepara_modulo",
-  #   opciones = opciones
-  # )
-  
   base_de_datos_server(
     id = "prepara_base_de_datos",
     opciones = opciones,
@@ -49,13 +42,10 @@ shinyServer(function(input, output, session) {
   # 
   # # Modulo outliers -----------------------------------------------------------
   # 
-  # callModule(
-  #   module = outliers_server,
-  #   id = "outliers_modulo",
-  #   datos = datos_modulos,
-  #   opciones = opciones,
-  #   nombre_id = "outliers_modulo"
-  # )
+  outliers_server(
+    id = "outliers_modulo",
+    opciones = opciones
+  )
   # 
   # 
   # # Modulo generar nota técnica -----------------------------------------------
