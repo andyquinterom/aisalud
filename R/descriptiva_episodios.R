@@ -25,9 +25,9 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       FUN = function(i) {
         lista_episodios[[i]] <<- episodios %>%
           filter(!!as.name(columnas) %in% i)
-        episodiso_procesados <- lista_episodios[[i]][[columna_suma]]
+        episodios_procesados <- lista_episodios[[i]][[columna_suma]]
         episodios <<- episodios %>%
-          filter(!(!!as.name(columna_suma) %in% episodiso_procesados))
+          filter(!(!!as.name(columna_suma) %in% episodios_procesados))
       })
     episodios_identificador <- rbindlist(lista_episodios)
     if (!is.null(columna_sep)) {
@@ -48,7 +48,11 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       prestaciones = FALSE
     )
     episodios_nivel_1 <- data_temp[["descriptiva"]]
+    episodios_procesados <- data_episodios[[columna_suma]]
+    data <- data %>%
+      filter(!(!!as.name(columna_suma) %in% episodios_procesados))
     data_temp <- NULL
+    print("Nivel 1: Completo.")
   }
   
   episodios_nivel_2_data <- NULL
@@ -65,6 +69,8 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_2_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_2)
     data_temp <- NULL
+    print("Nivel 2: Completo.")
+    
   }
 
   episodios_nivel_3_data <- NULL
@@ -81,10 +87,13 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_3_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_3)
     data_temp <- NULL
+    print("Nivel 3: Completo.")
+    
   }
 
   episodios_nivel_4_data <- NULL
   if (!is.null(nivel_4)) {
+    print("Nivel 4: Generando descriptiva.")
     data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
@@ -92,11 +101,14 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       columna_suma = "",
       prestaciones = TRUE
     )
+    print("Nivel 4: Descriptiva generada.")
     episodios_nivel_4 <- data_temp[["descriptiva"]] %>%
       filter(!!as.name(columnas) %in% nivel_4)
     episodios_nivel_4_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_4)
     data_temp <- NULL
+    print("Nivel 4: Completo.")
+    
   }
   
   return(

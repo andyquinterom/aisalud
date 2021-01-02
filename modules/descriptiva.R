@@ -214,8 +214,7 @@ episodios_server <- function(id, opciones, conn) {
             input$episodios_cols != "") {
           tryCatch(
             expr = {
-              agrupadores_items_length <- conn %>%
-                tbl(opciones$tabla) %>%
+              agrupadores_items_length <- opciones$tabla %>%
                 select(!!as.name(input$episodios_cols)) %>%
                 distinct() %>%
                 transmute(count = n()) %>%
@@ -224,8 +223,7 @@ episodios_server <- function(id, opciones, conn) {
                 unlist()
               if (agrupadores_items_length <= 60 &&
                   input$episodios_enable) {
-                agrupadores_items <- conn %>%
-                  tbl(opciones$tabla) %>%
+                agrupadores_items <- opciones$tabla %>%
                   select(!!as.name(input$episodios_cols)) %>%
                   distinct() %>%
                   collect() %>%
@@ -261,6 +259,7 @@ episodios_server <- function(id, opciones, conn) {
               }
             },
             error = function(e) {
+              print(e)
               sendSweetAlert(
                 session = session,
                 title = "Error", 
@@ -332,7 +331,7 @@ episodios_server <- function(id, opciones, conn) {
                 withProgress(message = "Calculando descriptiva...",{
                   if (!is.null(episodios$agrupadores_items)) {
                     episodios$tabla <- episodios_jerarquia(
-                      data = tbl(conn, opciones$tabla),
+                      data = opciones$tabla,
                       columnas =      episodios_cols, 
                       columna_valor = opciones$valor_costo, 
                       columna_sep =   episodios_cols_sep,
@@ -343,7 +342,7 @@ episodios_server <- function(id, opciones, conn) {
                       nivel_4 = input$episodios_jerarquia_nivel_4_order)
                   } else {
                     episodios$tabla <- descriptiva(
-                      data = tbl(conn, opciones$tabla),
+                      data = opciones$tabla,
                       columnas = c(
                         episodios_cols,
                         episodios_cols_sep
@@ -546,10 +545,10 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_registros <- renderText({
-        if (opciones$tabla != "Ninguno") {
+        if (opciones$tabla_nombre != "Ninguno") {
           paste("Número de registros:", 
                 formatC(
-                  {tbl(conn, opciones$tabla) %>% 
+                  {opciones$tabla %>% 
                       transmute(count = n()) %>% 
                       distinct() %>%
                       collect() %>%
@@ -566,11 +565,11 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_pacientes <- renderText({
-        if (opciones$tabla != "Ninguno" && 
+        if (opciones$tabla_nombre != "Ninguno" && 
             "nro_identificacion" %in% opciones$colnames) {
           paste("Número de pacientes:", 
                 formatC(
-                  {tbl(conn, opciones$tabla) %>% 
+                  {opciones$tabla %>% 
                       select(nro_identificacion) %>% 
                       distinct() %>%
                       transmute(count = n()) %>% 
@@ -589,11 +588,11 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_facturas <- renderText({
-        if (opciones$tabla != "Ninguno" && 
+        if (opciones$tabla_nombre != "Ninguno" && 
             "nro_factura" %in% opciones$colnames) {
           paste("Número de facturas:", 
                 formatC(
-                  {tbl(conn, opciones$tabla) %>% 
+                  {opciones$tabla %>% 
                       select(nro_factura) %>% 
                       distinct() %>%
                       transmute(count = n()) %>% 

@@ -11,15 +11,19 @@ rango <- function(x) {
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
                         prestaciones) {
   
+  print("Descriptiva: convirtiendo valor a numérico.")
+  
   data <- data %>%
     mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
   
   if (!prestaciones) {
+    print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
       group_by_at(vars(c(columna_suma,columnas))) %>%
       summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE))
   }
   
+  print("Descriptiva: resumiendo los datos.")
   data_descriptiva <- data %>%
     group_by_at(vars(columnas)) %>%
     arrange(valor_calculos) %>%
@@ -40,6 +44,8 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
         min(valor_calculos, na.rm = TRUE)
     )
   
+  print("Descriptiva: datos resumidos.")
+  
   fields <- data_descriptiva %>% colnames()
   
   if (".add" %in% fields) {
@@ -47,8 +53,12 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       select(-`.add`)
   }
   
+  print("Descriptiva: descargando los datos.")
+  
   data_descriptiva <- data_descriptiva %>%
     collect()
+  
+  print("Descriptiva: datos descargados.")
   
   setDT(data_descriptiva)
   

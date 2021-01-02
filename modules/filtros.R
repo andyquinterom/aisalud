@@ -28,19 +28,19 @@ filtros_ui <- function(id) {
   )
 }
 
-filtros_server <- function(input, output, session, datos, opciones) {
+filtros_server <- function(input, output, session, opciones) {
 
   n_num = 3
   n_char = 5
   
-  observeEvent(datos$colnames, {
+  observeEvent(opciones$colnames, {
     lapply(
       X = 1:n_char,
       FUN = function(x) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_char_columna", x, sep = "_"),
-          choices = c("Ninguno", datos$colnames)
+          choices = c("Ninguno", opciones$colnames)
         )
       }
     )
@@ -50,56 +50,70 @@ filtros_server <- function(input, output, session, datos, opciones) {
         updatePickerInput(
           session = session,
           inputId = paste("filtro_num_columna", x, sep = "_"),
-          choices = c("Ninguno", datos$colnames_num)
+          choices = c("Ninguno", opciones$colnames_num)
         )
       }
     )
   })
   
-  observeEvent(datos$pacientes_excluir_exe, {
-    if (is.null(input$filtros_paciente_valor) && 
-        length(datos$pacientes_excluir) > 1) {
-      pacientes_excluir <- unique(datos$pacientes_excluir[-1])
-    } else {
-      pacientes_excluir <- unique(datos$pacientes_excluir)
-    }
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtros_paciente_valor",
-      choices = pacientes_excluir,
-      selected = pacientes_excluir,
-      server = TRUE
-    )
-  })
+  # observeEvent(datos$pacientes_excluir_exe, {
+  #   if (is.null(input$filtros_paciente_valor) && 
+  #       length(datos$pacientes_excluir) > 1) {
+  #     pacientes_excluir <- unique(datos$pacientes_excluir[-1])
+  #   } else {
+  #     pacientes_excluir <- unique(datos$pacientes_excluir)
+  #   }
+  #   updateSelectizeInput(
+  #     session = session,
+  #     inputId = "filtros_paciente_valor",
+  #     choices = pacientes_excluir,
+  #     selected = pacientes_excluir,
+  #     server = TRUE
+  #   )
+  # })
   
-  observeEvent(input$filtros_paciente_valor,{
-    if (!all(datos$pacientes_excluir %in% input$filtros_paciente_valor)) {
-      datos$pacientes_excluir <- input$filtros_paciente_valor
-    }
-  })
+  # observeEvent(input$filtros_paciente_valor,{
+  #   if (!all(datos$pacientes_excluir %in% input$filtros_paciente_valor)) {
+  #     datos$pacientes_excluir <- input$filtros_paciente_valor
+  #   }
+  # })
   
-  observeEvent(input$filtro_paciente_vaciar, {
-    datos$pacientes_excluir <- datos$pacientes_excluir[1]
-    updateSelectizeInput(
-      session = session,
-      inputId = "filtros_paciente_valor",
-      choices = NULL,
-      selected = NULL,
-      server = TRUE
-    )
-  })
+  # observeEvent(input$filtro_paciente_vaciar, {
+  #   datos$pacientes_excluir <- datos$pacientes_excluir[1]
+  #   updateSelectizeInput(
+  #     session = session,
+  #     inputId = "filtros_paciente_valor",
+  #     choices = NULL,
+  #     selected = NULL,
+  #     server = TRUE
+  #   )
+  # })
   
   lapply(
     X = 1:n_char,
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_char_columna_", i)]], {
-        updateSelectizeInput(
-          session = session,
-          inputId = paste0("filtro_char_valor_", i),
-          server = TRUE,
-          choices = datos$valores_unicos[[
-            input[[paste0("filtro_char_columna_", i)]]]]
-        )
+        if (opciones$tabla_nombre != "Ninguno") {
+          updateSelectizeInput(
+            session = session,
+            inputId = paste0("filtro_char_valor_", i),
+            server = TRUE,
+            selected = "Ninguno",
+            choices = {
+              columna_seleccionada <- input[[paste0("filtro_char_columna_", i)]]
+              if (columna_seleccionada != "Ninguno") {
+                opciones$tabla_original %>%
+                  select(!!as.name(columna_seleccionada)) %>%
+                  distinct() %>%
+                  collect() %>%
+                  unlist() %>%
+                  unname()
+              } else {
+                "Ninguno"
+              }
+            }
+          )
+        }
       })
     }
   )
@@ -108,67 +122,58 @@ filtros_server <- function(input, output, session, datos, opciones) {
     X = 1:n_num,
     FUN = function(i) {
       observeEvent(input[[paste0("filtro_num_columna_", i)]], {
-        if (input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
-          updateNumericInput(
-            session = session,
-            inputId = paste0("filtro_num_min_", i),
-            value = min(
-              datos$data_original[[
-                input[[paste0("filtro_num_columna_", i)]]
-                ]],
-              na.rm = TRUE)
-          )
-          updateNumericInput(
-            session = session,
-            inputId = paste0("filtro_num_max_", i),
-            value = max(
-              datos$data_original[[
-                input[[paste0("filtro_num_columna_", i)]]
-              ]],
-              na.rm = TRUE)
-          )
-        }
-      })
-    }
-  )
-  
-  lapply(
-    X = 1:n_num,
-    FUN = function(i) {
-      observeEvent(input[[paste0("filtro_num_min_", i)]], {
-        if (is.na(input[[paste0("filtro_num_min_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
-          updateNumericInput(
-            session = session,
-            inputId = paste0("filtro_num_min_", i),
-            value = min(
-              datos$data_original[[
-                input[[paste0("filtro_num_columna_", i)]]
-              ]],
-              na.rm = TRUE)
-          )
-        }
-      })
-      observeEvent(input[[paste0("filtro_num_max_", i)]], {
-        if (is.na(input[[paste0("filtro_num_max_", i)]]) &
-            input[[paste0("filtro_num_columna_", i)]] != "Ninguno") {
-          updateNumericInput(
-            session = session,
-            inputId = paste0("filtro_num_max_", i),
-            value = max(
-              datos$data_original[[
-                input[[paste0("filtro_num_columna_", i)]]
-              ]],
-              na.rm = TRUE)
-          )
+        if (opciones$tabla_nombre != "Ninguno") {
+          if (opciones$tabla_nombre != "Ninguno") {
+            updateNumericInput(
+              session = session,
+              inputId = paste0("filtro_num_min_", i),
+              value = {
+                columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
+                if (columna_seleccionada != "Ninguno") {
+                  opciones$tabla_original %>%
+                    select(!!as.name(columna_seleccionada)) %>%
+                    transmute(min = min(!!as.name(columna_seleccionada),
+                                        na.rm = TRUE)) %>%
+                    distinct() %>%
+                    collect() %>%
+                    unlist() %>%
+                    unname()
+                } else {
+                  0
+                }
+              }
+            )
+            updateNumericInput(
+              session = session,
+              inputId = paste0("filtro_num_max_", i),
+              value = {
+                columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
+                if (columna_seleccionada != "Ninguno") {
+                  opciones$tabla_original %>%
+                    select(!!as.name(columna_seleccionada)) %>%
+                    transmute(max = max(!!as.name(columna_seleccionada),
+                                        na.rm = TRUE)) %>%
+                    distinct() %>%
+                    collect() %>%
+                    unlist() %>%
+                    unname()
+                } else {
+                  0
+                }
+              }
+            )
+          }
         }
       })
     }
   )
   
   observeEvent(input$aplicar_filtros, {
-    inputs_filtros_char <- c()
     
+    opciones$tabla <- opciones$tabla_original
+    
+    inputs_filtros_char <- c()
+
     inputs_filtros_char <- unlist(
       lapply(
         X = 1:n_char,
@@ -177,28 +182,22 @@ filtros_server <- function(input, output, session, datos, opciones) {
         }
       )
     )
-    
-    inputs_filtros_char_arguments <- paste(unlist(
-      lapply(
+
+    lapply(
         X = (1:n_char)[inputs_filtros_char],
         FUN = function(i) {
-          return(
-            paste0(
-              "[get(",
-              paste0("input$filtro_char_columna_", i),
-              ifelse(
-                test = input[[paste0("filtro_char_incluir_", i)]],
-                yes = ") %in% ",
-                no = ") %notin% "
-              ),
-              paste0("input$filtro_char_valor_", i),
-              "]"
-            )
-          )
+          valores_filtro <- input[[paste0("filtro_char_valor_", i)]]
+          if (input[[paste0("filtro_char_incluir_", i)]]) {
+            opciones$tabla <<- opciones$tabla %>%
+              filter(!!as.name(input[[paste0("filtro_char_columna_", i)]]) %in%
+                       valores_filtro)
+          } else {
+            opciones$tabla <<- opciones$tabla %>%
+              filter(!(!!as.name(input[[paste0("filtro_char_columna_", i)]]) %in%
+                       valores_filtro))
+          }
         }
       )
-    ),
-    collapse = "")
     
     inputs_filtros_num <- unlist(
       lapply(
@@ -209,57 +208,26 @@ filtros_server <- function(input, output, session, datos, opciones) {
       )
     )
     
-    inputs_filtros_num_arguments <- paste(unlist(
-      lapply(
-        X = (1:n_num)[inputs_filtros_num],
-        FUN = function(i) {
-          return(
-            paste0(
-              "[get(",
-              paste0("input$filtro_num_columna_", i),
-              ") >= ",
-              paste0("input$filtro_num_min_", i),
-              " & get(",
-              paste0("input$filtro_num_columna_", i),
-              ") <= ",
-              paste0("input$filtro_num_max_", i),
-              "]"
-            )
+    lapply(
+      X = (1:n_num)[inputs_filtros_num],
+      FUN = function(i) {
+        minimo <- input[[paste0("filtro_num_min_", i)]]
+        maximo <- input[[paste0("filtro_num_max_", i)]]
+        
+        if (!is.na(minimo) && !is.na(maximo)) {
+          columna <- input[[paste0("filtro_num_columna_", i)]]
+          opciones$tabla <<- opciones$tabla %>%
+            filter(!!as.name(columna) >= minimo) %>%
+            filter(!!as.name(columna) <= maximo)
+        } else {
+          showNotification(
+            "Uno de los filtros numéricos esta vacio.",
+            type = "error"
           )
         }
-      )
-    ),
-    collapse = "")
-    
-    inputs_filtros_pacientes_arguments <- paste(unlist(
-      if (!is.null(input$filtros_paciente_valor)) {
-        paste0(
-          "[nro_identificacion",
-          ifelse(
-            test = input[["filtro_paciente_incluir"]],
-            yes = " %in% ",
-            no = " %notin% "
-          ),
-          "input$filtros_paciente_valor]"
-        )
-      } else {
-        "[]"
+        
       }
-      ),
-      collapse = "")
-    
-    filtros_parse <- paste0(
-      "datos$data_table",
-      inputs_filtros_char_arguments,
-      inputs_filtros_num_arguments,
-      inputs_filtros_pacientes_arguments
     )
-
-
-    datos$data_table <- datos$data_original
-    datos$data_table <- eval(parse(
-      text = filtros_parse
-    ))
     
     showNotification(
       ui = "Filtros aplicados.",
@@ -267,7 +235,7 @@ filtros_server <- function(input, output, session, datos, opciones) {
     )
     
   })
-  
+ 
 }
 
 

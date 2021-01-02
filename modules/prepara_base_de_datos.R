@@ -92,30 +92,37 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
-        if (input$tabla != "Ninguno") {
+        if (input$tabla %notin% c("Ninguno", "")) {
           opciones$fecha_rango <- input$fecha_rango
           opciones$valor_costo <- ifelse(
             test = input$columna_valor != "",
             yes = input$columna_valor,
             no = opciones$valor_costo)
-          opciones$tabla <- input$tabla
+          tabla <- input$tabla
           opciones$colnames <- dbListFields(
             conn,
-            opciones$tabla)
+            tabla)
+          opciones$colnames_num <- dbListNumericFields(
+            conn,
+            tabla)
+          fecha_min <- opciones$fecha_rango[1]
+          fecha_max <- opciones$fecha_rango[2]
+          opciones$tabla_nombre <- tabla
+          opciones$tabla_nombre 
+          opciones$tabla_original <- conn %>%
+            tbl(tabla) %>%
+            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
+            filter(fecha_prestacion >= fecha_min) %>%
+            filter(fecha_prestacion <= fecha_max)
+          opciones$tabla <- conn %>%
+            tbl(tabla) %>%
+            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
+            filter(fecha_prestacion >= fecha_min) %>%
+            filter(fecha_prestacion <= fecha_max)
         }
       })
       
-      observeEvent(input$valor_a_numerico, {
-        if (input$valor_a_numerico) {
-          opciones$data_table[, "valor" := numerize(valor)]
-          opciones$data_original[, "valor" := numerize(valor)]
-        }
-        columnas_num <- unlist(lapply(opciones$data_table[1,], is.numeric))
-        opciones$colnames_num <- opciones$colnames[columnas_num]
-        opciones$valor_costo <- "valor"
-      })
-      
-      observeEvent(opciones$colnames, {
+      observeEvent(opciones$colnames_num, {
         updateSelectizeInput(
           session = session,
           inputId = "columna_valor",
@@ -125,8 +132,8 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       output$valor_con_tiempo <- renderPlotly({
-        if (input$tabla != "Ninguno") {
-            tabla <- input$tabla
+        if (opciones$tabla_nombre != "Ninguno") {
+            tabla <- opciones$tabla_nombre
             valor_costo <- opciones$valor_costo
             fecha_min <- opciones$fecha_rango[1]
             fecha_max <- opciones$fecha_rango[2]
@@ -168,3 +175,22 @@ base_de_datos_server <- function(id, opciones, conn) {
 
 # Funciones --------------------------------------------------------------------
 
+dbListNumericFields <- function(conn, table_name) {
+  query <- "select
+       col.column_name
+from information_schema.columns col
+join information_schema.tables tab on tab.table_schema = col.table_schema
+                                   and tab.table_name = col.table_name
+                                   and tab.table_type = 'BASE TABLE'
+where col.data_type in ('smallint', 'integer', 'bigint', 
+                        'decimal', 'numeric', 'real', 'double precision',
+                        'smallserial', 'serial', 'bigserial', 'money')
+      and col.table_schema not in ('information_schema', 'pg_catalog')
+      and col.table_name in ('#####')
+order by col.table_schema,
+         col.table_name,
+         col.ordinal_position"
+  dbGetQuery(conn, str_replace_all(query, "#####", table_name)) %>%
+    unlist() %>%
+    unname()
+}

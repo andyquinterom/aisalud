@@ -1,7 +1,8 @@
 shinyServer(function(input, output, session) {
   
   opciones <- reactiveValues(
-    "valor_costo" = "valor"
+    "valor_costo" = "valor",
+    "tabla_nombre" = "Ninguno"
   )
   
   
@@ -22,11 +23,11 @@ shinyServer(function(input, output, session) {
   
   # Modulo filtros --------------------------------------------
   
-  # callModule(
-  #   module = filtros_server,
-  #   id = "filtros_sideBar",
-  #   datos = datos_modulos
-  # )
+  callModule(
+    module = filtros_server,
+    id = "filtros_sideBar",
+    opciones = opciones
+  )
   
   # Modulo descriptiva y episodios --------------------------------------------
   
