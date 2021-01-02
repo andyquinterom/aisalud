@@ -65,7 +65,7 @@ outliers_ui <- function(id) {
   )
 }
 
-outliers_server <- function(input, output, session, datos, opciones, nombre_id) {
+outliers_server <- function(input, output, session, opciones, nombre_id) {
   
   ns <- NS(nombre_id)
   
