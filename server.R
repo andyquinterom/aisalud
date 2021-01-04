@@ -50,14 +50,12 @@ shinyServer(function(input, output, session) {
   # 
   # # Modulo generar nota técnica -----------------------------------------------
   # 
-  # callModule(
-  #   module = nota_tecnica_server,
-  #   id = "nota_tecnica_modulo",
-  #   nombre_id = "nota_tecnica_modulo",
-  #   datos = datos_modulos,
-  #   opciones = opciones
-  # )
-  # 
+  
+  nota_tecnica_server(
+    id = "nota_tecnica_modulo",
+    opciones = opciones
+  )
+  
   # # Modulo otros gráficos -----------------------------------------------------
   # 
   # callModule(
