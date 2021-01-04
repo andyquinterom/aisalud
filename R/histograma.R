@@ -46,12 +46,13 @@ histograma_agrupador <- function(data, titulo = "Valor", numero_bins = NULL,
 histograma_edades <- function(data, columna_numero, columna_sep) {
   numero_bins <- range(data[[columna_numero]], na.rm = TRUE)
   
-  grafico <- plot_ly(alpha = 0.7, type = "histogram")
+  grafico <- plot_ly(alpha = 0.7, type = "histogram", colors = "Dark24")
   
   if (is.null(columna_sep)) {
     grafico <- grafico %>% 
-      add_histogram(
+      add_bars(
         x = data[[columna_numero]],
+        y = data[["n"]],
         name = "") %>%
       config(locale = "es") %>%
       layout(barmode = "overlay",
@@ -63,11 +64,12 @@ histograma_edades <- function(data, columna_numero, columna_sep) {
     lapply(
       X = unique(data[[columna_sep]]),
       FUN = function(i) {
+        data_temp <- data[get(columna_sep) == i]
         grafico <<- grafico %>%
-          add_histogram(
-            x = data[get(columna_sep) == i][[columna_numero]],
-            name = i
-          )
+          add_bars(
+            x = data_temp[[columna_numero]],
+            y = data_temp[["n"]],
+            name = i)
       }
     )
     

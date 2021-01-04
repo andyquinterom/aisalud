@@ -57,13 +57,12 @@ shinyServer(function(input, output, session) {
   )
   
   # # Modulo otros gráficos -----------------------------------------------------
-  # 
-  # callModule(
-  #   module = otros_graficos_server,
-  #   id = "otros_graficos_modulo",
-  #   datos = datos_modulos
-  # )
-  # 
+
+  otros_graficos_server(
+    id = "otros_graficos_modulo",
+    opciones = opciones
+  )
+
   # # Modulos seguimiento NT ---------------------------------------------
   # 
   # if (NTS_INCLUIDO) {
