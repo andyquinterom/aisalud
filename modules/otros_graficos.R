@@ -81,12 +81,7 @@ otros_graficos_server <- function(id, opciones) {
                 edades_pacientes <- opciones$tabla %>%
                   group_by(nro_identificacion) %>%
                   summarise(edad = max(!!as.name(columna_edades),
-                                       na.rm = TRUE)) %>%
-                  group_by(edad) %>%
-                  summarise(n = n()) %>%
-                  arrange(edad) %>%
-                  collect() %>%
-                  as.data.table()
+                                       na.rm = TRUE))
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
                   columna_numero = input$edades_select_columna,
@@ -97,19 +92,16 @@ otros_graficos_server <- function(id, opciones) {
                 edades_pacientes <- opciones$tabla %>%
                   group_by(nro_identificacion, !!as.name(segmentacion)) %>%
                   summarise(edad = max(!!as.name(columna_edades),
-                                       na.rm = TRUE)) %>%
-                  group_by(edad, !!as.name(segmentacion)) %>%
-                  summarise(n = n()) %>%
-                  arrange(edad) %>%
-                  collect() %>%
-                  as.data.table()
+                                       na.rm = TRUE))
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
                   columna_numero = columna_edades,
                   columna_sep = segmentacion)
               }
             }
-          }, error = function(e) {
+          },
+          error = function(e) {
+            print(e)
             sendSweetAlert(
               session = session,
               title = "Error", 

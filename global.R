@@ -35,7 +35,8 @@ library(future)
 library(leaflet)
 library(maps)
 library(htmltools)
-library(pool)
+library(sparklyr)
+library(dbplot)
 
 
 dir.create("datos")
@@ -136,11 +137,8 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
 }
 
 
-conn <- pool::dbPool(
+conn <- dbConnect(
   RPostgres::Postgres(),
-  minSize = 0,
-  maxSize = 5,
-  idleTimeout = 0,
   dbname = Sys.getenv("DATABASE_NAME"),
   user = Sys.getenv("DATABASE_USER"),
   password = Sys.getenv("DATABASE_PW"),

@@ -7,28 +7,21 @@ histograma_agrupador <- function(data, titulo = "Valor", numero_bins = NULL,
     X = names(data),
     FUN = function(i) {
       if (!is.null(data[[i]])) {
-        x <- data[[i]] %>%
-          ungroup() %>%
-          merge(columnas_sep) %>%
-          select(valor_calculos) %>%
-          collect() %>%
-          unlist() %>%
-          as.numeric()
-        if (!identical(x, numeric(0))) {
-          numero_bins <- ifelse(
-            test = is.null(numero_bins),
-            yes = round(6.6*log10(length(x)), digits = 0),
-            no = numero_bins)
-          temp_histograma <- hist(
-            x = x,
-            breaks = numero_bins,
-            plot = FALSE,
-          )
-          histograma <<- histograma %>%
-            add_trace(x = temp_histograma$mids, y = temp_histograma$counts,
-                      name = toupper(i))
+        if (!is.null(numero_bins)) {
+          x <- data[[i]] %>%
+            ungroup() %>%
+            right_join(columnas_sep, copy = TRUE) %>%
+            db_compute_bins(valor_calculos, bins = numero_bins)
+        } else {
+          x <- data[[i]] %>%
+            ungroup() %>%
+            right_join(columnas_sep, copy = TRUE) %>%
+            db_compute_bins(valor_calculos)
         }
-        
+        histograma <<- histograma %>%
+          add_bars(x = x[["valor_calculos"]], 
+                    y = x[["count"]],
+                    name = toupper(i))
       }
     }
   )
@@ -43,16 +36,45 @@ histograma_agrupador <- function(data, titulo = "Valor", numero_bins = NULL,
            showlegend = TRUE)
 }
 
-histograma_edades <- function(data, columna_numero, columna_sep) {
-  numero_bins <- range(data[[columna_numero]], na.rm = TRUE)
+histograma_edades <- function(data, columna_numero, columna_sep = NULL,
+                              numero_bins = NULL) {
+  
+  numero_bins <- ifelse(
+    test = is.null(numero_bins),
+    yes = {data %>%
+        ungroup() %>%
+        select(!!as.name(columna_numero)) %>%
+        distinct() %>%
+        summarise(length = n()) %>%
+        collect() %>%
+        unlist() %>%
+        as.numeric()},
+    no = numero_bins
+  )
+  
+  valores_col_sep = list()
+  valores_col_sep <- ifelse(
+    test = is.null(columna_sep),
+    yes = list(),
+    no = {list(data %>%
+        ungroup() %>%
+        select(!!as.name(columna_sep)) %>%
+        distinct() %>%
+        collect() %>%
+        unlist() %>%
+        unname())}
+  )
   
   grafico <- plot_ly(alpha = 0.7, type = "histogram", colors = "Dark24")
   
   if (is.null(columna_sep)) {
+    datos_bins <- data %>%
+      ungroup() %>%
+      db_compute_bins(x = !!as.name(columna_numero), bins = numero_bins)
     grafico <- grafico %>% 
       add_bars(
-        x = data[[columna_numero]],
-        y = data[["n"]],
+        x = datos_bins[[columna_numero]],
+        y = datos_bins[["count"]],
         name = "") %>%
       config(locale = "es") %>%
       layout(barmode = "overlay",
@@ -62,13 +84,16 @@ histograma_edades <- function(data, columna_numero, columna_sep) {
              showlegend = FALSE)
   } else {
     lapply(
-      X = unique(data[[columna_sep]]),
+      X = valores_col_sep[[1]],
       FUN = function(i) {
-        data_temp <- data[get(columna_sep) == i]
-        grafico <<- grafico %>%
+        datos_bins_temp <- data %>%
+          ungroup() %>%
+          filter(!!as.name(columna_sep) == i) %>%
+          db_compute_bins(x = !!as.name(columna_numero), bins = numero_bins)
+        grafico <<- grafico %>% 
           add_bars(
-            x = data_temp[[columna_numero]],
-            y = data_temp[["n"]],
+            x = datos_bins_temp[[columna_numero]],
+            y = datos_bins_temp[["count"]],
             name = i)
       }
     )

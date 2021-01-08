@@ -419,6 +419,28 @@ episodios_server <- function(id, opciones, conn) {
       
       output$grafico_barras_select_agrupador <- 
         DT::renderDataTable({
+          if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
+            DT::datatable(
+              episodios$tabla[["descriptiva"]][, c(
+                episodios$cols, episodios$cols_sep), with = FALSE],
+              options = list(
+                language = list(
+                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                pageLength = 10000,
+                dom = 'ft',
+                autoWidth = FALSE,
+                ordering=T, 
+                scrollX = TRUE,
+                scrollY = "370px"),
+              rownames= FALSE) %>%
+              formatStyle(
+                columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+                fontSize = '95%')
+          }
+      })
+      
+      output$histograma_select_agrupador <- DT::renderDataTable({
+        if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
           DT::datatable(
             episodios$tabla[["descriptiva"]][, c(
               episodios$cols, episodios$cols_sep), with = FALSE],
@@ -435,45 +457,29 @@ episodios_server <- function(id, opciones, conn) {
             formatStyle(
               columns = 1:length(c(episodios$cols, episodios$cols_sep)),
               fontSize = '95%')
-      })
-      
-      output$histograma_select_agrupador <- DT::renderDataTable({
-        DT::datatable(
-          episodios$tabla[["descriptiva"]][, c(
-            episodios$cols, episodios$cols_sep), with = FALSE],
-          options = list(
-            language = list(
-              url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-            pageLength = 10000,
-            dom = 'ft',
-            autoWidth = FALSE,
-            ordering=T, 
-            scrollX = TRUE,
-            scrollY = "370px"),
-          rownames= FALSE) %>%
-          formatStyle(
-            columns = 1:length(c(episodios$cols, episodios$cols_sep)),
-            fontSize = '95%')
+        }
       })
       
       output$caja_de_bigotes_select_agrupador <- 
         DT::renderDataTable({
-          DT::datatable(
-            episodios$tabla[["descriptiva"]][, c(
-              episodios$cols, episodios$cols_sep), with = FALSE],
-            options = list(
-              language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              pageLength = 10000,
-              dom = 'ft',
-              autoWidth = FALSE,
-              ordering=T, 
-              scrollX = TRUE,
-              scrollY = "370px"),
-            rownames= FALSE) %>%
-            formatStyle(
-              columns = 1:length(c(episodios$cols, episodios$cols_sep)),
-              fontSize = '95%')
+          if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
+            DT::datatable(
+              episodios$tabla[["descriptiva"]][, c(
+                episodios$cols, episodios$cols_sep), with = FALSE],
+              options = list(
+                language = list(
+                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                pageLength = 10000,
+                dom = 'ft',
+                autoWidth = FALSE,
+                ordering=T, 
+                scrollX = TRUE,
+                scrollY = "370px"),
+              rownames= FALSE) %>%
+              formatStyle(
+                columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+                fontSize = '95%')
+          }
         })
       
       output$histograma_titulo <- renderText({
@@ -491,7 +497,7 @@ episodios_server <- function(id, opciones, conn) {
             data = episodios$tabla[["data"]],
             columnas_sep = episodios$lista_agrupadores[
               input$histograma_select_agrupador_rows_selected],
-            numero_bins = 10
+            numero_bins = 20
           )
         }
       })
