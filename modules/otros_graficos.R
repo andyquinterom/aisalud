@@ -24,6 +24,13 @@ otros_graficos_ui <- function(id) {
                   choices = "Ninguno",
                   width = "100%"
                 ),
+                sliderTextInput(
+                  inputId = ns("edades_numero_columnas"),
+                  label = "Número de columnas",
+                  choices = c("Auto", 5, 10, 20, 25),
+                  width = "100%", 
+                  selected = "Auto"
+                ),
                 actionButton(
                   inputId = ns("edades_ejecutar"),
                   label = "Ejecutar",
@@ -74,6 +81,11 @@ otros_graficos_server <- function(id, opciones) {
           expr = {
             if (input$edades_select_columna != "" && 
                 input$edades_select_columna != "Ninguno") {
+              if (input$edades_numero_columnas == "Auto") {
+                numero_bins <- NULL
+              } else {
+                numero_bins <- input$edades_numero_columnas
+              }
               if (input$edades_segmentacion_select_columna == "Ninguno" ||
                   input$edades_segmentacion_select_columna == "") {
                 segmentacion <- input$edades_segmentacion_select_columna
@@ -85,7 +97,8 @@ otros_graficos_server <- function(id, opciones) {
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
                   columna_numero = input$edades_select_columna,
-                  columna_sep = NULL)
+                  columna_sep = NULL,
+                  numero_bins = numero_bins)
               } else {
                 segmentacion <- input$edades_segmentacion_select_columna
                 columna_edades <- input$edades_select_columna
@@ -96,7 +109,8 @@ otros_graficos_server <- function(id, opciones) {
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
                   columna_numero = columna_edades,
-                  columna_sep = segmentacion)
+                  columna_sep = segmentacion,
+                  numero_bins = numero_bins)
               }
             }
           },

@@ -80,6 +80,13 @@ episodios_ui <- function(id) {
               ),
               tags$br(),
               tags$br(),
+              sliderTextInput(
+                inputId = ns("histograma_numero_columnas"),
+                label = "Número de columnas",
+                choices = c("Auto", 5, 10, 20, 25, 50),
+                width = "100%", 
+                selected = "Auto"
+              ),
               DT::dataTableOutput(
                 outputId = ns("histograma_select_agrupador")
               )
@@ -492,12 +499,17 @@ episodios_server <- function(id, opciones, conn) {
       
       observeEvent(input$histograma_ejecutar, {
         if (!is.null(input$histograma_select_agrupador_rows_selected)) {
+          if (input$histograma_numero_columnas == "Auto") {
+            numero_bins <- 20
+          } else {
+            numero_bins <- input$histograma_numero_columnas
+          }
           episodios$histograma_plot <- histograma_agrupador(
             titulo = "Histograma",
             data = episodios$tabla[["data"]],
             columnas_sep = episodios$lista_agrupadores[
               input$histograma_select_agrupador_rows_selected],
-            numero_bins = 20
+            numero_bins = numero_bins
           )
         }
       })
