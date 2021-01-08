@@ -15,7 +15,7 @@ shinyUI(
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.0.2.9000",
+            text = "Version: 2.1.1.9000",
             icon = icon("code-branch"),
             status = "info"
           )
@@ -33,29 +33,25 @@ shinyUI(
             tabName = "prepara_base_de_datos",
             icon = icon("cloud", lib = "font-awesome")),
           menuItem(
-            text = "Análisis",
-            icon = icon("chart-area", lib = "font-awesome"),
-            menuSubItem(
-              text = "Descriptiva",
-              tabName = "episodios_modulo", 
-              icon = icon("table", lib = "font-awesome")),
-            menuSubItem(
-              text = "Frecuencias",
-              tabName = "frecuencias_modulo", 
-              icon = icon("table", lib = "font-awesome")),
-            menuSubItem(
-              text = "Nota técnica", 
-              tabName = "nota_tecnica_modulo",
-              icon = icon("tags", lib = "font-awesome")),
-            menuSubItem(
-              text = "Outliers",
-              icon = icon("search-minus", lib = "font-awesome"),
-              tabName = "outliers_modulo"),
-            menuSubItem(
-              text = "Otros gráficos",
-              icon = icon("chart-bar", lib = "font-awesome"),
-              tabName = "otros_graficos_modulo"
-            )
+            text = "Descriptiva",
+            tabName = "episodios_modulo", 
+            icon = icon("table", lib = "font-awesome")),
+          menuItem(
+            text = "Frecuencias",
+            tabName = "frecuencias_modulo", 
+            icon = icon("sort-numeric-up-alt", lib = "font-awesome")),
+          menuItem(
+            text = "Nota técnica", 
+            tabName = "nota_tecnica_modulo",
+            icon = icon("tags", lib = "font-awesome")),
+          menuItem(
+            text = "Outliers",
+            icon = icon("search-minus", lib = "font-awesome"),
+            tabName = "outliers_modulo"),
+          menuItem(
+            text = "Otros gráficos",
+            icon = icon("chart-bar", lib = "font-awesome"),
+            tabName = "otros_graficos_modulo"
           ),
           if (NTS_INCLUIDO) {
             menuItem(
