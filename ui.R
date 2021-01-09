@@ -6,16 +6,18 @@ shinyUI(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
     dashboardPagePlus(
       collapse_sidebar = TRUE,
-      skin = "black",
+      skin = "blue-light",
       dashboardHeaderPlus(
         fixed = TRUE,
-        title = "",
+        title = tagList(
+          span(class = "logo-lg", "Analítica Integrada Salud"), 
+          img(src = "logo.svg")),
         dropdownMenu(
           icon = icon("info-circle"),
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.0.2.9000",
+            text = "Version: 2.1.1.9000",
             icon = icon("code-branch"),
             status = "info"
           )
@@ -25,9 +27,6 @@ shinyUI(
       sidebar = dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
-          HTML('
-               <img src="logoblanco.png" width="100%"/>
-               '),
           if (Sys.getenv("DATABASE_ACCESS") != "") {
             menuItem(
               text = "Carga de datos",
