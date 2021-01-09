@@ -122,3 +122,11 @@ div.escenarios_inline_div td {
 .control-sidebar-dark+.control-sidebar-bg {
   background-color: rgba(34, 45, 50, 0.9) !important;
 }
+
+.control-sidebar-open .content-wrapper {
+  margin-right: 0 !important;
+}
+
+.sidebar-collapse .content-wrapper {
+  margin-right: 0 !important;
+}
