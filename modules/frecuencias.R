@@ -55,251 +55,272 @@ frecuencias_ui <- function(id) {
   )
 }
 
-frecuencias_server <- function(input, output, session, datos, opciones, 
-                             nombre_id) {
-  
-  ns <- NS(nombre_id)
-  
-  frecuencias <- reactiveValues(
-    tabla = list("descriptiva" = data.table(), "data" = data.table()),
-    agrupadores_items = NULL)
-  
-  observeEvent(datos$colnames, {
-    if (input$episodios_enable) {
-      updateSelectizeInput(
-        session = session,
-        inputId = "episodios_col_valor",
-        choices = datos$colnames,
-        selected = "nro_identificacion"
-      )
-    }
-    updateSelectizeInput(
-      session = session,
-      inputId = "agrupador_cols",
-      choices = datos$colnames
-    )
-  })
-  
-  observeEvent(input$episodios_enable, {
-    if (input$episodios_enable) {
-      output$episodios_col_valor_out <- renderUI({
-        selectizeInput(
-          inputId = ns("episodios_col_valor"),
-          label = "Sumar valor por:",
-          choices = datos$colnames,
-          selected = "nro_identificacion",
-          multiple = FALSE)
-      })
-    } else {
-      output$episodios_col_valor_out <- renderUI({})
-    }
-  })
-  
-  cambio_columnas <- reactive({
-    list(input$agrupador_cols, input$episodios_enable)
-  })
-  
-  observeEvent(cambio_columnas(), {
-    if (!is.null(datos$colnames) && 
-        !is.null(input$agrupador_cols)) {
-      tryCatch(
-        expr = {
-          if (length(datos$valores_unicos[[input$agrupador_cols]]) <= 60 &&
-              input$episodios_enable) {
-            frecuencias$agrupadores_items <-
-              datos$valores_unicos[[input$agrupador_cols]]
-            output$episodios_jerarquia <- renderUI({
-              descriptiva_jerarquia(
-                ns = ns,
-                items_nivel_4 = frecuencias$agrupadores_items
-              )
-            })
-          } else {
-            frecuencias$agrupadores_items <- NULL
-            output$episodios_jerarquia <- renderUI({
-              radioButtons(
-                inputId = ns("descriptiva_unidades"),
-                label = "Unidad de descriptiva",
-                choiceNames = c(
-                  "Prestación",
-                  "Paciente",
-                  "Factura"
-                ),
-                choiceValues = c(
-                  "prestacion",
-                  "nro_identificacion",
-                  "nro_factura"
-                )
-              )
-            })
-          }
-        },
-        error = function(e) {
-          sendSweetAlert(
+frecuencias_server <- function(id, opciones) {
+  moduleServer(
+    id = id,
+    module = function(input, output, session) {
+      
+      ns <- NS(id)
+      
+      frecuencias <- reactiveValues(
+        tabla = data.table(),
+        agrupadores_items = NULL)
+      
+      observeEvent(opciones$colnames, {
+        if (input$episodios_enable) {
+          updateSelectizeInput(
             session = session,
-            title = "Error", 
-            type = "error",
-            text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+            inputId = "episodios_col_valor",
+            choices = opciones$colnames,
+            selected = "nro_identificacion"
           )
         }
-      )
-    }
-  })
-  
-  observeEvent(input$seleccionar_episodio, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        descriptiva_jerarquia(
-          ns = ns,
-          items_nivel_1 = frecuencias$agrupadores_items)
-      )
-    })
-  })
-  
-  observeEvent(input$seleccionar_factura, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        descriptiva_jerarquia(
-          ns = ns,
-          items_nivel_2 = frecuencias$agrupadores_items)
-      )
-    })
-  })
-  
-  observeEvent(input$seleccionar_paciente, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        descriptiva_jerarquia(
-          ns = ns,
-          items_nivel_3 = frecuencias$agrupadores_items)
-      )
-    })
-  })
-  
-  observeEvent(input$seleccionar_prestacion, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        descriptiva_jerarquia(
-          ns = ns,
-          items_nivel_4 = frecuencias$agrupadores_items)
-      )
-    })
-  })
-  
-  
-  observeEvent(input$frecuencias_exe, {
-    
-    if(!is.null(datos$colnames)) {
-      if(!is.null(input$agrupador_cols) &&
-         input$agrupador_cols != "NA") {
-        tryCatch(
-          expr = {
-            agrupador_cols <- input$agrupador_cols
-            if (input$episodios_enable) {
-              episodios_col_valor <- input$episodios_col_valor
-            }
-            withProgress(message = "Calculando descriptiva...",{
-              if (!is.null(frecuencias$agrupadores_items)) {
-                frecuencias$descriptiva_basica <- descriptiva_basica_jerarquia(
-                  data = datos$data_table,
-                  columnas =      agrupador_cols, 
-                  columna_valor = opciones$valor_costo, 
-                  columna_suma =  episodios_col_valor,
-                  nivel_1 = input$episodios_jerarquia_nivel_1_order,
-                  nivel_2 = input$episodios_jerarquia_nivel_2_order,
-                  nivel_3 = input$episodios_jerarquia_nivel_3_order,
-                  nivel_4 = input$episodios_jerarquia_nivel_4_order)
+        updateSelectizeInput(
+          session = session,
+          inputId = "agrupador_cols",
+          choices = opciones$colnames
+        )
+      })
+      
+      observeEvent(input$episodios_enable, {
+        if (input$episodios_enable) {
+          output$episodios_col_valor_out <- renderUI({
+            selectizeInput(
+              inputId = ns("episodios_col_valor"),
+              label = "Sumar valor por:",
+              choices = opciones$colnames,
+              selected = "nro_identificacion",
+              multiple = FALSE)
+          })
+        } else {
+          output$episodios_col_valor_out <- renderUI({})
+        }
+      })
+      
+      cambio_columnas <- reactive({
+        list(input$agrupador_cols, input$episodios_enable)
+      })
+      
+      observeEvent(cambio_columnas(), {
+        if (!is.null(opciones$colnames) && 
+            input$agrupador_cols != "") {
+          tryCatch(
+            expr = {
+              agrupadores_items_length <- opciones$tabla %>%
+                select(!!as.name(input$agrupador_cols)) %>%
+                distinct() %>%
+                transmute(count = n()) %>%
+                distinct() %>%
+                collect() %>%
+                unlist()
+              if (agrupadores_items_length <= 60 &&
+                  input$episodios_enable) {
+                agrupadores_items <- opciones$tabla %>%
+                  select(!!as.name(input$agrupador_cols)) %>%
+                  distinct() %>%
+                  collect() %>%
+                  as.list()
+                frecuencias$agrupadores_items <- agrupadores_items[[1]]
+                print(frecuencias$agrupadores_items)
+                output$episodios_jerarquia <- renderUI({
+                  descriptiva_jerarquia(
+                    ns = ns,
+                    items_nivel_4 = frecuencias$agrupadores_items
+                  )
+                })
               } else {
-                frecuencias$descriptiva_basica <- descriptiva_basica(
-                  data = datos$data_table,
-                  agrupador = agrupador_cols,
-                  columna_valor = opciones$valor_costo,
-                  columna_suma = input$descriptiva_unidades,
-                  prestaciones = (input$descriptiva_unidades == "prestacion"),
-                  columna_fecha = "fecha_prestacion"
+                frecuencias$agrupadores_items <- NULL
+                output$episodios_jerarquia <- renderUI({
+                  radioButtons(
+                    inputId = ns("descriptiva_unidades"),
+                    label = "Unidad de descriptiva",
+                    selected = frecuencias$unidad_descriptiva,
+                    choiceNames = c(
+                      "Prestación",
+                      "Paciente",
+                      "Factura"
+                    ),
+                    choiceValues = c(
+                      "prestacion",
+                      "nro_identificacion",
+                      "nro_factura"
+                    )
+                  )
+                })
+                frecuencias$unidad_descriptiva <- input$descriptiva_unidades
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error", 
+                type = "error",
+                text = "Por favor revisar los parametros de carga de datos,
+                    columnas, formato de fecha y los datos. Si este problema persiste
+                    ponerse en contacto con un administrador."
+              )
+            }
+          )
+        }
+      })
+      
+      observeEvent(input$seleccionar_episodio, {
+        output$episodios_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_1 = frecuencias$agrupadores_items)
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_factura, {
+        output$episodios_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_2 = frecuencias$agrupadores_items)
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_paciente, {
+        output$episodios_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_3 = frecuencias$agrupadores_items)
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_prestacion, {
+        output$episodios_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_4 = frecuencias$agrupadores_items)
+          )
+        })
+      })
+      
+      
+      observeEvent(input$frecuencias_exe, {
+        
+        if(!is.null(opciones$colnames)) {
+          if(!is.null(input$agrupador_cols) &&
+             input$agrupador_cols != "") {
+            tryCatch(
+              expr = {
+                agrupador_cols <- input$agrupador_cols
+                if (input$episodios_enable) {
+                  episodios_col_valor <- input$episodios_col_valor
+                }
+                withProgress(message = "Calculando descriptiva...",{
+                  if (!is.null(frecuencias$agrupadores_items)) {
+                    frecuencias$descriptiva_basica <- descriptiva_basica_jerarquia(
+                      data = opciones$tabla,
+                      columnas =      agrupador_cols, 
+                      columna_valor = opciones$valor_costo, 
+                      columna_suma =  episodios_col_valor,
+                      nivel_1 = input$episodios_jerarquia_nivel_1_order,
+                      nivel_2 = input$episodios_jerarquia_nivel_2_order,
+                      nivel_3 = input$episodios_jerarquia_nivel_3_order,
+                      nivel_4 = input$episodios_jerarquia_nivel_4_order)
+                  } else {
+                    frecuencias$descriptiva_basica <- descriptiva_basica(
+                      data = opciones$tabla,
+                      agrupador = agrupador_cols,
+                      columna_valor = opciones$valor_costo,
+                      columna_suma = input$descriptiva_unidades,
+                      prestaciones = (input$descriptiva_unidades == "prestacion"),
+                      columna_fecha = "fecha_prestacion"
+                    )
+                  }
+                  
+                  frecuencias$tabla <- descriptiva_basica_trans(
+                    data = frecuencias$descriptiva_basica,
+                    agrupador = agrupador_cols,
+                    suma = FALSE
+                  )
+                  
+                  frecuencias$tabla[is.na(frecuencias$tabla)] <- 0
+                  
+                  output$tabla_titulo <- renderText({
+                    paste(
+                      "Frecuencias de",
+                      agrupador_cols,
+                      collapse = " "
+                    )
+                  })
+                  
+                })
+              },
+              error = function(e) {
+                print(e)
+                sendSweetAlert(
+                  session = session,
+                  title = "Error", 
+                  type = "error",
+                  text = "Por favor revisar los parametros de carga de datos,
+                    columnas, formato de fecha y los datos. Si este problema persiste
+                    ponerse en contacto con un administrador."
                 )
               }
-              
-              frecuencias$tabla <- descriptiva_basica_trans(
-                data = frecuencias$descriptiva_basica,
-                agrupador = agrupador_cols,
-                suma = FALSE
-              )
-              
-              frecuencias$tabla[is.na(frecuencias$tabla)] <- 0
-              
-              output$frecuencias_tabla <- DT::renderDataTable({
-                DT::datatable(
-                  frecuencias$tabla,
-                  options = list(
-                    language = list(
-                      url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                    pageLength = 50,
-                    autoWidth = FALSE,
-                    ordering=T, 
-                    scrollX = TRUE,
-                    scrollY = "60vh"),
-                  rownames= FALSE) %>%
-                  DT::formatRound(
-                    2:ncol(frecuencias$tabla),
-                    mark = ".",
-                    dec.mark = ",",
-                    digits = 0)
-              })
-              
-              output$tabla_titulo <- renderText({
-                paste(
-                  "Frecuencias de",
-                  agrupador_cols,
-                  collapse = " "
-                )
-              })
-              
-            })
-          },
-          error = function(e) {
-            print(e)
-            sendSweetAlert(
-              session = session,
-              title = "Error", 
-              type = "error",
-              text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
             )
           }
-        )
-      }
-    }
+        }
+      })
+      
+      output$frecuencias_tabla <- DT::renderDataTable({
+        if (nrow(frecuencias$tabla) > 0) {
+          DT::datatable(
+            frecuencias$tabla,
+            options = list(
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 50,
+              autoWidth = FALSE,
+              ordering=T, 
+              scrollX = TRUE,
+              scrollY = "60vh"),
+            rownames= FALSE) %>%
+            DT::formatRound(
+              2:ncol(frecuencias$tabla),
+              mark = ".",
+              dec.mark = ",",
+              digits = 0)
+        }
+      })
+      
+      output$frecuencias_descargar_csv <- downloadHandler(
+        filename = function() {
+          paste("Frecuencias",
+                ".csv", sep="")
+        },
+        content = function(file) {
+          write.csv(
+            x = frecuencias$tabla,
+            file = file, 
+            row.names = FALSE,
+            na="")
+        }, 
+        contentType = "text/csv"
+      )
+      
+      output$frecuencias_descargar_xlsx <- downloadHandler(
+        filename = function() {
+          paste("Frecuencias",
+                ".xlsx", sep="")
+        },
+        content = function(file) {
+          write_xlsx(
+            x = frecuencias$tabla,
+            path = file)
+        }, 
+        contentType = "xlsx"
+      )
+  
   })
-  
-  output$frecuencias_descargar_csv <- downloadHandler(
-    filename = function() {
-      paste("Frecuencias",
-            ".csv", sep="")
-    },
-    content = function(file) {
-      write.csv(
-        x = frecuencias$tabla,
-        file = file, 
-        row.names = FALSE,
-        na="")
-    }, 
-    contentType = "text/csv"
-  )
-  
-  output$frecuencias_descargar_xlsx <- downloadHandler(
-    filename = function() {
-      paste("Frecuencias",
-            ".xlsx", sep="")
-    },
-    content = function(file) {
-      write_xlsx(
-        x = frecuencias$tabla,
-        path = file)
-    }, 
-    contentType = "xlsx"
-  )
 }
