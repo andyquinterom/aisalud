@@ -6,10 +6,12 @@ shinyUI(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
     dashboardPagePlus(
       collapse_sidebar = TRUE,
-      skin = "black",
+      skin = "blue-light",
       dashboardHeaderPlus(
         fixed = TRUE,
-        title = "",
+        title = tagList(
+          span(class = "logo-lg", "Analítica Integrada Salud"), 
+          img(src = "logo.svg")),
         dropdownMenu(
           icon = icon("info-circle"),
           type = "notifications",
@@ -25,9 +27,6 @@ shinyUI(
       sidebar = dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
-          HTML('
-               <img src="logoblanco.png" width="100%"/>
-               '),
           menuItem(
             text = "Cargar de la nube",
             tabName = "prepara_base_de_datos",

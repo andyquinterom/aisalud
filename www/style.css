@@ -94,3 +94,31 @@ div.escenarios_inline_div div.dataTables_scrollBody {
 div.escenarios_inline_div td {
   padding: 0 3px 0 3px !important;
 }
+
+.btn {
+  border-radius: 0 !important;
+}
+
+.main-header .navbar {
+  background-color: rgb(0, 148, 217) !important;
+}
+
+.skin-blue-light .main-header .logo {
+  background-color: rgb(0, 148, 217) !important;
+}
+
+.main-header .logo {
+  padding: 0 5px;
+}
+
+.control-sidebar-dark {
+  background-color: transparent !important;
+}
+
+.control-sidebar-dark .nav-tabs.control-sidebar-tabs>li.active>a {
+  background-color: transparent !important;
+}
+
+.control-sidebar-dark+.control-sidebar-bg {
+  background-color: rgba(34, 45, 50, 0.9) !important;
+}
