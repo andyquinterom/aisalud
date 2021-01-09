@@ -638,6 +638,32 @@
         "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 20:04:11 UTC; unix"
       }
     },
+    "config": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "config",
+        "Type": "Package",
+        "Title": "Manage Environment Specific Configuration Values",
+        "Version": "0.3",
+        "Authors@R": "c(\n  person(\"JJ\", \"Allaire\", role = c(\"aut\", \"cre\"), email = \"jj@rstudio.com\"),\n  person(family = \"RStudio, Inc.\", role = \"cph\"))",
+        "Imports": "yaml (>= 2.1.13)",
+        "Suggests": "testthat, knitr",
+        "Description": "Manage configuration values across multiple environments (e.g.\n  development, test, production). Read values using a function that determines\n  the current environment and returns the appropriate value.",
+        "License": "GPL-3",
+        "URL": "https://github.com/rstudio/config",
+        "BugReports": "https://github.com/rstudio/config/issues",
+        "RoxygenNote": "6.0.1",
+        "VignetteBuilder": "knitr",
+        "NeedsCompilation": "no",
+        "Packaged": "2018-03-27 17:50:45 UTC; jjallaire",
+        "Author": "JJ Allaire [aut, cre],\n  RStudio, Inc. [cph]",
+        "Maintainer": "JJ Allaire <jj@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2018-03-27 20:38:53 UTC",
+        "Built": "R 3.6.0; ; 2019-04-26 20:30:40 UTC; unix"
+      }
+    },
     "crayon": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -726,26 +752,52 @@
       "Repository": "https://cran.rstudio.com/",
       "description": {
         "Package": "data.table",
-        "Version": "1.12.8",
+        "Version": "1.13.4",
         "Title": "Extension of `data.frame`",
-        "Authors@R": "c(\n  person(\"Matt\",\"Dowle\",           role=c(\"aut\",\"cre\"), email=\"mattjdowle@gmail.com\"),\n  person(\"Arun\",\"Srinivasan\",      role=\"aut\",          email=\"arunkumar.sriniv@gmail.com\"),\n  person(\"Jan\",\"Gorecki\",          role=\"ctb\"),\n  person(\"Michael\",\"Chirico\",      role=\"ctb\"),\n  person(\"Pasha\",\"Stetsenko\",      role=\"ctb\"),\n  person(\"Tom\",\"Short\",            role=\"ctb\"),\n  person(\"Steve\",\"Lianoglou\",      role=\"ctb\"),\n  person(\"Eduard\",\"Antonyan\",      role=\"ctb\"),\n  person(\"Markus\",\"Bonsch\",        role=\"ctb\"),\n  person(\"Hugh\",\"Parsonage\",       role=\"ctb\"),\n  person(\"Scott\",\"Ritchie\",        role=\"ctb\"),\n  person(\"Kun\",\"Ren\",              role=\"ctb\"),\n  person(\"Xianying\",\"Tan\",         role=\"ctb\"),\n  person(\"Rick\",\"Saporta\",         role=\"ctb\"),\n  person(\"Otto\",\"Seiskari\",        role=\"ctb\"),\n  person(\"Xianghui\",\"Dong\",        role=\"ctb\"),\n  person(\"Michel\",\"Lang\",          role=\"ctb\"),\n  person(\"Watal\",\"Iwasaki\",        role=\"ctb\"),\n  person(\"Seth\",\"Wenchel\",         role=\"ctb\"),\n  person(\"Karl\",\"Broman\",          role=\"ctb\"),\n  person(\"Tobias\",\"Schmidt\",       role=\"ctb\"),\n  person(\"David\",\"Arenburg\",       role=\"ctb\"),\n  person(\"Ethan\",\"Smith\",          role=\"ctb\"),\n  person(\"Francois\",\"Cocquemas\",   role=\"ctb\"),\n  person(\"Matthieu\",\"Gomez\",       role=\"ctb\"),\n  person(\"Philippe\",\"Chataignon\",  role=\"ctb\"),\n  person(\"Declan\",\"Groves\",        role=\"ctb\"),\n  person(\"Daniel\",\"Possenriede\",   role=\"ctb\"),\n  person(\"Felipe\",\"Parages\",       role=\"ctb\"),\n  person(\"Denes\",\"Toth\",           role=\"ctb\"),\n  person(\"Mus\",\"Yaramaz-David\",    role=\"ctb\"),\n  person(\"Ayappan\",\"Perumal\",      role=\"ctb\"),\n  person(\"James\",\"Sams\",           role=\"ctb\"),\n  person(\"Martin\",\"Morgan\",        role=\"ctb\"),\n  person(\"Michael\",\"Quinn\",        role=\"ctb\"),\n  person(\"@javrucebo\",\"\",          role=\"ctb\"),\n  person(\"@marc-outins\",\"\",        role=\"ctb\"),\n  person(\"Roy\",\"Storey\",           role=\"ctb\"),\n  person(\"Manish\",\"Saraswat\",      role=\"ctb\"),\n  person(\"Morgan\",\"Jacob\",         role=\"ctb\"),\n  person(\"Michael\",\"Schubmehl\",    role=\"ctb\"),\n  person(\"Davis\",\"Vaughan\",        role=\"ctb\"))",
+        "Authors@R": "c(\n  person(\"Matt\",\"Dowle\",           role=c(\"aut\",\"cre\"), email=\"mattjdowle@gmail.com\"),\n  person(\"Arun\",\"Srinivasan\",      role=\"aut\",          email=\"arunkumar.sriniv@gmail.com\"),\n  person(\"Jan\",\"Gorecki\",          role=\"ctb\"),\n  person(\"Michael\",\"Chirico\",      role=\"ctb\"),\n  person(\"Pasha\",\"Stetsenko\",      role=\"ctb\"),\n  person(\"Tom\",\"Short\",            role=\"ctb\"),\n  person(\"Steve\",\"Lianoglou\",      role=\"ctb\"),\n  person(\"Eduard\",\"Antonyan\",      role=\"ctb\"),\n  person(\"Markus\",\"Bonsch\",        role=\"ctb\"),\n  person(\"Hugh\",\"Parsonage\",       role=\"ctb\"),\n  person(\"Scott\",\"Ritchie\",        role=\"ctb\"),\n  person(\"Kun\",\"Ren\",              role=\"ctb\"),\n  person(\"Xianying\",\"Tan\",         role=\"ctb\"),\n  person(\"Rick\",\"Saporta\",         role=\"ctb\"),\n  person(\"Otto\",\"Seiskari\",        role=\"ctb\"),\n  person(\"Xianghui\",\"Dong\",        role=\"ctb\"),\n  person(\"Michel\",\"Lang\",          role=\"ctb\"),\n  person(\"Watal\",\"Iwasaki\",        role=\"ctb\"),\n  person(\"Seth\",\"Wenchel\",         role=\"ctb\"),\n  person(\"Karl\",\"Broman\",          role=\"ctb\"),\n  person(\"Tobias\",\"Schmidt\",       role=\"ctb\"),\n  person(\"David\",\"Arenburg\",       role=\"ctb\"),\n  person(\"Ethan\",\"Smith\",          role=\"ctb\"),\n  person(\"Francois\",\"Cocquemas\",   role=\"ctb\"),\n  person(\"Matthieu\",\"Gomez\",       role=\"ctb\"),\n  person(\"Philippe\",\"Chataignon\",  role=\"ctb\"),\n  person(\"Nello\",\"Blaser\",         role=\"ctb\"),\n  person(\"Dmitry\",\"Selivanov\",     role=\"ctb\"),\n  person(\"Andrey\",\"Riabushenko\",   role=\"ctb\"),\n  person(\"Cheng\",\"Lee\",            role=\"ctb\"),\n  person(\"Declan\",\"Groves\",        role=\"ctb\"),\n  person(\"Daniel\",\"Possenriede\",   role=\"ctb\"),\n  person(\"Felipe\",\"Parages\",       role=\"ctb\"),\n  person(\"Denes\",\"Toth\",           role=\"ctb\"),\n  person(\"Mus\",\"Yaramaz-David\",    role=\"ctb\"),\n  person(\"Ayappan\",\"Perumal\",      role=\"ctb\"),\n  person(\"James\",\"Sams\",           role=\"ctb\"),\n  person(\"Martin\",\"Morgan\",        role=\"ctb\"),\n  person(\"Michael\",\"Quinn\",        role=\"ctb\"),\n  person(\"@javrucebo\",\"\",          role=\"ctb\"),\n  person(\"@marc-outins\",\"\",        role=\"ctb\"),\n  person(\"Roy\",\"Storey\",           role=\"ctb\"),\n  person(\"Manish\",\"Saraswat\",      role=\"ctb\"),\n  person(\"Morgan\",\"Jacob\",         role=\"ctb\"),\n  person(\"Michael\",\"Schubmehl\",    role=\"ctb\"),\n  person(\"Davis\",\"Vaughan\",        role=\"ctb\"),\n  person(\"Toby\",\"Hocking\",         role=\"ctb\"),\n  person(\"Leonardo\",\"Silvestri\",   role=\"ctb\"),\n  person(\"Tyson\",\"Barrett\",        role=\"ctb\"),\n  person(\"Jim\",\"Hester\",           role=\"ctb\"),\n  person(\"Anthony\",\"Damico\",       role=\"ctb\"),\n  person(\"Sebastian\",\"Freundt\",    role=\"ctb\"),\n  person(\"David\",\"Simons\",         role=\"ctb\"),\n  person(\"Elliott\",\"Sales de Andrade\", role=\"ctb\"),\n  person(\"Cole\",\"Miller\",          role=\"ctb\"),\n  person(\"Jens Peder\",\"Meldgaard\", role=\"ctb\"),\n  person(\"Vaclav\",\"Tlapak\",        role=\"ctb\"),\n  person(\"Kevin\",\"Ushey\",          role=\"ctb\"),\n  person(\"Dirk\",\"Eddelbuettel\",    role=\"ctb\"))",
         "Depends": "R (>= 3.1.0)",
         "Imports": "methods",
-        "Suggests": "bit64, curl, R.utils, knitr, xts, nanotime, zoo, yaml",
+        "Suggests": "bit64 (>= 4.0.0), bit (>= 4.0.4), curl, R.utils, xts,\nnanotime, zoo (>= 1.8-1), yaml, knitr, rmarkdown",
         "SystemRequirements": "zlib",
         "Description": "Fast aggregation of large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of columns by group using no copies at all, list columns, friendly and fast character-separated-value read/write. Offers a natural and flexible syntax, for faster development.",
         "License": "MPL-2.0 | file LICENSE",
-        "URL": "http://r-datatable.com, https://Rdatatable.gitlab.io/data.table,\nhttps://github.com/Rdatatable/data.table",
+        "URL": "https://Rdatatable.gitlab.io/data.table,\nhttps://github.com/Rdatatable/data.table",
         "BugReports": "https://github.com/Rdatatable/data.table/issues",
         "VignetteBuilder": "knitr",
         "ByteCompile": "TRUE",
         "NeedsCompilation": "yes",
-        "Packaged": "2019-12-08 22:28:25.859 UTC; mdowle",
-        "Author": "Matt Dowle [aut, cre],\n  Arun Srinivasan [aut],\n  Jan Gorecki [ctb],\n  Michael Chirico [ctb],\n  Pasha Stetsenko [ctb],\n  Tom Short [ctb],\n  Steve Lianoglou [ctb],\n  Eduard Antonyan [ctb],\n  Markus Bonsch [ctb],\n  Hugh Parsonage [ctb],\n  Scott Ritchie [ctb],\n  Kun Ren [ctb],\n  Xianying Tan [ctb],\n  Rick Saporta [ctb],\n  Otto Seiskari [ctb],\n  Xianghui Dong [ctb],\n  Michel Lang [ctb],\n  Watal Iwasaki [ctb],\n  Seth Wenchel [ctb],\n  Karl Broman [ctb],\n  Tobias Schmidt [ctb],\n  David Arenburg [ctb],\n  Ethan Smith [ctb],\n  Francois Cocquemas [ctb],\n  Matthieu Gomez [ctb],\n  Philippe Chataignon [ctb],\n  Declan Groves [ctb],\n  Daniel Possenriede [ctb],\n  Felipe Parages [ctb],\n  Denes Toth [ctb],\n  Mus Yaramaz-David [ctb],\n  Ayappan Perumal [ctb],\n  James Sams [ctb],\n  Martin Morgan [ctb],\n  Michael Quinn [ctb],\n  @javrucebo [ctb],\n  @marc-outins [ctb],\n  Roy Storey [ctb],\n  Manish Saraswat [ctb],\n  Morgan Jacob [ctb],\n  Michael Schubmehl [ctb],\n  Davis Vaughan [ctb]",
+        "Packaged": "2020-12-08 02:57:13 UTC; mdowle",
+        "Author": "Matt Dowle [aut, cre],\n  Arun Srinivasan [aut],\n  Jan Gorecki [ctb],\n  Michael Chirico [ctb],\n  Pasha Stetsenko [ctb],\n  Tom Short [ctb],\n  Steve Lianoglou [ctb],\n  Eduard Antonyan [ctb],\n  Markus Bonsch [ctb],\n  Hugh Parsonage [ctb],\n  Scott Ritchie [ctb],\n  Kun Ren [ctb],\n  Xianying Tan [ctb],\n  Rick Saporta [ctb],\n  Otto Seiskari [ctb],\n  Xianghui Dong [ctb],\n  Michel Lang [ctb],\n  Watal Iwasaki [ctb],\n  Seth Wenchel [ctb],\n  Karl Broman [ctb],\n  Tobias Schmidt [ctb],\n  David Arenburg [ctb],\n  Ethan Smith [ctb],\n  Francois Cocquemas [ctb],\n  Matthieu Gomez [ctb],\n  Philippe Chataignon [ctb],\n  Nello Blaser [ctb],\n  Dmitry Selivanov [ctb],\n  Andrey Riabushenko [ctb],\n  Cheng Lee [ctb],\n  Declan Groves [ctb],\n  Daniel Possenriede [ctb],\n  Felipe Parages [ctb],\n  Denes Toth [ctb],\n  Mus Yaramaz-David [ctb],\n  Ayappan Perumal [ctb],\n  James Sams [ctb],\n  Martin Morgan [ctb],\n  Michael Quinn [ctb],\n  @javrucebo [ctb],\n  @marc-outins [ctb],\n  Roy Storey [ctb],\n  Manish Saraswat [ctb],\n  Morgan Jacob [ctb],\n  Michael Schubmehl [ctb],\n  Davis Vaughan [ctb],\n  Toby Hocking [ctb],\n  Leonardo Silvestri [ctb],\n  Tyson Barrett [ctb],\n  Jim Hester [ctb],\n  Anthony Damico [ctb],\n  Sebastian Freundt [ctb],\n  David Simons [ctb],\n  Elliott Sales de Andrade [ctb],\n  Cole Miller [ctb],\n  Jens Peder Meldgaard [ctb],\n  Vaclav Tlapak [ctb],\n  Kevin Ushey [ctb],\n  Dirk Eddelbuettel [ctb]",
         "Maintainer": "Matt Dowle <mattjdowle@gmail.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2019-12-09 10:30:10 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-12-10 15:41:08 UTC; unix"
+        "Date/Publication": "2020-12-08 10:10:02 UTC",
+        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-12-09 06:50:31 UTC; unix"
+      }
+    },
+    "dbplot": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "dbplot",
+        "Version": "0.3.3",
+        "Title": "Simplifies Plotting Data Inside Databases",
+        "Description": "Leverages 'dplyr' to process the calculations of a plot inside a database. \n    This package provides helper functions that abstract the work at three levels:\n    outputs a 'ggplot', outputs the calculations, outputs the formula\n    needed to calculate bins.",
+        "Authors@R": "\n    person(\"Edgar\", \"Ruiz\", email = \"edgararuiz@gmail.com\", role = c(\"aut\", \"cre\"))",
+        "Depends": "R (>= 3.1)",
+        "Imports": "dplyr (>= 0.7), rlang (>= 0.3), ggplot2, purrr, magrittr",
+        "Suggests": "dbplyr (>= 1.4.0), testthat, tidyr, covr",
+        "License": "GPL-3",
+        "URL": "https://github.com/edgararuiz/dbplot",
+        "BugReports": "https://github.com/edgararuiz/dbplot/issues",
+        "RoxygenNote": "7.0.2",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-02-06 21:32:08 UTC; edgar",
+        "Author": "Edgar Ruiz [aut, cre]",
+        "Maintainer": "Edgar Ruiz <edgararuiz@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-02-07 01:10:09 UTC",
+        "Built": "R 3.6.0; ; 2020-02-07 22:26:11 UTC; unix"
       }
     },
     "dbplyr": {
@@ -1020,6 +1072,32 @@
         "Repository": "CRAN",
         "Date/Publication": "2019-09-15 00:10:22 UTC",
         "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-09-15 11:47:00 UTC; unix"
+      }
+    },
+    "forge": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "forge",
+        "Type": "Package",
+        "Title": "Casting Values into Shape",
+        "Version": "0.2.0",
+        "Authors@R": "c(\n  person(\"Kevin\", \"Kuo\", role = c(\"aut\", \"cre\"), email = \"kevin.kuo@rstudio.com\",\n  comment = c(ORCID = \"0000-0001-7803-7901\"))\n  )",
+        "Description": "Helper functions with a consistent interface to coerce and verify\n    the types and shapes of values for input checking.",
+        "License": "Apache License (>= 2.0)",
+        "Encoding": "UTF-8",
+        "LazyData": "true",
+        "Depends": "R (>= 3.1.2)",
+        "Imports": "rlang (>= 0.3.1), magrittr",
+        "RoxygenNote": "6.1.0",
+        "Suggests": "testthat, covr",
+        "NeedsCompilation": "no",
+        "Packaged": "2019-02-26 15:41:55 UTC; kevinykuo",
+        "Author": "Kevin Kuo [aut, cre] (<https://orcid.org/0000-0001-7803-7901>)",
+        "Maintainer": "Kevin Kuo <kevin.kuo@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2019-02-26 16:00:03 UTC",
+        "Built": "R 3.6.0; ; 2019-04-26 20:57:59 UTC; unix"
       }
     },
     "fs": {
@@ -1633,7 +1711,7 @@
       "Repository": "https://cran.rstudio.com/",
       "description": {
         "Package": "jsonlite",
-        "Version": "1.7.1",
+        "Version": "1.7.2",
         "Title": "A Simple and Robust JSON Parser and Generator for R",
         "License": "MIT + file LICENSE",
         "Depends": "methods",
@@ -1644,14 +1722,14 @@
         "VignetteBuilder": "knitr, R.rsp",
         "Description": "A reasonably fast JSON parser and generator, optimized for statistical \n    data and the web. Offers simple, flexible tools for working with JSON in R, and\n    is particularly powerful for building pipelines and interacting with a web API. \n    The implementation is based on the mapping described in the vignette (Ooms, 2014).\n    In addition to converting JSON data from/to R objects, 'jsonlite' contains \n    functions to stream, validate, and prettify JSON data. The unit tests included \n    with the package verify that all edge cases are encoded and decoded consistently \n    for use with dynamic data in systems and applications.",
         "Suggests": "httr, curl, plyr, testthat, knitr, rmarkdown, R.rsp, sf",
-        "RoxygenNote": "7.1.0",
+        "RoxygenNote": "7.1.1",
         "Encoding": "UTF-8",
         "NeedsCompilation": "yes",
-        "Packaged": "2020-09-05 10:16:12 UTC; jeroen",
+        "Packaged": "2020-12-09 13:54:18 UTC; jeroen",
         "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>),\n  Duncan Temple Lang [ctb],\n  Lloyd Hilaiel [cph] (author of bundled libyajl)",
         "Repository": "CRAN",
-        "Date/Publication": "2020-09-07 06:50:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-09-08 06:28:32 UTC; unix"
+        "Date/Publication": "2020-12-09 17:40:03 UTC",
+        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-12-10 07:20:27 UTC; unix"
       }
     },
     "labeling": {
@@ -2490,6 +2568,61 @@
         "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-04-18 04:34:07 UTC; unix"
       }
     },
+    "r2d3": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "r2d3",
+        "Type": "Package",
+        "Title": "Interface to 'D3' Visualizations",
+        "Version": "0.2.5",
+        "Authors@R": "c(\n    person(\"Nick\", \"Strayer\", email = \"nick.strayer@rstudio.com\", role = c(\"aut\", \"cre\")),\n    person(\"Javier\", \"Luraschi\", email = \"jluraschi@gmail.com\", role = c(\"aut\")),\n    person(\"JJ\", \"Allaire\", role = c(\"aut\")),\n    person(\"Mike\", \"Bostock\", role = c(\"ctb\", \"cph\"), comment = \"d3.js library, http://d3js.org\"),\n    person(family = \"RStudio\", role = c(\"cph\"))\n    )",
+        "Description": "Suite of tools for using 'D3', a library for producing dynamic, interactive data\n  visualizations. Supports translating objects into 'D3' friendly data structures, rendering\n  'D3' scripts, publishing 'D3' visualizations, incorporating 'D3' in R Markdown, creating\n  interactive 'D3' applications with Shiny, and distributing 'D3' based 'htmlwidgets' in R\n  packages.",
+        "License": "BSD_3_clause + file LICENSE",
+        "Encoding": "UTF-8",
+        "LazyData": "TRUE",
+        "Depends": "R (>= 3.1.2)",
+        "Imports": "htmlwidgets (>= 1.2), htmltools, jsonlite, rstudioapi",
+        "Suggests": "knitr, rmarkdown, R6, shiny, shinytest, testthat, webshot",
+        "RoxygenNote": "7.1.1",
+        "URL": "https://github.com/rstudio/r2d3",
+        "BugReports": "https://github.com/rstudio/r2d3/issues",
+        "VignetteBuilder": "knitr",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-12-15 18:58:01 UTC; javierluraschi",
+        "Author": "Nick Strayer [aut, cre],\n  Javier Luraschi [aut],\n  JJ Allaire [aut],\n  Mike Bostock [ctb, cph] (d3.js library, http://d3js.org),\n  RStudio [cph]",
+        "Maintainer": "Nick Strayer <nick.strayer@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-12-18 06:20:03 UTC",
+        "Built": "R 3.6.2; ; 2020-12-19 08:02:35 UTC; unix"
+      }
+    },
+    "rappdirs": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "rappdirs",
+        "Type": "Package",
+        "Title": "Application Directories: Determine Where to Save Data, Caches,\nand Logs",
+        "Version": "0.3.1",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", email = \"hadley@rstudio.com\",\n    role = c(\"trl\", \"cre\", \"cph\")),\n    person(\"RStudio\", role = \"cph\"),\n    person(\"Sridhar\", \"Ratnakumar\", role = \"aut\"),\n    person(\"Trent\", \"Mick\", role = \"aut\"),\n    person(\"ActiveState\", role = \"cph\", comment =\n      \"R/appdir.r, R/cache.r, R/data.r, R/log.r translated from appdirs\"),\n    person(\"Eddy\", \"Petrisor\", role = \"ctb\"),\n    person(\"Trevor\", \"Davis\", role = c(\"trl\", \"aut\")),\n    person(\"Gabor\", \"Csardi\", role = \"ctb\"),\n    person(\"Gregory\", \"Jefferis\", role = \"ctb\")\n    )",
+        "Depends": "R (>= 2.14), methods",
+        "Suggests": "testthat, roxygen2",
+        "Description": "An easy way to determine which directories on the users computer\n    you should use to save data, caches and logs. A port of Python's 'Appdirs'\n    (\\url{https://github.com/ActiveState/appdirs}) to R.",
+        "BugReports": "https://github.com/hadley/rappdirs/issues",
+        "URL": "https://github.com/hadley/rappdirs\nhttps://github.com/ActiveState/appdirs",
+        "License": "MIT + file LICENSE",
+        "Copyright": "Original python appdirs module copyright (c) 2010\nActiveState Software Inc. R port copyright Hadley Wickham,\nRStudio. See file LICENSE for details.",
+        "RoxygenNote": "5.0.1",
+        "NeedsCompilation": "yes",
+        "Packaged": "2016-03-28 19:04:15 UTC; hadley",
+        "Author": "Hadley Wickham [trl, cre, cph],\n  RStudio [cph],\n  Sridhar Ratnakumar [aut],\n  Trent Mick [aut],\n  ActiveState [cph] (R/appdir.r, R/cache.r, R/data.r, R/log.r translated\n    from appdirs),\n  Eddy Petrisor [ctb],\n  Trevor Davis [trl, aut],\n  Gabor Csardi [ctb],\n  Gregory Jefferis [ctb]",
+        "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2016-03-28 23:10:10",
+        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:56:22 UTC; unix"
+      }
+    },
     "raster": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -2971,6 +3104,35 @@
         "Repository": "CRAN",
         "Date/Publication": "2020-02-28 23:20:02 UTC",
         "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2020-02-29 16:20:58 UTC; unix"
+      }
+    },
+    "sparklyr": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "sparklyr",
+        "Type": "Package",
+        "Title": "R Interface to Apache Spark",
+        "Version": "1.5.2",
+        "Authors@R": "c(\n    person(\"Javier\", \"Luraschi\", email = \"jluraschi@gmail.com\", role = \"aut\"),\n    person(\"Kevin\", \"Kuo\", role = \"aut\", email = \"kevin.kuo@rstudio.com\",\n           comment = c(ORCID = \"0000-0001-7803-7901\")),\n    person(\"Kevin\", \"Ushey\", role = \"aut\", email = \"kevin@rstudio.com\"),\n    person(\"JJ\", \"Allaire\", role = \"aut\", email = \"jj@rstudio.com\"),\n    person(\"Samuel\", \"Macedo\", role = \"ctb\", email = \"samuelmacedo@recife.ifpe.edu.br\"),\n    person(\"Hossein\", \"Falaki\", role = \"aut\", email = \"hossein@databricks.com\"),\n    person(\"Lu\", \"Wang\", role = \"aut\", email = \"lu.wang@databricks.com\"),\n    person(\"Andy\", \"Zhang\", role = \"aut\", email = \"yue.zhang@databricks.com\"),\n    person(\"Yitao\", \"Li\", role = c(\"aut\", \"cre\"), email = \"yitao@rstudio.com\",\n           comment = c(ORCID = \"0000-0002-1261-905X\")),\n    person(\"Jozef\", \"Hajnala\", role = \"ctb\", email = \"jozef.hajnala@gmail.com\"),\n    person(\"Maciej\", \"Szymkiewicz\", role = \"ctb\", email = \"mszymkiewicz@gmail.com\",\n          comment = c(ORCID = \"0000-0003-1469-9396\")),\n    person(\"Wil\", \"Davis\", role = \"ctb\", email = \"william.davis@worthingtonindustries.com\"),\n    person(family = \"RStudio\", role = c(\"cph\")),\n    person(family = \"The Apache Software Foundation\", role = c(\"aut\", \"cph\"))\n    )",
+        "Maintainer": "Yitao Li <yitao@rstudio.com>",
+        "Description": "R interface to Apache Spark, a fast and general engine for big data\n    processing, see <http://spark.apache.org>. This package supports connecting to\n    local and remote Apache Spark clusters, provides a 'dplyr' compatible back-end,\n    and provides an interface to Spark's built-in machine learning algorithms.",
+        "License": "Apache License 2.0 | file LICENSE",
+        "SystemRequirements": "Spark: 1.6.x, 2.x, or 3.x",
+        "URL": "https://spark.rstudio.com/",
+        "BugReports": "https://github.com/sparklyr/sparklyr/issues",
+        "LazyData": "TRUE",
+        "RoxygenNote": "7.1.1",
+        "Depends": "R (>= 3.2)",
+        "Imports": "assertthat, base64enc, config (>= 0.2), DBI (>= 0.6-1), dplyr\n(>= 0.7.2), dbplyr (>= 1.1.0), digest, forge, generics,\nglobals, glue, httr (>= 1.2.1), jsonlite (>= 1.4), lifecycle,\nmethods, openssl (>= 0.8), purrr, r2d3, rappdirs, rlang (>=\n0.1.4), rprojroot, rstudioapi (>= 0.10), stringr, tibble,\ntidyr, tidyselect, vctrs, uuid, withr, xml2, ellipsis (>=\n0.1.0)",
+        "Suggests": "arrow (>= 0.14.0), broom, diffobj, foreach, ggplot2,\niterators, janeaustenr, Lahman, mlbench, nnet, nycflights13,\nR6, RCurl, reshape2, shiny (>= 1.0.1), testthat",
+        "Collate": "'spark_data_build_types.R' 'arrow_data.R' 'spark_invoke.R'\n'browse_url.R' 'spark_connection.R' 'avro_utils.R'\n'config_settings.R' 'config_spark.R' 'connection_instances.R'\n'connection_progress.R' 'connection_shinyapp.R'\n'spark_version.R' 'connection_spark.R' 'connection_viewer.R'\n'core_arrow.R' 'core_config.R' 'core_connection.R'\n'core_deserialize.R' 'core_gateway.R' 'core_invoke.R'\n'core_jobj.R' 'core_serialize.R' 'core_utils.R'\n'core_worker_config.R' 'data_copy.R' 'data_csv.R'\n'spark_schema_from_rdd.R' 'spark_apply_bundle.R'\n'spark_apply.R' 'data_interface.R' 'databricks_connection.R'\n'dbi_spark_connection.R' 'dbi_spark_result.R'\n'dbi_spark_table.R' 'dbi_spark_transactions.R' 'utils.R'\n'do_spark.R' 'dplyr_do.R' 'dplyr_hof.R' 'dplyr_join.R'\n'dplyr_spark.R' 'dplyr_spark_connection.R' 'dplyr_spark_data.R'\n'prng_utils.R' 'ml_feature_sql_transformer_utils.R'\n'dplyr_spark_table.R' 'tables_spark.R' 'sdf_interface.R'\n'stratified_sample.R' 'sdf_sql.R' 'dplyr_sql.R' 'imports.R'\n'install_spark.R' 'install_spark_versions.R'\n'install_spark_windows.R' 'install_tools.R' 'java.R'\n'jobs_api.R' 'kubernetes_config.R' 'shell_connection.R'\n'livy_connection.R' 'livy_install.R' 'livy_invoke.R'\n'livy_service.R' 'ml_classification_decision_tree_classifier.R'\n'ml_classification_gbt_classifier.R'\n'ml_classification_linear_svc.R'\n'ml_classification_logistic_regression.R'\n'ml_classification_multilayer_perceptron_classifier.R'\n'ml_classification_naive_bayes.R'\n'ml_classification_one_vs_rest.R'\n'ml_classification_random_forest_classifier.R'\n'ml_clustering.R' 'ml_clustering_bisecting_kmeans.R'\n'ml_clustering_gaussian_mixture.R' 'ml_clustering_kmeans.R'\n'ml_clustering_lda.R' 'ml_constructor_utils.R' 'ml_evaluate.R'\n'ml_evaluation_clustering.R' 'ml_evaluation_prediction.R'\n'ml_evaluator.R' 'ml_feature_binarizer.R'\n'ml_feature_bucketed_random_projection_lsh.R'\n'ml_feature_bucketizer.R' 'ml_feature_chisq_selector.R'\n'ml_feature_count_vectorizer.R' 'ml_feature_dct.R'\n'ml_feature_sql_transformer.R' 'ml_feature_dplyr_transformer.R'\n'ml_feature_elementwise_product.R'\n'ml_feature_feature_hasher.R' 'ml_feature_hashing_tf.R'\n'ml_feature_idf.R' 'ml_feature_imputer.R'\n'ml_feature_index_to_string.R' 'ml_feature_interaction.R'\n'ml_feature_lsh_utils.R' 'ml_feature_max_abs_scaler.R'\n'ml_feature_min_max_scaler.R' 'ml_feature_minhash_lsh.R'\n'ml_feature_ngram.R' 'ml_feature_normalizer.R'\n'ml_feature_one_hot_encoder.R'\n'ml_feature_one_hot_encoder_estimator.R' 'ml_feature_pca.R'\n'ml_feature_polynomial_expansion.R'\n'ml_feature_quantile_discretizer.R' 'ml_feature_r_formula.R'\n'ml_feature_regex_tokenizer.R' 'ml_feature_robust_scaler.R'\n'ml_feature_standard_scaler.R'\n'ml_feature_stop_words_remover.R' 'ml_feature_string_indexer.R'\n'ml_feature_string_indexer_model.R' 'ml_feature_tokenizer.R'\n'ml_feature_vector_assembler.R' 'ml_feature_vector_indexer.R'\n'ml_feature_vector_slicer.R' 'ml_feature_word2vec.R'\n'ml_fpm_fpgrowth.R' 'ml_helpers.R' 'ml_mapping_tables.R'\n'ml_model_aft_survival_regression.R' 'ml_model_als.R'\n'ml_model_bisecting_kmeans.R' 'ml_model_constructors.R'\n'ml_model_decision_tree.R' 'ml_model_gaussian_mixture.R'\n'ml_model_generalized_linear_regression.R'\n'ml_model_gradient_boosted_trees.R' 'ml_model_helpers.R'\n'ml_model_isotonic_regression.R' 'ml_model_kmeans.R'\n'ml_model_lda.R' 'ml_model_linear_regression.R'\n'ml_model_linear_svc.R' 'ml_model_logistic_regression.R'\n'ml_model_naive_bayes.R' 'ml_model_one_vs_rest.R'\n'ml_model_random_forest.R' 'ml_model_utils.R'\n'ml_param_utils.R' 'ml_persistence.R' 'ml_pipeline.R'\n'ml_pipeline_utils.R' 'ml_print_utils.R'\n'ml_recommendation_als.R'\n'ml_regression_aft_survival_regression.R'\n'ml_regression_decision_tree_regressor.R'\n'ml_regression_gbt_regressor.R'\n'ml_regression_generalized_linear_regression.R'\n'ml_regression_isotonic_regression.R'\n'ml_regression_linear_regression.R'\n'ml_regression_random_forest_regressor.R' 'ml_stat.R'\n'ml_summary.R' 'ml_transformation_methods.R'\n'ml_transformer_and_estimator.R' 'ml_tuning.R'\n'ml_tuning_cross_validator.R'\n'ml_tuning_train_validation_split.R' 'ml_utils.R'\n'ml_validator_utils.R' 'mutation.R' 'na_actions.R'\n'new_model_multilayer_perceptron.R' 'precondition.R'\n'project_template.R' 'qubole_connection.R' 'sql_utils.R'\n'tidyr_utils.R' 'tidyr_unnest.R' 'tidyr_unite.R'\n'tidyr_separate.R' 'tidyr_pivot_utils.R' 'tidyr_pivot_wider.R'\n'tidyr_pivot_longer.R' 'tidyr_nest.R' 'tidyr_fill.R'\n'test_connection.R' 'reexports.R' 'sdf_dim.R' 'sdf_ml.R'\n'sdf_saveload.R' 'sdf_sequence.R' 'sdf_stat.R'\n'sdf_streaming.R' 'sdf_unnest_longer.R' 'sdf_wrapper.R'\n'sdf_unnest_wider.R' 'sdf_utils.R' 'spark_compile.R'\n'spark_context_config.R' 'spark_dataframe.R'\n'spark_extensions.R' 'spark_gateway.R'\n'spark_gen_embedded_sources.R' 'spark_globals.R' 'spark_hive.R'\n'spark_home.R' 'spark_submit.R'\n'spark_update_embedded_sources.R' 'spark_utils.R'\n'spark_verify_embedded_sources.R' 'stream_data.R'\n'stream_job.R' 'stream_operations.R' 'stream_shiny.R'\n'stream_view.R' 'tbl_spark.R'\n'tidiers_ml_aft_survival_regression.R' 'tidiers_ml_als.R'\n'tidiers_ml_isotonic_regression.R' 'tidiers_ml_lda.R'\n'tidiers_ml_linear_models.R' 'tidiers_ml_logistic_regression.R'\n'tidiers_ml_multilayer_perceptron.R' 'tidiers_ml_naive_bayes.R'\n'tidiers_ml_svc_models.R' 'tidiers_ml_tree_models.R'\n'tidiers_ml_unsupervised_models.R' 'tidiers_pca.R'\n'tidiers_utils.R' 'worker_apply.R' 'worker_connect.R'\n'worker_connection.R' 'worker_invoke.R' 'worker_log.R'\n'worker_main.R' 'yarn_cluster.R' 'yarn_config.R' 'yarn_ui.R'\n'zzz.R'",
+        "NeedsCompilation": "no",
+        "Packaged": "2020-12-11 17:54:53 UTC; yitaoli",
+        "Author": "Javier Luraschi [aut],\n  Kevin Kuo [aut] (<https://orcid.org/0000-0001-7803-7901>),\n  Kevin Ushey [aut],\n  JJ Allaire [aut],\n  Samuel Macedo [ctb],\n  Hossein Falaki [aut],\n  Lu Wang [aut],\n  Andy Zhang [aut],\n  Yitao Li [aut, cre] (<https://orcid.org/0000-0002-1261-905X>),\n  Jozef Hajnala [ctb],\n  Maciej Szymkiewicz [ctb] (<https://orcid.org/0000-0003-1469-9396>),\n  Wil Davis [ctb],\n  RStudio [cph],\n  The Apache Software Foundation [aut, cph]",
+        "Repository": "CRAN",
+        "Date/Publication": "2020-12-11 23:00:03 UTC",
+        "Built": "R 3.6.2; ; 2020-12-12 06:58:59 UTC; unix"
       }
     },
     "stringi": {
@@ -3575,7 +3737,7 @@
       "checksum": "60928855a80cb1826986205fe62acdc8"
     },
     ".Renviron": {
-      "checksum": "a469d822b2f529463fe2bdfe6dcac021"
+      "checksum": "623865e6d40dc7f0dc9af85b551fd7fe"
     },
     "datos/nts/inclusiones.feather": {
       "checksum": "ee37c7df101c777abd2e3373a6288369"
@@ -3598,47 +3760,41 @@
     "datos/paquetes/referente.feather": {
       "checksum": "8c15d3cb3d7851b7c29dcc07e4616bb6"
     },
-    "datos/pricing/PRICING-EJEMPLO.csv": {
-      "checksum": "0ebbbbad9a858f5e2e3feb280f5fd7c7"
-    },
     "datos/saved/oncologia.feather": {
       "checksum": "7faf307f793cdce8eb8fa1335dfe315a"
     },
     "global.R": {
-      "checksum": "7d6b10134e04edcda0f5caa23cc62f1a"
+      "checksum": "380f0b6a6b7509d9d4841327784f39b1"
     },
     "modules/descriptiva.R": {
-      "checksum": "d3c2e40c67bf35a47494c710b7572fe2"
+      "checksum": "2d8bb2684f76ca50c6bdc46696dbc5e2"
     },
     "modules/filtros.R": {
-      "checksum": "2f4e69d1d674f92de257f564802c50b8"
+      "checksum": "3b1a770e3966027821d787618bba0940"
     },
     "modules/frecuencias.R": {
-      "checksum": "c44961421d0f058a6085fc514e7cd9da"
+      "checksum": "36e9b80ef20f300bb7c54751f5359e1c"
     },
     "modules/jerarquia_ui.R": {
       "checksum": "26b8e2f1e9b9615103136a09fdb2a8f3"
     },
     "modules/nota_tecnica.R": {
-      "checksum": "30d788761a27f7c21dd165552870ba21"
+      "checksum": "52f93e2318368f687e77e3e5444e78ca"
     },
     "modules/otros_graficos.R": {
-      "checksum": "1bc7d2f6fcb4c35f0993f05d2441d01e"
+      "checksum": "0924bc5ba3f3959f3632d5f1b04a8df9"
     },
     "modules/outliers.R": {
-      "checksum": "a541fca67848f61cff5b3509b471e985"
+      "checksum": "2789f961619b3f5114dd89d39ac44e1e"
     },
     "modules/prepara_base_de_datos.R": {
-      "checksum": "2af5e1230b5a6595674c661b9aea8d45"
+      "checksum": "06fd1efb4df0c9330e0c1d505633f295"
     },
     "modules/prepara.R": {
       "checksum": "26229b3f867d3a26ef91f5d4cff38b69"
     },
-    "modules/pricing.R": {
-      "checksum": "a5a91ad812d5909d41924a755b935edd"
-    },
     "modules/seguimiento_notas_comparar.R": {
-      "checksum": "c2b38f108308cddf532235d9694435fc"
+      "checksum": "c18679969af775e9890cd2abac69f032"
     },
     "modules/seguimiento_notas_dashboard.R": {
       "checksum": "55665cbb3b1a51b8090166d2623ef3cf"
@@ -3694,6 +3850,9 @@
     "packrat/desc/commonmark": {
       "checksum": "9185e6d30f52f4a45e76fe40c9eddd0d"
     },
+    "packrat/desc/config": {
+      "checksum": "99cc7f90a3aff10241695409f98a1851"
+    },
     "packrat/desc/crayon": {
       "checksum": "b24ecaa8a9670c0265dba74ec47767ba"
     },
@@ -3704,10 +3863,13 @@
       "checksum": "45cb602c8e08497c7908de15290ce741"
     },
     "packrat/desc/data.table": {
-      "checksum": "6ba17190cab5011766374f1cec8783d1"
+      "checksum": "8961d407a622df8d52dd14519cb063f9"
     },
     "packrat/desc/DBI": {
       "checksum": "2051121a086b30dd6f277d44762a7b17"
+    },
+    "packrat/desc/dbplot": {
+      "checksum": "c63c7dc61781f10fda7d4e270d947b70"
     },
     "packrat/desc/dbplyr": {
       "checksum": "b0a57b61e9b1f01ee1bbe39583c8793f"
@@ -3741,6 +3903,9 @@
     },
     "packrat/desc/feather": {
       "checksum": "175cf57d735cc6e481dd6cdfd1746ad7"
+    },
+    "packrat/desc/forge": {
+      "checksum": "692cb68c053f6b0db1519f6ba7e14c6f"
     },
     "packrat/desc/fs": {
       "checksum": "7db89f336eec946d2ef0c9797abb6e75"
@@ -3809,7 +3974,7 @@
       "checksum": "7756b418a941c965c2c509d844c784dd"
     },
     "packrat/desc/jsonlite": {
-      "checksum": "08b3c5e7892fe9b463ed863a5526cc01"
+      "checksum": "3cdedd47d3f1407b317bd57ec73a1f56"
     },
     "packrat/desc/labeling": {
       "checksum": "c380e60f2819fb5f40e18e442b3064bb"
@@ -3913,8 +4078,14 @@
     "packrat/desc/purrr": {
       "checksum": "4429e80c83273c6d9709d0f5b9ffd208"
     },
+    "packrat/desc/r2d3": {
+      "checksum": "3508fe1e31844b454f1200c32f1df043"
+    },
     "packrat/desc/R6": {
       "checksum": "8d83a878dc4c4958416ba0ba7c465295"
+    },
+    "packrat/desc/rappdirs": {
+      "checksum": "1156e307d1296a61c533b4338765270b"
     },
     "packrat/desc/raster": {
       "checksum": "e1a8237c2bca2595cddedd8ab1abd6b3"
@@ -3978,6 +4149,9 @@
     },
     "packrat/desc/sp": {
       "checksum": "d288f9015bc95bcb39dfeab3230e3f72"
+    },
+    "packrat/desc/sparklyr": {
+      "checksum": "92799c3b5ac2c118616553352a7fce71"
     },
     "packrat/desc/stringi": {
       "checksum": "393458ead0ed6e1912d6f0c76244d832"
@@ -4046,16 +4220,16 @@
       "checksum": "a5c8026f8dbd6fdbfb913829911a4ed8"
     },
     "packrat/packrat.lock": {
-      "checksum": "329e120df8f81a83f90bbdea6933ce61"
+      "checksum": "baaf29a9a62981bdff9aecebe79771e6"
     },
     "R/agregaciones.R": {
       "checksum": "807189188cc19fa969c3f845520157fe"
     },
     "R/caja_de_bigotes.R": {
-      "checksum": "e2b0dc8507a93591da64166841244f56"
+      "checksum": "6ae50ef7bd88865649d29c2fb308c328"
     },
     "R/comparar_nota_tecnica_rips.R": {
-      "checksum": "c3fa5446d299e438de59d3a8aecff1c5"
+      "checksum": "c84f09e97297ff1812f858b2c401eb2b"
     },
     "R/consolidar_rips.R": {
       "checksum": "e789f200fba8ea1a529b8ba06987e542"
@@ -4064,25 +4238,25 @@
       "checksum": "20a6aa4bc39567b790486a7f8189087f"
     },
     "R/descriptiva_episodios.R": {
-      "checksum": "452f1fca8056d106ab366787d7cb7f6e"
+      "checksum": "fe3aae0e3f80a9439596d35fae1479b9"
     },
     "R/descriptiva.R": {
-      "checksum": "0a43b15d86f0e8a00999a2f8f6dbc46f"
+      "checksum": "f1a0e927554c49da530241c13f6e7007"
     },
     "R/format_as_currency.R": {
       "checksum": "8053748990a637e11d8a69cb968189a2"
     },
     "R/histograma.R": {
-      "checksum": "a93c966a042ffd9d8eeb196b2b6729ef"
+      "checksum": "5019f9aa53ea98302721ab0954e71059"
     },
     "R/mapa_valor_nota_tecnica.R": {
       "checksum": "659d24898ddf3ec84c6f0308516835b1"
     },
     "R/notatecnica.R": {
-      "checksum": "3faa195a88c102663f43a9887121fa9f"
+      "checksum": "0f1ab846d0a4281c12c44a2ad5de35d7"
     },
     "R/outliers.R": {
-      "checksum": "27fdea62cfcb1bb27fee39fd41a576b1"
+      "checksum": "130ddd4576a3b931d37787a18b4597d7"
     },
     "R/pie_chart.R": {
       "checksum": "f98894b7ee8a1eb991b6caaaffc16486"
@@ -4109,10 +4283,13 @@
       "checksum": "5ca081ea6e9d486db2947ec29e5bc383"
     },
     "server.R": {
-      "checksum": "bb2447e5a4342b275c4693ed3b200ae6"
+      "checksum": "721d3b0fbe24310dbb549f66081a0526"
     },
     "ui.R": {
-      "checksum": "1332bff3708399792cd32d0d5c607e96"
+      "checksum": "683bc1fda04984e9b63ac03331175dbf"
+    },
+    "www/.DS_Store": {
+      "checksum": "c1e52985f1e64cbd03c83186bfc15e71"
     },
     "www/code.js": {
       "checksum": "79b901cfdc04d05bbbd1880d86f99676"
@@ -4120,11 +4297,14 @@
     "www/home.md": {
       "checksum": "a7deed1c537a29fc5023b7cc174edf02"
     },
+    "www/logo.svg": {
+      "checksum": "13059aa2d6e4d2a7952c8779e93de7dd"
+    },
     "www/logoblanco.png": {
       "checksum": "c97b70baa30962590207c4a84bba35a0"
     },
     "www/style.css": {
-      "checksum": "715c773836813802a597808dd2d79129"
+      "checksum": "5ba64b550419d1d51c48801dcb7efa37"
     }
   },
   "users": null
