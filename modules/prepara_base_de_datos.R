@@ -6,11 +6,6 @@ base_de_datos_ui <- function(id) {
     box(
       style = "min-height: 450px;",
       width = 4,
-      actionButton(
-        inputId = ns("establecer_conexion"),
-        label = "Establecer conexión",
-        width = "100%"
-      ),
       tags$br(),
       tags$br(),
       selectizeInput(
@@ -20,16 +15,11 @@ base_de_datos_ui <- function(id) {
         choices = "Ninguno"
       ),
       selectizeInput(
+        inputId = ns("columna_valor"),
+        label = "Columna de valor:",
         width = "100%",
-        inputId = ns("tabla_columnas"),
-        label = "Columnas",
-        choices = "Ninguno",
-        multiple = TRUE
-      ),
-      checkboxInput(
-        inputId = ns("tabla_columnas_todos"),
-        label = "Cargar todas las columnas",
-        value = TRUE
+        choices = "valor",
+        selected = "valor"
       ),
       dateRangeInput(
         inputId = ns("fecha_rango"),
@@ -38,35 +28,7 @@ base_de_datos_ui <- function(id) {
         max = NULL, 
         format = "dd/mm/yyyy",
         language = "es"),
-      tags$style(HTML(".datepicker {z-index:99999 !important;}")),
-      textInput(
-        inputId = ns("formato_fecha"),
-        label = "Formato de Fecha",
-        value = "%d/%m/%Y"),
-      actionButton(inputId = ns("file_load"), label = "Aplicar")
-    ),
-    box(
-      width = 3,
-      style = "min-height: 450px;",
-      selectizeInput(
-        inputId = ns("columna_valor"),
-        label = "Columna de valor:",
-        width = "100%",
-        choices = "valor",
-        selected = "valor"
-      ),
-      actionButton(
-        inputId = ns("columna_valor_cambiar"),
-        label = "Cambiar"
-      )
-    ),
-    box(
-      width = 5,
-      style = "min-height: 450px;",
-      tags$h3("Prevista:"),
-      DT::dataTableOutput(
-        outputId = ns("preview"),
-        width = "100%")
+      tags$style(HTML(".datepicker {z-index:99999 !important;}"))
     ),
     box(
       width = 12,
@@ -77,244 +39,159 @@ base_de_datos_ui <- function(id) {
   )
 }
 
-base_de_datos_server <- function(input, output, session, opciones, nombre_id,
-                                 datos) {
-  
-  base_de_datos_con <- NULL
-  
-  session$onSessionEnded(function() {
-    dbDisconnect(base_de_datos_con)
-  })
-  
-  id <- nombre_id
-  ns <- NS(id)
-  
-  base_de_datos <- reactiveValues()
-  
-  prepara_opciones <- reactiveValues()
-  
-  observeEvent(input$establecer_conexion, {
-    withProgress(
-      message = "Estableciendo conexión con base de datos...", {
-        tryCatch(
-          expr = {
-            if (is.null(base_de_datos_con)) {
-              base_de_datos_con <<- dbConnect(
-                RPostgres::Postgres(),
-                dbname = Sys.getenv("DATABASE_NAME"),
-                user = Sys.getenv("DATABASE_USER"),
-                password = Sys.getenv("DATABASE_PW"),
-                host = Sys.getenv("DATABASE_HOST"),
-                port = Sys.getenv("DATABASE_PORT"),
-                sslmode = "require",
-                options = paste0("-c search_path=", Sys.getenv("DATABASE_SCHEMA")))
-            }
-            base_de_datos$schema <- Sys.getenv("DATABASE_SCHEMA")
-            tables_query <- dbGetQuery(
-              base_de_datos_con,
-              paste0("SELECT table_name FROM information_schema.tables
-               WHERE table_schema='", 
-               Sys.getenv("DATABASE_SCHEMA"), "'")) %>%
-              unlist() %>%
-              unname()
-            if (identical(character(0), tables_query)) {
-              tables_query <- NULL
-              updateSelectizeInput(
-                session = session,
-                inputId = "tabla",
-                choices = "Ninguno"
-              )
-            } else {
-              updateSelectizeInput(
-                session = session,
-                inputId = "tabla",
-                choices = tables_query
-              )
-            }
-          }
-        )
-    })
-  })
-  
-  observeEvent(input$tabla, {
-    if (!is.null(base_de_datos_con) && 
-        input$tabla != "Ninguno" &&
-        input$tabla != "") {
-      prepara_opciones$colnames <- dbListFields(
-        base_de_datos_con,
-        input$tabla)
-      updateSelectizeInput(
-        session = session,
-        inputId = "tabla_columnas",
-        choices = prepara_opciones$colnames
-      )
-    }
-  })
-  
-  observeEvent(input$file_load, {
-    tryCatch(
-      expr = {
-        withProgress(
-          message = "Cargando datos...", {
-            if (!is.null(base_de_datos_con) && 
-                input$tabla != "Ninguno" &&
-                input$tabla != "") {
-              if (input$tabla_columnas_todos) {
-                datos$data_original <- as.data.table(
-                  tbl(base_de_datos_con, input$tabla))
-              } else {
-                datos$data_original <- as.data.table(
-                  tbl(base_de_datos_con, input$tabla) %>%
-                    select(!!input$tabla_columnas)
-                )
-              }
-              setnames(
-                datos$data_original,
-                tolower(colnames(datos$data_original)))
-              datos$data_original[, "fecha_prestacion" := as.Date(
-                fecha_prestacion, 
-                format = input$formato_fecha)]
-              datos$data_original <- datos$data_original[
-                fecha_prestacion >= as.Date(input$fecha_rango[1]) &
-                  fecha_prestacion <= as.Date(input$fecha_rango[2])]
-              datos$data_table <- datos$data_original
-              datos$valores_unicos <- lapply(datos$data_table, unique)
-              datos$colnames <- colnames(datos$data_table)
-              columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-              colnames_num <- datos$colnames[columnas_num]
-              opciones$valor_costo <- "columna_no_incluida"
-              if ("valor" %notin% colnames_num && "valor" %in% datos$colnames) {
-                confirmSweetAlert(
-                  session = session,
-                  inputId = ns("valor_a_numerico"),
-                  title = "Convertir columna valor.",
-                  text = "Se ha encontrado la columna valor cómo carácter. \n
-                  ¿Desea convertirla a numérico?",
-                  btn_labels = c("No", "Sí")
-                )
-              } else {
-                datos$colnames_num <- colnames_num
-                opciones$valor_costo <- "valor"
-              }
-            }
-          }
-        )
-      },
-      error = function(e) {
-        print(e[1])
-        sendSweetAlert(
-          session = session,
-          title = "Error",
-          text = "Por favor revisar las columnas seleccionadas.",
-          type = "error"
-        )
-      }
-    )
-  })
-  
-  observeEvent(input$valor_a_numerico, {
-    if (input$valor_a_numerico) {
-      datos$data_table[, "valor" := numerize(valor)]
-      datos$data_original[, "valor" := numerize(valor)]
-    }
-    columnas_num <- unlist(lapply(datos$data_table[1,], is.numeric))
-    datos$colnames_num <- datos$colnames[columnas_num]
-    opciones$valor_costo <- "valor"
-  })
-  
-  observeEvent(datos$colnames, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "columna_valor",
-      choices = datos$colnames_num,
-      selected = "valor"
-    )
-  })
-  
-  observeEvent(input$columna_valor_cambiar, {
-    if (!is.null(datos$colnames)) {
-      opciones$valor_costo <- input$columna_valor
-    }
-  })
-  
-  output$valor_con_tiempo <- renderPlotly({
-    if (!is.null(datos$colnames)) {
-      if (opciones$valor_costo %in% datos$colnames_num) {
-        datos <- datos$data_table[, list(
-          "mes_temporal" = year(fecha_prestacion)* 100 + month(fecha_prestacion),
-          "suma" = sum(get(opciones$valor_costo), na.rm = TRUE),
-          "mes_label_temporal" = mes_spanish(month(fecha_prestacion))),
-          by = "fecha_prestacion"][, list(
-            "Suma" = sum(suma, na.rm = TRUE)),
-            by = c("mes_label_temporal", "mes_temporal")][
-              order(mes_temporal)] %>%
-          plot_ly(x = ~mes_label_temporal,
-                  y = ~Suma,
-                  type = "bar") %>%
-          config(locale = "es") %>%
-          layout(
-            title = "Suma del valor a mes",
-            xaxis = list(
-              title = "Mes",
-              categoryorder = "array",
-              categoryarray = ~mes_temporal),
-            yaxis = list(title = "Suma",
-                         tickformat = ",.2f")) 
-      }
-    }
-  })
-  
-  output$preview <- DT::renderDataTable({
-    if (is.null(datos$colnames)) {
-      data.table()
-    } else {
-      tryCatch(
-        expr = {
-          columnas <- intersect(
-            x = c(
-              "nro_identificacion",
-              "fecha_prestacion",
-              "valor"),
-            y = names(datos$data_original[1])
-          )
-          DT::datatable(
-            data = datos$data_original[
-              1:5,
-              columnas,
-              with = FALSE],
-            rownames = FALSE,
-            options = list(
-              columnDefs = list(
-                list(
-                  className = 'dt-center',
-                  targets = "_all")),
-              dom = 't',
-              pageLength = 5,
-              ordering = FALSE,
-              language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
-            )) %>%
-            DT::formatStyle(
-              columns = 1:length(columnas),
-              valueColumns = 1,
-              backgroundColor = "white")
-        },
-        error = function(e) {
-          print(e[1])
-          sendSweetAlert(
+base_de_datos_server <- function(id, opciones, conn) {
+  moduleServer(
+    id = id,
+    module = function(input, output, session) {
+      
+      ns <- NS(id)
+      
+      base_de_datos <- reactiveValues()
+      
+      prepara_opciones <- reactiveValues()
+      
+      observe({
+        
+        tables_query <- dbGetQuery(
+          conn,
+          paste0("SELECT table_name FROM information_schema.tables
+       WHERE table_schema='", 
+                 Sys.getenv("DATABASE_SCHEMA"), "'")) %>%
+          unlist() %>%
+          unname()
+        if (identical(character(0), tables_query)) {
+          tables_query <- NULL
+          updateSelectizeInput(
             session = session,
-            title = "Error",
-            text = e[1],
-            type = "error"
+            inputId = "tabla",
+            choices = "Ninguno"
+          )
+        } else {
+          updateSelectizeInput(
+            session = session,
+            inputId = "tabla",
+            choices = tables_query
           )
         }
-      )
+      })
+      
+      observeEvent(input$tabla, {
+        if (!is.null(conn) && 
+            input$tabla != "Ninguno" &&
+            input$tabla != "") {
+          prepara_opciones$colnames <- dbListFields(
+            conn,
+            input$tabla)
+          updateSelectizeInput(
+            session = session,
+            inputId = "columna_valor",
+            selected = opciones$valor_costo,
+            choices = prepara_opciones$colnames
+          )
+        }
+      })
+      
+      observe({
+        if (input$tabla %notin% c("Ninguno", "")) {
+          opciones$fecha_rango <- input$fecha_rango
+          opciones$valor_costo <- ifelse(
+            test = input$columna_valor != "",
+            yes = input$columna_valor,
+            no = opciones$valor_costo)
+          tabla <- input$tabla
+          opciones$colnames <- dbListFields(
+            conn,
+            tabla)
+          opciones$colnames_num <- dbListNumericFields(
+            conn,
+            tabla)
+          fecha_min <- opciones$fecha_rango[1]
+          fecha_max <- opciones$fecha_rango[2]
+          opciones$tabla_nombre <- tabla
+          opciones$tabla_nombre 
+          opciones$tabla_original <- conn %>%
+            tbl(tabla) %>%
+            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
+            filter(fecha_prestacion >= fecha_min) %>%
+            filter(fecha_prestacion <= fecha_max)
+          opciones$tabla <- conn %>%
+            tbl(tabla) %>%
+            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
+            filter(fecha_prestacion >= fecha_min) %>%
+            filter(fecha_prestacion <= fecha_max)
+        }
+      })
+      
+      observeEvent(opciones$colnames_num, {
+        updateSelectizeInput(
+          session = session,
+          inputId = "columna_valor",
+          choices = opciones$colnames_num,
+          selected = "valor"
+        )
+      })
+      
+      output$valor_con_tiempo <- renderPlotly({
+        if (opciones$tabla_nombre != "Ninguno") {
+            tabla <- opciones$tabla_nombre
+            valor_costo <- opciones$valor_costo
+            fecha_min <- opciones$fecha_rango[1]
+            fecha_max <- opciones$fecha_rango[2]
+            datos <- conn %>%
+              tbl(tabla) %>%
+              mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
+              filter(fecha_prestacion >= fecha_min) %>%
+              filter(fecha_prestacion <= fecha_max) %>%
+              mutate(
+                mes_temporal = year(fecha_prestacion)*100 +
+                  month(fecha_prestacion)) %>%
+              group_by(mes_temporal) %>%
+              summarise(suma = sum(
+                as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
+              collect() %>%
+              mutate(mes_label_temporal = paste(
+                sep = " - ",
+                substr(mes_temporal, 1, 4),
+                mes_spanish(
+                as.numeric(substr(mes_temporal, 5, 6))))) %>%
+              arrange(mes_temporal) %>%
+              plot_ly(x = ~mes_label_temporal,
+                      y = ~suma,
+                      type = "bar") %>%
+              config(locale = "es") %>%
+              layout(
+                title = "Suma del valor a mes",
+                xaxis = list(
+                  title = "Mes",
+                  categoryorder = "array",
+                  categoryarray = ~mes_temporal),
+                yaxis = list(title = "Suma",
+                             tickformat = ",.2f"))
+        }
+      })
     }
-  })
-  
-  return(datos)
-  
+  )
 }
 
 # Funciones --------------------------------------------------------------------
 
+dbListNumericFields <- function(conn, table_name) {
+  sql <- "select
+       col.column_name
+from information_schema.columns col
+join information_schema.tables tab on tab.table_schema = col.table_schema
+                                   and tab.table_name = col.table_name
+                                   and tab.table_type = 'BASE TABLE'
+where col.data_type in ('smallint', 'integer', 'bigint', 
+                        'decimal', 'numeric', 'real', 'double precision',
+                        'smallserial', 'serial', 'bigserial', 'money')
+      and col.table_schema not in ('information_schema', 'pg_catalog')
+      and col.table_name in (?id)
+order by col.table_schema,
+         col.table_name,
+         col.ordinal_position"
+  query <- sqlInterpolate(conn, sql, id = table_name)
+  dbGetQuery(conn, str_replace_all(query, "#####", table_name)) %>%
+    unlist() %>%
+    unname()
+}
