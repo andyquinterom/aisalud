@@ -311,27 +311,29 @@ descriptiva_basica_jerarquia <- function(
   episodios_nivel_4 <- data.table()
   
   if (!is.null(nivel_1)) {
+    
+    index_episodios <- data.frame(
+      index = 1:length(nivel_1),
+      agrupador = nivel_1
+    )
+    colnames(index_episodios) <- c("index", columnas)
+    
     episodios <- data %>%
       select(!!as.name(columna_suma), !!as.name(columnas)) %>%
       filter(!!as.name(columnas) %in% nivel_1) %>%
       distinct() %>%
-      collect()
-    lista_episodios <- list()
-    lapply(
-      X = nivel_1,
-      FUN = function(i) {
-        lista_episodios[[i]] <<- episodios %>%
-          filter(!!as.name(columnas) %in% i)
-        episodios_procesados <- lista_episodios[[i]][[columna_suma]]
-        episodios <<- episodios %>%
-          filter(!(!!as.name(columna_suma) %in% episodios_procesados))
-      })
-    episodios_identificador <- rbindlist(lista_episodios)
+      right_join(index_episodios, copy = TRUE) %>%
+      arrange(index) %>%
+      group_by(!!as.name(columna_suma)) %>%
+      mutate(!!columnas := first(!!as.name(columnas))) %>%
+      ungroup() %>%
+      distinct(!!as.name(columna_suma), !!as.name(columnas))
+    
     data_episodios <- data %>%
       group_by(!!as.name(columna_suma)) %>%
       summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE),
                 fecha_episodio = max(fecha_prestacion)) %>%
-      merge(episodios_identificador)
+      right_join(episodios)
     
     episodios_nivel_1 <- descriptiva_basica(
       data = data_episodios,
@@ -341,9 +343,10 @@ descriptiva_basica_jerarquia <- function(
       columna_fecha = "fecha_episodio",
       prestaciones = FALSE
     )
-    episodios_procesados <- data_episodios[[columna_suma]]
+    episodios <- episodios %>%
+      select(!!as.name(columna_suma))
     data <- data %>%
-      filter(!(!!as.name(columna_suma) %in% episodios_procesados))
+      anti_join(episodios)
     data_temp <- NULL
   }
   
