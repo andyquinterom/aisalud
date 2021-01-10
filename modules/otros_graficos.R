@@ -24,6 +24,7 @@ otros_graficos_ui <- function(id) {
                   choices = "Ninguno",
                   width = "100%"
                 ),
+                uiOutput(ns("edades_segmentacion_select_agrupadores_ui")),
                 sliderTextInput(
                   inputId = ns("edades_numero_columnas"),
                   label = "Número de columnas",
@@ -59,6 +60,8 @@ otros_graficos_server <- function(id, opciones) {
     id = id,
     module = function(input, output, session) {
   
+      ns <- NS(id)
+      
       graficos <- reactiveValues()
       
       observeEvent(opciones$colnames, {
@@ -74,6 +77,29 @@ otros_graficos_server <- function(id, opciones) {
           choices = c("Ninguno", opciones$colnames),
           selected = "Ninguno"
         )
+      })
+      
+      observeEvent(input$edades_segmentacion_select_columna, {
+        segmentacion_columna <- input$edades_segmentacion_select_columna
+        if (segmentacion_columna != "Ninguno" && segmentacion_columna != "") {
+          output$edades_segmentacion_select_agrupadores_ui <- renderUI({
+            selectizeInput(
+              inputId = ns("edades_segmentacion_select_agrupadores"),
+              label = "Incluir:",
+              choices = {
+                opciones$tabla_original %>%
+                  select({{ segmentacion_columna }}) %>%
+                  distinct() %>%
+                  collect() %>%
+                  unlist() %>%
+                  unname()
+                },
+              multiple = TRUE
+            )
+          })
+        } else {
+          output$edades_segmentacion_select_agrupadores_ui <- renderUI({})
+        }
       })
       
       observeEvent(input$edades_ejecutar, {
@@ -101,8 +127,11 @@ otros_graficos_server <- function(id, opciones) {
                   numero_bins = numero_bins)
               } else {
                 segmentacion <- input$edades_segmentacion_select_columna
+                segmentacion_seleccionado <- 
+                  input$edades_segmentacion_select_agrupadores
                 columna_edades <- input$edades_select_columna
                 edades_pacientes <- opciones$tabla %>%
+                  filter(!!as.name(segmentacion) %in% segmentacion_seleccionado) %>%
                   group_by(nro_identificacion, !!as.name(segmentacion)) %>%
                   summarise(edad = max(!!as.name(columna_edades),
                                        na.rm = TRUE))
