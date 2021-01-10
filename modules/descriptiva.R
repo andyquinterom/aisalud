@@ -550,7 +550,7 @@ episodios_server <- function(id, opciones, conn) {
       
       output$descriptiva_sumas_valor <- renderText({
         if (!is.null(opciones$colnames)) {
-          if(nrow(episodios$tabla[["descriptiva"]]) > 1) {
+          if(nrow(episodios$tabla[["descriptiva"]]) > 0) {
             paste("Total",
                   paste0(tolower(opciones$valor_costo), ":"), 
                   formatAsCurrency(
