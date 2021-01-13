@@ -52,6 +52,11 @@ shinyUI(
             icon = icon("chart-bar", lib = "font-awesome"),
             tabName = "otros_graficos_modulo"
           ),
+          menuItem(
+            text = "Composición",
+            icon = icon("object-group", lib = "font-awesome"),
+            tabName = "composicion_modulo"
+          ),
           if (NTS_INCLUIDO) {
             menuItem(
               text = "Seguimiento",
@@ -110,6 +115,10 @@ shinyUI(
           tabItem(
             tabName = "otros_graficos_modulo",
             otros_graficos_ui("otros_graficos_modulo")
+          ),
+          tabItem(
+            tabName = "composicion_modulo",
+            composicion_ui("composicion_modulo")
           ),
           tabItem(
             tabName = "seguimiento_modulo_indice",
