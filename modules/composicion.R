@@ -126,7 +126,8 @@ composicion_server <- function(id, opciones, conn) {
           callback = callback_js,
           selection = 'none'
         ) %>%
-          formatPercentage(c("participacion", "participacion_valor"))
+          formatPercentage(c("participacion", "participacion_valor")) %>%
+          formatCurrency(c("valor_explorar", "valor_calculos"))
       })
       
     }
