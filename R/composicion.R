@@ -20,6 +20,14 @@ datos_composicion <- function(data, columna_episodios, columna_valor,
     group_by(!!as.name(columna_episodios)) %>%
     mutate(n_episodios = n())
   
+  sumas_episodios <- data %>%
+    group_by(!!as.name(columna_suma)) %>%
+    summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE)) %>%
+    right_join(episodios) %>%
+    ungroup() %>%
+    group_by(!!as.name(columna_episodios)) %>%
+    summarise(valor_calculos = sum(valor_calculos))
+  
   datos_explorar <- data %>%
     select(!!as.name(columna_suma), !!as.name(columna_explorar)) %>%
     distinct() %>%
