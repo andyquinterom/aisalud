@@ -103,7 +103,8 @@ composicion_server <- function(id, opciones, conn) {
                 prioridad = input$composicion_episodios_agrupadores
               ) %>%
                 collect() %>%
-                mutate(participacion = participacion/100)
+                mutate(participacion = participacion/100,
+                       participacion_valor = participacion_valor/100)
             }
           })
       })
@@ -125,7 +126,7 @@ composicion_server <- function(id, opciones, conn) {
           callback = callback_js,
           selection = 'none'
         ) %>%
-          formatPercentage("participacion")
+          formatPercentage(c("participacion", "participacion_valor"))
       })
       
     }
