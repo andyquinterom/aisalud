@@ -29,12 +29,18 @@ datos_composicion <- function(data, columna_episodios, columna_valor,
     summarise(valor_calculos = sum(valor_calculos))
   
   datos_explorar <- data %>%
-    select(!!as.name(columna_suma), !!as.name(columna_explorar)) %>%
-    distinct() %>%
+    group_by(!!as.name(columna_suma), !!as.name(columna_explorar)) %>%
+    summarise(valor_explorar = sum(!!as.name(columna_valor), na.rm = TRUE)) %>%
     right_join(episodios) %>%
     group_by(!!as.name(columna_episodios), !!as.name(columna_explorar)) %>%
-    summarise(count = n(), n_episodios = max(n_episodios)) %>%
-    mutate(participacion = round(100*count / n_episodios))
+    summarise(count = n(), n_episodios = max(n_episodios),
+              valor_explorar = sum(valor_explorar)) %>%
+    right_join(sumas_episodios) %>%
+    mutate(participacion = round(100*count / n_episodios),
+           participacion_valor = round(100*valor_explorar / valor_calculos)) %>%
+    select(!!as.name(columna_episodios), !!as.name(columna_explorar),
+           count, n_episodios, participacion,
+           valor_explorar, valor_calculos, participacion_valor)
   
   return(datos_explorar)
     
