@@ -59,6 +59,14 @@ shinyServer(function(input, output, session) {
     id = "otros_graficos_modulo",
     opciones = opciones
   )
+  
+  # Modulo de composicion
+  
+  composicion_server(
+    id = "composicion_modulo",
+    opciones = opciones,
+    conn = conn
+  )
 
   # Modulos seguimiento NT ---------------------------------------------
 
