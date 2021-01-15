@@ -27,7 +27,6 @@ composicion_ui <- function(id) {
           inputId = ns("composicion_grupos"),
           label = "Columna a explorar:",
           choices = NULL,
-          multiple = TRUE, 
           width = "100%"),
         actionButton(
           inputId = ns("composicion_ejecutar"),
@@ -49,7 +48,7 @@ composicion_server <- function(id, opciones, conn) {
     id = id,
     module = function(input, output, session) {
       
-      composicion <- reactiveValues(agrupadores = c())
+      composicion <- reactiveValues(agrupadores = c(), tabla = data.frame())
       
       observeEvent(opciones$colnames, {
         updateSelectizeInput(
@@ -70,21 +69,31 @@ composicion_server <- function(id, opciones, conn) {
       observe({
         if (input$composicion_episodios != "" &&
             opciones$tabla_nombre != "Ninguno" &&
-            input$composicion_episodios %in% opciones$colnames) {
-          updateSelectizeInput(
-            session = session,
-            inputId = "composicion_episodios_agrupadores",
-            server = TRUE,
-            choices = {
-              opciones$tabla %>%
-                select(!!as.name(input$composicion_episodios)) %>%
-                distinct() %>%
-                collect() %>%
-                unname() %>%
-                unlist()
-            }
-          )
+            input$composicion_episodios %in% opciones$colnames &&
+            input$composicion_grupos != "") {
+          if (!identical(composicion$agrupadores,
+                         input$composicion_episodios_agrupadores) ||
+              is.null(composicion$agrupadores)) {
+            updateSelectizeInput(
+              session = session,
+              inputId = "composicion_episodios_agrupadores",
+              server = TRUE,
+              selected = composicion$agrupadores,
+              choices = {
+                opciones$tabla %>%
+                  select(!!as.name(input$composicion_episodios)) %>%
+                  distinct() %>%
+                  collect() %>%
+                  unname() %>%
+                  unlist()
+              }
+            )
+          }
         }
+      })
+      
+      observe({
+        composicion$agrupadores <- input$composicion_episodios_agrupadores
       })
       
       observeEvent(input$composicion_ejecutar, {
@@ -93,7 +102,8 @@ composicion_server <- function(id, opciones, conn) {
             if (input$composicion_episodios != "" &&
                 opciones$tabla_nombre != "Ninguno" &&
                 input$composicion_episodios %in% opciones$colnames &&
-                !is.null(input$composicion_episodios_agrupadores)) {
+                !is.null(input$composicion_episodios_agrupadores) &&
+                input$composicion_grupos != "") {
               composicion$tabla <- datos_composicion(
                 data = opciones$tabla,
                 columna_episodios = input$composicion_episodios,
@@ -117,51 +127,57 @@ composicion_server <- function(id, opciones, conn) {
       )
       
       output$tabla_composicion <- DT::renderDT({
-        style_color_participacion_valor <- styleColorBar(
-          data = composicion$tabla$participacion_valor,
-          color = "#87CEEB")
         
-        style_color_participacion <- styleColorBar(
-          data = composicion$tabla$participacion,
-          color = "#87CEEB")
+        if (nrow(composicion$tabla) > 0) {
+          style_color_participacion_valor <- styleColorBar(
+            data = composicion$tabla$participacion_valor,
+            color = "#87CEEB")
+          
+          style_color_participacion <- styleColorBar(
+            data = composicion$tabla$participacion,
+            color = "#87CEEB")
+          
+          datatable(
+            composicion$tabla,
+            rownames = FALSE,
+            colnames = c(
+              "Incluida en episodios:" = "count",
+              "Número de episodios:" = "n_episodios",
+              "% de participación:" = "participacion",
+              "Suma de valor del agrupador:" = "valor_explorar",
+              "Suma de valor de los episodios" = "valor_calculos",
+              "% del valor total" = "participacion_valor"),
+            extensions = c('RowGroup', 'FixedColumns'),
+            options = list(rowGroup = list(dataSrc = 0),
+                           pageLength = nrow(composicion$tabla),
+                           orderFixed = c(0, "desc"),
+                           scrollY = "700px",
+                           fixedColumns = list(leftColumns = 2)),
+            callback = callback_js,
+            selection = 'none'
+          ) %>%
+            formatPercentage(c("% de participación:",
+                               "% del valor total")) %>%
+            formatCurrency(c("Suma de valor del agrupador:",
+                             "Suma de valor de los episodios")) %>%
+            formatStyle(
+              c("% de participación:"),
+              background = style_color_participacion,
+              backgroundSize = '100% 90%',
+              backgroundRepeat = 'no-repeat',
+              backgroundPosition = 'center') %>%
+            formatStyle(
+              c("% del valor total"),
+              background = style_color_participacion_valor,
+              backgroundSize = '100% 90%',
+              backgroundRepeat = 'no-repeat',
+              backgroundPosition = 'center')
+        } else {
+          data.frame()
+        }
         
-        datatable(
-          composicion$tabla,
-          rownames = FALSE,
-          colnames = c(
-            "Incluida en episodios:" = "count",
-            "Número de episodios:" = "n_episodios",
-            "% de participación:" = "participacion",
-            "Suma de valor del agrupador:" = "valor_explorar",
-            "Suma de valor de los episodios" = "valor_calculos",
-            "% del valor total" = "participacion_valor"),
-          extensions = c('RowGroup', 'FixedColumns'),
-          options = list(rowGroup = list(dataSrc = 0),
-                         pageLength = nrow(composicion$tabla),
-                         orderFixed = c(0, "desc"),
-                         scrollY = "700px",
-                         fixedColumns = list(leftColumns = 2)),
-          callback = callback_js,
-          selection = 'none'
-        ) %>%
-          formatPercentage(c("% de participación:",
-                             "% del valor total")) %>%
-          formatCurrency(c("Suma de valor del agrupador:",
-                           "Suma de valor de los episodios")) %>%
-          formatStyle(
-            c("% de participación:"),
-            background = style_color_participacion,
-            backgroundSize = '100% 90%',
-            backgroundRepeat = 'no-repeat',
-            backgroundPosition = 'center') %>%
-          formatStyle(
-            c("% del valor total"),
-            background = style_color_participacion_valor,
-            backgroundSize = '100% 90%',
-            backgroundRepeat = 'no-repeat',
-            backgroundPosition = 'center')
       })
-      
+        
     }
   )
 }
