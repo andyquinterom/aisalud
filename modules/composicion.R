@@ -117,17 +117,47 @@ composicion_server <- function(id, opciones, conn) {
       )
       
       output$test <- DT::renderDT({
+        style_color_participacion_valor <- styleColorBar(
+          data = composicion$tabla$participacion_valor,
+          color = "#87CEEB")
+        
+        style_color_participacion <- styleColorBar(
+          data = composicion$tabla$participacion,
+          color = "#87CEEB")
+        
         datatable(
           composicion$tabla,
-          extensions = 'RowGroup',
+          colnames = c(
+            "Incluida en episodios:" = "count",
+            "Número de episodios:" = "n_episodios",
+            "% de participación:" = "participacion",
+            "Suma de valor del agrupador:" = "valor_explorar",
+            "Suma de valor de los episodios" = "valor_calculos",
+            "% del valor total" = "participacion_valor"),
+          extensions = c('RowGroup', 'FixedColumns'),
           options = list(rowGroup = list(dataSrc = 1),
                          pageLength = nrow(composicion$tabla),
-                         orderFixed = c(1, "desc")),
+                         orderFixed = c(1, "desc"),
+                         fixedColumns = list(leftColumns = 2)),
           callback = callback_js,
           selection = 'none'
         ) %>%
-          formatPercentage(c("participacion", "participacion_valor")) %>%
-          formatCurrency(c("valor_explorar", "valor_calculos"))
+          formatPercentage(c("% de participación:",
+                             "% del valor total")) %>%
+          formatCurrency(c("Suma de valor del agrupador:",
+                           "Suma de valor de los episodios")) %>%
+          formatStyle(
+            c("% de participación:"),
+            background = style_color_participacion,
+            backgroundSize = '100% 90%',
+            backgroundRepeat = 'no-repeat',
+            backgroundPosition = 'center') %>%
+          formatStyle(
+            c("% del valor total"),
+            background = style_color_participacion_valor,
+            backgroundSize = '100% 90%',
+            backgroundRepeat = 'no-repeat',
+            backgroundPosition = 'center')
       })
       
     }
