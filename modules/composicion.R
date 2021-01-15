@@ -37,7 +37,7 @@ composicion_ui <- function(id) {
         ),
       box(
         width = 9,
-        DT::DTOutput(ns("test"))
+        DT::DTOutput(ns("tabla_composicion"))
       )
     )
   )
@@ -116,7 +116,7 @@ composicion_server <- function(id, opciones, conn) {
         "});"
       )
       
-      output$test <- DT::renderDT({
+      output$tabla_composicion <- DT::renderDT({
         style_color_participacion_valor <- styleColorBar(
           data = composicion$tabla$participacion_valor,
           color = "#87CEEB")
@@ -138,6 +138,8 @@ composicion_server <- function(id, opciones, conn) {
           options = list(rowGroup = list(dataSrc = 1),
                          pageLength = nrow(composicion$tabla),
                          orderFixed = c(1, "desc"),
+                         scrollX = TRUE,
+                         scrollY = "700px",
                          fixedColumns = list(leftColumns = 2)),
           callback = callback_js,
           selection = 'none'
