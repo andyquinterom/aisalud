@@ -127,6 +127,7 @@ composicion_server <- function(id, opciones, conn) {
         
         datatable(
           composicion$tabla,
+          rownames = FALSE,
           colnames = c(
             "Incluida en episodios:" = "count",
             "Número de episodios:" = "n_episodios",
@@ -135,10 +136,9 @@ composicion_server <- function(id, opciones, conn) {
             "Suma de valor de los episodios" = "valor_calculos",
             "% del valor total" = "participacion_valor"),
           extensions = c('RowGroup', 'FixedColumns'),
-          options = list(rowGroup = list(dataSrc = 1),
+          options = list(rowGroup = list(dataSrc = 0),
                          pageLength = nrow(composicion$tabla),
-                         orderFixed = c(1, "desc"),
-                         scrollX = TRUE,
+                         orderFixed = c(0, "desc"),
                          scrollY = "700px",
                          fixedColumns = list(leftColumns = 2)),
           callback = callback_js,
