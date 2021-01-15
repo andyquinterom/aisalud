@@ -116,6 +116,17 @@ composicion_server <- function(id, opciones, conn) {
                 mutate(participacion = participacion/100,
                        participacion_valor = participacion_valor/100)
             }
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error", 
+              type = "error",
+              text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+            )
           })
       })
       
