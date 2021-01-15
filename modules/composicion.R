@@ -32,8 +32,19 @@ composicion_ui <- function(id) {
           inputId = ns("composicion_ejecutar"),
           label = "Ejecutar",
           width = "100%"
-        )
         ),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("composicion_descargar_csv"),
+          label = "CSV",
+          style = "width:100%;"),
+        tags$br(),
+        tags$br(),
+        downloadButton(
+          outputId = ns("composicion_descargar_xlsx"),
+          label = "Excel",
+          style = "width:100%;")),
       box(
         width = 9,
         DT::DTOutput(ns("tabla_composicion"))
@@ -188,6 +199,34 @@ composicion_server <- function(id, opciones, conn) {
         }
         
       })
+      
+      output$composicion_descargar_csv <- downloadHandler(
+        filename = function() {
+          paste("Composicion",
+                ".csv", sep="")
+        },
+        content = function(file) {
+          write.csv(
+            x = composicion$tabla,
+            file = file, 
+            row.names = FALSE,
+            na="")
+        }, 
+        contentType = "text/csv"
+      )
+      
+      output$composicion_descargar_xlsx <- downloadHandler(
+        filename = function() {
+          paste("Composicion",
+                ".xlsx", sep="")
+        },
+        content = function(file) {
+          write_xlsx(
+            x = composicion$tabla,
+            path = file)
+        }, 
+        contentType = "xlsx"
+      )
         
     }
   )
