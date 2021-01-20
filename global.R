@@ -106,32 +106,15 @@ if (Sys.getenv("NTS_INCLUIDO") == "") {
   
   NTS_INCLUIDO <- TRUE
   
-  if (!(file.exists("datos/nts/notas_tecnicas.feather") &&
-        file.exists("datos/nts/indice.feather") && 
-        file.exists("datos/nts/inclusiones.feather"))) {
-    
-    write_feather(sheets_read(nts_path,
-                              sheet = "notas_tecnicas",
-                              col_types = "ccddd"),
-                  "datos/nts/notas_tecnicas.feather")
-    
-    write_feather(sheets_read(nts_path, 
-                              sheet = "indice", 
-                              col_types = "ccdcccd"),
-                  "datos/nts/indice.feather")
-    
-    write_feather(sheets_read(nts_path, 
-                              sheet = "inclusiones", 
-                              col_types = "ccdc") ,
-                  "datos/nts/inclusiones.feather")
-    
-  }
-  
-  dash_nt_indice <- as.data.table(read_feather("datos/nts/indice.feather"))
-  dash_nt_inclusiones <- as.data.table(
-    read_feather("datos/nts/inclusiones.feather"))
-  dash_nt_datos <- as.data.table(
-    read_feather("datos/nts/notas_tecnicas.feather"))
+  dash_nt_indice <- as.data.table(sheets_read(nts_path, 
+                                              sheet = "indice", 
+                                              col_types = "ccdcccd"))
+  dash_nt_inclusiones <- as.data.table(sheets_read(nts_path, 
+                                                   sheet = "inclusiones", 
+                                                   col_types = "ccdc"))
+  dash_nt_datos <- as.data.table(sheets_read(nts_path,
+                                             sheet = "notas_tecnicas",
+                                             col_types = "ccddd"))
   dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
   
 }
