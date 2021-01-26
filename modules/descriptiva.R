@@ -75,6 +75,13 @@ episodios_ui <- function(id) {
             style = "font-size:90%")
         ),
         tabPanel(
+          title = "Frecuencias",
+          div(
+            DT::dataTableOutput(outputId = ns("frecuencias_tabla")) %>%
+              withSpinner(),
+            style = "font-size:90%")
+        ),
+        tabPanel(
           title = "Histogramas",
           tags$br(),
           fluidRow(
