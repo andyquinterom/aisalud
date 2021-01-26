@@ -2,6 +2,9 @@ frecuencias <- function(
   data, agrupador, prestaciones, columna_fecha, columna_suma, 
   intervalo = "mes") {
   
+  data <- data %>%
+    mutate_at(vars(agrupador), as.character)
+  
   if (intervalo == "mes") {
     data <- data %>%
       mutate(mes_num = month(!!as.name(columna_fecha)),
@@ -30,8 +33,7 @@ frecuencias <- function(
     summarise(Frecuencia = n()) %>%
     arrange(mes_anio_num) %>%
     collect() %>%
-    pivot_wider(names_from = mes_anio_num, values_from = Frecuencia) %>%
-    replace(is.na(.), 0)
+    pivot_wider(names_from = mes_anio_num, values_from = Frecuencia) 
   
   if (intervalo == "mes") {
     data <- data %>%
