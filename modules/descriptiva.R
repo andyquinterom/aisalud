@@ -5,46 +5,62 @@ episodios_ui <- function(id) {
     fluidRow(
       box(
         width = 3,
-        checkboxInput(
-          inputId = ns("episodios_enable"),
-          label = "Agrupar por episodios",
-          value = F
-        ),
-        uiOutput(
-          outputId = ns("episodios_col_valor_out")
-        ),  
-        selectizeInput(
-          inputId = ns("episodios_cols"),
-          label = "Agrupar por:",
-          choices = NULL, 
-          multiple = FALSE),
-        selectizeInput(
-          inputId = ns("episodios_cols_sep"),
-          label = "Separar por:",
-          choices = NULL,
-          multiple = TRUE),
-        textOutput(outputId = ns("descriptiva_sumas_registros")),
-        textOutput(outputId = ns("descriptiva_sumas_pacientes")),
-        textOutput(outputId = ns("descriptiva_sumas_facturas")),
-        textOutput(outputId = ns("descriptiva_sumas_valor")),
-        tags$br(),
-        uiOutput(
-          outputId = ns("episodios_jerarquia")
-        ),
-        tags$br(),
-        actionButton(ns("episodios_exe"), "Confirmar"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("episodios_descargar_csv"),
-          label = "CSV",
-          style = "width:100%;"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("episodios_descargar_xlsx"),
-          label = "Excel",
-          style = "width:100%;")),
+        tabsetPanel(
+          tabPanel(
+            title = "Generales",
+            tags$br(),
+            checkboxInput(
+              inputId = ns("episodios_enable"),
+              label = "Agrupar por episodios",
+              value = F
+            ),
+            uiOutput(
+              outputId = ns("episodios_col_valor_out")
+            ),  
+            selectizeInput(
+              inputId = ns("episodios_cols"),
+              label = "Agrupar por:",
+              choices = NULL, 
+              multiple = FALSE),
+            selectizeInput(
+              inputId = ns("episodios_cols_sep"),
+              label = "Separar por:",
+              choices = NULL,
+              multiple = TRUE),
+            textOutput(outputId = ns("descriptiva_sumas_registros")),
+            textOutput(outputId = ns("descriptiva_sumas_pacientes")),
+            textOutput(outputId = ns("descriptiva_sumas_facturas")),
+            textOutput(outputId = ns("descriptiva_sumas_valor")),
+            tags$br(),
+            uiOutput(
+              outputId = ns("episodios_jerarquia")
+            ),
+            tags$br(),
+            actionButton(ns("episodios_exe"), "Confirmar"),
+            tags$br(),
+            tags$br(),
+            downloadButton(
+              outputId = ns("episodios_descargar_csv"),
+              label = "CSV",
+              style = "width:100%;"),
+            tags$br(),
+            tags$br(),
+            downloadButton(
+              outputId = ns("episodios_descargar_xlsx"),
+              label = "Excel",
+              style = "width:100%;")
+          ),
+          tabPanel(
+            title = "Frecuencias",
+            tags$br(),
+            radioButtons(
+              inputId = ns("frecuencias_intervalo"),
+              choiceNames = c("Mes", "Semana", "Día"),
+              choiceValues = c("mes", "semana", "dia"),
+              label = "Intervalo para frecuencias"
+            )
+          )
+        )),
     box(
       width = 9,
       tabsetPanel(
