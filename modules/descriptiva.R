@@ -76,6 +76,7 @@ episodios_ui <- function(id) {
         ),
         tabPanel(
           title = "Frecuencias",
+          tags$br(),
           div(
             DT::dataTableOutput(outputId = ns("frecuencias_tabla")) %>%
               withSpinner(),
@@ -370,6 +371,17 @@ episodios_server <- function(id, opciones, conn) {
                       nivel_2 = input$episodios_jerarquia_nivel_2_order,
                       nivel_3 = input$episodios_jerarquia_nivel_3_order,
                       nivel_4 = input$episodios_jerarquia_nivel_4_order)
+                    episodios$frecuencias <- frecuencias_jerarquia(
+                      data = opciones$tabla,
+                      columnas =      episodios_cols, 
+                      columna_fecha = "fecha_prestacion",
+                      columna_sep =   episodios_cols_sep,
+                      columna_suma =  episodios_col_valor,
+                      nivel_1 = input$episodios_jerarquia_nivel_1_order,
+                      nivel_2 = input$episodios_jerarquia_nivel_2_order,
+                      nivel_3 = input$episodios_jerarquia_nivel_3_order,
+                      nivel_4 = input$episodios_jerarquia_nivel_4_order,
+                      intervalo = input$frecuencias_intervalo)
                   } else {
                     episodios$tabla <- descriptiva(
                       data = opciones$tabla,
@@ -380,6 +392,17 @@ episodios_server <- function(id, opciones, conn) {
                       columna_valor = opciones$valor_costo,
                       columna_suma = input$descriptiva_unidades,
                       prestaciones = (input$descriptiva_unidades == "prestacion")
+                    )
+                    episodios$frecuencias <- frecuencias(
+                      columna_fecha = "fecha_prestacion",
+                      data = opciones$tabla,
+                      agrupador = c(
+                        episodios_cols,
+                        episodios_cols_sep
+                      ),
+                      columna_suma = input$descriptiva_unidades,
+                      prestaciones = (input$descriptiva_unidades == "prestacion"),
+                      intervalo = input$frecuencias_intervalo
                     )
                     episodios$tabla[["data"]] <- 
                       list("temporal" = episodios$tabla[["data"]])
@@ -445,6 +468,20 @@ episodios_server <- function(id, opciones, conn) {
                            mark = ".",
                            dec.mark = ",")
         }
+      })
+      
+      output$frecuencias_tabla <- DT::renderDataTable({
+        DT::datatable(
+          episodios$frecuencias,
+          options = list(
+            language = list(
+              url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+            pageLength = 50,
+            autoWidth = FALSE,
+            ordering=T, 
+            scrollX = TRUE,
+            scrollY = "60vh"),
+          rownames= FALSE)
       })
       
       output$grafico_barras_select_agrupador <- 
