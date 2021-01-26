@@ -19,13 +19,13 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   if (!prestaciones) {
     print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
-      group_by_at(vars(c(columna_suma,columnas))) %>%
+      group_by(!!!rlang::syms(c(columna_suma,columnas))) %>%
       summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE))
   }
   
   print("Descriptiva: resumiendo los datos.")
   data_descriptiva <- data %>%
-    group_by_at(vars(columnas)) %>%
+    group_by(!!!rlang::syms(columnas)) %>%
     arrange(valor_calculos) %>%
     summarise(
       "Frecuencia" = n(),
