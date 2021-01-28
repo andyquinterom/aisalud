@@ -12,7 +12,7 @@ episodios_ui <- function(id) {
             checkboxInput(
               inputId = ns("episodios_enable"),
               label = "Agrupar por episodios",
-              value = F
+              value = FALSE
             ),
             uiOutput(
               outputId = ns("episodios_col_valor_out")
@@ -523,7 +523,7 @@ episodios_server <- function(id, opciones, conn) {
               url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
             pageLength = 50,
             autoWidth = FALSE,
-            ordering=T, 
+            ordering= TRUE, 
             scrollX = TRUE,
             scrollY = "60vh"),
           rownames= FALSE)
@@ -541,10 +541,10 @@ episodios_server <- function(id, opciones, conn) {
                 pageLength = 10000,
                 dom = 'ft',
                 autoWidth = FALSE,
-                ordering=T, 
+                ordering= TRUE, 
                 scrollX = TRUE,
                 scrollY = "370px"),
-              rownames= FALSE) %>%
+              rownames = FALSE) %>%
               formatStyle(
                 columns = 1:length(c(episodios$cols, episodios$cols_sep)),
                 fontSize = '95%')
@@ -562,10 +562,10 @@ episodios_server <- function(id, opciones, conn) {
               pageLength = 10000,
               dom = 'ft',
               autoWidth = FALSE,
-              ordering=T, 
+              ordering = TRUE, 
               scrollX = TRUE,
               scrollY = "370px"),
-            rownames= FALSE) %>%
+            rownames = FALSE) %>%
             formatStyle(
               columns = 1:length(c(episodios$cols, episodios$cols_sep)),
               fontSize = '95%')
@@ -584,10 +584,10 @@ episodios_server <- function(id, opciones, conn) {
                 pageLength = 10000,
                 dom = 'ft',
                 autoWidth = FALSE,
-                ordering=T, 
+                ordering = TRUE, 
                 scrollX = TRUE,
                 scrollY = "370px"),
-              rownames= FALSE) %>%
+              rownames = FALSE) %>%
               formatStyle(
                 columns = 1:length(c(episodios$cols, episodios$cols_sep)),
                 fontSize = '95%')
@@ -736,14 +736,14 @@ episodios_server <- function(id, opciones, conn) {
       output$episodios_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
-                ".csv", sep="")
+                ".csv", sep = "")
         },
         content = function(file) {
           write.csv(
             x = episodios$tabla[["descriptiva"]],
             file = file, 
             row.names = FALSE,
-            na="")
+            na = "")
         }, 
         contentType = "text/csv"
       )
@@ -751,7 +751,7 @@ episodios_server <- function(id, opciones, conn) {
       output$episodios_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
-                ".xlsx", sep="")
+                ".xlsx", sep = "")
         },
         content = function(file) {
           write_xlsx(
@@ -764,14 +764,14 @@ episodios_server <- function(id, opciones, conn) {
       output$frecuencias_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
-                ".csv", sep="")
+                ".csv", sep = "")
         },
         content = function(file) {
           write.csv(
             x = episodios$frecuencias,
             file = file, 
             row.names = FALSE,
-            na="")
+            na = "")
         }, 
         contentType = "text/csv"
       )
@@ -779,7 +779,7 @@ episodios_server <- function(id, opciones, conn) {
       output$episodios_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
-                ".xlsx", sep="")
+                ".xlsx", sep = "")
         },
         content = function(file) {
           write_xlsx(

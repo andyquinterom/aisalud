@@ -54,7 +54,8 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
                                 nivel_4, intervalo = "mes", return_list = FALSE) {
   
   # data[, "ASIGNACION_NIVEL" := ""]
-  data <- data %>% mutate(ASIGNACION_NIVEL = "")
+  data <- data %>% 
+    mutate(ASIGNACION_NIVEL = "")
   
   episodios_nivel_1 <- data.table()
   episodios_nivel_2 <- data.table()
