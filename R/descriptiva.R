@@ -37,7 +37,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       "P90" = round(quantile(valor_calculos, probs = 0.9),2),
       "Desv.tipica" = round(sd(valor_calculos, na.rm = TRUE),2),
       "Coef.var" = round(na_if(sd(valor_calculos, na.rm = TRUE), 0)/
-                           mean(valor_calculos, na.rm = TRUE),2),
+                           na_if(mean(valor_calculos, na.rm = TRUE), 0), 2),
       "Min." = min(valor_calculos, na.rm = TRUE),
       "Max." = max(valor_calculos, na.rm = TRUE),
       "Rango" = max(valor_calculos, na.rm = TRUE) - 
