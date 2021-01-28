@@ -33,7 +33,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     
     if (!is.null(columna_sep)) {
       data_episodios <- data %>%
-        group_by(!!as.name(columna_suma), !!as.name(columna_sep))
+        group_by(!!as.name(columna_suma), !!!rlang::syms(columna_sep))
     } else {
       data_episodios <- data %>%
         group_by(!!as.name(columna_suma))

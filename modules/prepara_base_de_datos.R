@@ -4,7 +4,7 @@ base_de_datos_ui <- function(id) {
   
   tagList(
     box(
-      style = "min-height: 450px;",
+      style = "min-height: 470px;",
       width = 4,
       tags$br(),
       tags$br(),
@@ -31,9 +31,9 @@ base_de_datos_ui <- function(id) {
       tags$style(HTML(".datepicker {z-index:99999 !important;}"))
     ),
     box(
-      width = 12,
-      height = "300px",
-      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "280px") %>%
+      width = 8,
+      style = "min-height: 450px;",
+      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "450px") %>%
         withSpinner()
     )
   )
@@ -70,7 +70,7 @@ base_de_datos_server <- function(id, opciones, conn) {
           updateSelectizeInput(
             session = session,
             inputId = "tabla",
-            choices = tables_query
+            choices = c("Ninguno", tables_query)
           )
         }
       })

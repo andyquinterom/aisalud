@@ -29,14 +29,6 @@ shinyServer(function(input, output, session) {
     conn = conn
   )
   
-  # # Modulo Frecuencias --------------------------------------------
-  # 
-  frecuencias_server(
-    id = "frecuencias_modulo",
-    opciones = opciones
-  )
-  # 
-  # 
   # # Modulo outliers -----------------------------------------------------------
   # 
   outliers_server(
