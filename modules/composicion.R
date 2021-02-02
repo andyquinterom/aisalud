@@ -79,7 +79,7 @@ composicion_server <- function(id, opciones, conn) {
       
       observe({
         if (input$composicion_episodios != "" &&
-            opciones$tabla_nombre != "Ninguno" &&
+            opciones$datos_cargados &&
             input$composicion_episodios %in% opciones$colnames &&
             input$composicion_grupos != "") {
           if (!identical(composicion$agrupadores,
@@ -109,7 +109,7 @@ composicion_server <- function(id, opciones, conn) {
         tryCatch(
           expr = {
             if (input$composicion_episodios != "" &&
-                opciones$tabla_nombre != "Ninguno" &&
+                opciones$datos_cargados &&
                 input$composicion_episodios %in% opciones$colnames &&
                 !is.null(input$composicion_episodios_agrupadores) &&
                 input$composicion_grupos != "") {

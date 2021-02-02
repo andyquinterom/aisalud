@@ -182,7 +182,7 @@ seguimiento_notas_comparar_server <- function(id, nota_tecnica, indice, opciones
       })
       
       observeEvent(cambio_columnas(), {
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             input$comparar_agrupador != "") {
           tryCatch(
             expr = {

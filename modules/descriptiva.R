@@ -668,7 +668,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_registros <- renderText({
-        if (opciones$tabla_nombre != "Ninguno") {
+        if (opciones$datos_cargados) {
           paste("Número de registros:", 
                 formatC(
                   {opciones$tabla %>% 
@@ -688,7 +688,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_pacientes <- renderText({
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             "nro_identificacion" %in% opciones$colnames) {
           paste("Número de pacientes:", 
                 formatC(
@@ -711,7 +711,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_facturas <- renderText({
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             "nro_factura" %in% opciones$colnames) {
           paste("Número de facturas:", 
                 formatC(

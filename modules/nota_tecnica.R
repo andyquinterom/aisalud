@@ -130,8 +130,8 @@ nota_tecnica_server <- function(id, opciones) {
           "prestacion" = list()
         ))
       
-      observeEvent(opciones$tabla_original, {
-        if (opciones$tabla_nombre != "Ninguno") {
+      observe({
+        if (opciones$datos_cargados) {
           numero_meses <- opciones$tabla_original %>%
             transmute(mes_temporal = month(fecha_prestacion)) %>%
             distinct() %>%
@@ -184,7 +184,7 @@ nota_tecnica_server <- function(id, opciones) {
       })
 
       observeEvent(cambio_columnas(), {
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             input$nota_tecnica_cols != "") {
           tryCatch(
             expr = {

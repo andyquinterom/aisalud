@@ -84,7 +84,7 @@ outliers_server <- function(id, opciones) {
       })
       
       observeEvent(input$outliers_excluir, {
-        if(opciones$tabla_nombre != "Ninguno") {
+        if(opciones$datos_cargados) {
           if (length(input$outliers_tabla_rows_selected) > 0) {
             opciones$pacientes_excluir <- unname(c(
               opciones$pacientes_excluir,
@@ -121,7 +121,7 @@ outliers_server <- function(id, opciones) {
         valor_costo <- opciones$valor_costo
         frecuencia <- input$outliers_frecuencia
         showNotification("Procesando outliers...")
-        if (opciones$tabla_nombre != "Ninguno") {
+        if (opciones$datos_cargados) {
           tryCatch(
             expr = {
               if (input$outliers_modo == "percentil") {
