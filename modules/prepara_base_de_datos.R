@@ -4,7 +4,7 @@ base_de_datos_ui <- function(id) {
   
   tagList(
     box(
-      style = "min-height: 550px;",
+      style = "min-height: 650px;",
       width = 4,
       tabsetPanel(
         tabPanel(
@@ -78,8 +78,8 @@ base_de_datos_ui <- function(id) {
     ),
     box(
       width = 8,
-      style = "min-height: 550px;",
-      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "450px") %>%
+      style = "min-height: 650px;",
+      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
         withSpinner()
     )
   )
@@ -333,10 +333,6 @@ base_de_datos_server <- function(id, opciones, conn) {
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
           opciones$datos_cargados <- TRUE
-        } else if (input$tabla == "Ninguno" &&
-                   opciones$datos_cargados) {
-          file_opciones$enabled <- FALSE
-          opciones$datos_cargados <- FALSE
         } else if (input$tabla == "Ninguno" &&
                    file_opciones$enabled) {
           opciones$datos_cargados <- TRUE
