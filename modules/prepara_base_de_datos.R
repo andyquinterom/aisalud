@@ -63,14 +63,16 @@ base_de_datos_ui <- function(id) {
             inputId = ns("file_formato_fecha"),
             label = "Formato de Fecha",
             value = "%d/%m/%Y"),
+          actionButton(inputId = ns("file_load"), label = "Aplicar",
+                       width = "100%"),
+          tags$br(),
+          tags$br(),
           selectizeInput(
             inputId = ns("file_columna_valor"),
             label = "Columna de valor:",
             width = "100%",
             choices = "valor",
-            selected = "valor"),
-          actionButton(inputId = ns("file_load"), label = "Aplicar",
-                       width = "100%")
+            selected = "valor")
         )
       )
     ),
@@ -136,12 +138,23 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
-        if (input$tabla %notin% c("Ninguno", "")) {
-          opciones$fecha_rango <- input$fecha_rango
+        if (input$tabla != "Ninguno" &&
+            input$tabla != "") {
           opciones$valor_costo <- ifelse(
             test = input$columna_valor != "",
             yes = input$columna_valor,
             no = opciones$valor_costo)
+        } else if (opciones$datos_cargados) {
+          opciones$valor_costo <- ifelse(
+            test = input$file_columna_valor != "",
+            yes = input$file_columna_valor,
+            no = opciones$valor_costo)
+        }
+      })
+      
+      observe({
+        if (input$tabla %notin% c("Ninguno", "")) {
+          opciones$fecha_rango <- input$fecha_rango
           tabla <- input$tabla
           opciones$colnames <- dbListFields(
             conn,
@@ -166,26 +179,32 @@ base_de_datos_server <- function(id, opciones, conn) {
         }
       })
       
-      observeEvent(opciones$colnames_num, {
-        updateSelectizeInput(
-          session = session,
-          inputId = "columna_valor",
-          choices = opciones$colnames_num,
-          selected = "valor"
-        )
+      observe({
+        if (input$tabla != "Ninguno" &&
+            input$tabla != "") {
+          updateSelectizeInput(
+            session = session,
+            inputId = "columna_valor",
+            choices = opciones$colnames_num,
+            selected = "valor"
+          )
+        } else if (opciones$datos_cargados) {
+          updateSelectizeInput(
+            session = session,
+            inputId = "file_columna_valor",
+            choices = opciones$colnames_num,
+            selected = "valor"
+          )
+        }
       })
       
       output$valor_con_tiempo <- renderPlotly({
-        if (opciones$tabla_nombre != "Ninguno") {
+        if (opciones$datos_cargados) {
             tabla <- opciones$tabla_nombre
             valor_costo <- opciones$valor_costo
             fecha_min <- opciones$fecha_rango[1]
             fecha_max <- opciones$fecha_rango[2]
-            datos <- conn %>%
-              tbl(tabla) %>%
-              mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
-              filter(fecha_prestacion >= fecha_min) %>%
-              filter(fecha_prestacion <= fecha_max) %>%
+            datos <- opciones$tabla %>%
               mutate(
                 mes_temporal = year(fecha_prestacion)*100 +
                   month(fecha_prestacion)) %>%
@@ -258,6 +277,9 @@ base_de_datos_server <- function(id, opciones, conn) {
       observeEvent(input$file_load, {
         tryCatch(expr = {
           if (!is.null(input$file)) {
+            
+            opciones$fecha_rango <- input$file_fecha_rango
+            
             value_delimitador <- ifelse(
               test = file_opciones$value_delimitador == "Espacios",
               yes = "\t",
@@ -273,12 +295,14 @@ base_de_datos_server <- function(id, opciones, conn) {
               datos_read <- read_feather(path = input$file$datapath)
             }
             
-            opciones$tabla <- datos_read %>%
+            opciones$tabla_original <- datos_read %>%
               rename_with(tolower) %>%
               mutate(fecha_prestacion = as.Date(
                 fecha_prestacion, format = input$file_formato_fecha)) %>%
               filter(fecha_prestacion >= as.Date(input$file_fecha_rango[1]) &
                        fecha_prestacion <= as.Date(input$file_fecha_rango[2]))
+            
+            opciones$tabla <- opciones$tabla_original
             
             opciones$colnames <- opciones$tabla %>%
               colnames()
@@ -301,6 +325,7 @@ base_de_datos_server <- function(id, opciones, conn) {
             )
           })
       })
+      
       
       # Eanble tabla
       
