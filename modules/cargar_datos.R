@@ -44,7 +44,7 @@ base_de_datos_ui <- function(id) {
             inputId = ns("file_type"),
             label = "Tipo de archivo",
             inline = TRUE, 
-            choices = c("feather", "csv", "datos didacticos")),
+            choices = c("csv", "feather")),
           actionButton(
             inputId = ns("file_options_open"),
             label = "Opciones",
@@ -366,4 +366,66 @@ order by col.table_schema,
   dbGetQuery(conn, str_replace_all(query, "#####", table_name)) %>%
     unlist() %>%
     unname()
+}
+
+datos_opciones_ui <- function(
+  id, file_type, value_decimal, value_delimitador, value_sheet, value_range,
+  value_file) {
+  
+  if (file_type == "csv") {
+    return(
+      datos_opciones_csv_ui(
+        id = id,
+        value_decimal = value_decimal,
+        value_delimitador = value_delimitador)
+    )
+  }
+  
+  if (file_type == "datos didacticos") {
+    return(
+      datos_opciones_cloud_ui(
+        id = id,
+        value_file = value_file
+      )
+    )
+  }
+  
+}
+
+datos_opciones_csv_ui <- function(id, value_delimitador, value_decimal) {
+  ns <- NS(id)
+  
+  tagList(
+    radioButtons(
+      inputId = ns("value_delimitador"),
+      choices = c(",", ";", "|", "Espacios"),
+      label = "Delimitador",
+      inline = TRUE,
+      selected = value_delimitador
+    ),
+    
+    radioButtons(
+      inputId = ns("value_decimal"),
+      choiceNames = c("Punto", "Coma"),
+      choiceValues = c(".", ","),
+      label = "Separador decimal",
+      inline = TRUE,
+      selected = value_decimal
+    )
+  )
+  
+}
+
+datos_opciones_cloud_ui <- function(id, value_file) {
+  ns <- NS(id)
+  
+  tagList(
+    selectizeInput(
+      inputId = ns("value_file"),
+      choices = list.files("datos/saved/"),
+      label = "Archivo:",
+      selected = value_file
+    )
+  )
+  
 }
