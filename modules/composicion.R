@@ -220,7 +220,7 @@ composicion_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = composicion$tabla,
+            x = as.data.frame(composicion$tabla),
             path = file)
         }, 
         contentType = "xlsx"

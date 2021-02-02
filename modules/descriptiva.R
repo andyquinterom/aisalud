@@ -755,7 +755,7 @@ episodios_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = episodios$tabla[["descriptiva"]],
+            x = as.data.frame(episodios$tabla[["descriptiva"]]),
             path = file)
         }, 
         contentType = "xlsx"
@@ -783,7 +783,7 @@ episodios_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = episodios$frecuencias,
+            x = as.data.frame(episodios$frecuencias),
             path = file)
         }, 
         contentType = "xlsx"

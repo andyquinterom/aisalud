@@ -219,7 +219,7 @@ outliers_server <- function(id, opciones) {
         },
         content = function(file) {
           write_xlsx(
-            x = outliers$tabla,
+            x = as.data.frame(outliers$tabla),
             path = file)
         },
         contentType = "xlsx"
