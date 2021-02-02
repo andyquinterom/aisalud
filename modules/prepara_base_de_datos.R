@@ -4,35 +4,79 @@ base_de_datos_ui <- function(id) {
   
   tagList(
     box(
-      style = "min-height: 470px;",
+      style = "min-height: 550px;",
       width = 4,
-      tags$br(),
-      tags$br(),
-      selectizeInput(
-        width = "100%",
-        inputId = ns("tabla"),
-        label = "Seleccionar datos",
-        choices = "Ninguno"
-      ),
-      selectizeInput(
-        inputId = ns("columna_valor"),
-        label = "Columna de valor:",
-        width = "100%",
-        choices = "valor",
-        selected = "valor"
-      ),
-      dateRangeInput(
-        inputId = ns("fecha_rango"),
-        label = "Fechas:",
-        min = NULL, 
-        max = NULL, 
-        format = "dd/mm/yyyy",
-        language = "es"),
-      tags$style(HTML(".datepicker {z-index:99999 !important;}"))
+      tabsetPanel(
+        tabPanel(
+          title = "Nube",
+          tags$br(),
+          tags$br(),
+          selectizeInput(
+            width = "100%",
+            inputId = ns("tabla"),
+            label = "Seleccionar datos",
+            choices = "Ninguno"
+          ),
+          selectizeInput(
+            inputId = ns("columna_valor"),
+            label = "Columna de valor:",
+            width = "100%",
+            choices = "valor",
+            selected = "valor"
+          ),
+          dateRangeInput(
+            inputId = ns("fecha_rango"),
+            label = "Fechas:",
+            min = NULL, 
+            max = NULL, 
+            format = "dd/mm/yyyy",
+            language = "es"),
+          tags$style(HTML(".datepicker {z-index:99999 !important;}"))
+        ),
+        tabPanel(
+          title = "Subir datos",
+          fileInput(
+            inputId = ns("file"),
+            label = "", 
+            buttonLabel = "Subir archivo",
+            placeholder = "Ningún archivo"),
+          radioButtons(
+            inputId = ns("file_type"),
+            label = "Tipo de archivo",
+            inline = TRUE, 
+            choices = c("feather", "csv", "datos didacticos")),
+          actionButton(
+            inputId = ns("file_options_open"),
+            label = "Opciones",
+            width = "100%"),
+          tags$br(),
+          tags$br(),
+          dateRangeInput(
+            inputId = ns("file_fecha_rango"),
+            label = "Fechas:",
+            min = NULL, 
+            max = NULL, 
+            format = "dd/mm/yyyy",
+            language = "es"),
+          tags$style(HTML(".datepicker {z-index:99999 !important;}")),
+          textInput(
+            inputId = ns("file_formato_fecha"),
+            label = "Formato de Fecha",
+            value = "%d/%m/%Y"),
+          selectizeInput(
+            inputId = ns("file_columna_valor"),
+            label = "Columna de valor:",
+            width = "100%",
+            choices = "valor",
+            selected = "valor"),
+          actionButton(inputId = ns("file_load"), label = "Aplicar",
+                       width = "100%")
+        )
+      )
     ),
     box(
       width = 8,
-      style = "min-height: 450px;",
+      style = "min-height: 550px;",
       plotlyOutput(outputId = ns("valor_con_tiempo"), height = "450px") %>%
         withSpinner()
     )
@@ -169,6 +213,93 @@ base_de_datos_server <- function(id, opciones, conn) {
                              tickformat = ",.2f"))
         }
       })
+      
+      # Cargar datos locales -----------------
+      
+      file_opciones <- reactiveValues(
+        "value_decimal" = ".",
+        "value_delimitador" = ",",
+        "value_sheet" = NULL,
+        "value_range" = NULL
+      )
+      
+      observeEvent(input$file_options_open, {
+        showModal(
+          session = session,
+          ui = modalDialog(
+            title = "Opciones archivo",
+            easyClose = TRUE,
+            fade = TRUE,
+            datos_opciones_ui(
+              id = id,
+              file_type = input$file_type,
+              value_decimal = file_opciones$value_decimal,
+              value_delimitador = file_opciones$value_delimitador,
+              value_range = file_opciones$value_range,
+              value_sheet = file_opciones$value_sheet,
+              value_file = file_opciones$value_file),
+            footer = actionButton(
+              inputId = ns("file_opciones_guardar"),
+              label = "Guardar")
+          )
+        )
+      })
+      
+      observeEvent(input$datos_opciones_guardar, {
+        file_opciones$value_decimal <- input$value_decimal
+        file_opciones$value_delimitador <- input$value_delimitador
+        file_opciones$value_sheet <- input$value_sheet
+        file_opciones$value_range <- input$value_range
+        file_opciones$value_file <- input$value_file
+        removeModal(session = session)
+      })
+      
+      observeEvent(input$file_load, {
+        tryCatch(expr = {
+          if (!is.null(input$file)) {
+            value_delimitador <- ifelse(
+              test = file_opciones$value_delimitador == "Espacios",
+              yes = "\t",
+              no = file_opciones$value_delimitador)
+            
+            if (input$file_type == "csv") {
+              datos_read <- readr::read_delim(
+                file = input$file$datapath, 
+                delim = value_delimitador, 
+                locale = locale(
+                  decimal_mark = file_opciones$value_decimal))
+            } else if (input$file_type == "feather") {
+              datos_read <- read_feather(path = input$file$datapath)
+            }
+            
+            opciones$tabla <- datos_read %>%
+              rename_with(tolower) %>%
+              mutate(fecha_prestacion = as.Date(
+                fecha_prestacion, format = input$file_formato_fecha)) %>%
+              filter(fecha_prestacion >= as.Date(input$file_fecha_rango[1]) &
+                       fecha_prestacion <= as.Date(input$file_fecha_rango[2]))
+            
+            opciones$colnames <- opciones$tabla %>%
+              colnames()
+            
+            testfor_numeric <- opciones$tabla %>%
+              summarise_all(class) == "numeric"
+            
+            opciones$colnames_num <- opciones$colnames[testfor_numeric]
+            
+            
+          }},
+          error = function(e) {
+            print(e[1])
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          })
+      })
+      
     }
   )
 }
