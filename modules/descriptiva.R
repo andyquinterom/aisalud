@@ -776,7 +776,7 @@ episodios_server <- function(id, opciones, conn) {
         contentType = "text/csv"
       )
       
-      output$episodios_descargar_xlsx <- downloadHandler(
+      output$frecuencias_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
                 ".xlsx", sep = "")
