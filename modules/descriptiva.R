@@ -419,7 +419,7 @@ episodios_server <- function(id, opciones, conn) {
                         nivel_2 = input$episodios_jerarquia_nivel_2_order,
                         nivel_3 = input$episodios_jerarquia_nivel_3_order,
                         nivel_4 = input$episodios_jerarquia_nivel_4_order,
-                        intervalo = input$frecuencias_intervalo)
+                        intervalo = input$frecuencias_intervalo)[["descriptiva"]]
                     }
                   } else {
                     if (input$descriptiva_activar) {

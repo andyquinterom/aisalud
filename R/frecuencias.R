@@ -21,11 +21,11 @@ frecuencias <- function(
   }
   
   if (!prestaciones) {
-    
+
     data <- data %>%
       group_by(!!as.name(columna_suma), !!!rlang::syms(agrupador)) %>%
       summarise(mes_anio_num = max(mes_anio_num))
-    
+
   }
   
   data <- data %>%
@@ -151,7 +151,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       data = data,
       agrupador = c(columnas, columna_sep),
       columna_fecha = columna_fecha,
-      columna_suma = "",
+      columna_suma = "nro_identificacion",
       prestaciones = TRUE,
       intervalo = intervalo
     )
@@ -175,11 +175,14 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       )
     } else {
       list(
-        "descriptiva" = rbind(
-          episodios_nivel_1,
-          episodios_nivel_2,
-          episodios_nivel_3,
-          episodios_nivel_4
+        "descriptiva" = rbindlist(
+          list(
+            episodios_nivel_1,
+            episodios_nivel_2,
+            episodios_nivel_3,
+            episodios_nivel_4
+          ),
+          fill = TRUE
         )
       )
     }
