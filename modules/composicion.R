@@ -94,9 +94,7 @@ composicion_server <- function(id, opciones, conn) {
                 opciones$tabla %>%
                   select(!!as.name(input$composicion_episodios)) %>%
                   distinct() %>%
-                  collect() %>%
-                  unname() %>%
-                  unlist()
+                  pull(!!as.name(input$composicion_episodios))
               }
             )
           }
