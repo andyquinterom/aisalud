@@ -220,7 +220,8 @@ base_de_datos_server <- function(id, opciones, conn) {
         "value_decimal" = ".",
         "value_delimitador" = ",",
         "value_sheet" = NULL,
-        "value_range" = NULL
+        "value_range" = NULL,
+        "enabled" = FALSE
       )
       
       observeEvent(input$file_options_open, {
@@ -287,6 +288,7 @@ base_de_datos_server <- function(id, opciones, conn) {
             
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
             
+            file_opciones$enabled <- TRUE
             
           }},
           error = function(e) {
@@ -298,6 +300,20 @@ base_de_datos_server <- function(id, opciones, conn) {
               type = "error"
             )
           })
+      })
+      
+      # Eanble tabla
+      
+      observe({
+        if (input$tabla != "Ninguno" &&
+            input$tabla != "") {
+          opciones$datos_cargados <- TRUE
+        } else if (input$tabla == "Ninguno" &&
+                   file_opciones$enabled) {
+          opciones$datos_cargados <- TRUE
+        } else {
+          opciones$datos_cargados <- FALSE
+        }
       })
       
     }
