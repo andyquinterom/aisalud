@@ -334,6 +334,10 @@ base_de_datos_server <- function(id, opciones, conn) {
             input$tabla != "") {
           opciones$datos_cargados <- TRUE
         } else if (input$tabla == "Ninguno" &&
+                   opciones$datos_cargados) {
+          file_opciones$enabled <- FALSE
+          opciones$datos_cargados <- FALSE
+        } else if (input$tabla == "Ninguno" &&
                    file_opciones$enabled) {
           opciones$datos_cargados <- TRUE
         } else {
