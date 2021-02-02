@@ -130,8 +130,8 @@ nota_tecnica_server <- function(id, opciones) {
           "prestacion" = list()
         ))
       
-      observeEvent(opciones$tabla_original, {
-        if (opciones$tabla_nombre != "Ninguno") {
+      observe({
+        if (opciones$datos_cargados) {
           numero_meses <- opciones$tabla_original %>%
             transmute(mes_temporal = month(fecha_prestacion)) %>%
             distinct() %>%
@@ -184,7 +184,7 @@ nota_tecnica_server <- function(id, opciones) {
       })
 
       observeEvent(cambio_columnas(), {
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             input$nota_tecnica_cols != "") {
           tryCatch(
             expr = {
@@ -726,46 +726,64 @@ nota_tecnica_server <- function(id, opciones) {
       )
 
       output$nota_tecnica_suma <- renderValueBox({
-        valueBox(
-          subtitle = "Valor total a mes.",
-          value = {
-            if (nrow(nota_tecnica$tabla_junta) >= 1) {
-              formatAsCurrency(
-                sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE)
-              )
-            } else {
-              0
-            }
-          },
-          color = "green",
-          icon = icon("dollar-sign", "font-awesome")
-        )
+        if (opciones$datos_cargados) {
+          valueBox(
+            subtitle = "Valor total a mes.",
+            value = {
+              if (nrow(nota_tecnica$tabla_junta) >= 1) {
+                formatAsCurrency(
+                  sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE)
+                )
+              } else {
+                0
+              }
+            },
+            color = "green",
+            icon = icon("dollar-sign", "font-awesome")
+          )
+        } else {
+          valueBox(
+            subtitle = "Valor total a mes.",
+            value = 0,
+            color = "green",
+            icon = icon("dollar-sign", "font-awesome")
+          )
+        }
       })
 
       output$nota_tecnica_porcentaje <- renderValueBox({
-        nota_tecnica$valor_total <- opciones$tabla %>%
-          transmute(suma_valores = sum(!!as.name(opciones$valor_costo),
-                                       na.rm = TRUE)) %>%
-          distinct() %>%
-          collect() %>%
-          unlist() %>%
-          as.numeric()
-        valueBox(
-          subtitle = "Porcentaje del valor de los datos.",
-          value = {
-            if (nrow(nota_tecnica$tabla_junta) >= 1) {
-              formatAsPerc(
-                100 * sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE) /
-                  (nota_tecnica$valor_total /
-                     input$nota_tecnica_meses)
-              )
-            } else {
-              0
-            }
-          },
-          color = "yellow",
-          icon = icon("percent", "font-awesome")
-        )
+        if (opciones$datos_cargados) {
+          nota_tecnica$valor_total <- opciones$tabla %>%
+            transmute(suma_valores = sum(!!as.name(opciones$valor_costo),
+                                         na.rm = TRUE)) %>%
+            distinct() %>%
+            collect() %>%
+            unlist() %>%
+            as.numeric()
+          valueBox(
+            subtitle = "Porcentaje del valor de los datos.",
+            value = {
+              if (nrow(nota_tecnica$tabla_junta) >= 1) {
+                formatAsPerc(
+                  100 * sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE) /
+                    (nota_tecnica$valor_total /
+                       input$nota_tecnica_meses)
+                )
+              } else {
+                0
+              }
+            },
+            color = "yellow",
+            icon = icon("percent", "font-awesome")
+          )
+        } else {
+          valueBox(
+            subtitle = "Porcentaje del valor de los datos.",
+            value = 0,
+            color = "yellow",
+            icon = icon("percent", "font-awesome")
+          )
+        }
       })
 
       output$nota_tecnica_warnings <- renderValueBox({

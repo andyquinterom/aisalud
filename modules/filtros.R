@@ -96,7 +96,7 @@ filtros_server <- function(id, opciones) {
         X = 1:n_char,
         FUN = function(i) {
           observeEvent(input[[paste0("filtro_char_columna_", i)]], {
-            if (opciones$tabla_nombre != "Ninguno") {
+            if (opciones$datos_cargados) {
               updateSelectizeInput(
                 session = session,
                 inputId = paste0("filtro_char_valor_", i),
@@ -125,47 +125,45 @@ filtros_server <- function(id, opciones) {
         X = 1:n_num,
         FUN = function(i) {
           observeEvent(input[[paste0("filtro_num_columna_", i)]], {
-            if (opciones$tabla_nombre != "Ninguno") {
-              if (opciones$tabla_nombre != "Ninguno") {
-                updateNumericInput(
-                  session = session,
-                  inputId = paste0("filtro_num_min_", i),
-                  value = {
-                    columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
-                    if (columna_seleccionada != "Ninguno") {
-                      opciones$tabla_original %>%
-                        select(!!as.name(columna_seleccionada)) %>%
-                        transmute(min = min(!!as.name(columna_seleccionada),
-                                            na.rm = TRUE)) %>%
-                        distinct() %>%
-                        collect() %>%
-                        unlist() %>%
-                        unname()
-                    } else {
-                      0
-                    }
+            if (opciones$datos_cargados) {
+              updateNumericInput(
+                session = session,
+                inputId = paste0("filtro_num_min_", i),
+                value = {
+                  columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
+                  if (columna_seleccionada != "Ninguno") {
+                    opciones$tabla_original %>%
+                      select(!!as.name(columna_seleccionada)) %>%
+                      transmute(min = min(!!as.name(columna_seleccionada),
+                                          na.rm = TRUE)) %>%
+                      distinct() %>%
+                      collect() %>%
+                      unlist() %>%
+                      unname()
+                  } else {
+                    0
                   }
-                )
-                updateNumericInput(
-                  session = session,
-                  inputId = paste0("filtro_num_max_", i),
-                  value = {
-                    columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
-                    if (columna_seleccionada != "Ninguno") {
-                      opciones$tabla_original %>%
-                        select(!!as.name(columna_seleccionada)) %>%
-                        transmute(max = max(!!as.name(columna_seleccionada),
-                                            na.rm = TRUE)) %>%
-                        distinct() %>%
-                        collect() %>%
-                        unlist() %>%
-                        unname()
-                    } else {
-                      0
-                    }
+                }
+              )
+              updateNumericInput(
+                session = session,
+                inputId = paste0("filtro_num_max_", i),
+                value = {
+                  columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
+                  if (columna_seleccionada != "Ninguno") {
+                    opciones$tabla_original %>%
+                      select(!!as.name(columna_seleccionada)) %>%
+                      transmute(max = max(!!as.name(columna_seleccionada),
+                                          na.rm = TRUE)) %>%
+                      distinct() %>%
+                      collect() %>%
+                      unlist() %>%
+                      unname()
+                  } else {
+                    0
                   }
-                )
-              }
+                }
+              )
             }
           })
         }

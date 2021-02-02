@@ -85,10 +85,6 @@ shinyUI(
         ),
         tabItems(
           tabItem(
-            tabName = "prepara",
-            prepara_ui("prepara_modulo")
-          ),
-          tabItem(
             tabName = "prepara_base_de_datos",
             base_de_datos_ui("prepara_base_de_datos")
           ),

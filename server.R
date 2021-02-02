@@ -2,7 +2,8 @@ shinyServer(function(input, output, session) {
   
   opciones <- reactiveValues(
     "valor_costo" = "valor",
-    "tabla_nombre" = "Ninguno"
+    "tabla_nombre" = "Ninguno",
+    "datos_cargados" = FALSE
   )
   
   

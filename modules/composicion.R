@@ -79,7 +79,7 @@ composicion_server <- function(id, opciones, conn) {
       
       observe({
         if (input$composicion_episodios != "" &&
-            opciones$tabla_nombre != "Ninguno" &&
+            opciones$datos_cargados &&
             input$composicion_episodios %in% opciones$colnames &&
             input$composicion_grupos != "") {
           if (!identical(composicion$agrupadores,
@@ -94,9 +94,7 @@ composicion_server <- function(id, opciones, conn) {
                 opciones$tabla %>%
                   select(!!as.name(input$composicion_episodios)) %>%
                   distinct() %>%
-                  collect() %>%
-                  unname() %>%
-                  unlist()
+                  pull(!!as.name(input$composicion_episodios))
               }
             )
           }
@@ -111,7 +109,7 @@ composicion_server <- function(id, opciones, conn) {
         tryCatch(
           expr = {
             if (input$composicion_episodios != "" &&
-                opciones$tabla_nombre != "Ninguno" &&
+                opciones$datos_cargados &&
                 input$composicion_episodios %in% opciones$colnames &&
                 !is.null(input$composicion_episodios_agrupadores) &&
                 input$composicion_grupos != "") {
@@ -222,7 +220,7 @@ composicion_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = composicion$tabla,
+            x = as.data.frame(composicion$tabla),
             path = file)
         }, 
         contentType = "xlsx"

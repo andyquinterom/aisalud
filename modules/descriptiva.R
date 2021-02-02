@@ -419,7 +419,7 @@ episodios_server <- function(id, opciones, conn) {
                         nivel_2 = input$episodios_jerarquia_nivel_2_order,
                         nivel_3 = input$episodios_jerarquia_nivel_3_order,
                         nivel_4 = input$episodios_jerarquia_nivel_4_order,
-                        intervalo = input$frecuencias_intervalo)
+                        intervalo = input$frecuencias_intervalo)[["descriptiva"]]
                     }
                   } else {
                     if (input$descriptiva_activar) {
@@ -668,7 +668,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_registros <- renderText({
-        if (opciones$tabla_nombre != "Ninguno") {
+        if (opciones$datos_cargados) {
           paste("Número de registros:", 
                 formatC(
                   {opciones$tabla %>% 
@@ -688,7 +688,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_pacientes <- renderText({
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             "nro_identificacion" %in% opciones$colnames) {
           paste("Número de pacientes:", 
                 formatC(
@@ -711,7 +711,7 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$descriptiva_sumas_facturas <- renderText({
-        if (opciones$tabla_nombre != "Ninguno" && 
+        if (opciones$datos_cargados && 
             "nro_factura" %in% opciones$colnames) {
           paste("Número de facturas:", 
                 formatC(
@@ -755,7 +755,7 @@ episodios_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = episodios$tabla[["descriptiva"]],
+            x = as.data.frame(episodios$tabla[["descriptiva"]]),
             path = file)
         }, 
         contentType = "xlsx"
@@ -776,14 +776,14 @@ episodios_server <- function(id, opciones, conn) {
         contentType = "text/csv"
       )
       
-      output$episodios_descargar_xlsx <- downloadHandler(
+      output$frecuencias_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
                 ".xlsx", sep = "")
         },
         content = function(file) {
           write_xlsx(
-            x = episodios$frecuencias,
+            x = as.data.frame(episodios$frecuencias),
             path = file)
         }, 
         contentType = "xlsx"
