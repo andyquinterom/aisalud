@@ -85,6 +85,11 @@ base_de_datos_ui <- function(id) {
             width = "100%",
             "Perfil:",
             choices = "Ninguno"
+          ),
+          aceEditor(
+            outputId = ns("perfil_editor"),
+            mode = "json",
+            value = ""
           )
         )
       )
@@ -357,14 +362,24 @@ base_de_datos_server <- function(id, opciones, conn) {
       # Perfiles ----------------------------------------------------
       
       observe({
-        opciones$perfil_lista <- tbl(conn, "perfiles_usuario") %>%
-          pull(perfiles) %>%
+        opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
+          pull(perfiles)
+        
+        opciones$perfil_lista <- opciones$perfil_raw %>%
           parse_json(simplifyVector = TRUE)
         
         updateSelectizeInput(
           session = session,
           inputId = "perfil",
           choices = c("Ninguno", names(opciones$perfil_lista))
+        )
+      })
+      
+      observe({
+        updateAceEditor(
+          session = session,
+          editorId = "perfil_editor",
+          value = opciones$perfil_raw
         )
       })
       
