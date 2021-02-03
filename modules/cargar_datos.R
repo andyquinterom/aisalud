@@ -76,24 +76,34 @@ base_de_datos_ui <- function(id) {
         ),
         tabPanel(
           title = "Perfiles",
-          checkboxInput(
-            inputId = ns("perfil_enable"),
-            label = "Utilizar perfil:"
-          ),
-          selectizeInput(
-            inputId = ns("perfil"),
-            width = "100%",
-            "Perfil:",
-            choices = "Ninguno"
-          ),
-          aceEditor(
-            outputId = ns("perfil_editor"),
-            mode = "json",
-            value = ""
-          ),
-          actionButton(
-            inputId = ns("perfil_actualizar"),
-            label = "Guardar perfiles"
+          tags$br(),
+          tabsetPanel(
+            tabPanel(
+              title = "Seleccionar",
+              tags$br(),
+              checkboxInput(
+                inputId = ns("perfil_enable"),
+                label = "Utilizar perfil:"
+              ),
+              selectizeInput(
+                inputId = ns("perfil"),
+                width = "100%",
+                "Perfil:",
+                choices = "Ninguno"
+              )),
+            tabPanel(
+              title = "Modificar",
+              tags$br(),
+              aceEditor(
+                outputId = ns("perfil_editor"),
+                mode = "json",
+                value = ""
+              ),
+              actionButton(
+                inputId = ns("perfil_actualizar"),
+                label = "Guardar perfiles"
+              )
+            )
           )
         )
       )

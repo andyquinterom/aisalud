@@ -295,7 +295,6 @@ episodios_server <- function(id, opciones, conn) {
                   collect() %>%
                   as.list()
                 episodios$agrupadores_items <- agrupadores_items[[1]]
-                print(episodios$agrupadores_items)
                 output$episodios_jerarquia <- renderUI({
                   if (opciones$perfil_enable) {
                     perfil_jerarquia(
