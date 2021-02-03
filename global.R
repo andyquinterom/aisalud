@@ -133,7 +133,7 @@ conn <- dbConnect(
 
 dbGetQuery(
   conn,
-  str_replace_all("SET search_path = public, ######;",
+  str_replace_all("SET search_path = public, config, ######;",
                   "######", Sys.getenv("DATABASE_SCHEMA"))
 )
 

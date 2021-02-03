@@ -73,6 +73,19 @@ base_de_datos_ui <- function(id) {
             width = "100%",
             choices = "valor",
             selected = "valor")
+        ),
+        tabPanel(
+          title = "Perfiles",
+          checkboxInput(
+            inputId = ns("perfil_enable"),
+            label = "Utilizar perfil:"
+          ),
+          selectizeInput(
+            inputId = ns("perfil"),
+            width = "100%",
+            "Perfil:",
+            choices = "Ninguno"
+          )
         )
       )
     ),
@@ -327,7 +340,7 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       
-      # Eanble tabla
+      # Enable tabla
       
       observe({
         if (input$tabla != "Ninguno" &&
@@ -338,6 +351,17 @@ base_de_datos_server <- function(id, opciones, conn) {
           opciones$datos_cargados <- TRUE
         } else {
           opciones$datos_cargados <- FALSE
+        }
+      })
+      
+      # Perfiles ----------------------------------------------------
+      
+      observe({
+        if (input$perfil != "Ninguno" &&
+            input$perfil_enable) {
+          opciones$perfil_enable <- TRUE
+        } else {
+          opciones$perfil_enable <- FALSE
         }
       })
       
