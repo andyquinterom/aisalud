@@ -81,16 +81,13 @@ base_de_datos_ui <- function(id) {
             tabPanel(
               title = "Seleccionar",
               tags$br(),
-              checkboxInput(
-                inputId = ns("perfil_enable"),
-                label = "Utilizar perfil:"
-              ),
               selectizeInput(
                 inputId = ns("perfil"),
                 width = "100%",
                 "Perfil:",
-                choices = "Ninguno"
-              )),
+                choices = "Ninguno"),
+              includeMarkdown("markdown/perfiles.md")
+              ),
             tabPanel(
               title = "Modificar",
               tags$br(),
@@ -399,8 +396,7 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
-        if (input$perfil != "Ninguno" &&
-            input$perfil_enable) {
+        if (input$perfil != "Ninguno") {
           opciones$perfil_enable <- TRUE
           opciones$perfil_selected <- input$perfil
         } else {
