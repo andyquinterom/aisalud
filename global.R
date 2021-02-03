@@ -37,6 +37,7 @@ library(maps)
 library(htmltools)
 library(sparklyr)
 library(dbplot)
+library(jsonlite)
 
 
 dir.create("datos")

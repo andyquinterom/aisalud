@@ -357,9 +357,22 @@ base_de_datos_server <- function(id, opciones, conn) {
       # Perfiles ----------------------------------------------------
       
       observe({
+        opciones$perfil_lista <- tbl(conn, "perfiles_usuario") %>%
+          pull(perfiles) %>%
+          parse_json()
+        
+        updateSelectizeInput(
+          session = session,
+          inputId = "perfil",
+          choices = c("Ninguno", names(opciones$perfil_lista))
+        )
+      })
+      
+      observe({
         if (input$perfil != "Ninguno" &&
             input$perfil_enable) {
           opciones$perfil_enable <- TRUE
+          opciones$perfil_selected <- input$perfil
         } else {
           opciones$perfil_enable <- FALSE
         }
