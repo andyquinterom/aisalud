@@ -38,6 +38,7 @@ library(htmltools)
 library(sparklyr)
 library(dbplot)
 library(jsonlite)
+library(shinyAce)
 
 
 dir.create("datos")
