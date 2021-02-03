@@ -202,11 +202,19 @@ seguimiento_notas_comparar_server <- function(id, nota_tecnica, indice, opciones
                   as.list()
                 comparar$agrupadores_items <- agrupadores_items[[1]]
                 output$comparar_jerarquia <- renderUI({
-                  tagList(
+                  if (opciones$perfil_enable) {
+                    perfil_jerarquia(
+                      perfiles = opciones$perfil_lista,
+                      perfil_select = opciones$perfil_selected,
+                      items = comparar$agrupadores_items,
+                      funcion_jerarquia = comparar_cajas_jerarquia,
+                      ns = ns
+                    )
+                  } else {
                     comparar_cajas_jerarquia(
                       ns = ns,
                       items_nivel_4 = comparar$agrupadores_items)
-                  )
+                  }
                 })
               } else {
                 comparar$agrupadores_items <- NULL
