@@ -90,6 +90,10 @@ base_de_datos_ui <- function(id) {
             outputId = ns("perfil_editor"),
             mode = "json",
             value = ""
+          ),
+          actionButton(
+            inputId = ns("perfil_actualizar"),
+            label = "Guardar perfiles"
           )
         )
       )
@@ -391,6 +395,46 @@ base_de_datos_server <- function(id, opciones, conn) {
         } else {
           opciones$perfil_enable <- FALSE
         }
+      })
+      
+      observeEvent(input$perfil_actualizar, {
+        perfil_nuevo <- data.frame("perfiles" = input$perfil_editor)
+        
+        tryCatch(
+          expr = {
+            parse_json(input$perfil_editor, simplifyVector = TRUE)
+            
+            dbWriteTable(
+              conn = conn,
+              Id(schema = "config", table = "perfiles_usuario"),
+              perfil_nuevo,
+              overwrite = TRUE
+            )
+            
+            opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
+              pull(perfiles)
+            
+            opciones$perfil_lista <- opciones$perfil_raw %>%
+              parse_json(simplifyVector = TRUE)
+            
+            updateSelectizeInput(
+              session = session,
+              inputId = "perfil",
+              choices = c("Ninguno", names(opciones$perfil_lista))
+            )
+            
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
+        )
+        
       })
       
     }
