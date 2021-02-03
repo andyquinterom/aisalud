@@ -359,7 +359,7 @@ base_de_datos_server <- function(id, opciones, conn) {
       observe({
         opciones$perfil_lista <- tbl(conn, "perfiles_usuario") %>%
           pull(perfiles) %>%
-          parse_json()
+          parse_json(simplifyVector = TRUE)
         
         updateSelectizeInput(
           session = session,

@@ -1,9 +1,3 @@
-leer_perfil <- function(json) {
-  perfil <- parse_json(json, simplifyVector = TRUE)
-  return(perfil)
-  
-}
-
 perfil_jerarquia <- function(perfiles, perfil_select, items, 
                              funcion_jerarquia, ns) {
   

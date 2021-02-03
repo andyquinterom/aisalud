@@ -297,10 +297,20 @@ episodios_server <- function(id, opciones, conn) {
                 episodios$agrupadores_items <- agrupadores_items[[1]]
                 print(episodios$agrupadores_items)
                 output$episodios_jerarquia <- renderUI({
-                  descriptiva_jerarquia(
-                    ns = ns,
-                    items_nivel_4 = episodios$agrupadores_items
-                  )
+                  if (opciones$perfil_enable) {
+                    perfil_jerarquia(
+                      perfiles = opciones$perfil_lista,
+                      perfil_select = opciones$perfil_selected,
+                      items = episodios$agrupadores_items,
+                      funcion_jerarquia = descriptiva_jerarquia,
+                      ns = ns
+                    )
+                  } else {
+                    descriptiva_jerarquia(
+                      ns = ns,
+                      items_nivel_4 = episodios$agrupadores_items
+                    )
+                  }
                 })
               } else {
                 episodios$agrupadores_items <- NULL
