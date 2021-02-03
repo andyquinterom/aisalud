@@ -130,7 +130,7 @@ nota_tecnica_server <- function(id, opciones) {
           "prestacion" = list()
         ))
       
-      observe({
+      observeEvent(opciones$colnames, {
         if (opciones$datos_cargados) {
           numero_meses <- opciones$tabla_original %>%
             transmute(mes_temporal = month(fecha_prestacion)) %>%
@@ -204,11 +204,19 @@ nota_tecnica_server <- function(id, opciones) {
                   as.list()
                 nota_tecnica$agrupadores_items <- agrupadores_items[[1]]
                 output$nota_tecnica_jerarquia <- renderUI({
-                  tagList(
+                  if (opciones$perfil_enable) {
+                    perfil_jerarquia(
+                      perfiles = opciones$perfil_lista,
+                      perfil_select = opciones$perfil_selected,
+                      items = nota_tecnica$agrupadores_items,
+                      funcion_jerarquia = nota_tecnica_cajas_jerarquia,
+                      ns = ns
+                    )
+                  } else {
                     nota_tecnica_cajas_jerarquia(
                       ns = ns,
                       items_nivel_4 = nota_tecnica$agrupadores_items)
-                  )
+                  }
                 })
               } else {
                 nota_tecnica$agrupadores_items <- NULL
