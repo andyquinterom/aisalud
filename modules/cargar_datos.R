@@ -367,7 +367,8 @@ base_de_datos_server <- function(id, opciones, conn) {
       
       observe({
         opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
-          pull(perfiles)
+          pull(perfiles) %>%
+          prettify()
         
         opciones$perfil_lista <- opciones$perfil_raw %>%
           parse_json(simplifyVector = TRUE)
@@ -412,7 +413,8 @@ base_de_datos_server <- function(id, opciones, conn) {
             )
             
             opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
-              pull(perfiles)
+              pull(perfiles) %>%
+              prettify()
             
             opciones$perfil_lista <- opciones$perfil_raw %>%
               parse_json(simplifyVector = TRUE)
@@ -421,6 +423,12 @@ base_de_datos_server <- function(id, opciones, conn) {
               session = session,
               inputId = "perfil",
               choices = c("Ninguno", names(opciones$perfil_lista))
+            )
+            
+            updateAceEditor(
+              session = session,
+              editorId = "perfil_editor",
+              value = opciones$perfil_raw
             )
             
           },
