@@ -37,6 +37,8 @@ library(maps)
 library(htmltools)
 library(sparklyr)
 library(dbplot)
+library(jsonlite)
+library(shinyAce)
 
 
 dir.create("datos")
@@ -133,9 +135,38 @@ conn <- dbConnect(
 
 dbGetQuery(
   conn,
-  str_replace_all("SET search_path = public, ######;",
+  str_replace_all("SET search_path = public, config, ######;",
                   "######", Sys.getenv("DATABASE_SCHEMA"))
 )
+
+tabla_perfiles <- dbGetQuery(
+  conn,
+  paste0("SELECT table_name FROM information_schema.tables
+       WHERE table_schema='config'")) %>%
+  unlist() %>%
+  unname()
+
+if ("perfiles_usuario" %notin% tabla_perfiles) {
+  dbWriteTable(
+    conn = conn,
+    Id(schema = "config", table = "perfiles_usuario"),
+    data.frame(
+      "perfiles" = '
+      {
+      "Perfil de ejemplo": {
+          "jerarquia": {
+             "episodio": [
+               "HOSPITALARIO"
+             ],
+             "paciente": [
+               "AMBULATORIO"
+              ]
+          }
+        }
+      }'
+    )
+  )
+}
 
 print(dbGetQuery(
   conn,

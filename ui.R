@@ -28,7 +28,7 @@ shinyUI(
         collapsed = TRUE,
         sidebarMenu(
           menuItem(
-            text = "Cargar de la nube",
+            text = "Cargar datos",
             tabName = "prepara_base_de_datos",
             icon = icon("cloud", lib = "font-awesome")),
           menuItem(

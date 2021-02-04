@@ -39,8 +39,6 @@ mapa_valores <- function(indice, ...) {
   
   datos[, "valor_total" := sum(valor_mes, na.rm = TRUE)]
   
-  print(datos)
-  
   p <- leaflet(datos) %>%
     addTiles() %>%
     addCircleMarkers(

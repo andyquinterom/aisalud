@@ -73,6 +73,35 @@ base_de_datos_ui <- function(id) {
             width = "100%",
             choices = "valor",
             selected = "valor")
+        ),
+        tabPanel(
+          title = "Perfiles",
+          tags$br(),
+          tabsetPanel(
+            tabPanel(
+              title = "Seleccionar",
+              tags$br(),
+              selectizeInput(
+                inputId = ns("perfil"),
+                width = "100%",
+                "Perfil:",
+                choices = "Ninguno"),
+              includeMarkdown("markdown/perfiles.md")
+              ),
+            tabPanel(
+              title = "Modificar",
+              tags$br(),
+              aceEditor(
+                outputId = ns("perfil_editor"),
+                mode = "json",
+                value = ""
+              ),
+              actionButton(
+                inputId = ns("perfil_actualizar"),
+                label = "Guardar perfiles"
+              )
+            )
+          )
         )
       )
     ),
@@ -327,7 +356,7 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       
-      # Eanble tabla
+      # Enable tabla
       
       observe({
         if (input$tabla != "Ninguno" &&
@@ -339,6 +368,87 @@ base_de_datos_server <- function(id, opciones, conn) {
         } else {
           opciones$datos_cargados <- FALSE
         }
+      })
+      
+      # Perfiles ----------------------------------------------------
+      
+      observe({
+        opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
+          pull(perfiles) %>%
+          prettify()
+        
+        opciones$perfil_lista <- opciones$perfil_raw %>%
+          parse_json(simplifyVector = TRUE)
+        
+        updateSelectizeInput(
+          session = session,
+          inputId = "perfil",
+          choices = c("Ninguno", names(opciones$perfil_lista))
+        )
+      })
+      
+      observe({
+        updateAceEditor(
+          session = session,
+          editorId = "perfil_editor",
+          value = opciones$perfil_raw
+        )
+      })
+      
+      observe({
+        if (input$perfil != "Ninguno") {
+          opciones$perfil_enable <- TRUE
+          opciones$perfil_selected <- input$perfil
+        } else {
+          opciones$perfil_enable <- FALSE
+        }
+      })
+      
+      observeEvent(input$perfil_actualizar, {
+        perfil_nuevo <- data.frame("perfiles" = input$perfil_editor)
+        
+        tryCatch(
+          expr = {
+            parse_json(input$perfil_editor, simplifyVector = TRUE)
+            
+            dbWriteTable(
+              conn = conn,
+              Id(schema = "config", table = "perfiles_usuario"),
+              perfil_nuevo,
+              overwrite = TRUE
+            )
+            
+            opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
+              pull(perfiles) %>%
+              prettify()
+            
+            opciones$perfil_lista <- opciones$perfil_raw %>%
+              parse_json(simplifyVector = TRUE)
+            
+            updateSelectizeInput(
+              session = session,
+              inputId = "perfil",
+              choices = c("Ninguno", names(opciones$perfil_lista))
+            )
+            
+            updateAceEditor(
+              session = session,
+              editorId = "perfil_editor",
+              value = opciones$perfil_raw
+            )
+            
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
+        )
+        
       })
       
     }
