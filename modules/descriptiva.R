@@ -694,7 +694,7 @@ episodios_server <- function(id, opciones, conn) {
                 formatC(
                   {opciones$tabla %>%
                       ungroup() %>%
-                      summarise(count = n()) %>%
+                      count() %>%
                       collect() %>%
                       unlist() %>%
                       unname()},
@@ -714,9 +714,10 @@ episodios_server <- function(id, opciones, conn) {
           paste("Número de pacientes:",
                 formatC(
                   {opciones$tabla %>%
+                      group_by(nro_identificacion) %>%
+                      count() %>%
                       ungroup() %>%
-                      select(nro_identificacion) %>%
-                      summarise(count = n_distinct(nro_identificacion)) %>%
+                      count() %>%
                       collect() %>%
                       unlist() %>%
                       unname()},
@@ -736,9 +737,10 @@ episodios_server <- function(id, opciones, conn) {
           paste("Número de facturas:",
                 formatC(
                   {opciones$tabla %>%
+                      group_by(nro_factura) %>%
+                      count() %>%
                       ungroup() %>%
-                      select(nro_factura) %>%
-                      summarise(count = n_distinct(nro_factura)) %>%
+                      count() %>%
                       collect() %>%
                       unlist() %>%
                       unname()},
