@@ -47,8 +47,9 @@ datos_composicion <- function(data, columna_episodios, columna_valor,
              round(100*incluida_n_episodios / n_episodios),
            participacion_valor = 
              round(100*valor_explorar / valor_episodios)) %>%
-    select(!!as.name(columna_episodios), !!as.name(columna_explorar),
+    select(!!as.name(columna_episodios),
            valor_episodios, media_episodio, n_episodios,
+           !!as.name(columna_explorar),
            participacion_en_episodios, participacion_valor, 
            n_registros, incluida_n_episodios, valor_explorar,
            registros_por_episodios,
