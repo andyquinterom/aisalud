@@ -3581,8 +3581,8 @@
       "description": {
         "Package": "shinyWidgets",
         "Title": "Custom Inputs Widgets for Shiny",
-        "Version": "0.5.4",
-        "Authors@R": "c(\n  person(\"Victor\", \"Perrier\", email = \"victor.perrier@dreamrs.fr\", role = c(\"aut\", \"cre\", \"cph\")),\n  person(\"Fanny\", \"Meyer\", role = \"aut\"),\n  person(\"David\", \"Granjon\", role = \"aut\"),\n  person(\"Ian\", \"Fellows\", role = \"ctb\", comment = \"Methods for mutating vertical tabs & updateMultiInput\"),\n  person(\"Wil\", \"Davis\", role = \"ctb\", comment = \"numericRangeInput function\"),\n  person(\"Spencer\", \"Matthews\", role = \"ctb\", comment = \"autoNumeric methods\")\n  )",
+        "Version": "0.5.7",
+        "Authors@R": "c(\n  person(\"Victor\", \"Perrier\", email = \"victor.perrier@dreamrs.fr\", role = c(\"aut\", \"cre\", \"cph\")),\n  person(\"Fanny\", \"Meyer\", role = \"aut\"),\n  person(\"David\", \"Granjon\", role = \"aut\"),\n  person(\"Ian\", \"Fellows\", role = \"ctb\", comment = \"Methods for mutating vertical tabs & updateMultiInput\"),\n  person(\"Wil\", \"Davis\", role = \"ctb\", comment = \"numericRangeInput function\"),\n  person(\"Spencer\", \"Matthews\", role = \"ctb\", comment = \"autoNumeric methods\"),\n  person(family = \"JavaScript and CSS libraries authors\", role = c(\"ctb\", \"cph\"), comment = \"All authors are listed in LICENSE.md\")\n  )",
         "Description": "Collection of custom input controls and user interface components for 'Shiny' applications. \n  Give your applications a unique and colorful style !",
         "URL": "https://github.com/dreamRs/shinyWidgets",
         "BugReports": "https://github.com/dreamRs/shinyWidgets/issues",
@@ -3594,12 +3594,12 @@
         "Imports": "shiny (>= 0.14), htmltools, jsonlite, grDevices",
         "Suggests": "shinydashboard, testthat, covr, shinydashboardPlus, bs4Dash,\nargonR, argonDash, tablerDash, ggplot2, DT, scales",
         "NeedsCompilation": "no",
-        "Packaged": "2020-10-06 08:30:09 UTC; perri",
-        "Author": "Victor Perrier [aut, cre, cph],\n  Fanny Meyer [aut],\n  David Granjon [aut],\n  Ian Fellows [ctb] (Methods for mutating vertical tabs &\n    updateMultiInput),\n  Wil Davis [ctb] (numericRangeInput function),\n  Spencer Matthews [ctb] (autoNumeric methods)",
+        "Packaged": "2021-02-03 17:06:35 UTC; perri",
+        "Author": "Victor Perrier [aut, cre, cph],\n  Fanny Meyer [aut],\n  David Granjon [aut],\n  Ian Fellows [ctb] (Methods for mutating vertical tabs &\n    updateMultiInput),\n  Wil Davis [ctb] (numericRangeInput function),\n  Spencer Matthews [ctb] (autoNumeric methods),\n  JavaScript and CSS libraries authors [ctb, cph] (All authors are listed\n    in LICENSE.md)",
         "Maintainer": "Victor Perrier <victor.perrier@dreamrs.fr>",
         "Repository": "CRAN",
-        "Date/Publication": "2020-10-06 09:10:03 UTC",
-        "Built": "R 3.6.2; ; 2020-10-07 05:48:12 UTC; unix"
+        "Date/Publication": "2021-02-03 17:40:03 UTC",
+        "Built": "R 3.6.2; ; 2021-02-04 05:42:13 UTC; unix"
       }
     },
     "shinycssloaders": {
@@ -4997,7 +4997,7 @@
       "checksum": "df132220b092e836eccf4d2dda23fd0d"
     },
     "packrat/desc/shinyWidgets": {
-      "checksum": "defd179b6d2079ec7e8e2c8ec11a3b40"
+      "checksum": "52c9dc0660a776ab0d9fbe54803334f4"
     },
     "packrat/desc/sourcetools": {
       "checksum": "966c4e942ba212e977a95f8fff0eb356"
@@ -5078,7 +5078,7 @@
       "checksum": "a5c8026f8dbd6fdbfb913829911a4ed8"
     },
     "packrat/packrat.lock": {
-      "checksum": "8649056a43526ea628857afdc3e25ee7"
+      "checksum": "6ff42018ca90c6e768f43d82f4fc8e33"
     },
     "R/agregaciones.R": {
       "checksum": "807189188cc19fa969c3f845520157fe"
