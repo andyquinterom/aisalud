@@ -527,12 +527,12 @@ episodios_server <- function(id, opciones, conn) {
             rownames= FALSE) %>%
             formatCurrency(
               c('P25','P50','P75','P90','Media','Desv.tipica'),
-              mark = ".",
-              dec.mark = ",") %>%
+              dec.mark = ",", mark = ".") %>%
+            formatRound("Cord.var",
+                        dec.mark = ",", mark = ".", digits = 2) %>%
             formatCurrency(c('Suma','Min.','Max.','Rango'),
                            digits=0,
-                           mark = ".",
-                           dec.mark = ",")
+                           dec.mark = ",", mark = ".")
         }
       })
       

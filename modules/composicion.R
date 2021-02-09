@@ -122,7 +122,8 @@ composicion_server <- function(id, opciones, conn) {
                 prioridad = input$composicion_episodios_agrupadores
               ) %>%
                 collect() %>%
-                mutate(participacion = participacion/100,
+                mutate(participacion_en_episodios = 
+                         participacion_en_episodios/100,
                        participacion_valor = participacion_valor/100)
             }
           },
@@ -154,34 +155,48 @@ composicion_server <- function(id, opciones, conn) {
             color = "#87CEEB")
           
           style_color_participacion <- styleColorBar(
-            data = composicion$tabla$participacion,
+            data = composicion$tabla$participacion_en_episodios,
             color = "#87CEEB")
           
           datatable(
             composicion$tabla,
             rownames = FALSE,
             colnames = c(
-              "Incluida en episodios:" = "count",
-              "Número de episodios:" = "n_episodios",
-              "% de participación:" = "participacion",
-              "Suma de valor del agrupador:" = "valor_explorar",
-              "Suma de valor de los episodios" = "valor_calculos",
-              "% del valor total" = "participacion_valor"),
-            extensions = c('RowGroup', 'FixedColumns'),
-            options = list(rowGroup = list(dataSrc = 0),
-                           pageLength = nrow(composicion$tabla),
+              "Incluida en episodios" = "incluida_n_episodios",
+              "Número de episodios" = "n_episodios",
+              "% de participación" = "participacion_en_episodios",
+              "Suma de valor a explorar" = "valor_explorar",
+              "Suma de valor de los episodios" = "valor_episodios",
+              "% del valor total" = "participacion_valor",
+              "Número de registros" = "n_registros",
+              "Registros por episodio" = "registros_por_episodios",
+              "Valor medio a explorar de registro" = "media_explorar_registro",
+              "Valor medio a explorar por episodio" = "media_explorar_episodio",
+              "Valor medio de episodio" = "media_episodio"),
+            extensions = c('FixedColumns'),
+            options = list(pageLength = nrow(composicion$tabla),
                            orderFixed = c(0, "desc"),
-                           scrollY = "700px",
-                           fixedColumns = list(leftColumns = 2)),
-            callback = callback_js,
+                           scrollY = "600px",
+                           scrollX = TRUE,
+                           fixedColumns = list(leftColumns = 5)),
             selection = 'none'
           ) %>%
-            formatPercentage(c("% de participación:",
-                               "% del valor total")) %>%
-            formatCurrency(c("Suma de valor del agrupador:",
-                             "Suma de valor de los episodios")) %>%
+            formatPercentage(c("% de participación",
+                               "% del valor total"),
+                             dec.mark = ",", mark = ".") %>%
+            formatCurrency(c("Suma de valor a explorar",
+                             "Suma de valor de los episodios",
+                             "Valor medio a explorar de registro",
+                             "Valor medio de episodio",
+                             "Valor medio a explorar por episodio"),
+                           dec.mark = ",", mark = ".", digits = 0) %>%
+            formatRound(c("Número de episodios", "Número de registros", 
+                          "Incluida en episodios"),
+                        dec.mark = ",", mark = ".", digits = 0) %>%
+            formatRound("Registros por episodio",
+                        dec.mark = ",", mark = ".", digits = 2) %>%
             formatStyle(
-              c("% de participación:"),
+              c("% de participación"),
               background = style_color_participacion,
               backgroundSize = '100% 90%',
               backgroundRepeat = 'no-repeat',
@@ -205,7 +220,20 @@ composicion_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write.csv(
-            x = composicion$tabla,
+            x = composicion$tabla %>%
+              rename(
+                "Incluida en episodios" = "incluida_n_episodios",
+                "Número de episodios" = "n_episodios",
+                "% de participación" = "participacion_en_episodios",
+                "Suma de valor a explorar" = "valor_explorar",
+                "Suma de valor de los episodios" = "valor_episodios",
+                "% del valor total" = "participacion_valor",
+                "Número de registros" = "n_registros",
+                "Registros por episodio" = "registros_por_episodios",
+                "Valor medio a explorar de registro" = "media_explorar_registro",
+                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio de episodio" = "media_episodio"
+              ),
             file = file, 
             row.names = FALSE,
             na="")
@@ -220,7 +248,20 @@ composicion_server <- function(id, opciones, conn) {
         },
         content = function(file) {
           write_xlsx(
-            x = as.data.frame(composicion$tabla),
+            x = as.data.frame(composicion$tabla)  %>%
+              rename(
+                "Incluida en episodios" = "incluida_n_episodios",
+                "Número de episodios" = "n_episodios",
+                "% de participación" = "participacion_en_episodios",
+                "Suma de valor a explorar" = "valor_explorar",
+                "Suma de valor de los episodios" = "valor_episodios",
+                "% del valor total" = "participacion_valor",
+                "Número de registros" = "n_registros",
+                "Registros por episodio" = "registros_por_episodios",
+                "Valor medio a explorar de registro" = "media_explorar_registro",
+                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio de episodio" = "media_episodio"
+              ),
             path = file)
         }, 
         contentType = "xlsx"
