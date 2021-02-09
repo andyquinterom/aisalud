@@ -197,12 +197,10 @@ base_de_datos_server <- function(id, opciones, conn) {
           opciones$tabla_nombre 
           opciones$tabla_original <- conn %>%
             tbl(tabla) %>%
-            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
             filter(fecha_prestacion >= fecha_min) %>%
             filter(fecha_prestacion <= fecha_max)
           opciones$tabla <- conn %>%
             tbl(tabla) %>%
-            mutate(fecha_prestacion = as.Date(fecha_prestacion)) %>%
             filter(fecha_prestacion >= fecha_min) %>%
             filter(fecha_prestacion <= fecha_max)
         }

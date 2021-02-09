@@ -247,7 +247,7 @@ episodios_server <- function(id, opciones, conn) {
         updateSelectizeInput(
           session = session,
           inputId = "episodios_cols",
-          choices = opciones$colnames
+          choices = c("Ninguno", opciones$colnames)
         )
         updateSelectizeInput(
           session = session,
@@ -277,40 +277,52 @@ episodios_server <- function(id, opciones, conn) {
       
       observeEvent(cambio_columnas(), {
         if (!is.null(opciones$colnames) && 
-            input$episodios_cols != "") {
+            input$episodios_cols %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
-              agrupadores_items_length <- opciones$tabla %>%
-                select(!!as.name(input$episodios_cols)) %>%
-                distinct() %>%
-                transmute(count = n()) %>%
-                distinct() %>%
-                collect() %>%
-                unlist()
-              if (agrupadores_items_length <= 60 &&
-                  input$episodios_enable) {
-                agrupadores_items <- opciones$tabla %>%
+              if (input$episodios_enable) {
+                episodios$agrupadores_items <- opciones$tabla %>%
                   select(!!as.name(input$episodios_cols)) %>%
                   distinct() %>%
-                  collect() %>%
-                  as.list()
-                episodios$agrupadores_items <- agrupadores_items[[1]]
-                output$episodios_jerarquia <- renderUI({
-                  if (opciones$perfil_enable) {
-                    perfil_jerarquia(
-                      perfiles = opciones$perfil_lista,
-                      perfil_select = opciones$perfil_selected,
-                      items = episodios$agrupadores_items,
-                      funcion_jerarquia = descriptiva_jerarquia,
-                      ns = ns
+                  pull(!!as.name(input$episodios_cols))
+                if (length(episodios$agrupadores_items) <= 60) {
+                  output$episodios_jerarquia <- renderUI({
+                    if (opciones$perfil_enable) {
+                      perfil_jerarquia(
+                        perfiles = opciones$perfil_lista,
+                        perfil_select = opciones$perfil_selected,
+                        items = episodios$agrupadores_items,
+                        funcion_jerarquia = descriptiva_jerarquia,
+                        ns = ns
+                      )
+                    } else {
+                      descriptiva_jerarquia(
+                        ns = ns,
+                        items_nivel_4 = episodios$agrupadores_items
+                      )
+                    }
+                  })
+                } else {
+                  episodios$agrupadores_items <- NULL
+                  output$episodios_jerarquia <- renderUI({
+                    radioButtons(
+                      inputId = ns("descriptiva_unidades"),
+                      label = "Unidad de descriptiva",
+                      selected = episodios$unidad_descriptiva,
+                      choiceNames = c(
+                        "Prestación",
+                        "Paciente",
+                        "Factura"
+                      ),
+                      choiceValues = c(
+                        "prestacion",
+                        "nro_identificacion",
+                        "nro_factura"
+                      )
                     )
-                  } else {
-                    descriptiva_jerarquia(
-                      ns = ns,
-                      items_nivel_4 = episodios$agrupadores_items
-                    )
-                  }
-                })
+                  })
+                  episodios$unidad_descriptiva <- input$descriptiva_unidades
+                }
               } else {
                 episodios$agrupadores_items <- NULL
                 output$episodios_jerarquia <- renderUI({
@@ -393,7 +405,7 @@ episodios_server <- function(id, opciones, conn) {
         
         if(!is.null(opciones$colnames)) {
           if(!is.null(input$episodios_cols) &&
-             input$episodios_cols != "") {
+             input$episodios_cols %notin% c("", "Ninguno")) {
             tryCatch(
               expr = {
                 episodios_cols <- input$episodios_cols
@@ -666,7 +678,7 @@ episodios_server <- function(id, opciones, conn) {
         if (!is.null(opciones$colnames)) {
           if(nrow(episodios$tabla[["descriptiva"]]) > 0) {
             paste("Total",
-                  paste0(tolower(opciones$valor_costo), ":"), 
+                  paste0(tolower(opciones$valor_costo), ":"),
                   formatAsCurrency(
                     sum(episodios$tabla[["descriptiva"]][["Suma"]],
                         na.rm = TRUE)),
@@ -675,66 +687,66 @@ episodios_server <- function(id, opciones, conn) {
           }
         }
       })
-      
+
       output$descriptiva_sumas_registros <- renderText({
         if (opciones$datos_cargados) {
-          paste("Número de registros:", 
+          paste("Número de registros:",
                 formatC(
-                  {opciones$tabla %>% 
-                      transmute(count = n()) %>% 
-                      distinct() %>%
+                  {opciones$tabla %>%
+                      ungroup() %>%
+                      count() %>%
                       collect() %>%
-                      unlist() %>% 
+                      unlist() %>%
                       unname()},
-                  big.mark = ".", 
-                  decimal.mark = ",", 
-                  format = "f", 
+                  big.mark = ".",
+                  decimal.mark = ",",
+                  format = "f",
                   digits = 0
                 ),
                 sep = " "
           )
         }
       })
-      
+
       output$descriptiva_sumas_pacientes <- renderText({
-        if (opciones$datos_cargados && 
+        if (opciones$datos_cargados &&
             "nro_identificacion" %in% opciones$colnames) {
-          paste("Número de pacientes:", 
+          paste("Número de pacientes:",
                 formatC(
-                  {opciones$tabla %>% 
-                      select(nro_identificacion) %>% 
-                      distinct() %>%
-                      transmute(count = n()) %>% 
-                      distinct() %>% 
+                  {opciones$tabla %>%
+                      group_by(nro_identificacion) %>%
+                      count() %>%
+                      ungroup() %>%
+                      count() %>%
                       collect() %>%
-                      unlist() %>% 
+                      unlist() %>%
                       unname()},
-                  big.mark = ".", 
-                  decimal.mark = ",", 
-                  format = "f", 
+                  big.mark = ".",
+                  decimal.mark = ",",
+                  format = "f",
                   digits = 0
                 ),
                 sep = " "
           )
         }
       })
-      
+
       output$descriptiva_sumas_facturas <- renderText({
-        if (opciones$datos_cargados && 
+        if (opciones$datos_cargados &&
             "nro_factura" %in% opciones$colnames) {
-          paste("Número de facturas:", 
+          paste("Número de facturas:",
                 formatC(
-                  {opciones$tabla %>% 
-                      select(nro_factura) %>% 
-                      distinct() %>%
-                      transmute(count = n()) %>% 
-                      distinct() %>% 
+                  {opciones$tabla %>%
+                      group_by(nro_factura) %>%
+                      count() %>%
+                      ungroup() %>%
+                      count() %>%
                       collect() %>%
-                      unlist() %>% 
+                      unlist() %>%
                       unname()},
-                  big.mark = ".", 
-                  decimal.mark = ",", 
-                  format = "f", 
+                  big.mark = ".",
+                  decimal.mark = ",",
+                  format = "f",
                   digits = 0
                 ),
                 sep = " "
