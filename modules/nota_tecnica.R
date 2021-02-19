@@ -130,15 +130,22 @@ nota_tecnica_server <- function(id, opciones) {
           "prestacion" = list()
         ))
       
+      observe({
+        if (opciones$datos_cargados) {
+          numero_meses <-  round(interval(
+            opciones$fecha_rango[1],
+            opciones$fecha_rango[2]) / months(1),
+            digits = 1)
+          updateNumericInput(
+            session = session,
+            inputId = "nota_tecnica_meses",
+            value = numero_meses
+          )
+        }
+      })
+      
       observeEvent(opciones$colnames, {
         if (opciones$datos_cargados) {
-          numero_meses <- opciones$tabla_original %>%
-            transmute(mes_temporal = month(fecha_prestacion)) %>%
-            distinct() %>%
-            transmute(meses_unicos = n()) %>%
-            distinct() %>%
-            collect() %>%
-            as.numeric()
           if (input$nota_tecnica_episodios) {
             updateSelectizeInput(
               session = session,
@@ -155,11 +162,6 @@ nota_tecnica_server <- function(id, opciones) {
             session = session,
             inputId = "nota_tecnica_cols_sep",
             choices = opciones$colnames
-          )
-          updateNumericInput(
-            session = session,
-            inputId = "nota_tecnica_meses",
-            value = numero_meses
           )
         }
       })
