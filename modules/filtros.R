@@ -60,12 +60,7 @@ filtros_server <- function(id, opciones) {
       })
       
       observeEvent(opciones$pacientes_excluir_exe, {
-        if (is.null(input$filtros_paciente_valor) && 
-            length(opciones$pacientes_excluir) > 1) {
-          pacientes_excluir <- unique(opciones$pacientes_excluir[-1])
-        } else {
-          pacientes_excluir <- unique(opciones$pacientes_excluir)
-        }
+        pacientes_excluir <- unique(opciones$pacientes_excluir)
         updateSelectizeInput(
           session = session,
           inputId = "filtros_paciente_valor",
@@ -76,13 +71,14 @@ filtros_server <- function(id, opciones) {
       })
       
       observeEvent(input$filtros_paciente_valor,{
-        if (!all(opciones$pacientes_excluir %in% input$filtros_paciente_valor)) {
+        if (!all(opciones$pacientes_excluir %in%
+                 input$filtros_paciente_valor)) {
           opciones$pacientes_excluir <- input$filtros_paciente_valor
         }
       })
       
       observeEvent(input$filtro_paciente_vaciar, {
-        opciones$pacientes_excluir <- opciones$pacientes_excluir[1]
+        opciones$pacientes_excluir <- NULL
         updateSelectizeInput(
           session = session,
           inputId = "filtros_paciente_valor",
