@@ -60,8 +60,8 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
     select(valor_calculos) %>%
     collect() %>%
     transmute(
-      lower = quantile(valor_calculos, 0.5) - multiplicativo*IQR(valor_calculos),
-      upper = quantile(valor_calculos, 0.5) + multiplicativo*IQR(valor_calculos)
+      lower = quantile(valor_calculos, 0.25) - multiplicativo*IQR(valor_calculos),
+      upper = quantile(valor_calculos, 0.75) + multiplicativo*IQR(valor_calculos)
     ) %>%
     distinct() %>%
     collect()
