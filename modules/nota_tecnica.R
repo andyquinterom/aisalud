@@ -852,8 +852,8 @@ nota_tecnica_server <- function(id, opciones) {
                 ".csv", sep="")
         },
         content = function(file) {
-          write.csv(
-            x = nota_tecnica$descriptiva_escenarios,
+          write_csv(
+            x = rbindlist(nota_tecnica$descriptiva_escenarios, idcol = TRUE),
             file = file)
         },
         contentType = "text/csv"
