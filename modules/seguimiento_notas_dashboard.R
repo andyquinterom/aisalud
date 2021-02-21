@@ -109,7 +109,7 @@ seguimiento_notas_dashboard_server <- function(
           scientific = F,
           big.mark = ".", 
           decimal.mark = ","),
-        subtitle = "Pobalción", 
+        subtitle = "Población", 
         icon = icon("users", lib = "font-awesome"),
         color = "blue"
       )
