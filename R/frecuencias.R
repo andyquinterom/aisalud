@@ -53,7 +53,6 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
                                 nivel_4, intervalo = "mes", return_list = FALSE) {
   
-  # data[, "ASIGNACION_NIVEL" := ""]
   data <- data %>% 
     mutate(ASIGNACION_NIVEL = "")
   
@@ -84,10 +83,13 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
     
     if (!is.null(columna_sep)) {
       data_episodios <- data %>%
-        distinct(!!as.name(columna_suma), !!!rlang::syms(columna_sep))
+        group_by(!!as.name(columna_suma), !!!rlang::syms(columna_sep),
+                 !!as.name(columna_fecha)) %>%
+        count()
     } else {
       data_episodios <- data %>%
-        distinct(!!as.name(columna_suma))
+        group_by(!!as.name(columna_suma), !!as.name(columna_fecha)) %>%
+        count()
     }
     
     data_episodios <- data_episodios %>%
