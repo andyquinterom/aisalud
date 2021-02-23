@@ -41,10 +41,21 @@ library(jsonlite)
 library(shinyAce)
 
 
-dir.create("datos")
-dir.create("secrets")
-dir.create(file.path("datos", "saved"))
-dir.create(file.path("datos", "nts"))
+if (!dir.exists("datos")) {
+  dir.create("datos")
+}
+
+if (!dir.exists("secrets")) {
+  dir.create("secrets")
+}
+
+if (!dir.exists(file.path("datos", "saved"))) {
+  dir.create(file.path("datos", "saved"))
+}
+
+if (!dir.exists(file.path("datos", "nts"))) {
+  dir.create(file.path("datos", "nts"))
+}
 
 
 if (Sys.getenv("maxRequestSize") != "") {
