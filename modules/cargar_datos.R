@@ -292,7 +292,7 @@ base_de_datos_server <- function(id, opciones, conn) {
         )
       })
       
-      observeEvent(input$datos_opciones_guardar, {
+      observeEvent(input$file_opciones_guardar, {
         file_opciones$value_decimal <- input$value_decimal
         file_opciones$value_delimitador <- input$value_delimitador
         file_opciones$value_sheet <- input$value_sheet
