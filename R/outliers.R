@@ -1,77 +1,88 @@
 outliers_percentil <- function(data, columna, columna_valor, percentil,
                              frecuencia = 1) {
   
-  data <- as.data.frame(data)
-  data <- data[, c('nro_identificacion', columna, columna_valor)]
-  setnames(data, c('nro_identificacion', columna, "valor_calculos"))
-  data$valor_calculos <- numerize(data$valor_calculos)
-  data <- data.table(data, key = 'nro_identificacion')
-  data <- data[, list("valor_calculos" = sum(valor_calculos)),
-               by = c('nro_identificacion', columna)]
-  datapacientes <- data
-  data <- data[, list("condicion" = quantile(valor_calculos,
-                                             probs = percentil,
-                                             na.rm = TRUE),
-                      "frec" = length(valor_calculos)), by = c(columna)]  
-  data <- data[frec >= frecuencia]
-  data <- merge.data.table(
-    x = datapacientes,
-    y = data,
-    by = columna
-  )
-  data[, "diferencia" := condicion - valor_calculos]
-  data <- data[diferencia < 0]
-  setorder(data, -valor_calculos)
+  data <- data %>%
+    mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
   
-  data <- data[, list(get(columna), nro_identificacion, valor_calculos)]
+  valor_total <- data %>%
+    transmute(valor_total = sum(valor_calculos, na.rm = TRUE)) %>%
+    distinct() %>%
+    collect() %>%
+    unlist() %>%
+    as.numeric()
   
-  setnames(data, c(columna, "nro_identificacion", "valor_calculos"))
+  valor_maximo <- data %>%
+    group_by(!!as.name(columna)) %>%
+    summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE)) %>%
+    select(valor_calculos) %>%
+    collect() %>%
+    transmute(percentil = quantile(valor_calculos, probs = percentil)) %>%
+    distinct() %>%
+    collect() %>%
+    unlist() %>%
+    as.numeric()
   
-  return(data)
+  outliers <- data %>%
+    group_by(!!as.name(columna)) %>%
+    summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
+              frec = n()) %>%
+    mutate(porcentaje = paste0(
+      round(100*valor_calculos/valor_total, digits = 2),
+      "%")) %>%
+    filter(frec >= frecuencia) %>%
+    filter(valor_calculos >= valor_maximo) %>%
+    arrange(desc(valor_calculos)) %>%
+    collect() %>%
+    as.data.table()
+  
+  return(outliers)
   
 }
 
 outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
                         frecuencia = 1) {
 
-  multiplicativo <- numerize(multiplicativo)
-  data <- as.data.frame(data)
-  data <- data[, c('nro_identificacion', columna, columna_valor)]
-  setnames(data, c('nro_identificacion', columna, "valor_calculos"))
-  data$valor_calculos <- numerize(data$valor_calculos)
-  data <- data.table(data, key= 'nro_identificacion')
-  data <- data[, list("valor_calculos" = sum(valor_calculos, na.rm = TRUE)),
-               by = c('nro_identificacion', columna)]
-  datapacientes <- data
-  data <- data[, list(
-    "condicion1" = quantile(valor_calculos, probs = 0.75, na.rm = TRUE)+
-      (IQR(valor_calculos, na.rm = TRUE)*multiplicativo), 
-    "condicion2" = quantile(valor_calculos, probs = 0.25, na.rm = TRUE)-
-      (IQR(valor_calculos, na.rm = TRUE)*multiplicativo), 
-    "frec" = length(valor_calculos)), by = c(columna)]  
-  data <- data[frec >= frecuencia]
+  multiplicativo <- as.numeric(multiplicativo)
   
-  data <- merge.data.table(
-    x = datapacientes,
-    y = data,
-    by = columna
-  )
+  data <- data %>%
+    mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
   
-  data[, "diferencia_1" := condicion1 - valor_calculos]
-  data[, "diferencia_2" := condicion2 - valor_calculos]
+  valor_total <- data %>%
+    transmute(valor_total = sum(valor_calculos, na.rm = TRUE)) %>%
+    distinct() %>%
+    collect() %>%
+    unlist() %>%
+    as.numeric()
   
-  data <- rbind(
-    data[diferencia_1 < 0],
-    data[diferencia_2 > 0]
-  )
+  limites <- data %>%
+    group_by(!!as.name(columna)) %>%
+    summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE)) %>%
+    select(valor_calculos) %>%
+    collect() %>%
+    transmute(
+      lower = quantile(valor_calculos, 0.25) - multiplicativo*IQR(valor_calculos),
+      upper = quantile(valor_calculos, 0.75) + multiplicativo*IQR(valor_calculos)
+    ) %>%
+    distinct() %>%
+    collect()
   
-  setorder(data, -valor_calculos)
+  upper <- limites[["upper"]] %>% unname() %>% as.numeric()
+  lower <- limites[["lower"]] %>% unname() %>% as.numeric()
   
-  data <- data[, list(get(columna), nro_identificacion, valor_calculos)]
+  outliers <- data %>%
+    group_by(!!as.name(columna)) %>%
+    summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
+              frec = n()) %>%
+    mutate(porcentaje = paste0(
+      round(100*valor_calculos/valor_total, digits = 2),
+      "%")) %>%
+    filter(frec >= frecuencia) %>%
+    filter(valor_calculos >= upper | valor_calculos <= lower) %>%
+    arrange(desc(valor_calculos)) %>%
+    collect() %>%
+    as.data.table()
   
-  setnames(data, c(columna, "nro_identificacion", "valor_calculos"))
-  
-  return(data)
+  return(outliers)
 
 }
 

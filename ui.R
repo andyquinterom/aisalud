@@ -6,16 +6,18 @@ shinyUI(
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
     dashboardPagePlus(
       collapse_sidebar = TRUE,
-      skin = "black",
+      skin = "blue-light",
       dashboardHeaderPlus(
         fixed = TRUE,
-        title = "",
+        title = tagList(
+          span(class = "logo-lg", "Analítica Integrada Salud"), 
+          img(src = "logo.svg")),
         dropdownMenu(
           icon = icon("info-circle"),
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.0.1",
+            text = "Version: 2.2.1",
             icon = icon("code-branch"),
             status = "info"
           )
@@ -25,47 +27,31 @@ shinyUI(
       sidebar = dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
-          HTML('
-               <img src="logoblanco.png" width="100%"/>
-               '),
-          if (Sys.getenv("DATABASE_ACCESS") != "") {
-            menuItem(
-              text = "Carga de datos",
-              icon = icon("cog", lib = "font-awesome"),
-              menuSubItem(
-                text = "Subir datos",
-                tabName = "prepara",
-                icon = icon("upload", lib = "font-awesome")),
-              menuItem(
-                text = "Cargar de la nube",
-                tabName = "prepara_base_de_datos",
-                icon = icon("cloud", lib = "font-awesome")))
-          } else {
-            menuItem(
-              text = "Prepara",
-              icon = icon("cog", lib = "font-awesome"),
-              tabName = "prepara")
-          },
           menuItem(
-            text = "Análisis",
-            icon = icon("chart-area", lib = "font-awesome"),
-            menuSubItem(
-              text = "Descriptiva",
-              tabName = "episodios_modulo", 
-              icon = icon("table", lib = "font-awesome")),
-            menuSubItem(
-              text = "Nota técnica", 
-              tabName = "nota_tecnica_modulo",
-              icon = icon("tags", lib = "font-awesome")),
-            menuSubItem(
-              text = "Outliers",
-              icon = icon("search-minus", lib = "font-awesome"),
-              tabName = "outliers_modulo"),
-            menuSubItem(
-              text = "Otros gráficos",
-              icon = icon("chart-bar", lib = "font-awesome"),
-              tabName = "otros_graficos_modulo"
-            )
+            text = "Cargar datos",
+            tabName = "prepara_base_de_datos",
+            icon = icon("cloud", lib = "font-awesome")),
+          menuItem(
+            text = "Descriptiva",
+            tabName = "episodios_modulo", 
+            icon = icon("table", lib = "font-awesome")),
+          menuItem(
+            text = "Nota técnica", 
+            tabName = "nota_tecnica_modulo",
+            icon = icon("tags", lib = "font-awesome")),
+          menuItem(
+            text = "Outliers",
+            icon = icon("search-minus", lib = "font-awesome"),
+            tabName = "outliers_modulo"),
+          menuItem(
+            text = "Otros gráficos",
+            icon = icon("chart-bar", lib = "font-awesome"),
+            tabName = "otros_graficos_modulo"
+          ),
+          menuItem(
+            text = "Composición",
+            icon = icon("object-group", lib = "font-awesome"),
+            tabName = "composicion_modulo"
           ),
           if (NTS_INCLUIDO) {
             menuItem(
@@ -81,22 +67,7 @@ shinyUI(
                 text = "Comparación",
                 tabName = "seguimiento_modulo_comparar")
             )
-          },
-          if (PAQUETES_INCLUIDO) {
-            menuItem(
-              text = "Paquetes",
-              icon = icon("chart-pie", lib = "font-awesome"),
-              menuSubItem(text = "Índice", tabName = "paquetes_modulo_indice"),
-              menuSubItem(text = "Dashboard", tabName = "paquetes_modulo_dashboard")
-            )
-          },
-          if (PRICING_INCLUIDO) {
-            menuItem(
-              text = "Pricing",
-              icon = icon("tags", lib = "font-awesome"),
-              tabName = "pricing"
-            )
-          }
+          }  
         )
       ),
       rightsidebar = rightSidebar(
@@ -113,10 +84,6 @@ shinyUI(
           style = "min-height: 50px;"
         ),
         tabItems(
-          tabItem(
-            tabName = "prepara",
-            prepara_ui("prepara_modulo")
-          ),
           tabItem(
             tabName = "prepara_base_de_datos",
             base_de_datos_ui("prepara_base_de_datos")
@@ -138,6 +105,10 @@ shinyUI(
             otros_graficos_ui("otros_graficos_modulo")
           ),
           tabItem(
+            tabName = "composicion_modulo",
+            composicion_ui("composicion_modulo")
+          ),
+          tabItem(
             tabName = "seguimiento_modulo_indice",
             seguimiento_notas_indice_ui("seguimiento_notas_indice")
           ),
@@ -148,20 +119,6 @@ shinyUI(
           tabItem(
             tabName = "seguimiento_modulo_comparar",
             seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
-          ),
-          tabItem(
-            tabName = "paquetes_modulo_indice",
-            paquetes_indice_ui("paquetes_modulo_indice")
-          ),
-          tabItem(
-            tabName = "paquetes_modulo_dashboard",
-            paquetes_dashboard_ui("paquetes_modulo_dashboard")
-          ),
-          
-         # Pricing -----------------------------------------------------------
-          tabItem(
-            tabName = "pricing",
-            pricing_ui("pricing_modulo")
           )
         )
       )

@@ -24,6 +24,14 @@ otros_graficos_ui <- function(id) {
                   choices = "Ninguno",
                   width = "100%"
                 ),
+                uiOutput(ns("edades_segmentacion_select_agrupadores_ui")),
+                sliderTextInput(
+                  inputId = ns("edades_numero_columnas"),
+                  label = "Número de columnas",
+                  choices = c("Auto", 5, 10, 20, 25),
+                  width = "100%", 
+                  selected = "Auto"
+                ),
                 actionButton(
                   inputId = ns("edades_ejecutar"),
                   label = "Ejecutar",
@@ -47,85 +55,128 @@ otros_graficos_ui <- function(id) {
   )
 }
 
-otros_graficos_server <- function(input, output, session, datos) {
+otros_graficos_server <- function(id, opciones) {
+  moduleServer(
+    id = id,
+    module = function(input, output, session) {
   
-  graficos <- reactiveValues()
-  
-  observeEvent(datos$colnames, {
-    updateSelectizeInput(
-      session = session,
-      inputId = "edades_select_columna",
-      choices = datos$colnames_num,
-      selected = "edad"
-    )
-    updateSelectizeInput(
-      session = session,
-      inputId = "edades_segmentacion_select_columna",
-      choices = c("Ninguno", datos$colnames),
-      selected = "Ninguno"
-    )
-  })
-  
-  observeEvent(input$edades_ejecutar, {
-    tryCatch(
-      expr = {
-        if (input$edades_select_columna != "" && 
-            input$edades_select_columna != "Ninguno") {
-          if (input$edades_segmentacion_select_columna == "Ninguno" ||
-              input$edades_segmentacion_select_columna == "") {
-            edades_pacientes <- copy(datos$data_table)[, c(
-              input$edades_select_columna, 
-              "nro_identificacion"),
-              with = FALSE] %>%
-              unique()
-            graficos$edades <- histograma_edades(
-              data = edades_pacientes,
-              columna_numero = input$edades_select_columna,
-              columna_sep = NULL)
-          } else {
-            edades_pacientes <- copy(datos$data_table)[, c(
-              input$edades_select_columna, 
-              input$edades_segmentacion_select_columna,
-              "nro_identificacion"),
-              with = FALSE] %>%
-              unique()
-            graficos$edades <- histograma_edades(
-              data = edades_pacientes,
-              columna_numero = input$edades_select_columna,
-              columna_sep = input$edades_segmentacion_select_columna)
-          }
-        }
-      }, error = function(e) {
-        sendSweetAlert(
+      ns <- NS(id)
+      
+      graficos <- reactiveValues()
+      
+      observeEvent(opciones$colnames, {
+        updateSelectizeInput(
           session = session,
-          title = "Error", 
-          type = "error",
-          text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+          inputId = "edades_select_columna",
+          choices = opciones$colnames_num,
+          selected = "edad"
         )
-      }
-    )
-  })
-  
-  output$edades_render <- renderPlotly({
-    if (!is.null(graficos$edades)) {
-      graficos$edades
+        updateSelectizeInput(
+          session = session,
+          inputId = "edades_segmentacion_select_columna",
+          choices = c("Ninguno", opciones$colnames),
+          selected = "Ninguno"
+        )
+      })
+      
+      observeEvent(input$edades_segmentacion_select_columna, {
+        segmentacion_columna <- input$edades_segmentacion_select_columna
+        if (segmentacion_columna != "Ninguno" && segmentacion_columna != "") {
+          output$edades_segmentacion_select_agrupadores_ui <- renderUI({
+            selectizeInput(
+              inputId = ns("edades_segmentacion_select_agrupadores"),
+              label = "Incluir:",
+              choices = {
+                opciones$tabla_original %>%
+                  select({{ segmentacion_columna }}) %>%
+                  distinct() %>%
+                  collect() %>%
+                  unlist() %>%
+                  unname()
+                },
+              multiple = TRUE
+            )
+          })
+        } else {
+          output$edades_segmentacion_select_agrupadores_ui <- renderUI({})
+        }
+      })
+      
+      observeEvent(input$edades_ejecutar, {
+        tryCatch(
+          expr = {
+            if (input$edades_select_columna != "" && 
+                input$edades_select_columna != "Ninguno") {
+              if (input$edades_numero_columnas == "Auto") {
+                numero_bins <- NULL
+              } else {
+                numero_bins <- input$edades_numero_columnas
+              }
+              if (input$edades_segmentacion_select_columna == "Ninguno" ||
+                  input$edades_segmentacion_select_columna == "") {
+                segmentacion <- input$edades_segmentacion_select_columna
+                columna_edades <- input$edades_select_columna
+                edades_pacientes <- opciones$tabla %>%
+                  group_by(nro_identificacion) %>%
+                  summarise(edad = max(!!as.name(columna_edades),
+                                       na.rm = TRUE))
+                graficos$edades <- histograma_edades(
+                  data = edades_pacientes,
+                  columna_numero = input$edades_select_columna,
+                  columna_sep = NULL,
+                  numero_bins = numero_bins)
+              } else {
+                segmentacion <- input$edades_segmentacion_select_columna
+                segmentacion_seleccionado <- 
+                  input$edades_segmentacion_select_agrupadores
+                columna_edades <- input$edades_select_columna
+                edades_pacientes <- opciones$tabla %>%
+                  filter(!!as.name(segmentacion) %in% segmentacion_seleccionado) %>%
+                  group_by(nro_identificacion, !!as.name(segmentacion)) %>%
+                  summarise(edad = max(!!as.name(columna_edades),
+                                       na.rm = TRUE))
+                graficos$edades <- histograma_edades(
+                  data = edades_pacientes,
+                  columna_numero = columna_edades,
+                  columna_sep = segmentacion,
+                  numero_bins = numero_bins)
+              }
+            }
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error", 
+              type = "error",
+              text = "Por favor revisar los parametros de carga de datos,
+                    columnas, formato de fecha y los datos. Si este problema persiste
+                    ponerse en contacto con un administrador."
+            )
+          }
+        )
+      })
+      
+      output$edades_render <- renderPlotly({
+        if (!is.null(graficos$edades)) {
+          graficos$edades
+        }
+      })
+      
+      output$edades_titulo <- renderText({
+        paste0(
+          "Distribución de edades",
+          ifelse(
+            test = input$edades_segmentacion_select_columna != "Ninguno",
+            yes = paste(
+              " segmentada por", input$edades_segmentacion_select_columna),
+            no = ""
+          )
+        )
+      })
+      
+      
+      
     }
-  })
-  
-  output$edades_titulo <- renderText({
-    paste0(
-      "Distribución de edades",
-      ifelse(
-        test = input$edades_segmentacion_select_columna != "Ninguno",
-        yes = paste(
-          " segmentada por", input$edades_segmentacion_select_columna),
-        no = ""
-      )
-    )
-  })
-  
-  
-  
+  )
 }

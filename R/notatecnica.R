@@ -33,36 +33,7 @@ crear_notatecnica_escenarios <- function(
     
     return(nota_tecnica_tabla)
   }
-  
-  if (escenario == 3) {
-    nota_tecnica_tabla <- data[
-      , list(
-        "CM" = round0(get('Media truncada 10%')),
-        "Frecuencia a mes" = round0(Frecuencia/meses),
-        "Valor a mes" = round0(get('Media truncada 10%')*Frecuencia/meses),
-        "Frecuencia per capita" = Frecuencia/poblacion,
-        "Coe" = get('Coef.var')
-      ),
-      by = c(columnas)
-    ]
-    
-    return(nota_tecnica_tabla)
-  }
-  
-  if (escenario == 4) {
-    nota_tecnica_tabla <- data[
-      , list(
-        "CM" = round0(get('Media truncada 5%')),
-        "Frecuencia a mes" = round0(Frecuencia/meses),
-        "Valor a mes" = round0(get('Media truncada 5%')*Frecuencia/meses),
-        "Frecuencia per capita" = Frecuencia/poblacion,
-        "Coe" = get('Coef.var')
-      ),
-      by = c(columnas)
-    ]
-    
-    return(nota_tecnica_tabla)
-  }
+
 }
 
 crear_notatecnica <- function(x = NULL, columnas, poblacion = 1, meses = 1) {

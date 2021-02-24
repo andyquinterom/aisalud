@@ -30,76 +30,66 @@ mes_spanish <- function(x) {
   
 }
 
+mes_spanish_juntos <- function(x) {
+  meses <- c(
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+  )
+  anio <- substr(x, 1, 4)
+  mes <- meses[as.numeric(substr(x, 5, 6))]
+  return(
+    paste(anio, mes, sep = " - ")
+  )
+  
+}
+
 descriptiva_basica <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
-  data <- copy(data)
-  setnames(data, columna_valor, "valor_calculos")
-  data[, "valor_calculos" := numerize(valor_calculos)]
+  
+  data <- data %>%
+    mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
+  
   if (!prestaciones) {
-    data[, "MES_ANIO_NUM" := min(lubridate::year(
-      get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
-      na.rm = TRUE),
-      by = c(columna_suma)]
-    data[, "MES_ANIO" := paste(min(lubridate::year(
-      get(columna_fecha))),
-      mes_spanish(min(lubridate::month(get(columna_fecha)))),
-      sep = " - "),
-      by = c(columna_suma)]
-    columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
-    data <- data[, list("valor_calculos" = sum(valor_calculos)),
-                 by = c(columna_suma,
-                        columnas[columnas != columna_suma])]
+    
+    data <- data %>%
+      mutate(mes_num = month(!!as.name(columna_fecha)),
+             anio_num = year(!!as.name(columna_fecha))) %>%
+      group_by(!!as.name(columna_suma), !!as.name(agrupador)) %>%
+      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
+                mes_anio_num = max(anio_num*100 + mes_num))
+    
   } else {
-    data[, "MES_ANIO_NUM" := lubridate::year(
-      data[[columna_fecha]])*100 + lubridate::month(data[[columna_fecha]])]
-    data[, "MES_ANIO" := paste(lubridate::year(
-      data[[columna_fecha]]),
-      mes_spanish(lubridate::month(data[[columna_fecha]])),
-      sep = " - ")]
-    columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
+    data <- data %>%
+      mutate(mes_num = month(!!as.name(columna_fecha)),
+             anio_num = year(!!as.name(columna_fecha))) %>%
+      mutate(mes_anio_num = anio_num*100 + mes_num)
+      
   }
-  data <- data[, list("Frecuencia" = length(valor_calculos),
-                      "Suma" = sum(valor_calculos, na.rm = TRUE)),
-                      by = c(columnas)]
-  setnames(data, c(columnas, "Frecuencia", "Suma"))
+  data <- data %>%
+    group_by(!!as.name(agrupador), mes_anio_num) %>%
+    summarise(Frecuencia = n(), Suma = sum(valor_calculos, na.rm = TRUE)) %>%
+    arrange(mes_anio_num) %>%
+    collect() %>%
+    mutate(mes_anio = mes_spanish_juntos(mes_anio_num)) %>%
+    as.data.table()
   
-  return(data[order(MES_ANIO_NUM)])
+  return(data)
   data <- NULL
 }
-
-descriptiva_basica_episodios <- function(
-  data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
-  data <- copy(data)
-  setnames(data, columna_valor, "valor_calculos")
-  data[, "valor_calculos" := numerize(valor_calculos)]
-  data[, "MES_ANIO_NUM" := min(lubridate::year(
-    get(columna_fecha))*100 + lubridate::month(get(columna_fecha)),
-    na.rm = TRUE),
-    by = c(columna_suma)]
-  data[, "MES_ANIO" := paste(min(lubridate::year(
-    get(columna_fecha))),
-    mes_spanish(min(lubridate::month(get(columna_fecha)))),
-    sep = " - "),
-    by = c(columna_suma)]
-  columnas = c(agrupador, "MES_ANIO_NUM", "MES_ANIO")
-  data <- data[, list("FREC_PACIENTES" = uniqueN(get(columna_suma)),
-                      "Suma_ep" = sum(valor_calculos, na.rm = TRUE),
-                      "VAR_COLUMNAS" = unique(get(agrupador))),
-               by = c(columna_suma, "MES_ANIO_NUM", "MES_ANIO")]
-  setnames(data, "VAR_COLUMNAS", agrupador)
-  data <- data[, list("Frecuencia" = length(Suma_ep),
-                      "Suma" = sum(Suma_ep, na.rm = TRUE)),
-               by = c(columnas)]
-  setnames(data, c(columnas, "Frecuencia", "Suma"))
-  
-  return(data[order(MES_ANIO_NUM)])
-  data <- NULL
-}
-
 
 descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
   data <- copy(data)
-  meses <- as.list(unique(data$MES_ANIO))
+  meses <- as.list(unique(data$mes_anio))
   agrupCompletos <- data.table(agrupador = unique(data[[agrupador]]))
   setnames(agrupCompletos, agrupador)
   data_sep <- lapply(
@@ -109,20 +99,20 @@ descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) 
     frec = frec,
     suma = suma,
     FUN = function(x, data, agrupador, frec, suma) {
-      data <- data[MES_ANIO == x,
+      data <- data[mes_anio == x,
                   c(agrupador,
-                    "MES_ANIO", c("Frecuencia", "Suma")[c(frec, suma)]), 
+                    "mes_anio", c("Frecuencia", "Suma")[c(frec, suma)]), 
                   with = FALSE]
       setnames(data,
                c(agrupador,
-                 "MES_ANIO",
-                 paste(unique(data[["MES_ANIO"]]),
+                 "mes_anio",
+                 paste(unique(data[["mes_anio"]]),
                        c("Frecuencia", "Suma")[c(frec, suma)]))) 
 
-           return(data[,-c("MES_ANIO")])
+           return(data[,-c("mes_anio")])
       
   })
-
+  
   return(cbind.fill(data_sep, agrupador = agrupador)[[1]])
   
 }
@@ -315,37 +305,49 @@ descriptiva_basica_jerarquia <- function(
   data, columnas, columna_valor, columna_suma, nivel_1, nivel_2, 
   nivel_3, nivel_4, return_list = FALSE) {
   
-  data <- copy(data)
-  
-  data[, "ASIGNACION_NIVEL" := ""]
-  
   episodios_nivel_1 <- data.table()
   episodios_nivel_2 <- data.table()
   episodios_nivel_3 <- data.table()
   episodios_nivel_4 <- data.table()
   
   if (!is.null(nivel_1)) {
-    episodios_nivel_1 <- list()
-    lapply(
-      X = nivel_1,
-      FUN = function(i) {
-        episodios_nivel_1[[i]] <<- descriptiva_basica_episodios(
-          data = data,
-          agrupador = columnas,  
-          columna_valor = columna_valor,
-          columna_suma = columna_suma,
-          columna_fecha = "fecha_prestacion",
-          prestaciones = FALSE
-        )[get(columnas) %in% i]
-        registros_procesados <- unique(data[
-          get(columnas) %in% i][[columna_suma]])
-        data[get(columna_suma) %in% registros_procesados,
-             "ASIGNACION_NIVEL" := i]
-        data <<- data[ASIGNACION_NIVEL != i]
-        registros_procesados <- NULL
-      }
+    
+    index_episodios <- data.frame(
+      index = 1:length(nivel_1),
+      agrupador = nivel_1
     )
-    episodios_nivel_1 <- rbindlist(episodios_nivel_1)
+    colnames(index_episodios) <- c("index", columnas)
+    
+    episodios <- data %>%
+      select(!!as.name(columna_suma), !!as.name(columnas)) %>%
+      filter(!!as.name(columnas) %in% nivel_1) %>%
+      distinct() %>%
+      right_join(index_episodios, copy = TRUE) %>%
+      arrange(index) %>%
+      group_by(!!as.name(columna_suma)) %>%
+      mutate(!!columnas := first(!!as.name(columnas))) %>%
+      ungroup() %>%
+      distinct(!!as.name(columna_suma), !!as.name(columnas))
+    
+    data_episodios <- data %>%
+      group_by(!!as.name(columna_suma)) %>%
+      summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE),
+                fecha_episodio = max(fecha_prestacion)) %>%
+      right_join(episodios)
+    
+    episodios_nivel_1 <- descriptiva_basica(
+      data = data_episodios,
+      agrupador = columnas,  
+      columna_valor = "valor_calculos",
+      columna_suma = columna_suma,
+      columna_fecha = "fecha_episodio",
+      prestaciones = FALSE
+    )
+    episodios <- episodios %>%
+      select(!!as.name(columna_suma))
+    data <- data %>%
+      anti_join(episodios)
+    data_temp <- NULL
   }
   
   
@@ -357,12 +359,8 @@ descriptiva_basica_jerarquia <- function(
       columna_suma = "nro_factura",
       columna_fecha = "fecha_prestacion",
       prestaciones = FALSE
-    )[get(columnas) %in% nivel_2]
-    registros_procesados <- unique(data[
-      get(columnas) %in% i][["nro_factura"]])
-    data[get(columna_suma) %in% registros_procesados,
-         "ASIGNACION_NIVEL" := "nivel_2"]
-    data <- data[ASIGNACION_NIVEL != "nivel_2"]
+    ) %>%
+      filter(!!as.name(columnas) %in% nivel_2)
     registros_procesados <- NULL
   }
   
@@ -374,12 +372,8 @@ descriptiva_basica_jerarquia <- function(
       columna_suma = "nro_identificacion",
       columna_fecha = "fecha_prestacion",
       prestaciones = FALSE
-    )[get(columnas) %in% nivel_3]
-    registros_procesados <- unique(data[
-      get(columnas) %in% i][["nro_identificacion"]])
-    data[get(columna_suma) %in% registros_procesados,
-         "ASIGNACION_NIVEL" := "nivel_3"]
-    data <- data[ASIGNACION_NIVEL != "nivel_3"]
+    ) %>%
+      filter(!!as.name(columnas) %in% nivel_3)
   }
   
   if (!is.null(nivel_4)) {
@@ -390,19 +384,23 @@ descriptiva_basica_jerarquia <- function(
       columna_suma = "",
       columna_fecha = "fecha_prestacion",
       prestaciones = TRUE
-    )[get(columnas) %in% nivel_4]
+    ) %>%
+      filter(!!as.name(columnas) %in% nivel_4)
   }
   
+  data_final <- data.table::rbindlist(
+    fill = TRUE,
+    list(
+      "episodio" = episodios_nivel_1,
+      "factura"   = episodios_nivel_2,
+      "paciente"  = episodios_nivel_3,
+      "prestacion"= episodios_nivel_4
+    )
+  )
+  print(data_final)
+  
   return(
-      data.table::rbindlist(
-        fill = TRUE,
-        list(
-          "episodio" = episodios_nivel_1,
-          "factura"   = episodios_nivel_2,
-          "paciente"  = episodios_nivel_3,
-          "prestacion"= episodios_nivel_4
-        )
-      )
+      data_final
   )
   
 }

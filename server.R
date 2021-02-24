@@ -1,123 +1,78 @@
 shinyServer(function(input, output, session) {
   
   opciones <- reactiveValues(
-    "valor_costo" = "valor"
+    "valor_costo" = "valor",
+    "tabla_nombre" = "Ninguno",
+    "datos_cargados" = FALSE,
+    "perfil_enable" = FALSE
   )
+  
   
  # Modulo prepara ---------------------------------------------
   
-  datos_modulos <- callModule(
-    module = prepara_server,
-    id = "prepara_modulo",
-    nombre_id = "prepara_modulo",
-    opciones = opciones
-  )
-  
-  callModule(
-    module = base_de_datos_server,
+  base_de_datos_server(
     id = "prepara_base_de_datos",
-    nombre_id = "prepara_base_de_datos",
-    datos = datos_modulos,
-    opciones = opciones
+    opciones = opciones,
+    conn = conn
   )
   
   # Modulo filtros --------------------------------------------
   
-  callModule(
-    module = filtros_server,
+  filtros_server(
     id = "filtros_sideBar",
-    datos = datos_modulos
+    opciones = opciones
   )
   
   # Modulo descriptiva y episodios --------------------------------------------
   
-  callModule(
-    module = episodios_server, 
+  episodios_server(
     id = "episodios_modulo",
     opciones = opciones,
-    nombre_id = "episodios_modulo",
-    datos = datos_modulos
+    conn = conn
   )
   
- 
-  # Modulo outliers -----------------------------------------------------------
-  
-  callModule(
-    module = outliers_server,
+  # # Modulo outliers -----------------------------------------------------------
+  # 
+  outliers_server(
     id = "outliers_modulo",
-    datos = datos_modulos,
-    opciones = opciones,
-    nombre_id = "outliers_modulo"
+    opciones = opciones
   )
+  # 
+  # 
+  # # Modulo generar nota técnica -----------------------------------------------
+  # 
   
- 
-  # Modulo generar nota técnica -----------------------------------------------
-  
-  callModule(
-    module = nota_tecnica_server,
+  nota_tecnica_server(
     id = "nota_tecnica_modulo",
-    nombre_id = "nota_tecnica_modulo",
-    datos = datos_modulos,
     opciones = opciones
   )
   
+  # # Modulo otros gráficos -----------------------------------------------------
 
-  # Modulo paquete -------------------------------------------------
-  
-  if (PAQUETES_INCLUIDO) {
-    
-    callModule(
-      module = paquetes_dashboard_server,
-      id = "paquetes_modulo_dashboard",
-      paquetes = paquetes,
-      paquetes_ref_cups = paquetes_ref_cups,
-      paquetes_ref = paquetes_ref,
-      paquetes_paquetes = paquetes_paquetes,
-      paquetes_cups = paquetes_cups
-    )
-    
-    callModule(
-      module = paquetes_indice_server,
-      id = "paquetes_modulo_indice",
-      paquetes = paquetes,
-      paquete_path = paquete_path,
-      nombre_id = "paquetes_modulo_indice"
-    )
-    
-  }
-  
-  # Modulo otros gráficos
-  
-  callModule(
-    module = otros_graficos_server,
+  otros_graficos_server(
     id = "otros_graficos_modulo",
-    datos = datos_modulos
+    opciones = opciones
   )
   
+  # Modulo de composicion
+  
+  composicion_server(
+    id = "composicion_modulo",
+    opciones = opciones,
+    conn = conn
+  )
 
-  # Pricing ------------------------------------------------------------------
-  
-  if (PRICING_INCLUIDO) {
-    callModule(
-      module = pricing_server,
-      id = "pricing_modulo", 
-      pricing_path = pricing_path,
-      nombre_id = "pricing_modulo"
-    )
-  }
- 
   # Modulos seguimiento NT ---------------------------------------------
-  
+
   if (NTS_INCLUIDO) {
-    
+
     callModule(
       module = seguimiento_notas_indice_server,
       id = "seguimiento_notas_indice",
       indice = dash_nt_indice,
-      mapa = dash_nt_mapa,
       nombre_id = "seguimiento_notas_indice"
     )
-    
+  
     callModule(
       module = seguimiento_notas_dashboard_server,
       id = "seguimiento_notas_dash",
@@ -125,18 +80,15 @@ shinyServer(function(input, output, session) {
       nota_tecnica = dash_nt_datos,
       inclusiones = dash_nt_inclusiones
     )
-    
-    callModule(
-      module = seguimiento_notas_comparar_server,
-      id = "seguimiento_notas_comparar",
-      datos = datos_modulos,
-      indice = dash_nt_indice,
-      nota_tecnica = dash_nt_datos,
-      nombre_id = "seguimiento_notas_comparar",
-      opciones = opciones
-    )
-    
-  }
   
+    seguimiento_notas_comparar_server(
+      id = "seguimiento_notas_comparar",
+      opciones = opciones,
+      indice = dash_nt_indice,
+      nota_tecnica = dash_nt_datos
+    )
+
+  }
+
  
 })
