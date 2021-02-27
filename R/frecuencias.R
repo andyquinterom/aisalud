@@ -2,6 +2,8 @@ frecuencias <- function(
   data, agrupador, prestaciones, columna_fecha, columna_suma, 
   intervalo = "mes") {
   
+  agrupador <- unique(agrupador)
+  
   data <- data %>%
     mutate_at(vars(agrupador), as.character)
   
@@ -23,7 +25,7 @@ frecuencias <- function(
   if (!prestaciones) {
 
     data <- data %>%
-      group_by(!!as.name(columna_suma), !!!rlang::syms(agrupador)) %>%
+      group_by(!!!rlang::syms(unique(c(columna_suma, agrupador)))) %>%
       summarise(mes_anio_num = max(mes_anio_num))
 
   }
@@ -71,7 +73,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
     colnames(index_episodios) <- c("index", columnas)
     
     episodios <- data %>%
-      select(!!as.name(columna_suma), !!as.name(columnas)) %>%
+      select(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
       filter(!!as.name(columnas) %in% nivel_1) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
@@ -79,16 +81,16 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       group_by(!!as.name(columna_suma)) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
-      distinct(!!as.name(columna_suma), !!as.name(columnas))
+      distinct(!!!rlang::syms(unique(c(columna_suma, columnas))))
     
     if (!is.null(columna_sep)) {
       data_episodios <- data %>%
-        group_by(!!as.name(columna_suma), !!!rlang::syms(columna_sep),
-                 !!as.name(columna_fecha)) %>%
+        group_by(!!!rlang::syms(unique(c(
+          columna_sep, columna_suma, columna_fecha)))) %>%
         count()
     } else {
       data_episodios <- data %>%
-        group_by(!!as.name(columna_suma), !!as.name(columna_fecha)) %>%
+        group_by(!!!rlang::syms(unique(c(columna_suma, columna_fecha)))) %>%
         count()
     }
     
