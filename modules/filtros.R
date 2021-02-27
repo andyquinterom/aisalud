@@ -40,7 +40,7 @@ filtros_server <- function(id, opciones) {
         lapply(
           X = 1:n_char,
           FUN = function(x) {
-            updatePickerInput(
+            updateSelectizeInput(
               session = session,
               inputId = paste("filtro_char_columna", x, sep = "_"),
               choices = c("Ninguno", opciones$colnames)
@@ -50,7 +50,7 @@ filtros_server <- function(id, opciones) {
         lapply(
           X = 1:n_num,
           FUN = function(x) {
-            updatePickerInput(
+            updateSelectizeInput(
               session = session,
               inputId = paste("filtro_num_columna", x, sep = "_"),
               choices = c("Ninguno", opciones$colnames_num)
@@ -100,7 +100,7 @@ filtros_server <- function(id, opciones) {
                 selected = "Ninguno",
                 choices = {
                   columna_seleccionada <- input[[paste0("filtro_char_columna_", i)]]
-                  if (columna_seleccionada != "Ninguno") {
+                  if (columna_seleccionada %notin% c("Ninguno", "")) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
                       distinct() %>%
@@ -127,7 +127,7 @@ filtros_server <- function(id, opciones) {
                 inputId = paste0("filtro_num_min_", i),
                 value = {
                   columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
-                  if (columna_seleccionada != "Ninguno") {
+                  if (columna_seleccionada %notin% c("Ninguno", "")) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
                       transmute(min = min(!!as.name(columna_seleccionada),
@@ -146,7 +146,7 @@ filtros_server <- function(id, opciones) {
                 inputId = paste0("filtro_num_max_", i),
                 value = {
                   columna_seleccionada <- input[[paste0("filtro_num_columna_", i)]]
-                  if (columna_seleccionada != "Ninguno") {
+                  if (columna_seleccionada %notin% c("Ninguno", "")) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
                       transmute(max = max(!!as.name(columna_seleccionada),
@@ -175,7 +175,8 @@ filtros_server <- function(id, opciones) {
           lapply(
             X = 1:n_char,
             FUN = function(i) {
-              return(input[[paste0("filtro_char_columna_", i)]] != "Ninguno")
+              return(input[[paste0("filtro_char_columna_", i)]] %notin%
+                       c("Ninguno", ""))
             }
           )
         )
@@ -211,7 +212,8 @@ filtros_server <- function(id, opciones) {
           lapply(
             X = 1:n_char,
             FUN = function(i) {
-              return(input[[paste0("filtro_num_columna_", i)]] != "Ninguno")
+              return(input[[paste0("filtro_num_columna_", i)]] %notin% 
+                       c("Ninguno", ""))
             }
           )
         )
@@ -252,7 +254,7 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
   fluidRow(
     column(
       width = 5,
-      pickerInput(
+      selectizeInput(
         inputId = ns(paste("filtro_char_columna", position, sep = "_")),
         label = NULL,
         choices = "Ninguno",
@@ -298,7 +300,8 @@ filtro_numerico_ui_fila <- function(ns, position = 1) {
   fluidRow(
     column(
       width = 5,
-      pickerInput(
+      selectizeInput(
+        label = NULL,
         inputId = ns(paste("filtro_num_columna", position, sep = "_")),
         choices = c("Ninguno"),
         width = "100%")),
