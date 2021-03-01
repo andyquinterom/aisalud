@@ -122,7 +122,7 @@ otros_graficos_server <- function(id, opciones) {
                                        na.rm = TRUE))
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
-                  columna_numero = input$edades_select_columna,
+                  columna_numero = "edad",
                   columna_sep = NULL,
                   numero_bins = numero_bins)
               } else {
@@ -137,7 +137,7 @@ otros_graficos_server <- function(id, opciones) {
                                        na.rm = TRUE))
                 graficos$edades <- histograma_edades(
                   data = edades_pacientes,
-                  columna_numero = columna_edades,
+                  columna_numero = "edad",
                   columna_sep = segmentacion,
                   numero_bins = numero_bins)
               }
