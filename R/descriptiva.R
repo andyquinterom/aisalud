@@ -11,6 +11,8 @@ rango <- function(x) {
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
                         prestaciones) {
   
+  columnas <- unique(columnas)
+  
   print("Descriptiva: convirtiendo valor a numérico.")
   
   data <- data %>%
@@ -19,7 +21,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   if (!prestaciones) {
     print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
-      group_by(!!!rlang::syms(c(columna_suma, columnas))) %>%
+      group_by(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
       summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE))
   }
   
