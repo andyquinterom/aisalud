@@ -58,3 +58,20 @@ mapa_valores <- function(indice, ...) {
   return(p)
   
 }
+
+parse_nt <- function(x) {
+  
+  purrr::map(x, function(y) {
+    poblacion <- y[["poblacion"]]
+    agrupadores_names <- names(y[["agrupadores"]])
+
+    purrr::map2(y[["agrupadores"]], agrupadores_names, function(i, w) {
+      return(data.frame("agrupador" = w, "frecuencia" = i[1],
+                        "cm" = i[2], "frecuencia_pc" = i[1]/poblacion,
+                        "valor_mes" = i[1]*i[2]))
+    }) %>% rbindlist()
+    
+  }) %>% 
+    rbindlist(idcol = "nt")
+  
+}
