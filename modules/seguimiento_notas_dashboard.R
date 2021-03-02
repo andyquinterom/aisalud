@@ -6,6 +6,25 @@ seguimiento_notas_dashboard_ui <- function(id) {
     fluidRow(
       column(
         width = 12,
+        box(
+          width = 7,
+          height = "500px",
+          DT::dataTableOutput(
+            outputId = ns("indice_tabla"),
+            height = "auto") %>%
+            withSpinner()),
+        box(
+          width = 5, 
+          height = "500px",
+          leafletOutput(
+          height = "480px",
+          outputId = ns("indice_mapa")) %>%
+            withSpinner())
+      )
+    ),
+    fluidRow(
+      column(
+        width = 12,
         valueBoxOutput(outputId = ns("entidad"), width = 12))),
     fluidRow(
       column(
@@ -26,7 +45,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
           pickerInput(
             inputId = ns("board_select"), 
             width = "100%",
-            choices = "NA",
+            choices = "Ninguno",
             label = "Nota técnica")),
         box(
           width = 12,
@@ -53,158 +72,219 @@ seguimiento_notas_dashboard_ui <- function(id) {
   
 }
 
-seguimiento_notas_dashboard_server <- function(
-  input, output, session, indice, nota_tecnica, inclusiones) {
+seguimiento_notas_dashboard_server <- function(id, opciones) {
   
-  observeEvent(indice, {
-    updatePickerInput(
-      session = session,
-      inputId = "board_select",
-      choices = indice$cod_nt
-    )
-  })
-  
-  dash_nt_valores <- reactiveValues(
-    "indice" = indice,
-    "datos" = nota_tecnica, 
-    "inclusiones" = inclusiones
-  )
-  
-  observeEvent(input$board_select, {
-    dash_nt_valores$datos <- nota_tecnica[
-      cod_nt == input$board_select]
-    dash_nt_valores$indice <- indice[
-      cod_nt == input$board_select]
-    dash_nt_valores$inclusiones <- inclusiones[
-      cod_nt == input$board_select]
-  })
-  
-  output$entidad <- renderValueBox({
-    if(!is.null(dash_nt_valores$indice)) {
-      valueBox(
-        value = dash_nt_valores$indice$nom_prestador,
-        subtitle = "Prestador", 
-        icon = icon("stethoscope", lib = "font-awesome"), 
-        color = "yellow"
+  moduleServer(
+    id = id,
+    module = function(input, output, session) {
+      
+      nt_opciones <- reactiveValues(
+        # "indice" = indice,
+        # "datos" = nota_tecnica, 
+        # "inclusiones" = inclusiones
       )
-    }
+
+      observe({
+        nt_opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
+          pull(notas_tecnicas) %>%
+          prettify()
+        
+        nt_opciones$notas_tecnicas_lista <- nt_opciones$notas_tecnicas_raw %>%
+          parse_json(simplifyVector = TRUE)
+        
+        nt_opciones$notas_tecnicas <- nt_opciones$notas_tecnicas_lista %>%
+          parse_nt()
+        
+        nt_opciones$indice_todos <- parse_nt_indice(
+          nt_opciones$notas_tecnicas_lista,
+          tabla_agrupadores = nt_opciones$notas_tecnicas
+        )
+        
+        print(nt_opciones$indice)
+        
+        updatePickerInput(
+          session = session,
+          inputId = "board_select",
+          choices = names(nt_opciones$notas_tecnicas_lista)
+        )
+      })
+      
+      output$indice_tabla <- DT::renderDataTable({
+        if(!is.null(nt_opciones$indice_todos)) {
+          datatable(
+            nt_opciones$indice_todos %>%
+              mutate(vigencia = case_when(
+                vigente ~ "Vigente",
+                TRUE ~ "No vigente")) %>%
+              select(-c(cod_departamento, vigente)),
+            rownames = F, 
+            selection = 'none', 
+            colnames = c(
+              "Nombre NT",
+              "Prestador",
+              "Población", 
+              "Departamento",
+              "Ciudades",
+              "Valor a mes",
+              "Vigencia"),
+            options = list(
+              dom='ft',
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 10, 
+              ordering = FALSE, 
+              scrollX = TRUE,
+              scrollY = "400px")) %>%
+            DT::formatCurrency(
+              columns = c("valor_mes")
+              , digits = 0, mark = ".", dec.mark = ",") %>%
+            DT::formatRound(columns = "poblacion", mark = ".", dec.mark = ",",
+                            digits = 0)
+        }
+      })
+      
+      output$indice_mapa <- renderLeaflet({
+        mapa_valores(nt_opciones$indice_todos %>%
+                       filter(vigente))
+      })
+      
+      observeEvent(input$board_select, {
+        if (input$board_select != "Ninguno") {
+          nt_opciones$datos <- nt_opciones$notas_tecnicas %>%
+            filter(nt == input$board_select) %>%
+            rename(cod_nt = nt)
+          nt_opciones$indice <- nt_opciones$indice_todos %>%
+            filter(cod_nt == input$board_select)
+        }
+      })
+
+      output$entidad <- renderValueBox({
+        if(!is.null(nt_opciones$indice)) {
+          valueBox(
+            value = nt_opciones$indice$nom_prestador,
+            subtitle = "Prestador",
+            icon = icon("stethoscope", lib = "font-awesome"),
+            color = "yellow"
+          )
+        }
+      })
+
+      output$valor_mes <- renderValueBox({
+        if(!is.null(nt_opciones$indice)) {
+          valueBox(
+            value = formatAsCurrency(nt_opciones$indice$valor_mes),
+            subtitle = "Valor total a mes",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            color = "green"
+          )
+        }
+      })
+
+      output$poblacion <- renderValueBox({
+        if(!is.null(nt_opciones$indice)) {
+          valueBox(
+            value = format(
+              nt_opciones$indice$poblacion,
+              scientific = F,
+              big.mark = ".",
+              decimal.mark = ","),
+            subtitle = "Población",
+            icon = icon("users", lib = "font-awesome"),
+            color = "blue"
+          )
+        }
+      })
+
+      output$departamento <- renderValueBox({
+        if(!is.null(nt_opciones$indice)) {
+          valueBox(
+            value = nt_opciones$indice$departamento,
+            subtitle = nt_opciones$indice$ciudades,
+            icon = icon("city", lib = "font-awesome"),
+            color = "aqua"
+          )
+        }
+      })
+
+      # output$inclusiones <- DT::renderDataTable({
+      #   if(!is.null(nt_opciones$inclusiones)) {
+      #     datatable(
+      #       nt_opciones$inclusiones[incluido == 1, c("objeto", "notas")],
+      #       rownames = F,
+      #       selection = 'none',
+      #       colnames = c("Observación", "Notas"),
+      #       options = list(
+      #         dom='ft',
+      #         language = list(
+      #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+      #         pageLength = nrow(nt_opciones$inclusiones),
+      #         ordering = FALSE, 
+      #         scrollX = TRUE,
+      #         scrollY = "60vh")) %>%
+      #       DT::formatStyle(
+      #         columns = 1:4,
+      #         valueColumns = 1, 
+      #         backgroundColor = "white")
+      #   }
+      # })
+      # 
+      # output$exclusiones <- DT::renderDataTable({
+      #   if(!is.null(nt_opciones$inclusiones)) {
+      #     datatable(
+      #       nt_opciones$inclusiones[incluido == 0, c("objeto", "notas")],
+      #       rownames = F,
+      #       selection = 'none',
+      #       colnames = c("Observación", "Notas"),
+      #       options = list(
+      #         dom='ft',
+      #         language = list(
+      #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+      #         pageLength = nrow(nt_opciones$inclusiones),
+      #         ordering = FALSE, 
+      #         scrollX = TRUE,
+      #         scrollY = "60vh")) %>%
+      #       DT::formatStyle(
+      #         columns = 1:4,
+      #         valueColumns = 1, 
+      #         backgroundColor = "white")
+      #   }
+      # })
+
+      output$plot_agrupadores <- renderPlotly({
+        pie_chart(
+          paquetes = nt_opciones$datos,
+          columna = "agrupador",
+          valor_costo = "valor_mes")
+      })
+
+      output$board_datos <- DT::renderDataTable({
+        if(!is.null(nt_opciones$datos)) {
+          datatable(
+            nt_opciones$datos %>%
+              select(agrupador, frec_mes, frecuencia_pc, cm, valor_mes),
+            rownames = F,
+            selection = 'none',
+            colnames = c("Agrupador", "Frecuencia a mes",
+                         "Frecuencia per capita", "cm", "Valor a mes"),
+            options = list(
+              dom='ft',
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = nrow(nt_opciones$datos),
+              ordering = FALSE,
+              scrollX = TRUE,
+              scrollY = "600px")) %>%
+            DT::formatCurrency(
+              columns = c("cm", "valor_mes"),
+              digits = 0, mark = ".", dec.mark = ","
+            ) %>%
+            DT::formatStyle(
+              columns = 1:5,
+              valueColumns = 1,
+              backgroundColor = "white")
+        }
+      })
+  
   })
-  
-  output$valor_mes <- renderValueBox({
-    if(!is.null(dash_nt_valores$indice)) {
-      valueBox(
-        value = formatAsCurrency(dash_nt_valores$indice$valor_mes),
-        subtitle = "Valor total a mes", 
-        icon = icon("dollar-sign", lib = "font-awesome"),
-        color = "green"
-      )
-    }
-  })
-  
-  output$poblacion <- renderValueBox({
-    if(!is.null(dash_nt_valores$indice)) {
-      valueBox(
-        value = format(
-          dash_nt_valores$indice$poblacion,
-          scientific = F,
-          big.mark = ".", 
-          decimal.mark = ","),
-        subtitle = "Población", 
-        icon = icon("users", lib = "font-awesome"),
-        color = "blue"
-      )
-    }
-  })
-  
-  output$departamento <- renderValueBox({
-    if(!is.null(dash_nt_valores$indice)) {
-      valueBox(
-        value = dash_nt_valores$indice$departamento,
-        subtitle = dash_nt_valores$indice$ciudades, 
-        icon = icon("city", lib = "font-awesome"),
-        color = "aqua"
-      )
-    }
-  })
-  
-  output$inclusiones <- DT::renderDataTable({
-    if(!is.null(dash_nt_valores$inclusiones)) {
-      datatable(
-        dash_nt_valores$inclusiones[incluido == 1, c("objeto", "notas")],
-        rownames = F,
-        selection = 'none',
-        colnames = c("Observación", "Notas"),
-        options = list(
-          dom='ft',
-          language = list(
-            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(dash_nt_valores$inclusiones),
-          ordering = FALSE, 
-          scrollX = TRUE,
-          scrollY = "60vh")) %>%
-        DT::formatStyle(
-          columns = 1:4,
-          valueColumns = 1, 
-          backgroundColor = "white")
-    }
-  })
-  
-  output$exclusiones <- DT::renderDataTable({
-    if(!is.null(dash_nt_valores$inclusiones)) {
-      datatable(
-        dash_nt_valores$inclusiones[incluido == 0, c("objeto", "notas")],
-        rownames = F,
-        selection = 'none',
-        colnames = c("Observación", "Notas"),
-        options = list(
-          dom='ft',
-          language = list(
-            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(dash_nt_valores$inclusiones),
-          ordering = FALSE, 
-          scrollX = TRUE,
-          scrollY = "60vh")) %>%
-        DT::formatStyle(
-          columns = 1:4,
-          valueColumns = 1, 
-          backgroundColor = "white")
-    }
-  })
-  
-  output$plot_agrupadores <- renderPlotly({
-    pie_chart(
-      paquetes = dash_nt_valores$datos,
-      columna = "agrupador",
-      valor_costo = "valor_mes")
-  })
-  
-  output$board_datos <- DT::renderDataTable({
-    if(!is.null(dash_nt_valores$datos)) {
-      datatable(
-        dash_nt_valores$datos[, c("agrupador", "frec_mes", "cm", "valor_mes")],
-        rownames = F, 
-        selection = 'none',
-        colnames = c("Agrupador", "Frecuencia a mes", "cm", "Valor a mes"),
-        options = list(
-          dom='ft', 
-          language = list(
-            url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-          pageLength = nrow(dash_nt_valores$datos),
-          ordering = FALSE,
-          scrollX = TRUE,
-          scrollY = "600px")) %>%
-        DT::formatCurrency(
-          columns = c("cm", "valor_mes"),
-          digits = 0, mark = ".", dec.mark = ","
-        ) %>%
-        DT::formatStyle(
-          columns = 1:4,
-          valueColumns = 1,
-          backgroundColor = "white")
-    }
-  })
-  
-  
-  
   
 }

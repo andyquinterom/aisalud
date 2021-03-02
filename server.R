@@ -66,27 +66,21 @@ shinyServer(function(input, output, session) {
 
   if (NTS_INCLUIDO) {
 
-    callModule(
-      module = seguimiento_notas_indice_server,
-      id = "seguimiento_notas_indice",
-      indice = dash_nt_indice,
-      nombre_id = "seguimiento_notas_indice"
-    )
+    # callModule(
+    #   module = seguimiento_notas_indice_server,
+    #   id = "seguimiento_notas_indice",
+    #   indice = dash_nt_indice,
+    #   nombre_id = "seguimiento_notas_indice"
+    # )
   
-    callModule(
-      module = seguimiento_notas_dashboard_server,
-      id = "seguimiento_notas_dash",
-      indice = dash_nt_indice,
-      nota_tecnica = dash_nt_datos,
-      inclusiones = dash_nt_inclusiones
-    )
-  
-    seguimiento_notas_comparar_server(
-      id = "seguimiento_notas_comparar",
-      opciones = opciones,
-      indice = dash_nt_indice,
-      nota_tecnica = dash_nt_datos
-    )
+    seguimiento_notas_dashboard_server(id = "seguimiento_notas_dash")
+
+    # seguimiento_notas_comparar_server(
+    #   id = "seguimiento_notas_comparar",
+    #   opciones = opciones,
+    #   indice = dash_nt_indice,
+    #   nota_tecnica = dash_nt_datos
+    # )
 
   }
 

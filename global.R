@@ -81,56 +81,56 @@ for (i in paste0("modules/", list.files("modules/"))) {
 
 # Authentication google -------------------------------------------------------
 
-if (Sys.getenv("SERVICE_ACCOUNT") != "") {
-  if (file.exists(file.path("secrets", "serviceAccount.json"))) {
-    file.remove(file.path("secrets", "serviceAccount.json"))
-  }
-  write_lines(
-    x = Sys.getenv("SERVICE_ACCOUNT"),
-    path = file.path("secrets", "serviceAccount.json")
-  )
-  googledrive::drive_auth(path = "secrets/serviceAccount.json")
-  googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
-}
-
-if (!file.exists(file.path("datos", "saved", "oncologia.feather"))) {
-  googledrive::drive_download(
-    file = as_id("1h6T9p3Di5vNmL2wPkFq5HzR8sAdun7ef"),
-    path = file.path("datos", "saved", "oncologia.feather"))
-}
-
-if (Sys.getenv("NTS_PATH") == "") {
-  
-  nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
-  
-} else {
-  
-  nts_path <- Sys.getenv("NTS_PATH")
-  
-}
+# if (Sys.getenv("SERVICE_ACCOUNT") != "") {
+#   if (file.exists(file.path("secrets", "serviceAccount.json"))) {
+#     file.remove(file.path("secrets", "serviceAccount.json"))
+#   }
+#   write_lines(
+#     x = Sys.getenv("SERVICE_ACCOUNT"),
+#     path = file.path("secrets", "serviceAccount.json")
+#   )
+#   googledrive::drive_auth(path = "secrets/serviceAccount.json")
+#   googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
+# }
+# 
+# if (!file.exists(file.path("datos", "saved", "oncologia.feather"))) {
+#   googledrive::drive_download(
+#     file = as_id("1h6T9p3Di5vNmL2wPkFq5HzR8sAdun7ef"),
+#     path = file.path("datos", "saved", "oncologia.feather"))
+# }
+# 
+# if (Sys.getenv("NTS_PATH") == "") {
+#   
+#   nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
+#   
+# } else {
+#   
+#   nts_path <- Sys.getenv("NTS_PATH")
+#   
+# }
 
 # Notas técnicas  ------------------------------------------------------------- 
 
-if (Sys.getenv("NTS_INCLUIDO") == "") {
-  
-  NTS_INCLUIDO <- FALSE
-  
-} else {
-  
-  NTS_INCLUIDO <- TRUE
-  
-  dash_nt_indice <- as.data.table(sheets_read(nts_path, 
-                                              sheet = "indice", 
-                                              col_types = "ccdcccd"))
-  dash_nt_inclusiones <- as.data.table(sheets_read(nts_path, 
-                                                   sheet = "inclusiones", 
-                                                   col_types = "ccdc"))
-  dash_nt_datos <- as.data.table(sheets_read(nts_path,
-                                             sheet = "notas_tecnicas",
-                                             col_types = "ccddd"))
-  dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
-  
-}
+# if (Sys.getenv("NTS_INCLUIDO") == "") {
+#   
+#   NTS_INCLUIDO <- FALSE
+#   
+# } else {
+#   
+#   NTS_INCLUIDO <- TRUE
+#   
+#   dash_nt_indice <- as.data.table(sheets_read(nts_path, 
+#                                               sheet = "indice", 
+#                                               col_types = "ccdcccd"))
+#   dash_nt_inclusiones <- as.data.table(sheets_read(nts_path, 
+#                                                    sheet = "inclusiones", 
+#                                                    col_types = "ccdc"))
+#   dash_nt_datos <- as.data.table(sheets_read(nts_path,
+#                                              sheet = "notas_tecnicas",
+#                                              col_types = "ccddd"))
+#   dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
+#   
+# }
 
 
 conn <- dbConnect(

@@ -66,12 +66,42 @@ parse_nt <- function(x) {
     agrupadores_names <- names(y[["agrupadores"]])
 
     purrr::map2(y[["agrupadores"]], agrupadores_names, function(i, w) {
-      return(data.frame("agrupador" = w, "frecuencia" = i[1],
+      return(data.frame("agrupador" = w, "frec_mes" = i[1],
                         "cm" = i[2], "frecuencia_pc" = i[1]/poblacion,
                         "valor_mes" = i[1]*i[2]))
     }) %>% rbindlist()
     
   }) %>% 
     rbindlist(idcol = "nt")
+  
+}
+
+parse_nt_indice <- function(x, tabla_agrupadores) {
+  
+  nombres_nt <- names(x)
+  
+  indice_datos <- purrr::map2(x, nombres_nt,  function(y, cod_nt) {
+    tibble(
+      cod_nt = cod_nt,
+      nom_prestador = y[["prestador"]],
+      poblacion = y[["poblacion"]],
+      departamento = y[["departamento"]],
+      ciudades = y[["ciudades"]],
+      cod_departamento = y[["cod_departamento"]],
+      vigente = ifelse(is.null(y[["vigente"]]),
+                               yes = FALSE, 
+                               no = as.logical(y[["vigente"]]))
+    )
+  }) %>% 
+    rbindlist()
+  
+  valores_mes <- tabla_agrupadores %>%
+    group_by(nt) %>%
+    summarise(valor_mes = sum(valor_mes, na.rm = TRUE))
+  
+  indice <- indice_datos %>%
+    inner_join(valores_mes, by = c("cod_nt" = "nt")) %>%
+    mutate(cod_departamento = as.character(cod_departamento)) %>%
+    return()
   
 }
