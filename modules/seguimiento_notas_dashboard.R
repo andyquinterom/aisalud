@@ -42,7 +42,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
         width = 12,
         box(
           width = 12,
-          pickerInput(
+          selectizeInput(
             inputId = ns("board_select"), 
             width = "100%",
             choices = "Ninguno",
@@ -100,9 +100,10 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           tabla_agrupadores = nt_opciones$notas_tecnicas
         )
         
-        print(nt_opciones$indice)
-        
-        updatePickerInput(
+      })
+      
+      observeEvent(names(nt_opciones$notas_tecnicas_lista), {
+        updateSelectizeInput(
           session = session,
           inputId = "board_select",
           choices = names(nt_opciones$notas_tecnicas_lista)
@@ -149,7 +150,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       observeEvent(input$board_select, {
-        if (input$board_select != "Ninguno") {
+        if (input$board_select %notin% c("Ninguno", "")) {
           nt_opciones$datos <- nt_opciones$notas_tecnicas %>%
             filter(nt == input$board_select) %>%
             rename(cod_nt = nt)
