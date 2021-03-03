@@ -85,28 +85,28 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       )
 
       observe({
-        nt_opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
+        opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
           pull(notas_tecnicas) %>%
           prettify()
         
-        nt_opciones$notas_tecnicas_lista <- nt_opciones$notas_tecnicas_raw %>%
+        opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
           parse_json(simplifyVector = TRUE)
         
-        nt_opciones$notas_tecnicas <- nt_opciones$notas_tecnicas_lista %>%
+        nt_opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
           parse_nt()
         
         nt_opciones$indice_todos <- parse_nt_indice(
-          nt_opciones$notas_tecnicas_lista,
+          opciones$notas_tecnicas_lista,
           tabla_agrupadores = nt_opciones$notas_tecnicas
         )
         
       })
       
-      observeEvent(names(nt_opciones$notas_tecnicas_lista), {
+      observeEvent(names(opciones$notas_tecnicas_lista), {
         updateSelectizeInput(
           session = session,
           inputId = "board_select",
-          choices = names(nt_opciones$notas_tecnicas_lista)
+          choices = names(opciones$notas_tecnicas_lista)
         )
       })
       

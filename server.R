@@ -73,7 +73,9 @@ shinyServer(function(input, output, session) {
     #   nombre_id = "seguimiento_notas_indice"
     # )
   
-    seguimiento_notas_dashboard_server(id = "seguimiento_notas_dash")
+    seguimiento_notas_dashboard_server(
+      id = "seguimiento_notas_dash",
+      opciones = opciones)
 
     # seguimiento_notas_comparar_server(
     #   id = "seguimiento_notas_comparar",

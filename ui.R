@@ -53,21 +53,14 @@ shinyUI(
             icon = icon("object-group", lib = "font-awesome"),
             tabName = "composicion_modulo"
           ),
-          if (NTS_INCLUIDO) {
-            menuItem(
-              text = "Seguimiento",
-              icon = icon("dollar-sign", lib = "font-awesome"),
-              menuSubItem(
-                text = "Índice",
-                tabName = "seguimiento_modulo_indice"),
-              menuSubItem(
-                text = "Dashboard",
-                tabName = "seguimiento_modulo_dash"),
-              menuSubItem(
-                text = "Comparación",
-                tabName = "seguimiento_modulo_comparar")
-            )
-          }  
+          menuItem(
+            text = "NTs: Dashboard",
+            icon = icon("columns", lib = "font-awesome"),
+            tabName = "seguimiento_modulo_dash"),
+          menuItem(
+            text = "NTs: Comparación",
+            icon = icon("chart-line", lib = "font-awesome"),
+            tabName = "seguimiento_modulo_comparar")
         )
       ),
       rightsidebar = rightSidebar(
