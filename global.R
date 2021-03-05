@@ -79,60 +79,6 @@ for (i in paste0("modules/", list.files("modules/"))) {
 
 # Carga de datos ---------------------------------------------------------------
 
-# Authentication google -------------------------------------------------------
-
-# if (Sys.getenv("SERVICE_ACCOUNT") != "") {
-#   if (file.exists(file.path("secrets", "serviceAccount.json"))) {
-#     file.remove(file.path("secrets", "serviceAccount.json"))
-#   }
-#   write_lines(
-#     x = Sys.getenv("SERVICE_ACCOUNT"),
-#     path = file.path("secrets", "serviceAccount.json")
-#   )
-#   googledrive::drive_auth(path = "secrets/serviceAccount.json")
-#   googlesheets4::gs4_auth(path = "secrets/serviceAccount.json")
-# }
-# 
-# if (!file.exists(file.path("datos", "saved", "oncologia.feather"))) {
-#   googledrive::drive_download(
-#     file = as_id("1h6T9p3Di5vNmL2wPkFq5HzR8sAdun7ef"),
-#     path = file.path("datos", "saved", "oncologia.feather"))
-# }
-# 
-# if (Sys.getenv("NTS_PATH") == "") {
-#   
-#   nts_path <- "1hmVLybaBfgJvmXlUNRp0_0eygKG7mRtxmQNH5VGsr00"
-#   
-# } else {
-#   
-#   nts_path <- Sys.getenv("NTS_PATH")
-#   
-# }
-
-# Notas técnicas  ------------------------------------------------------------- 
-
-# if (Sys.getenv("NTS_INCLUIDO") == "") {
-#   
-#   NTS_INCLUIDO <- FALSE
-#   
-# } else {
-#   
-#   NTS_INCLUIDO <- TRUE
-#   
-#   dash_nt_indice <- as.data.table(sheets_read(nts_path, 
-#                                               sheet = "indice", 
-#                                               col_types = "ccdcccd"))
-#   dash_nt_inclusiones <- as.data.table(sheets_read(nts_path, 
-#                                                    sheet = "inclusiones", 
-#                                                    col_types = "ccdc"))
-#   dash_nt_datos <- as.data.table(sheets_read(nts_path,
-#                                              sheet = "notas_tecnicas",
-#                                              col_types = "ccddd"))
-#   dash_nt_codigos <- unique(dash_nt_datos$COD_NT)
-#   
-# }
-
-
 conn <- dbConnect(
   RPostgres::Postgres(),
   dbname = Sys.getenv("DATABASE_NAME"),
@@ -175,6 +121,58 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
           }
         }
       }'
+    )
+  )
+}
+
+if ("notas_tecnicas" %notin% tabla_perfiles) {
+  dbWriteTable(
+    conn = conn,
+    Id(schema = "config", table = "notas_tecnicas"),
+    data.frame(
+      "notas_tecnicas" = 
+'{
+  "Ambito": {
+      "poblacion": 40000,
+      "prestador": "MD&CO Cali",
+      "departamento": "Valle del Cauca",
+      "cod_departamento": 76,
+      "ciudades": "Cali, Palmira",
+      "vigente": 1,
+      "agrupadores": {
+          "HOSPITALARIO": [4230, 150000],
+          "AMBULATORIO": [504, 278714],
+          "URGENCIAS": [153, 42235]
+      }
+  },
+  "Tipo de servicio": {
+      "poblacion": 40000,
+      "prestador": "MD&CO Bogotá",
+      "departamento": "Bogotá D.C",
+      "cod_departamento": 11,
+      "ciudades": "Bogotá D.C",
+      "vigente": 0,
+      "agrupadores": {
+          "APOYO_D": [110, 183425],
+          "PRC": [1199, 85912],
+          "TERAPIAS": [131, 16823],
+          "LABORATORIO": [322, 16688],
+          "MEDICAMENTOS": [1534, 111809],
+          "HONORARIOS": [240, 46624],
+          "PARTO": [2, 173236],
+          "ESTANCIA": [224, 317270],
+          "INSUMO": [858, 30591],
+          "CIRUGIA": [147, 1150662],
+          "OXIGENO": [52, 63063],
+          "QUIMIOTERAPIA": [53, 579845],
+          "BANCO DE SANGRE": [1, 373880],
+          "RADIOTERAPIA": [10, 6049302],
+          "TRANSLADOS": [1, 102200],
+          "AMBULANCIA": [1, 230534],
+          "CUIDADO DOMICILIARIO": [2, 153030]
+      }
+  }
+}'
     )
   )
 }
