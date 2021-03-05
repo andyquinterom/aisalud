@@ -102,10 +102,6 @@ shinyUI(
             composicion_ui("composicion_modulo")
           ),
           tabItem(
-            tabName = "seguimiento_modulo_indice",
-            seguimiento_notas_indice_ui("seguimiento_notas_indice")
-          ),
-          tabItem(
             tabName = "seguimiento_modulo_dash",
             seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
           ),

@@ -64,27 +64,13 @@ shinyServer(function(input, output, session) {
 
   # Modulos seguimiento NT ---------------------------------------------
 
-  if (NTS_INCLUIDO) {
-
-    # callModule(
-    #   module = seguimiento_notas_indice_server,
-    #   id = "seguimiento_notas_indice",
-    #   indice = dash_nt_indice,
-    #   nombre_id = "seguimiento_notas_indice"
-    # )
-  
     seguimiento_notas_dashboard_server(
       id = "seguimiento_notas_dash",
       opciones = opciones)
 
     # seguimiento_notas_comparar_server(
     #   id = "seguimiento_notas_comparar",
-    #   opciones = opciones,
-    #   indice = dash_nt_indice,
-    #   nota_tecnica = dash_nt_datos
+    #   opciones = opciones
     # )
 
-  }
-
- 
 })

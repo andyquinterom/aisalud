@@ -120,7 +120,7 @@ seguimiento_notas_comparar_ui <- function(id) {
 }
 
 
-seguimiento_notas_comparar_server <- function(id, nota_tecnica, indice, opciones) {
+seguimiento_notas_comparar_server <- function(id, opciones) {
   
   moduleServer(
     id = id,
@@ -136,7 +136,7 @@ seguimiento_notas_comparar_server <- function(id, nota_tecnica, indice, opciones
       observeEvent(comparar$indice, {
         updateSelectizeInput(
           session = session,
-          choices = comparar$indice$cod_nt,
+          choices = names(opciones$notas_tecnicas_lista),
           inputId = "comparar_select"
         )
       })
@@ -144,7 +144,7 @@ seguimiento_notas_comparar_server <- function(id, nota_tecnica, indice, opciones
       comparar <- reactiveValues(
         datos = data.table(),
         agrupadores_items = NULL,
-        indice = indice
+        indice = opciones$indice_todos
       )
       
       observeEvent(opciones$colnames, {

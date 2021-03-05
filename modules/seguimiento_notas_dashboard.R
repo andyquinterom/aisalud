@@ -92,12 +92,12 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
           parse_json(simplifyVector = TRUE)
         
-        nt_opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
+        opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
           parse_nt()
         
-        nt_opciones$indice_todos <- parse_nt_indice(
+        opciones$indice_todos <- parse_nt_indice(
           opciones$notas_tecnicas_lista,
-          tabla_agrupadores = nt_opciones$notas_tecnicas
+          tabla_agrupadores = opciones$notas_tecnicas
         )
         
       })
@@ -111,9 +111,9 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       output$indice_tabla <- DT::renderDataTable({
-        if(!is.null(nt_opciones$indice_todos)) {
+        if(!is.null(opciones$indice_todos)) {
           datatable(
-            nt_opciones$indice_todos %>%
+            opciones$indice_todos %>%
               mutate(vigencia = case_when(
                 vigente ~ "Vigente",
                 TRUE ~ "No vigente")) %>%
@@ -145,16 +145,16 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       output$indice_mapa <- renderLeaflet({
-        mapa_valores(nt_opciones$indice_todos %>%
+        mapa_valores(opciones$indice_todos %>%
                        filter(vigente))
       })
       
       observeEvent(input$board_select, {
         if (input$board_select %notin% c("Ninguno", "")) {
-          nt_opciones$datos <- nt_opciones$notas_tecnicas %>%
+          nt_opciones$datos <- opciones$notas_tecnicas %>%
             filter(nt == input$board_select) %>%
             rename(cod_nt = nt)
-          nt_opciones$indice <- nt_opciones$indice_todos %>%
+          nt_opciones$indice <- opciones$indice_todos %>%
             filter(cod_nt == input$board_select)
         }
       })
