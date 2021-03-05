@@ -105,7 +105,7 @@ configuracion_server <- function(id, opciones) {
         updateAceEditor(
           session = session,
           editorId = "notas_tecnicas_editor",
-          value = opciones$notas_tecnicas_raw
+          value = opciones$notas_tecnicas_raw, tabSize = 2
         )
       })
       
