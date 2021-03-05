@@ -60,14 +60,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
                 outputId = ns("plot_agrupadores"),
                 width = "100%",
                 height = "600px")))),
-        box(
-          title = "Inclusiones:",
-          width = 6,
-          DT::dataTableOutput(outputId = ns("inclusiones"))),
-        box(
-          title = "Exclusiones:",
-          width = 6,
-          DT::dataTableOutput(outputId = ns("exclusiones")))))
+        uiOutput(ns("otra_informacion"))))
   )
   
 }
@@ -251,6 +244,87 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             color = "aqua"
           )
         }
+      })
+      
+      output$otra_informacion <- renderUI({
+        
+        if (!is.null(opciones$indice_todos) &&
+            input$board_select %notin% c("Ninguno", "")) {
+          
+          otra_informacion_datos <-
+            opciones$notas_tecnicas_lista[[input$board_select]]
+          
+          
+          
+          tagList(
+            if (!is.null(otra_informacion_datos$inclusiones) ||
+                !is.null(otra_informacion_datos$exclusiones)) {
+              box(
+                width = 12,
+                fluidRow(
+                  column(
+                    width = 6,
+                    tags$h3("Inclusiones"),
+                    tags$ol(
+                      purrr::map(
+                        .x = otra_informacion_datos$inclusiones,
+                        tags$li))),
+                  column(
+                    width = 6,
+                    tags$h3("Exclusiones"),
+                    tags$ol(
+                      purrr::map(
+                        .x = otra_informacion_datos$exclusiones,
+                        tags$li)))
+                  )
+                )
+            },
+            if (!is.null(otra_informacion_datos$notas)) {
+              box(
+                title = "Notas",
+                width = 12,
+                tags$p(otra_informacion_datos$notas))
+            },
+            if (!is.null(otra_informacion_datos$perfil)) {
+              if (otra_informacion_datos$perfil %in%
+                  names(opciones$perfil_lista)) {
+                perfil_nota_tecnica <- 
+                  opciones$perfil_lista[[otra_informacion_datos$perfil]]
+                
+                width_row <- 12/length(names(perfil_nota_tecnica[["jerarquia"]]))
+                
+                box(
+                  title = "Conteos especiales y jerarquía",
+                  width = 12,
+                  fluidRow(
+                    purrr::map2(
+                      .x = perfil_nota_tecnica[["jerarquia"]],
+                      .y = names(perfil_nota_tecnica[["jerarquia"]]),
+                      .f = function(x, y) {
+                        print(y)
+                        if (!is.null(x)) {
+                          column(
+                            width = width_row,
+                            tags$h3(toupper(y)),
+                            tags$ol(
+                              purrr::map(
+                                .x = intersect(
+                                  x = x,
+                                  y = pull(nt_opciones$datos, agrupador)),
+                                tags$li))
+                          ) %>%
+                            return()
+                        }
+                      })
+                  )
+                )
+                
+              }
+            }
+          )
+          
+        }
+        
       })
 
       # output$inclusiones <- DT::renderDataTable({
