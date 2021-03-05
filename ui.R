@@ -60,7 +60,11 @@ shinyUI(
           menuItem(
             text = "NTs: Comparación",
             icon = icon("chart-line", lib = "font-awesome"),
-            tabName = "seguimiento_modulo_comparar")
+            tabName = "seguimiento_modulo_comparar"),
+          menuItem(
+            text = "Configuración",
+            icon = icon("cog", lib = "font-awesome"),
+            tabName = "configuracion")
         )
       ),
       rightsidebar = rightSidebar(
@@ -108,6 +112,10 @@ shinyUI(
           tabItem(
             tabName = "seguimiento_modulo_comparar",
             seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
+          ),
+          tabItem(
+            tabName = "configuracion",
+            configuracion_ui("configuracion")
           )
         )
       )
