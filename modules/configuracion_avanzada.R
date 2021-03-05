@@ -77,10 +77,9 @@ configuracion_server <- function(id, opciones) {
             opciones$perfil_updated <- FALSE
             opciones$perfil_updated <- TRUE
             
-            updateAceEditor(
-              session = session,
-              editorId = "perfil_editor",
-              value = opciones$perfil_raw
+            showNotification(
+              ui = "El perfil se a guardado.",
+              type = "message"
             )
             
           },
@@ -130,10 +129,9 @@ configuracion_server <- function(id, opciones) {
             opciones$notas_tecnicas_updated <- FALSE
             opciones$notas_tecnicas_updated <- TRUE
             
-            updateAceEditor(
-              session = session,
-              editorId = "notas_tecnicas_editor",
-              value = opciones$notas_tecnicas_raw, 
+            showNotification(
+              ui = "La nota técnica se a guardado.",
+              type = "message"
             )
             
           },
