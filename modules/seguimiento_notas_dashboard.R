@@ -185,6 +185,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             icon = icon("stethoscope", lib = "font-awesome"),
             color = "yellow"
           )
+        } else {
+          valueBox(
+            value = "",
+            subtitle = "Prestador",
+            icon = icon("stethoscope", lib = "font-awesome"),
+            color = "yellow"
+          )
         }
       })
 
@@ -192,6 +199,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         if(!is.null(nt_opciones$indice)) {
           valueBox(
             value = formatAsCurrency(nt_opciones$indice$valor_mes),
+            subtitle = "Valor total a mes",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            color = "green"
+          )
+        } else {
+          valueBox(
+            value = "",
             subtitle = "Valor total a mes",
             icon = icon("dollar-sign", lib = "font-awesome"),
             color = "green"
@@ -211,6 +225,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             icon = icon("users", lib = "font-awesome"),
             color = "blue"
           )
+        } else {
+          valueBox(
+            value = "",
+            subtitle = "Población",
+            icon = icon("users", lib = "font-awesome"),
+            color = "blue"
+          )
         }
       })
 
@@ -219,6 +240,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           valueBox(
             value = nt_opciones$indice$departamento,
             subtitle = nt_opciones$indice$ciudades,
+            icon = icon("city", lib = "font-awesome"),
+            color = "aqua"
+          )
+        } else {
+          valueBox(
+            value = "",
+            subtitle = "",
             icon = icon("city", lib = "font-awesome"),
             color = "aqua"
           )
