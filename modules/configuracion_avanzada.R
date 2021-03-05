@@ -21,7 +21,17 @@ configuracion_ui <- function(id) {
             )
           ),
           tabPanel(
-            title = "Notas técnicas"
+            title = "Notas técnicas",
+            aceEditor(
+              outputId = ns("notas_tecnicas_editor"),
+              mode = "json",
+              value = "", 
+              height = "70vh", 
+            ),
+            actionButton(
+              inputId = ns("notas_tecnicas_actualizar"),
+              label = "Guardar notas técnicas"
+            )
           )
         )
       )
@@ -53,7 +63,9 @@ configuracion_server <- function(id, opciones) {
         
         tryCatch(
           expr = {
-            parse_json(input$perfil_editor, simplifyVector = TRUE)
+            
+            perfil_nuevo$perfiles %>%
+              prettify()
             
             dbWriteTable(
               conn = conn,
@@ -62,13 +74,6 @@ configuracion_server <- function(id, opciones) {
               overwrite = TRUE
             )
             
-            opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
-              pull(perfiles) %>%
-              prettify()
-            
-            opciones$perfil_lista <- opciones$perfil_raw %>%
-              parse_json(simplifyVector = TRUE)
-            
             opciones$perfil_updated <- FALSE
             opciones$perfil_updated <- TRUE
             
@@ -76,6 +81,59 @@ configuracion_server <- function(id, opciones) {
               session = session,
               editorId = "perfil_editor",
               value = opciones$perfil_raw
+            )
+            
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
+        )
+        
+      })
+      
+      
+      # Nota técnicas 
+      
+      # Perfiles ----------------
+      
+      observe({
+        updateAceEditor(
+          session = session,
+          editorId = "notas_tecnicas_editor",
+          value = opciones$notas_tecnicas_raw
+        )
+      })
+      
+      observeEvent(input$notas_tecnicas_actualizar, {
+        notas_tecnicas_nuevo <- data.frame(
+          "notas_tecnicas" = input$notas_tecnicas_editor)
+        
+        tryCatch(
+          expr = {
+            
+            notas_tecnicas_nuevo$notas_tecnicas  %>%
+              prettify()
+            
+            dbWriteTable(
+              conn = conn,
+              Id(schema = "config", table = "notas_tecnicas"),
+              notas_tecnicas_nuevo,
+              overwrite = TRUE
+            )
+            
+            opciones$notas_tecnicas_updated <- FALSE
+            opciones$notas_tecnicas_updated <- TRUE
+            
+            updateAceEditor(
+              session = session,
+              editorId = "notas_tecnicas_editor",
+              value = opciones$notas_tecnicas_raw, 
             )
             
           },

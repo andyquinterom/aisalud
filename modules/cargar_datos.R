@@ -356,17 +356,37 @@ base_de_datos_server <- function(id, opciones, conn) {
         
         opciones$perfil_updated
         
-        opciones$perfil_raw <- tbl(conn, "perfiles_usuario") %>%
-          pull(perfiles) %>%
-          prettify()
+        perfil_raw <- tbl(conn, "perfiles_usuario") %>%
+          pull(perfiles)
         
-        opciones$perfil_lista <- opciones$perfil_raw %>%
-          parse_json(simplifyVector = TRUE)
-        
-        updateSelectizeInput(
-          session = session,
-          inputId = "perfil",
-          choices = c("Ninguno", names(opciones$perfil_lista))
+        tryCatch(
+          expr = {
+            
+            opciones$perfil_raw <- perfil_raw %>%
+              prettify()
+            
+            opciones$perfil_lista <- opciones$perfil_raw %>%
+              parse_json(simplifyVector = TRUE)
+            
+            updateSelectizeInput(
+              session = session,
+              inputId = "perfil",
+              choices = c("Ninguno", names(opciones$perfil_lista))
+            )
+            
+          },
+          
+          error = function(e) {
+            opciones$perfil_raw <- perfil_raw
+            
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
         )
         
       })

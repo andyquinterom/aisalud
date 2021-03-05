@@ -85,19 +85,37 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       )
 
       observe({
+        
+        opciones$notas_tecnicas_updated
+        
         opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
-          pull(notas_tecnicas) %>%
-          prettify()
+          pull(notas_tecnicas)
         
-        opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
-          parse_json(simplifyVector = TRUE)
+        tryCatch(
+          expr = {
+
+            opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
+              parse_json(simplifyVector = TRUE)
+            
+            opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
+              parse_nt()
+            
+            opciones$indice_todos <- parse_nt_indice(
+              opciones$notas_tecnicas_lista,
+              tabla_agrupadores = opciones$notas_tecnicas
+            )
         
-        opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
-          parse_nt()
-        
-        opciones$indice_todos <- parse_nt_indice(
-          opciones$notas_tecnicas_lista,
-          tabla_agrupadores = opciones$notas_tecnicas
+          },
+          
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
         )
         
       })
@@ -149,7 +167,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                        filter(vigente))
       })
       
-      observeEvent(input$board_select, {
+      observe({
         if (input$board_select %notin% c("Ninguno", "")) {
           nt_opciones$datos <- opciones$notas_tecnicas %>%
             filter(nt == input$board_select) %>%
@@ -252,10 +270,12 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       # })
 
       output$plot_agrupadores <- renderPlotly({
-        pie_chart(
-          paquetes = nt_opciones$datos,
-          columna = "agrupador",
-          valor_costo = "valor_mes")
+        if (!is.null(nt_opciones$datos)) {
+          pie_chart(
+            paquetes = nt_opciones$datos,
+            columna = "agrupador",
+            valor_costo = "valor_mes")
+        }
       })
 
       output$board_datos <- DT::renderDataTable({
