@@ -130,3 +130,11 @@ div.escenarios_inline_div td {
 .sidebar-collapse .content-wrapper {
   margin-right: 0 !important;
 }
+
+table.dataTable.no-footer {
+  border-bottom: 0px !important;
+}
+
+div.dataTables_scrollBody {
+  border-bottom: 0px !important;
+}

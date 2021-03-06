@@ -59,8 +59,8 @@ seguimiento_notas_dashboard_ui <- function(id) {
               plotlyOutput(
                 outputId = ns("plot_agrupadores"),
                 width = "100%",
-                height = "600px")))),
-        uiOutput(ns("otra_informacion"))))
+                height = "600px"))),
+          uiOutput(ns("otra_informacion")))))
   )
   
 }
@@ -259,31 +259,34 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           tagList(
             if (!is.null(otra_informacion_datos$inclusiones) ||
                 !is.null(otra_informacion_datos$exclusiones)) {
-              box(
-                width = 12,
-                fluidRow(
-                  column(
-                    width = 6,
-                    tags$h3("Inclusiones"),
-                    tags$ol(
-                      purrr::map(
-                        .x = otra_informacion_datos$inclusiones,
-                        tags$li))),
-                  column(
-                    width = 6,
-                    tags$h3("Exclusiones"),
-                    tags$ol(
-                      purrr::map(
-                        .x = otra_informacion_datos$exclusiones,
-                        tags$li)))
+                column(
+                  width = 12,
+                  tags$hr(),
+                  fluidRow(
+                    column(
+                      width = 6,
+                      tags$h3("Inclusiones") %>% tags$u(),
+                      tags$ol(
+                        purrr::map(
+                          .x = otra_informacion_datos$inclusiones,
+                          tags$li))),
+                    column(
+                      width = 6,
+                      tags$h3("Exclusiones") %>% tags$u(),
+                      tags$ol(
+                        purrr::map(
+                          .x = otra_informacion_datos$exclusiones,
+                          tags$li)))
+                    )
                   )
-                )
             },
             if (!is.null(otra_informacion_datos$notas)) {
-              box(
-                title = "Notas",
-                width = 12,
-                tags$p(otra_informacion_datos$notas))
+                column(
+                  width = 12,
+                  tags$hr(),
+                  tags$h2("Notas") %>% tags$u(),
+                  tags$p(otra_informacion_datos$notas)
+                )
             },
             if (!is.null(otra_informacion_datos$perfil)) {
               if (otra_informacion_datos$perfil %in%
@@ -293,31 +296,32 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                 
                 width_row <- 12/length(names(perfil_nota_tecnica[["jerarquia"]]))
                 
-                box(
-                  title = "Conteos especiales y jerarquía",
-                  width = 12,
-                  fluidRow(
-                    purrr::map2(
-                      .x = perfil_nota_tecnica[["jerarquia"]],
-                      .y = names(perfil_nota_tecnica[["jerarquia"]]),
-                      .f = function(x, y) {
-                        print(y)
-                        if (!is.null(x)) {
-                          column(
-                            width = width_row,
-                            tags$h3(toupper(y)),
-                            tags$ol(
-                              purrr::map(
-                                .x = intersect(
-                                  x = x,
-                                  y = pull(nt_opciones$datos, agrupador)),
-                                tags$li))
-                          ) %>%
-                            return()
-                        }
-                      })
+                  column(
+                    width = 12,
+                    tags$hr(),
+                    tags$h2("Conteos especiales y jerarquía") %>% tags$u(),
+                    fluidRow(
+                      purrr::map2(
+                        .x = perfil_nota_tecnica[["jerarquia"]],
+                        .y = names(perfil_nota_tecnica[["jerarquia"]]),
+                        .f = function(x, y) {
+                          print(y)
+                          if (!is.null(x)) {
+                            column(
+                              width = width_row,
+                              tags$h3(toupper(y)),
+                              tags$ol(
+                                purrr::map(
+                                  .x = intersect(
+                                    x = x,
+                                    y = pull(nt_opciones$datos, agrupador)),
+                                  tags$li))
+                            ) %>%
+                              return()
+                          }
+                        })
+                    )
                   )
-                )
                 
               }
             }
