@@ -68,7 +68,6 @@ seguimiento_notas_dashboard_ui <- function(id) {
             tabPanel(
               tags$br(),
               title = "Seguimiento",
-              uiOutput(ns("comparar_jerarquia")),
               fluidRow(
                 column(
                   width = 4,
@@ -102,8 +101,14 @@ seguimiento_notas_dashboard_ui <- function(id) {
                     outputId = ns("comparar_descargar_xlsx"), 
                     label = "Excel",
                     style = "width:100%;")
+                ),
+                column(
+                  width = 8,
+                  uiOutput(ns("comparar_jerarquia"))
                 )
-              )
+              ),
+              uiOutput(ns("comparar_resultados")) %>%
+                withSpinner()
             )
           ))))
   )
@@ -624,6 +629,10 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             tags$hr()
           )
         })
+      })
+      
+      observeEvent(input$comparar_exe, {
+        
       })
   
   })
