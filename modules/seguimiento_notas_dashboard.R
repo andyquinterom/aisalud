@@ -85,6 +85,13 @@ seguimiento_notas_dashboard_ui <- function(id) {
                     label = "Agrupar por:",
                     choices = c("Ninguno"),
                     multiple = FALSE),
+                  radioButtons(
+                    inputId = ns("comparar_tipo"),
+                    label = "Seguimiento de",
+                    choices = c(
+                      "Frecuencias", "Valor facturado", "Costos medios"), 
+                    inline = TRUE, 
+                    width = "100%"),
                   actionButton(
                     inputId = ns("comparar_exe"),
                     "Ejecutar",
@@ -370,50 +377,6 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         }
         
       })
-
-      # output$inclusiones <- DT::renderDataTable({
-      #   if(!is.null(nt_opciones$inclusiones)) {
-      #     datatable(
-      #       nt_opciones$inclusiones[incluido == 1, c("objeto", "notas")],
-      #       rownames = F,
-      #       selection = 'none',
-      #       colnames = c("Observación", "Notas"),
-      #       options = list(
-      #         dom='ft',
-      #         language = list(
-      #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-      #         pageLength = nrow(nt_opciones$inclusiones),
-      #         ordering = FALSE, 
-      #         scrollX = TRUE,
-      #         scrollY = "60vh")) %>%
-      #       DT::formatStyle(
-      #         columns = 1:4,
-      #         valueColumns = 1, 
-      #         backgroundColor = "white")
-      #   }
-      # })
-      # 
-      # output$exclusiones <- DT::renderDataTable({
-      #   if(!is.null(nt_opciones$inclusiones)) {
-      #     datatable(
-      #       nt_opciones$inclusiones[incluido == 0, c("objeto", "notas")],
-      #       rownames = F,
-      #       selection = 'none',
-      #       colnames = c("Observación", "Notas"),
-      #       options = list(
-      #         dom='ft',
-      #         language = list(
-      #           url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-      #         pageLength = nrow(nt_opciones$inclusiones),
-      #         ordering = FALSE, 
-      #         scrollX = TRUE,
-      #         scrollY = "60vh")) %>%
-      #       DT::formatStyle(
-      #         columns = 1:4,
-      #         valueColumns = 1, 
-      #         backgroundColor = "white")
-      #   }
-      # })
 
       output$plot_agrupadores <- renderPlotly({
         if (!is.null(nt_opciones$datos)) {
