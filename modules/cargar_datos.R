@@ -353,6 +353,14 @@ base_de_datos_server <- function(id, opciones, conn) {
       # Perfiles ----------------------------------------------------
       
       observe({
+        updateSelectizeInput(
+          session = session,
+          inputId = "perfil",
+          selected = opciones$perfil_selected
+        )
+      })
+      
+      observe({
         
         opciones$perfil_updated
         

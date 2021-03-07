@@ -49,23 +49,63 @@ seguimiento_notas_dashboard_ui <- function(id) {
             label = "Nota técnica")),
         box(
           width = 12,
-          title = "Nota técnica:",
-          fluidRow(
-            column(
-              width = 5,
-              DT::dataTableOutput(outputId = ns("board_datos"))),
-            column(
-              width = 7,
-              plotlyOutput(
-                outputId = ns("plot_agrupadores"),
-                width = "100%",
-                height = "600px"))),
-          uiOutput(ns("otra_informacion")))))
+          tabsetPanel(
+            tabPanel(
+              tags$br(),
+              title = "Nota técnica",
+              fluidRow(
+                column(
+                  width = 5,
+                  DT::dataTableOutput(outputId = ns("board_datos"))),
+                column(
+                  width = 7,
+                  plotlyOutput(
+                    outputId = ns("plot_agrupadores"),
+                    width = "100%",
+                    height = "600px"))),
+              uiOutput(ns("otra_informacion"))
+            ),
+            tabPanel(
+              tags$br(),
+              title = "Seguimiento",
+              uiOutput(ns("comparar_jerarquia")),
+              fluidRow(
+                column(
+                  width = 4,
+                  checkboxInput(
+                    inputId = ns("comparar_episodios"),
+                    label = "Agrupar por episodios",
+                    value = F
+                  ),
+                  uiOutput(
+                    outputId = ns("comparar_col_valor_out")
+                  ),
+                  selectizeInput(
+                    inputId = ns("comparar_agrupador"),
+                    label = "Agrupar por:",
+                    choices = c("Ninguno"),
+                    multiple = FALSE),
+                  actionButton(
+                    inputId = ns("comparar_exe"),
+                    "Ejecutar",
+                    width = "100%"),
+                  tags$br(),
+                  tags$br(),
+                  downloadButton(
+                    outputId = ns("comparar_descargar_xlsx"), 
+                    label = "Excel",
+                    style = "width:100%;")
+                )
+              )
+            )
+          ))))
   )
   
 }
 
 seguimiento_notas_dashboard_server <- function(id, opciones) {
+  
+  ns <- NS(id)
   
   moduleServer(
     id = id,
@@ -410,6 +450,217 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               valueColumns = 1,
               backgroundColor = "white")
         }
+      })
+      
+      # Comparacion ------------------
+      
+      comparar <- reactiveValues(
+        datos = data.table(),
+        agrupadores_items = NULL
+      )
+      
+      observeEvent(opciones$colnames, {
+        if (input$comparar_episodios) {
+          updateSelectizeInput(
+            session = session,
+            inputId = "comparar_col_valor",
+            choices = opciones$colnames
+          )
+        }
+        updateSelectizeInput(
+          session = session,
+          inputId = "comparar_agrupador",
+          choices = c("Ninguno", opciones$colnames)
+        )
+      })
+      
+      observeEvent(input$comparar_episodios, {
+        if (input$comparar_episodios) {
+          output$comparar_col_valor_out <- renderUI({
+            selectizeInput(
+              inputId = ns("comparar_col_valor"),
+              label = "Sumar valor por:",
+              selected = "nro_identificacion",
+              choices = opciones$colnames,
+              multiple = FALSE)
+          })
+        } else {
+          output$comparar_col_valor_out <- renderUI({})
+        }
+      })
+      
+      cambio_columnas <- reactive({
+        list(input$comparar_agrupador, input$comparar_episodios)
+      })
+      
+      observeEvent(input$comparar_episodios, {
+        perfil_nt <-
+          opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
+        if (input$comparar_episodios && perfil_nt %in%
+              names(opciones$perfil_lista)) {
+          if (!opciones$perfil_enable) {
+            confirmSweetAlert(
+              session = session,
+              inputId = ns("comparar_cambiar_perfil"),
+              title = "Utilizar perfil",
+              text = "Esta nota técnica tiene un perfil asignado.
+                      ¿Desea utilizarlo?",
+              btn_labels = c("Cancelar", "Utilizar")
+            )
+          } else if (opciones$perfil_enable && 
+                     opciones$perfil_selected != perfil_nt) {
+            confirmSweetAlert(
+              session = session,
+              inputId = ns("comparar_cambiar_perfil"),
+              title = "Utilizar perfil",
+              text = "Esta nota técnica tiene un perfil asignado diferente al
+                      seleccionado.
+                      ¿Desea cambiarlo?",
+              btn_labels = c("Cancelar", "Carmbiar")
+            )
+          }
+        }
+      })
+      
+      observeEvent(input$comparar_cambiar_perfil, {
+        opciones$perfil_selected <- NULL
+        opciones$perfil_selected <-
+          opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
+      })
+      
+      observeEvent(cambio_columnas(), {
+        if (!is.null(opciones$colnames) && 
+            input$comparar_agrupador %notin% c("", "Ninguno")) {
+          tryCatch(
+            expr = {
+              if (input$comparar_episodios) {
+                comparar$agrupadores_items <- opciones$tabla %>%
+                  select(!!as.name(input$comparar_agrupador)) %>%
+                  distinct() %>%
+                  pull(!!as.name(input$comparar_agrupador))
+                if (length(comparar$agrupadores_items) <= 60) {
+                  output$comparar_jerarquia <- renderUI({
+                    if (opciones$perfil_enable) {
+                      tagList(
+                        perfil_jerarquia(
+                          perfiles = opciones$perfil_lista,
+                          perfil_select = opciones$perfil_selected,
+                          items = comparar$agrupadores_items,
+                          funcion_jerarquia = descriptiva_jerarquia,
+                          ns = ns
+                        ),
+                        tags$hr()
+                      )
+                    } else {
+                      tagList(
+                        descriptiva_jerarquia(
+                          ns = ns,
+                          items_nivel_4 = comparar$agrupadores_items
+                        ),
+                        tags$hr()
+                      )
+                    }
+                  })
+                } else {
+                  comparar$agrupadores_items <- NULL
+                  output$comparar_jerarquia <- renderUI({
+                    radioButtons(
+                      inputId = ns("descriptiva_unidades"),
+                      label = "Unidad de descriptiva",
+                      selected = comparar$unidad_descriptiva,
+                      choiceNames = c(
+                        "Prestación",
+                        "Paciente",
+                        "Factura"
+                      ),
+                      choiceValues = c(
+                        "prestacion",
+                        "nro_identificacion",
+                        "nro_factura"
+                      )
+                    )
+                  })
+                  comparar$unidad_descriptiva <- input$descriptiva_unidades
+                }
+              } else {
+                comparar$agrupadores_items <- NULL
+                output$comparar_jerarquia <- renderUI({
+                  radioButtons(
+                    inputId = ns("descriptiva_unidades"),
+                    label = "Unidad de descriptiva",
+                    selected = comparar$unidad_descriptiva,
+                    choiceNames = c(
+                      "Prestación",
+                      "Paciente",
+                      "Factura"
+                    ),
+                    choiceValues = c(
+                      "prestacion",
+                      "nro_identificacion",
+                      "nro_factura"
+                    )
+                  )
+                })
+                comparar$unidad_descriptiva <- input$descriptiva_unidades
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error", 
+                type = "error",
+                text = "Por favor revisar los parametros de carga de datos,
+                columnas, formato de fecha y los datos. Si este problema persiste
+                ponerse en contacto con un administrador."
+              )
+            }
+          )
+        }
+      })
+      
+      observeEvent(input$seleccionar_episodio, {
+        output$comparar_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_1 = comparar$agrupadores_items),
+            tags$hr()
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_factura, {
+        output$comparar_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_2 = comparar$agrupadores_items),
+            tags$hr()
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_paciente, {
+        output$comparar_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_3 = comparar$agrupadores_items),
+            tags$hr()
+          )
+        })
+      })
+      
+      observeEvent(input$seleccionar_prestacion, {
+        output$comparar_jerarquia <- renderUI({
+          tagList(
+            descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_4 = comparar$agrupadores_items),
+            tags$hr()
+          )
+        })
       })
   
   })

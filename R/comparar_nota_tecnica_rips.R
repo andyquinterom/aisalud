@@ -53,6 +53,33 @@ mes_spanish_juntos <- function(x) {
   
 }
 
+comparar_nt_frecuencias <- function(frecuencias, nota_tecnica, agrupador,
+                                    indicador = "diff") {
+  
+  frec_y_nt <- frecuencias %>%
+    rename(agrupador = !!as.name(agrupador)) %>%
+    right_join(nota_tecnica %>%
+                 select(agrupador, frec_mes, cm)) %>%
+    group_by(agrupador, frec_mes, cm) %>%
+    mutate(valor_mes = frec_mes * cm) %>%
+    group_by(agrupador, frec_mes, cm, valor_mes)
+  
+  frec_y_nt %>%
+    {if (indicador == "diff") {
+      mutate(., across(.fns = ~ .x - frec_mes)) %>%
+      mutate(total = rowSums(across(), na.rm = TRUE))
+    } else if (indicador == "perc") {
+      mutate(., across(.fns = ~ .x / na_if(frec_mes, 0))) %>%
+      mutate(total = rowMeans(across(), na.rm = TRUE))
+    } else if (indicador == "diff_cm") {
+      mutate(., across(.fns = ~ (.x - frec_mes) * cm)) %>%
+      mutate(total = rowSums(across(), na.rm = TRUE))
+    }} %>%
+    relocate(agrupador, frec_mes, cm, valor_mes) %>%
+    return()
+  
+}
+
 descriptiva_basica <- function(
   data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
   
