@@ -522,9 +522,11 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       observeEvent(input$comparar_cambiar_perfil, {
-        opciones$perfil_selected <- NULL
-        opciones$perfil_selected <-
-          opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
+        if (input$comparar_cambiar_perfil) {
+          opciones$perfil_selected <- NULL
+          opciones$perfil_selected <-
+            opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
+        }
       })
       
       observeEvent(cambio_columnas(), {
