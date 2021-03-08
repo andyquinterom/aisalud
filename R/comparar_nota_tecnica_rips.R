@@ -65,16 +65,22 @@ comparar_nt_frecuencias <- function(frecuencias, nota_tecnica, agrupador,
     group_by(agrupador, frec_mes, cm, valor_mes)
   
   frec_y_nt %>%
+    mutate(across(.fns = replace_na, replace = 0)) %>%
     {if (indicador == "diff") {
-      mutate(., across(.fns = ~ .x - frec_mes)) %>%
-      mutate(total = rowSums(across(), na.rm = TRUE))
+      mutate(., across(.fns = ~ .x - frec_mes))
     } else if (indicador == "perc") {
       mutate(., across(.fns = ~ .x / na_if(frec_mes, 0))) %>%
-      mutate(total = rowMeans(across(), na.rm = TRUE))
+      mutate(media = rowMeans(across(), na.rm = TRUE),
+             media_valor = media * valor_mes)
     } else if (indicador == "diff_cm") {
-      mutate(., across(.fns = ~ (.x - frec_mes) * cm)) %>%
-      mutate(total = rowSums(across(), na.rm = TRUE))
+      mutate(., across(.fns = ~ (.x - frec_mes) * cm))
     }} %>%
+    {if (indicador %in% c("diff", "diff_cm")) {
+      mutate(., total = rowSums(across(), na.rm = TRUE))
+    } else {.}} %>%
+    {if (indicador == "diff") {
+      mutate(., total_valor = total * cm)
+    } else {.}} %>%
     relocate(agrupador, frec_mes, cm, valor_mes) %>%
     return()
   

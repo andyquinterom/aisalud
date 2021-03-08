@@ -423,7 +423,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       # Comparacion ------------------
       
       comparar <- reactiveValues(
-        datos = data.table(),
+        datos = list(),
         agrupadores_items = NULL
       )
       
@@ -632,9 +632,205 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       observeEvent(input$comparar_exe, {
+        comparar_tipo <- input$comparar_tipo
+        frecuencias_test <- frecuencias_jerarquia(
+          data = opciones$tabla,
+          columnas =      "tipo_ambito",
+          columna_fecha = "fecha_prestacion",
+          columna_sep =   NULL,
+          columna_suma =  "nro_factura",
+          nivel_1 = input$episodios_jerarquia_nivel_1_order,
+          nivel_2 = input$episodios_jerarquia_nivel_2_order,
+          nivel_3 = input$episodios_jerarquia_nivel_3_order,
+          nivel_4 = input$episodios_jerarquia_nivel_4_order)[["descriptiva"]]
+        
+        print(frecuencias_test)
+        
+        nt_test <- nt_opciones$datos
+        output$comparar_resultados <- renderUI({
+          if (comparar_tipo == "Frecuencias") {
+            
+            comparar$datos <- comparacion_frecuencias(
+              frecuencias = frecuencias_test,
+              nota_tecnica = nt_test,
+              agrupador = "tipo_ambito"
+            )
+            
+            print(comparar$datos$comparacion)
+            
+            output$diferencias_frecuencias <- 
+              DT::renderDataTable({comparar$datos$comparacion_frecs_dt})
+            
+            output$diferencias_frecuencias_x_cme <- 
+              DT::renderDataTable({comparar$datos$comparacion_x_cme_dt})
+            
+            output$diferencias_frecuencias_porcentaje <- 
+              DT::renderDataTable({comparar$datos$comparacion_porcentaje_dt})
+            
+            comparacion_frecuencias_ui(ns)
+            
+          } else {
+            tags$h3("chao")
+          }
+        })
+        
+
         
       })
   
   })
+  
+}
+
+ # Funciones ---------------------------------------
+
+comparacion_frecuencias_ui <- function(ns) {
+  
+  tagList(
+    fluidRow(
+      column(
+        width = 12, 
+        tags$h4("Diferencias de frecuencia"),
+        DT::dataTableOutput(ns("diferencias_frecuencias")),
+        tags$br(),
+        tags$h4("Diferencias de frecuencia con costos medios"),
+        DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")),
+        tags$br(),
+        tags$h4("Diferencias de frecuencia en porcentaje"),
+        DT::dataTableOutput(ns("diferencias_frecuencias_porcentaje"))
+      )
+    )
+  )
+  
+}
+
+comparacion_frecuencias <- function(frecuencias, nota_tecnica, agrupador) {
+  
+  style_interval <-ifelse(
+    test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
+    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
+    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
+
+  comparacion_frecs <- comparar_nt_frecuencias(
+    frecuencias = frecuencias,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador
+  )
+  
+  comparacion_frecs_dt <- datatable(
+    data = comparacion_frecs,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Diferencia valor total" = "total_valor",
+      "Diferencia de frecuencia total" = "total",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    extensions = c('FixedColumns'),
+    selection = 'none',
+    options = list(
+      pageLength = nrow(comparacion_frecs),
+      scrollX = TRUE,
+      fixedColumns = list(leftColumns = 4),
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_frecs), backgroundColor = 'white') %>%
+    formatCurrency(
+      table = .,
+      columns = c("Valor a mes", "Diferencia valor total", "Costo medio"),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:ncol(comparacion_frecs),
+      backgroundColor = styleInterval(
+        cuts = 0,
+        values = style_interval
+      ))
+  
+  comparacion_x_cme <- comparar_nt_frecuencias(
+    frecuencias = frecuencias,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador,
+    indicador = "diff_cm")
+  
+  comparacion_x_cme_dt <- datatable(
+    data = comparacion_x_cme,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Diferencia valor total" = "total",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    extensions = c('FixedColumns'),
+    selection = 'none',
+    options = list(
+      pageLength = nrow(comparacion_x_cme),
+      scrollX = TRUE,
+      fixedColumns = list(leftColumns = 4),
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_x_cme), backgroundColor = 'white') %>%
+    formatCurrency(
+      table = .,
+      columns = 3:ncol(comparacion_x_cme),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:ncol(comparacion_x_cme),
+      backgroundColor = styleInterval(
+        cuts = 0,
+        values = style_interval
+      ))
+  
+  comparacion_porcentaje <- comparar_nt_frecuencias(
+    frecuencias = frecuencias,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador,
+    indicador = "perc")
+  
+  comparacion_porcentaje_dt <- datatable(
+    data = comparacion_porcentaje,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Porcentaje de ejecución medio" = "media",
+      "Ejecución media a mes" = "media_valor",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    extensions = c('FixedColumns'),
+    selection = 'none',
+    options = list(
+      pageLength = nrow(comparacion_porcentaje),
+      scrollX = TRUE,
+      fixedColumns = list(leftColumns = 4),
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_porcentaje),
+                backgroundColor = 'white') %>%
+    formatPercentage(
+      table = .,
+      columns = c(5:(ncol(comparacion_porcentaje) - 1)),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatCurrency(
+      table = .,
+      columns = c(3, 4, ncol(comparacion_porcentaje)),
+      dec.mark = ",", mark = ".", digits = 0)  %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:(ncol(comparacion_porcentaje) - 1),
+      backgroundColor = styleInterval(
+        cuts = 1,
+        values = style_interval
+      ))
+  
+  return(list(comparacion_frecs = comparacion_frecs,
+              comparacion_frecs_dt = comparacion_frecs_dt,
+              comparacion_x_cme = comparacion_x_cme,
+              comparacion_x_cme_dt = comparacion_x_cme_dt,
+              comparacion_porcentaje = comparacion_porcentaje,
+              comparacion_porcentaje_dt = comparacion_porcentaje_dt))
   
 }
