@@ -455,7 +455,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       
       comparar <- reactiveValues(
         datos = list(),
-        agrupadores_items = NULL
+        agrupadores_items = NULL,
+        frecs = list()
       )
       
       observeEvent(opciones$colnames, {
@@ -666,27 +667,47 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       
       observeEvent(input$comparar_exe, {
         
-        comparar$frecs <- list()
+        comparar$nt_name <- input$board_select
         
-        nt_test <- nt_opciones$datos
-        
-        frecuencias_tabla <- frecuencias_jerarquia(
-          data = opciones$tabla,
-          columnas =      "tipo_ambito",
-          columna_fecha = "fecha_prestacion",
-          columna_sep =   NULL,
-          columna_suma =  "nro_factura",
-          nivel_1 = input$episodios_jerarquia_nivel_1_order,
-          nivel_2 = input$episodios_jerarquia_nivel_2_order,
-          nivel_3 = input$episodios_jerarquia_nivel_3_order,
-          nivel_4 = input$episodios_jerarquia_nivel_4_order)[["descriptiva"]]
+        if (!is.null(opciones$colnames) && !is.null(input$comparar_agrupador) &&
+            input$comparar_agrupador %notin% c("", "Ninguno")) {
+          comparar$frecs <- list()
+          agrupador <- input$comparar_agrupador
+          comparar_col_valor <- input$comparar_col_valor
+          tryCatch(
+            expr = {
+              if (!is.null(comparar$agrupadores_items)) {
+                comparar$datos$frecuencias_tabla <- frecuencias_jerarquia(
+                  data = opciones$tabla,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   NULL,
+                  columna_suma = comparar_col_valor,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order)[["descriptiva"]]
+              } else {
+                comparar$datos$frecuencias_tabla <- frecuencias(
+                  columna_fecha = "fecha_prestacion",
+                  data = opciones$tabla,
+                  agrupador = agrupador,
+                  columna_suma = input$descriptiva_unidades,
+                  prestaciones = (input$descriptiva_unidades == "prestacion")
+                )
+              }
             
-        comparar$frecs <- comparacion_frecuencias(
-          frecuencias_tabla = frecuencias_tabla,
-          nota_tecnica = nt_test,
-          agrupador = "tipo_ambito"
-        )
-            
+              nt_test <- nt_opciones$datos
+              
+              comparar$frecs <- comparacion_frecuencias(
+                frecuencias_tabla = comparar$datos$frecuencias_tabla,
+                nota_tecnica = nt_test,
+                agrupador = agrupador
+              )
+              
+            }
+          )
+        }
         
       })
       
@@ -708,6 +729,25 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       output$diferencias_frecuencias_porcentaje <- 
         DT::renderDataTable({comparar$frecs$comparacion_porcentaje_dt})
   
+      output$comparar_descargar_xlsx <- downloadHandler(
+        filename = function() {
+          paste0("Seguimiento de ", comparar$nt_name, ".xlsx")
+        },
+        content = function(file) {
+          write_xlsx(
+            x = list(
+              "Nota tecnica" = nt_opciones$datos,
+              "Frecuencias" = comparar$frecs$frecuencias_original,
+              "Diferencias frecuencias" = comparar$frecs$comparacion_frecs,
+              "Diferencias valor por CM" = comparar$frecs$comparacion_x_cme,
+              "Diferencias frencuencias %" = comparar$frecs$comparacion_porcentaje
+            ),
+            path = file
+          )
+        },
+        contentType = "xlsx"
+      )
+      
   })
   
 }
@@ -932,7 +972,8 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
         y = ~valor_a_ejecutar,
         name = "Valor a ejecutar",
         mode = "lines",
-        line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+        line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+        fill = 'tonexty', fillcolor='rgba(0,100,80,0.2)'
       ) %>%
       config(locale = "es") %>%
       layout(
