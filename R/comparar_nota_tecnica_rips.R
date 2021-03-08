@@ -53,12 +53,41 @@ mes_spanish_juntos <- function(x) {
   
 }
 
+mes_spanish_inv <- function(x) {
+  meses <- c(
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+  )
+  
+  divididos <- str_split(x, " - ")
+  
+  divididos_numerico <- purrr::map(
+    .x = divididos,
+    .f = function(x) {
+      as.numeric(x[1]) * 100 + which(x[2] == meses)
+    })
+  
+  return(unlist(divididos_numerico))
+  
+  
+}
+
 comparar_nt_frecuencias <- function(frecuencias, nota_tecnica, agrupador,
                                     indicador = "diff") {
   
   frec_y_nt <- frecuencias %>%
     rename(agrupador = !!as.name(agrupador)) %>%
-    right_join(nota_tecnica %>%
+    inner_join(nota_tecnica %>%
                  select(agrupador, frec_mes, cm)) %>%
     group_by(agrupador, frec_mes, cm) %>%
     mutate(valor_mes = frec_mes * cm) %>%
@@ -74,7 +103,9 @@ comparar_nt_frecuencias <- function(frecuencias, nota_tecnica, agrupador,
              media_valor = media * valor_mes)
     } else if (indicador == "diff_cm") {
       mutate(., across(.fns = ~ (.x - frec_mes) * cm))
-    }} %>%
+    } else if (indicador == "cm") {
+      mutate(., across(.fns = ~ .x * cm))
+    } else {.}} %>%
     {if (indicador %in% c("diff", "diff_cm")) {
       mutate(., total = rowSums(across(), na.rm = TRUE))
     } else {.}} %>%
