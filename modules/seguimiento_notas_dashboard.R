@@ -100,31 +100,37 @@ seguimiento_notas_dashboard_ui <- function(id) {
                   uiOutput(ns("comparar_jerarquia"))
                 )
               ),
+              tags$br(),
               tabsetPanel(
                 tabPanel(
                   title = "Frecuencias",
                   tags$br(),
                   fluidRow(
                     column(width = 4, uiOutput(ns("frecuencias_resumen"))),
-                    column(width = 8, plotlyOutput(ns("frecuencias_plot"),
-                                                   height = "600px"))
+                    column(
+                      width = 8,
+                      plotlyOutput(ns("frecuencias_plot"), height = "450px") %>%
+                        withSpinner())
                   ),
                   tags$hr(),
                   tags$br(),
                   tags$h4("Ejecución:"),
-                  DT::dataTableOutput(ns("frecuencias_total")),
+                  DT::dataTableOutput(ns("frecuencias_total")) %>% withSpinner(),
                   tags$hr(),
                   tags$br(),
                   tags$h4("Diferencias de frecuencia:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias")),
+                  DT::dataTableOutput(ns("diferencias_frecuencias")) %>%
+                    withSpinner(),
                   tags$hr(),
                   tags$br(),
                   tags$h4("Diferencias de frecuencia con costos medios:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")),
+                  DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")) %>% 
+                    withSpinner(),
                   tags$hr(),
                   tags$br(),
                   tags$h4("Diferencias de frecuencia en porcentaje:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias_porcentaje")),
+                  DT::dataTableOutput(ns("diferencias_frecuencias_porcentaje")) %>%
+                    withSpinner(),
                   tags$hr()
                 ),
                 tabPanel(
@@ -658,6 +664,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       
       observeEvent(input$comparar_exe, {
         
+        comparar$frecs <- list()
+        
         nt_test <- nt_opciones$datos
         
         frecuencias_tabla <- frecuencias_jerarquia(
@@ -671,32 +679,32 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           nivel_3 = input$episodios_jerarquia_nivel_3_order,
           nivel_4 = input$episodios_jerarquia_nivel_4_order)[["descriptiva"]]
             
-            comparar$frecs <- comparacion_frecuencias(
-              frecuencias_tabla = frecuencias_tabla,
-              nota_tecnica = nt_test,
-              agrupador = "tipo_ambito"
-            )
-            
-            output$frecuencias_resumen <- renderUI({comparar$frecs$totales})
-            
-            output$frecuencias_plot <- renderPlotly({
-              comparar$frecs$plot_valor_acumulado
-            })
-            
-            output$frecuencias_total <-
-              DT::renderDataTable({comparar$frecs$frecuencias_original_dt})
-            
-            output$diferencias_frecuencias <- 
-              DT::renderDataTable({comparar$frecs$comparacion_frecs_dt})
-            
-            output$diferencias_frecuencias_x_cme <- 
-              DT::renderDataTable({comparar$frecs$comparacion_x_cme_dt})
-            
-            output$diferencias_frecuencias_porcentaje <- 
-              DT::renderDataTable({comparar$frecs$comparacion_porcentaje_dt})
+        comparar$frecs <- comparacion_frecuencias(
+          frecuencias_tabla = frecuencias_tabla,
+          nota_tecnica = nt_test,
+          agrupador = "tipo_ambito"
+        )
             
         
       })
+      
+      output$frecuencias_resumen <- renderUI({comparar$frecs$totales})
+      
+      output$frecuencias_plot <- renderPlotly({
+        comparar$frecs$plot_valor_acumulado
+      })
+      
+      output$frecuencias_total <-
+        DT::renderDataTable({comparar$frecs$frecuencias_original_dt})
+      
+      output$diferencias_frecuencias <- 
+        DT::renderDataTable({comparar$frecs$comparacion_frecs_dt})
+      
+      output$diferencias_frecuencias_x_cme <- 
+        DT::renderDataTable({comparar$frecs$comparacion_x_cme_dt})
+      
+      output$diferencias_frecuencias_porcentaje <- 
+        DT::renderDataTable({comparar$frecs$comparacion_porcentaje_dt})
   
   })
   
