@@ -53,21 +53,14 @@ shinyUI(
             icon = icon("object-group", lib = "font-awesome"),
             tabName = "composicion_modulo"
           ),
-          if (NTS_INCLUIDO) {
-            menuItem(
-              text = "Seguimiento",
-              icon = icon("dollar-sign", lib = "font-awesome"),
-              menuSubItem(
-                text = "Índice",
-                tabName = "seguimiento_modulo_indice"),
-              menuSubItem(
-                text = "Dashboard",
-                tabName = "seguimiento_modulo_dash"),
-              menuSubItem(
-                text = "Comparación",
-                tabName = "seguimiento_modulo_comparar")
-            )
-          }  
+          menuItem(
+            text = "Seguimiento",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            tabName = "seguimiento_modulo_dash"),
+          menuItem(
+            text = "Configuración",
+            icon = icon("cog", lib = "font-awesome"),
+            tabName = "configuracion")
         )
       ),
       rightsidebar = rightSidebar(
@@ -109,16 +102,12 @@ shinyUI(
             composicion_ui("composicion_modulo")
           ),
           tabItem(
-            tabName = "seguimiento_modulo_indice",
-            seguimiento_notas_indice_ui("seguimiento_notas_indice")
-          ),
-          tabItem(
             tabName = "seguimiento_modulo_dash",
             seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
           ),
           tabItem(
-            tabName = "seguimiento_modulo_comparar",
-            seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
+            tabName = "configuracion",
+            configuracion_ui("configuracion")
           )
         )
       )
