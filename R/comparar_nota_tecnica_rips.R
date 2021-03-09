@@ -149,354 +149,446 @@ comparar_nt_valor_factura <- function(
   
 }
 
-descriptiva_basica <- function(
-  data, agrupador, columna_valor, prestaciones, columna_fecha, columna_suma) {
+comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) {
   
-  data <- data %>%
-    mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
+  style_interval <-ifelse(
+    test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
+    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
+    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
   
-  if (!prestaciones) {
-    
-    data <- data %>%
-      mutate(mes_num = month(!!as.name(columna_fecha)),
-             anio_num = year(!!as.name(columna_fecha))) %>%
-      group_by(!!as.name(columna_suma), !!as.name(agrupador)) %>%
-      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
-                mes_anio_num = max(anio_num*100 + mes_num))
-    
-  } else {
-    data <- data %>%
-      mutate(mes_num = month(!!as.name(columna_fecha)),
-             anio_num = year(!!as.name(columna_fecha))) %>%
-      mutate(mes_anio_num = anio_num*100 + mes_num)
-      
-  }
-  data <- data %>%
-    group_by(!!as.name(agrupador), mes_anio_num) %>%
-    summarise(Frecuencia = n(), Suma = sum(valor_calculos, na.rm = TRUE)) %>%
-    arrange(mes_anio_num) %>%
-    collect() %>%
-    mutate(mes_anio = mes_spanish_juntos(mes_anio_num)) %>%
-    as.data.table()
+  comparacion_frecs <- comparar_nt_frecuencias(
+    frecuencias = frecuencias_tabla,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador
+  )
   
-  return(data)
-  data <- NULL
-}
-
-descriptiva_basica_trans <- function(data, agrupador, frec = TRUE, suma = TRUE) {
-  data <- copy(data)
-  meses <- as.list(unique(data$mes_anio))
-  agrupCompletos <- data.table(agrupador = unique(data[[agrupador]]))
-  setnames(agrupCompletos, agrupador)
-  data_sep <- lapply(
-    meses,
-    data = data,
+  comparacion_frecs_dt <- datatable(
+    data = comparacion_frecs,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Diferencia valor total" = "total_valor",
+      "Diferencia de frecuencia total" = "total",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparacion_frecs),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_frecs), backgroundColor = 'white') %>%
+    formatCurrency(
+      table = .,
+      columns = c("Valor a mes", "Diferencia valor total", "Costo medio"),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:ncol(comparacion_frecs),
+      backgroundColor = styleInterval(
+        cuts = 0,
+        values = style_interval
+      ))
+  
+  comparacion_x_cme <- comparar_nt_frecuencias(
+    frecuencias = frecuencias_tabla,
+    nota_tecnica = nota_tecnica,
     agrupador = agrupador,
-    frec = frec,
-    suma = suma,
-    FUN = function(x, data, agrupador, frec, suma) {
-      data <- data[mes_anio == x,
-                  c(agrupador,
-                    "mes_anio", c("Frecuencia", "Suma")[c(frec, suma)]), 
-                  with = FALSE]
-      setnames(data,
-               c(agrupador,
-                 "mes_anio",
-                 paste(unique(data[["mes_anio"]]),
-                       c("Frecuencia", "Suma")[c(frec, suma)]))) 
-
-           return(data[,-c("mes_anio")])
-      
-  })
+    indicador = "diff_cm")
   
-  return(cbind.fill(data_sep, agrupador = agrupador)[[1]])
+  comparacion_x_cme_dt <- datatable(
+    data = comparacion_x_cme,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Diferencia valor total" = "total",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparacion_x_cme),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_x_cme), backgroundColor = 'white') %>%
+    formatCurrency(
+      table = .,
+      columns = 3:ncol(comparacion_x_cme),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:ncol(comparacion_x_cme),
+      backgroundColor = styleInterval(
+        cuts = 0,
+        values = style_interval
+      ))
   
-}
-
-multiplicar_cme <- function(frecs, nota_tecnica) {
-  frecs <- copy(frecs)
-  nota_tecnica <- copy(nota_tecnica)
-  setnames(frecs, 1, "agrupador")
-  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]], 
-                                frecs[["agrupador"]])
-  nota_tecnica <- nota_tecnica[agrupador %in% agrupadores_compartidos]
-  frecs <- frecs[agrupador %in% agrupadores_compartidos]
+  comparacion_porcentaje <- comparar_nt_frecuencias(
+    frecuencias = frecuencias_tabla,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador,
+    indicador = "perc")
   
-  nota_tecnica <- nota_tecnica[order(agrupador)]
-  frecs <- frecs[order(agrupador)]
+  comparacion_porcentaje_dt <- datatable(
+    data = comparacion_porcentaje,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Porcentaje de ejecución medio" = "media",
+      "Ejecución media a mes" = "media_valor",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparacion_porcentaje),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(comparacion_porcentaje),
+                backgroundColor = 'white') %>%
+    formatPercentage(
+      table = .,
+      columns = c(5:(ncol(comparacion_porcentaje) - 1)),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatCurrency(
+      table = .,
+      columns = c(3, 4, ncol(comparacion_porcentaje)),
+      dec.mark = ",", mark = ".", digits = 0)  %>%
+    formatRound(2, dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 5:(ncol(comparacion_porcentaje) - 1),
+      backgroundColor = styleInterval(
+        cuts = 1,
+        values = style_interval
+      ))
   
-  return(
-    as.matrix(apply(frecs[, -c("agrupador")], 2, as.numeric)) * 
-      numerize(nota_tecnica[["cm"]])
-    )
+  frecuencias_original <- frecuencias_tabla %>%
+    rename(agrupador = !!as.name(agrupador)) %>%
+    inner_join(nota_tecnica %>%
+                 select(agrupador, frec_mes, cm)) %>%
+    group_by(agrupador, frec_mes, cm) %>%
+    mutate(valor_mes = frec_mes * cm) %>%
+    group_by(agrupador, frec_mes, cm, valor_mes) %>%
+    mutate(across(.fns = replace_na, replace = 0)) %>%
+    mutate(., total = rowSums(across(), na.rm = TRUE)) %>%
+    mutate(., total_valor = total * cm) %>%
+    relocate(agrupador, frec_mes, cm, valor_mes)
   
-}
-
-diferencia_valor_rips <- function(sumas, nota_tecnica, porcentaje = FALSE) {
-  sumas <- copy(sumas)
-  nota_tecnica <- copy(nota_tecnica)
-  setnames(sumas, 1, "agrupador")
-  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
-                                sumas[["agrupador"]])
-  nota_tecnica <- nota_tecnica[
-    agrupador %in% agrupadores_compartidos][order(agrupador)]
-  sumas <- sumas[agrupador %in% agrupadores_compartidos][order(agrupador)]
+  frecuencias_original_dt <- datatable(
+    data = frecuencias_original,
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Valor total" = "total_valor",
+      "Frecuencia total" = "total",
+      "Costo medio" = "cm",
+      "Frecuencia a mes" = "frec_mes",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(frecuencias_original),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatStyle(columns = 1:ncol(frecuencias_original), backgroundColor = 'white') %>%
+    formatCurrency(
+      table = .,
+      columns = c("Valor a mes", "Valor total", "Costo medio"),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatRound(c(2, ncol(frecuencias_original) - 1),
+                dec.mark = ",", mark = ".", digits = 0)
   
-  nota_tecnica[, "cm" := numerize(cm)]
-  nota_tecnica[, "valor_mes" := numerize(valor_mes)]
+  numero_meses <- ncol(frecuencias_tabla) - 1
+  valor_a_ejecutar <- sum(nota_tecnica$valor_mes) * numero_meses
+  valor_ejecutado <- sum(frecuencias_original$total_valor)
   
-  numero_meses <- 2:ncol(sumas)
+  totales <- list(
+    "Valor a ejecutar:" = formatAsCurrency(valor_a_ejecutar),
+    "Valor ejecutado con costo medio:" = formatAsCurrency(valor_ejecutado),
+    "Diferencia de valor total:" = formatAsCurrency(valor_a_ejecutar - 
+                                                      valor_ejecutado),
+    "Porcentaje del valor ejecutado:" = formatAsPerc(
+      100 * valor_ejecutado / na_if(valor_a_ejecutar, 0)))
   
-  sumas[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
+  totales_ui <- purrr::map2(
+    .x = totales, .y = names(totales),
+    .f = function(x, y) {
+      tagList(
+        tags$b(y),
+        tags$p(x)
+      )
+    }) %>%
+    tagList()
   
-  if (porcentaje) {
-    return(
-      as.data.table(
-        append(
-          list(agrupador = sumas$agrupador),
-          as.data.frame(
-            sumas[, c(numero_meses) , with = FALSE] / 
-              nota_tecnica[["valor_mes"]])))
-    )
-  } else {
-    return(
-      as.data.table(
-        append(
-          list(agrupador = sumas$agrupador),
-          as.data.frame(
-            sumas[, c(numero_meses), with = FALSE] -
-              nota_tecnica[["valor_mes"]])))
-    )
-  }
-}
-
-diferencia_valor_cme <- function(frecs, nota_tecnica, porcentaje = FALSE) {
-  frecs <- copy(frecs)
-  nota_tecnica <- copy(nota_tecnica)
-  setnames(frecs, 1, "agrupador")
-  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
-                                frecs[["agrupador"]])
-  nota_tecnica <- nota_tecnica[
-    agrupador %in% agrupadores_compartidos][order(agrupador)]
-  frecs <- frecs[agrupador %in% agrupadores_compartidos][order(agrupador)]
+  meses <- frecuencias_tabla %>%
+    select(-c(rlang::sym(agrupador))) %>%
+    colnames() %>%
+    mes_spanish_inv() %>%
+    as.numeric()
   
-  nota_tecnica[["cm"]] <- numerize(nota_tecnica[["cm"]])
-  nota_tecnica[["valor_mes"]] <- numerize(nota_tecnica[["valor_mes"]])
+  minimo_mes <- min(meses)
+  maximo_mes <- max(meses)
   
-  numero_meses <- 2:ncol(frecs)
-  frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
+  meses_completos <- tibble("ais_mes_anio" = seq(minimo_mes, maximo_mes)) %>%
+    mutate(ais_anio = substr(ais_mes_anio, 1, 4) %>% as.numeric(),
+           ais_mes  = substr(ais_mes_anio, 5, 6) %>% as.numeric()) %>%
+    filter(ais_mes >= 1 & ais_mes <= 12) %>%
+    rename(mes_anio_num = ais_mes_anio)
   
-  if (porcentaje) {
-    return(
-      as.data.table(
-        append(list(agrupador = frecs$agrupador),
-               as.data.frame((
-                 frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(nota_tecnica[["cm"]])/
-                   nota_tecnica[["valor_mes"]]))))
-    )
-  } else {
-     return(
-      as.data.table(
-        append(list(agrupador = frecs$agrupador), 
-               as.data.frame((
-                 frecs[, c(numero_meses) , with = FALSE] * 
-                   numerize(nota_tecnica[["cm"]]) - 
-                   nota_tecnica[["valor_mes"]]))))
-    )
-  }
-}
-
-diferencias_totales <- function(frecs, sumas, nota_tecnica) {
-  frecs <- copy(frecs)
-  sumas <- copy(sumas)
-  nota_tecnica <- copy(nota_tecnica)
-  
-  setnames(frecs, 1, "agrupador")
-  setnames(sumas, 1, "agrupador")
-  agrupadores_compartidos <- intersect(nota_tecnica[["agrupador"]],
-                                frecs[["agrupador"]])
-  valor_ejecutar_mes <- sum(nota_tecnica[["valor_mes"]], na.rm = TRUE)
-  nota_tecnica <- nota_tecnica[
-    agrupador %in% agrupadores_compartidos][order(agrupador)]
-  frecs <- frecs[agrupador %in% agrupadores_compartidos][order(agrupador)]
-  sumas <- sumas[agrupador %in% agrupadores_compartidos][order(agrupador)]
-  
-  nota_tecnica[, "cm" := numerize(cm)]
-  nota_tecnica[, "valor_mes" := numerize(valor_mes)]
-  
-  total_mes_rips <- data.table(
-    "Mes" = c(colnames(sumas[, -c(1)])),
-    "Total" = c(as.vector(apply(sumas[, -c(1)], 2, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumas[, -c(1)], 2, sum, na.rm = TRUE)) -
-                       valor_ejecutar_mes),
-    "%" = c(as.vector(apply(sumas[, -c(1)], 2, sum, na.rm = TRUE)) /
-              valor_ejecutar_mes)
-  )
-  
-  total_agrupador_rips <- data.table(
-    "Agrupador" = c(sumas[["agrupador"]]),
-    "Total" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) -
-                       (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)]))),
-    "%" = c(as.vector(apply(sumas[, -c(1)], 1, sum, na.rm = TRUE)) /
-              (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)])))
-  )
-  
-  numero_meses <- 2:ncol(frecs)
-  frecs[, (numero_meses) := lapply(.SD, numerize), .SDcols = numero_meses]
-  
-  sumas_cme <- frecs[, c(numero_meses) , with = FALSE] * 
-    numerize(nota_tecnica[["cm"]])
-  
-  total_mes_cme <- data.table(
-    "Mes" = c(colnames(sumas[, -c(1)])),
-    "Total" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE)) - 
-                       valor_ejecutar_mes),
-    "%" = c(as.vector(apply(sumas_cme, 2, sum, na.rm = TRUE)) /
-              valor_ejecutar_mes)
-  )
-  
-  total_agrupador_cme <- data.table(
-    "Mes" = c(sumas[["agrupador"]]),
-    "Total" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE))),
-    "Diferencia" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) -
-                       (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)]))),
-    "%" = c(as.vector(apply(sumas_cme, 1, sum, na.rm = TRUE)) /
-              (nota_tecnica[["valor_mes"]] * ncol(sumas[, -c(1)])))
-  )
-  
-  valor_ejecutar <- valor_ejecutar_mes * ncol(sumas[, -c(1)])
-  valor_ejecutado_rips <- sum(sumas[, -c(1)], na.rm = TRUE)
-  valor_ejecutado_cme <- sum(sumas_cme, na.rm = TRUE)
-  
-  totales <- data.table(
-    "Detalle" = c("Valor a ejecutar", "Ejecutado RIPS", "Ejecutado CM"),
-    "Valor" = c(valor_ejecutar, valor_ejecutado_rips, valor_ejecutado_cme),
-    "Diferencias" = c(NA,
-                      valor_ejecutado_rips - valor_ejecutar,
-                      valor_ejecutado_cme  - valor_ejecutar),
-    "%" = c(NA,
-                      valor_ejecutado_rips/valor_ejecutar,
-                      valor_ejecutado_cme/valor_ejecutar)
-  )
-  
-  
-  
-  return(
-    list(
-      total_mes_rips = total_mes_rips,
-      total_mes_cme  = total_mes_cme,
-      total_agrupador_rips = total_agrupador_rips,
-      total_agrupador_cme  = total_agrupador_cme,
-      totales = totales
-    )
-  )
-  
-}
-
-
-descriptiva_basica_jerarquia <- function(
-  data, columnas, columna_valor, columna_suma, nivel_1, nivel_2, 
-  nivel_3, nivel_4, return_list = FALSE) {
-  
-  episodios_nivel_1 <- data.table()
-  episodios_nivel_2 <- data.table()
-  episodios_nivel_3 <- data.table()
-  episodios_nivel_4 <- data.table()
-  
-  if (!is.null(nivel_1)) {
-    
-    index_episodios <- data.frame(
-      index = 1:length(nivel_1),
-      agrupador = nivel_1
-    )
-    colnames(index_episodios) <- c("index", columnas)
-    
-    episodios <- data %>%
-      select(!!as.name(columna_suma), !!as.name(columnas)) %>%
-      filter(!!as.name(columnas) %in% nivel_1) %>%
-      distinct() %>%
-      right_join(index_episodios, copy = TRUE) %>%
-      arrange(index) %>%
-      group_by(!!as.name(columna_suma)) %>%
-      mutate(!!columnas := first(!!as.name(columnas))) %>%
-      ungroup() %>%
-      distinct(!!as.name(columna_suma), !!as.name(columnas))
-    
-    data_episodios <- data %>%
-      group_by(!!as.name(columna_suma)) %>%
-      summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE),
-                fecha_episodio = max(fecha_prestacion)) %>%
-      right_join(episodios)
-    
-    episodios_nivel_1 <- descriptiva_basica(
-      data = data_episodios,
-      agrupador = columnas,  
-      columna_valor = "valor_calculos",
-      columna_suma = columna_suma,
-      columna_fecha = "fecha_episodio",
-      prestaciones = FALSE
-    )
-    episodios <- episodios %>%
-      select(!!as.name(columna_suma))
-    data <- data %>%
-      anti_join(episodios)
-    data_temp <- NULL
-  }
-  
-  
-  if (!is.null(nivel_2)) {
-    episodios_nivel_2 <- descriptiva_basica(
-      data = data,
-      agrupador = columnas,  
-      columna_valor = columna_valor,
-      columna_suma = "nro_factura",
-      columna_fecha = "fecha_prestacion",
-      prestaciones = FALSE
+  valor_acumulado <- meses_completos %>%
+    left_join(
+      comparar_nt_frecuencias(
+        frecuencias = frecuencias_tabla,
+        nota_tecnica = nota_tecnica,
+        agrupador = agrupador,
+        indicador = "cm") %>%
+        ungroup() %>%
+        select(-c(cm, frec_mes, valor_mes)) %>%
+        pivot_longer(
+          cols = -c(agrupador),
+          names_to = "mes_anio",
+          values_to = "valor") %>%
+        group_by(mes_anio) %>%
+        summarise(suma = sum(valor, na.rm = TRUE)) %>%
+        mutate(mes_anio_num = mes_spanish_inv(mes_anio))
     ) %>%
-      filter(!!as.name(columnas) %in% nivel_2)
-    registros_procesados <- NULL
-  }
+    mutate(numero_meses = 1:nrow(.), suma = replace_na(suma, 0),
+           mes_anio = mes_spanish_juntos(mes_anio_num),
+           mes_anio_num = do.call(purrr::map(
+             .x = as.Date(paste(ais_anio, ais_mes, "01", sep = "-")),
+             .f = function(x) last(seq(x, length = 2, by = "months") - 1)),
+             what = "c")) %>%
+    arrange(mes_anio_num) %>%
+    ungroup() %>%
+    mutate(valor_acumulado = cumsum(suma), 
+           valor_mes_esperado = as.double(sum(nota_tecnica$valor_mes)),
+           numero_meses = 1:nrow(.),
+           valor_a_ejecutar = valor_mes_esperado * numero_meses)
   
-  if (!is.null(nivel_3)) {
-    episodios_nivel_3 <- descriptiva_basica(
-      data = data,
-      agrupador = columnas,  
-      columna_valor = columna_valor,
-      columna_suma = "nro_identificacion",
-      columna_fecha = "fecha_prestacion",
-      prestaciones = FALSE
+  plot_valor_acumulado <- valor_acumulado %>%
+    plot_ly(
+      x = ~mes_anio_num,
+      y = ~valor_acumulado, 
+      name = "Valor ejecutado",
+      type = "scatter", mode = "lines+markers"
     ) %>%
-      filter(!!as.name(columnas) %in% nivel_3)
-  }
-  
-  if (!is.null(nivel_4)) {
-    episodios_nivel_4 <- descriptiva_basica(
-      data = data,
-      agrupador = columnas,  
-      columna_valor = columna_valor,
-      columna_suma = "",
-      columna_fecha = "fecha_prestacion",
-      prestaciones = TRUE
+    add_trace(
+      y = ~valor_a_ejecutar,
+      name = "Valor a ejecutar",
+      mode = "lines",
+      line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+      fill = 'tonexty', fillcolor='rgba(0,100,80,0.2)'
     ) %>%
-      filter(!!as.name(columnas) %in% nivel_4)
-  }
+    layout(
+      legend = list(x = 0.1, y = 0.9),
+      xaxis = list(title = "Mes"),
+      yaxis = list(title = "Suma",
+                   tickformat = ",.2f")
+    ) %>%
+    config(locale = "es")
   
-  data_final <- data.table::rbindlist(
-    fill = TRUE,
-    list(
-      "episodio" = episodios_nivel_1,
-      "factura"   = episodios_nivel_2,
-      "paciente"  = episodios_nivel_3,
-      "prestacion"= episodios_nivel_4
-    )
-  )
-  print(data_final)
   
-  return(
-      data_final
+  return(list(comparacion_frecs = comparacion_frecs,
+              comparacion_frecs_dt = comparacion_frecs_dt,
+              comparacion_x_cme = comparacion_x_cme,
+              comparacion_x_cme_dt = comparacion_x_cme_dt,
+              comparacion_porcentaje = comparacion_porcentaje,
+              comparacion_porcentaje_dt = comparacion_porcentaje_dt,
+              frecuencias_original = frecuencias_original,
+              frecuencias_original_dt = frecuencias_original_dt,
+              totales = totales_ui,
+              valor_acumulado = valor_acumulado,
+              plot_valor_acumulado = plot_valor_acumulado
+  ))
+  
+}
+
+comparacion_valor_facturado <- function(
+  descriptiva_tabla, nota_tecnica, agrupador, col_mes = "ais_mes",
+  col_anio = "ais_anio") {
+  
+  descriptiva_tabla <- descriptiva_tabla %>%
+    mutate(ais_mes_anio = !!rlang::sym(col_anio) * 100 + !!rlang::sym(col_mes))
+  
+  style_interval <-ifelse(
+    test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
+    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
+    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
+  
+  comparaciones <- purrr::map(
+    .x = list("suma" = "suma", "diff" = "diff", "perc" = "perc"),
+    .f = comparar_nt_valor_factura,
+    descriptiva_tabla = descriptiva_tabla,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador,
+    col_anio = col_anio,
+    col_mes = col_mes
   )
+  
+  comparacion_suma_dt <- datatable(
+    data = comparaciones[["suma"]],
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Suma valor total" = "total",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparaciones[["suma"]]),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatCurrency(
+      columns = 2:ncol(comparaciones[["suma"]]),
+      dec.mark = ",", mark = ".", digits = 0)
+  
+  comparacion_diff_dt <- datatable(
+    data = comparaciones[["diff"]],
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Diferencia de valor total" = "total",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparaciones[["diff"]]),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatCurrency(
+      columns = 2:ncol(comparaciones[["diff"]]),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = c(3:ncol(comparaciones[["diff"]]),
+                  ncol(comparaciones[["diff"]])),
+      backgroundColor = styleInterval(
+        cuts = 0,
+        values = style_interval
+      ))
+  
+  comparacion_perc_dt <- datatable(
+    data = comparaciones[["perc"]],
+    colnames = c(
+      "Valor a mes" = "valor_mes",
+      "Porcentaje de ejecución medio" = "media",
+      "Ejecución media a mes" = "media_valor",
+      "Agrupador" = "agrupador"),
+    rownames = FALSE,
+    selection = 'none',
+    options = list(
+      dom = 't',
+      pageLength = nrow(comparaciones[["perc"]]),
+      scrollX = TRUE,
+      language = list(
+        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+    formatPercentage(
+      columns = 3:(ncol(comparaciones[["perc"]]) - 1),
+      dec.mark = ",", mark = ".", digits = 0) %>%
+    formatStyle(
+      columns = 3:(ncol(comparaciones[["perc"]]) - 1),
+      backgroundColor = styleInterval(
+        cuts = 1,
+        values = style_interval
+      )) %>%
+    formatCurrency(
+      columns = c(2, ncol(comparaciones[["perc"]])),
+      dec.mark = ",", mark = ".", digits = 0)
+  
+  minimo_mes <- min(pull(descriptiva_tabla, ais_mes_anio))
+  maximo_mes <- max(pull(descriptiva_tabla, ais_mes_anio))
+  valor_mes <- sum(nota_tecnica$valor_mes)
+  
+  meses_completos <- tibble("ais_mes_anio" = seq(minimo_mes, maximo_mes)) %>%
+    mutate(ais_anio = substr(ais_mes_anio, 1, 4) %>% as.numeric(),
+           ais_mes  = substr(ais_mes_anio, 5, 6) %>% as.numeric()) %>%
+    filter(ais_mes >= 1 & ais_mes <= 12) %>%
+    select(-ais_mes_anio)
+  
+  valor_acumulado <- meses_completos %>%
+    left_join(
+      descriptiva_tabla %>%
+        rename(agrupador = !!as.name(agrupador)) %>%
+        left_join(nota_tecnica %>%
+                    select(agrupador)) %>%
+        arrange(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
+        group_by(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
+        summarise(Suma = sum(Suma, na.rm = TRUE)) %>%
+        select(!!!rlang::syms(c(col_anio, col_mes)), Suma),
+      by = c("ais_mes" = col_mes, "ais_anio" = col_anio)) %>%
+    mutate(numero_meses = 1:nrow(.),
+           mes_anio_num = ais_anio * 100 + ais_mes,
+           mes_anio = mes_spanish_juntos(mes_anio_num),
+           mes_anio_num = do.call(purrr::map(
+             .x = as.Date(paste(ais_anio, ais_mes, "01", sep = "-")),
+             .f = function(x) last(seq(x, length = 2, by = "months") - 1)),
+             what = "c")) %>%
+    mutate(Suma = replace_na(Suma, 0),
+           valor_acumulado = cumsum(Suma), valor_mes_esperado = valor_mes,
+           valor_a_ejecutar = valor_mes * as.double(numero_meses))
+  
+  plot_valor_acumulado <- valor_acumulado %>%
+    plot_ly(
+      x = ~mes_anio_num,
+      y = ~valor_acumulado, 
+      name = "Valor ejecutado",
+      type = "scatter", mode = "lines+markers"
+    ) %>%
+    add_trace(
+      y = ~valor_a_ejecutar,
+      name = "Valor a ejecutar",
+      mode = "lines",
+      line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+      fill = 'tonexty', fillcolor='rgba(0,100,80,0.2)'
+    ) %>%
+    config(locale = "es") %>%
+    layout(
+      legend = list(x = 0.1, y = 0.9),
+      xaxis = list(title = "Mes"),
+      yaxis = list(title = "Suma",
+                   tickformat = ",.2f")
+    ) 
+  
+  numero_meses <- nrow(valor_acumulado)
+  valor_a_ejecutar <- numero_meses * as.double(valor_mes)
+  valor_ejecutado <- sum(valor_acumulado$Suma, na.rm = TRUE)
+  
+  totales <- list(
+    "Valor a ejecutar:" = formatAsCurrency(valor_a_ejecutar),
+    "Valor facturado:" = formatAsCurrency(valor_ejecutado),
+    "Diferencia de valor total:" = formatAsCurrency(valor_a_ejecutar - 
+                                                      valor_ejecutado),
+    "Porcentaje del valor ejecutado:" = formatAsPerc(
+      100 * valor_ejecutado / na_if(valor_a_ejecutar, 0)))
+  
+  totales_ui <- purrr::map2(
+    .x = totales, .y = names(totales),
+    .f = function(x, y) {
+      tagList(
+        tags$b(y),
+        tags$p(x)
+      )
+    }) %>%
+    tagList()
+  
+  return(list(comparacion_suma = comparaciones[["suma"]],
+              comparacion_suma_dt = comparacion_suma_dt,
+              comparacion_diff = comparaciones[["diff"]],
+              comparacion_diff_dt = comparacion_diff_dt,
+              comparacion_porcentaje = comparaciones[["perc"]],
+              comparacion_porcentaje_dt = comparacion_perc_dt,
+              valor_acumulado = valor_acumulado,
+              plot_valor_acumulado = plot_valor_acumulado,
+              totales = totales_ui
+  ))
+  
   
 }

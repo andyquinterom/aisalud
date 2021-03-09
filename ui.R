@@ -54,13 +54,9 @@ shinyUI(
             tabName = "composicion_modulo"
           ),
           menuItem(
-            text = "NTs: Dashboard",
-            icon = icon("columns", lib = "font-awesome"),
+            text = "Seguimiento",
+            icon = icon("dollar-sign", lib = "font-awesome"),
             tabName = "seguimiento_modulo_dash"),
-          menuItem(
-            text = "NTs: Comparación",
-            icon = icon("chart-line", lib = "font-awesome"),
-            tabName = "seguimiento_modulo_comparar"),
           menuItem(
             text = "Configuración",
             icon = icon("cog", lib = "font-awesome"),
@@ -108,10 +104,6 @@ shinyUI(
           tabItem(
             tabName = "seguimiento_modulo_dash",
             seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
-          ),
-          tabItem(
-            tabName = "seguimiento_modulo_comparar",
-            seguimiento_notas_comparar_ui("seguimiento_notas_comparar")
           ),
           tabItem(
             tabName = "configuracion",

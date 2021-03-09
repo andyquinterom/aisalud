@@ -62,16 +62,9 @@ shinyServer(function(input, output, session) {
     conn = conn
   )
 
-  # Modulos seguimiento NT ---------------------------------------------
-
   seguimiento_notas_dashboard_server(
     id = "seguimiento_notas_dash",
     opciones = opciones)
-
-    # seguimiento_notas_comparar_server(
-    #   id = "seguimiento_notas_comparar",
-    #   opciones = opciones
-    # )
   
   configuracion_server(
     id = "configuracion",
