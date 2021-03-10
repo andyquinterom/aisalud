@@ -174,11 +174,14 @@ composicion_server <- function(id, opciones, conn) {
               "Valor medio a explorar por episodio" = "media_explorar_episodio",
               "Valor medio de episodio" = "media_episodio"),
             extensions = c('FixedColumns'),
-            options = list(pageLength = nrow(composicion$tabla),
-                           orderFixed = c(0, "desc"),
-                           scrollY = "600px",
-                           scrollX = TRUE,
-                           fixedColumns = list(leftColumns = 5)),
+            options = list(
+              pageLength = nrow(composicion$tabla),
+              orderFixed = c(0, "desc"),
+              scrollY = "600px",
+              scrollX = TRUE,
+              fixedColumns = list(leftColumns = 5),
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')),
             selection = 'none'
           ) %>%
             formatPercentage(c("% de participación",
