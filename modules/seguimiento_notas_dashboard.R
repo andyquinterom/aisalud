@@ -713,19 +713,21 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
                   group_by(!!!rlang::syms(comparar_col_valor)) %>%
                   mutate(
-                    ais_mes  = month(max(fecha_prestacion, na.rm = TRUE)),
-                    ais_anio =  year(max(fecha_prestacion, na.rm = TRUE))) %>%
+                    ais_mes_anio = 
+                      year(fecha_prestacion) * 100 +
+                      month(fecha_prestacion)) %>%
                   ungroup() %>%
                   episodios_jerarquia(
                     data = .,
                     columnas = agrupador,
-                    columna_sep = c("ais_anio", "ais_mes"),
+                    columna_sep = c("ais_mes_anio"),
                     columna_valor = opciones$valor_costo,
                     columna_suma = comparar_col_valor,
                     nivel_1 = input$episodios_jerarquia_nivel_1_order,
                     nivel_2 = input$episodios_jerarquia_nivel_2_order,
                     nivel_3 = input$episodios_jerarquia_nivel_3_order,
-                    nivel_4 = input$episodios_jerarquia_nivel_4_order
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order,
+                    columna_fecha = "ais_mes_anio"
                   )
                 
               } else {
@@ -738,10 +740,12 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                 )
                 
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
-                  mutate(ais_mes  = month(fecha_prestacion),
-                         ais_anio =  year(fecha_prestacion)) %>%
+                  mutate(
+                    ais_mes_anio = 
+                      year(fecha_prestacion) * 100 +
+                      month(fecha_prestacion)) %>%
                   descriptiva(
-                    columnas = c(agrupador, "ais_anio", "ais_mes"),
+                    columnas = c(agrupador, "ais_mes_anio"),
                     columna_suma = comparar_col_valor,
                     columna_valor = opciones$valor_costo,
                     prestaciones = (input$descriptiva_unidades == "prestacion")
@@ -759,7 +763,10 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               comparar$valor_fac <- comparacion_valor_facturado(
                 descriptiva_tabla = 
                   comparar$datos$valor_factura_tabla[["descriptiva"]] %>%
-                    ungroup(),
+                    ungroup() %>%
+                    mutate(
+                      ais_mes = ais_mes_anio %% 100,
+                      ais_anio = as.numeric(substr(ais_mes_anio, 1, 4))),
                 nota_tecnica = nt_test,
                 agrupador = agrupador,
                 col_mes = "ais_mes", col_anio = "ais_anio"
