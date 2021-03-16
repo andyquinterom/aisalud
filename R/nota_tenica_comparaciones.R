@@ -153,8 +153,8 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
   
   style_interval <-ifelse(
     test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
-    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
-    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
+    yes = c("rgb(145, 255, 145)", "rgb(255, 190, 100)"),
+    no = c("rgb(255, 190, 100)", "rgb(145, 255, 145)"))
   
   comparacion_frecs <- comparar_nt_frecuencias(
     frecuencias = frecuencias_tabla,
@@ -419,8 +419,8 @@ comparacion_valor_facturado <- function(
   
   style_interval <-ifelse(
     test = (Sys.getenv("NT_MODO_IPS") != "") %>% rep(2),
-    yes = c("rgb(145, 255, 145)", "rgb(255, 145, 145)"),
-    no = c("rgb(255, 145, 145)", "rgb(145, 255, 145)"))
+    yes = c("rgb(145, 255, 145)", "rgb(255, 190, 100)"),
+    no = c("rgb(255, 190, 100)", "rgb(145, 255, 145)"))
   
   comparaciones <- purrr::map(
     .x = list("suma" = "suma", "diff" = "diff", "perc" = "perc"),
