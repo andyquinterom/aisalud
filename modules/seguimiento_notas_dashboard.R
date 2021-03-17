@@ -184,7 +184,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         
         opciones$notas_tecnicas_updated
         
-        opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
+        opciones$notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
           pull(notas_tecnicas)
         
         tryCatch(

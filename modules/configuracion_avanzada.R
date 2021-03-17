@@ -69,7 +69,7 @@ configuracion_server <- function(id, opciones) {
             
             dbWriteTable(
               conn = conn,
-              Id(schema = "config", table = "perfiles_usuario"),
+              name = "perfiles_usuario",
               perfil_nuevo,
               overwrite = TRUE
             )
@@ -121,7 +121,7 @@ configuracion_server <- function(id, opciones) {
             
             dbWriteTable(
               conn = conn,
-              Id(schema = "config", table = "notas_tecnicas"),
+              name = "perfiles_notas_tecnicas",
               notas_tecnicas_nuevo,
               overwrite = TRUE
             )
