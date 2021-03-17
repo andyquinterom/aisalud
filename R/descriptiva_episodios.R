@@ -1,7 +1,8 @@
 
 episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
-                                nivel_4, return_list = FALSE) {
+                                nivel_4, return_list = FALSE, 
+                                columna_fecha = NULL) {
   
   # data[, "ASIGNACION_NIVEL" := ""]
   data <- data %>% mutate(ASIGNACION_NIVEL = "")
@@ -23,21 +24,25 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios <- data %>%
       select(!!as.name(columna_suma), !!as.name(columnas)) %>%
       filter(!!as.name(columnas) %in% nivel_1) %>%
+      group_by(!!as.name(columna_suma)) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
       arrange(index) %>%
-      group_by(!!as.name(columna_suma)) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
       distinct(!!as.name(columna_suma), !!as.name(columnas))
     
-    if (!is.null(columna_sep)) {
-      data_episodios <- data %>%
-        group_by(!!!rlang::syms(unique(c(columna_suma, columna_sep))))
-    } else {
-      data_episodios <- data %>%
-        group_by(!!as.name(columna_suma))
-    }
+    data_episodios <- data %>%
+      {if (!is.null(columna_fecha)) {
+        group_by(., !!as.name(columna_suma)) %>%
+        mutate(!!columna_fecha := max(!!as.name(columna_fecha)))
+      } else {.}} %>%
+      {if (!is.null(columna_sep)) {
+        group_by(., !!!rlang::syms(unique(c(columna_suma, columna_sep))))
+      } else {
+        group_by(., !!as.name(columna_suma))
+      }}
+      
     data_episodios <- data_episodios %>%
       summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE)) %>%
       right_join(episodios)
