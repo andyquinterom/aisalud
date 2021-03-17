@@ -102,22 +102,19 @@ base_de_datos_server <- function(id, opciones, conn) {
     module = function(input, output, session) {
       
       ns <- NS(id)
-      
       base_de_datos <- reactiveValues()
-      
       prepara_opciones <- reactiveValues()
       
       observe({
-        
-        tables_query <- dbGetQuery(
-          conn,
-          paste0("SELECT table_name FROM information_schema.tables
-       WHERE table_schema='", 
-                 Sys.getenv("DATABASE_SCHEMA"), "'")) %>%
+        tables_query <- dbListTables(conn = conn) %>%
           unlist() %>%
           unname()
-        if (identical(character(0), tables_query)) {
-          tables_query <- NULL
+        
+        tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
+          stringr::str_replace(pattern = "ais_", "")
+        
+        if (identical(character(0), tables_ais)) {
+          tables_ais <- NULL
           updateSelectizeInput(
             session = session,
             inputId = "tabla",
@@ -127,25 +124,39 @@ base_de_datos_server <- function(id, opciones, conn) {
           updateSelectizeInput(
             session = session,
             inputId = "tabla",
-            choices = c("Ninguno", tables_query)
+            choices = c("Ninguno", tables_ais)
           )
         }
       })
       
       observeEvent(input$tabla, {
-        if (!is.null(conn) && 
-            input$tabla != "Ninguno" &&
-            input$tabla != "") {
-          prepara_opciones$colnames <- dbListFields(
-            conn,
-            input$tabla)
-          updateSelectizeInput(
-            session = session,
-            inputId = "columna_valor",
-            selected = opciones$valor_costo,
-            choices = prepara_opciones$colnames
+        tabla <- paste0("ais_", input$tabla)
+        
+        if (input$tabla %notin% c("Ninguno", "")) {
+          tryCatch(
+            expr = {
+              prepara_opciones$colnames <- dbListFields(
+                conn,
+                tabla)
+              updateSelectizeInput(
+                session = session,
+                inputId = "columna_valor",
+                selected = opciones$valor_costo,
+                choices = prepara_opciones$colnames
+              )
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = "No se pudo leer la tabla seleccionada. Valide que aun exista esta tabla o contacte a un administrador.",
+                type = "error"
+              )
+            }
           )
         }
+
       })
       
       observe({
@@ -165,26 +176,60 @@ base_de_datos_server <- function(id, opciones, conn) {
       
       observe({
         if (input$tabla %notin% c("Ninguno", "")) {
-          opciones$fecha_rango <- input$fecha_rango
-          tabla <- input$tabla
-          opciones$colnames <- dbListFields(
-            conn,
-            tabla)
-          opciones$colnames_num <- dbListNumericFields(
-            conn,
-            tabla)
-          fecha_min <- opciones$fecha_rango[1]
-          fecha_max <- opciones$fecha_rango[2]
-          opciones$tabla_nombre <- tabla
-          opciones$tabla_nombre 
-          opciones$tabla_original <- conn %>%
-            tbl(tabla) %>%
-            filter(fecha_prestacion >= fecha_min) %>%
-            filter(fecha_prestacion <= fecha_max)
-          opciones$tabla <- conn %>%
-            tbl(tabla) %>%
-            filter(fecha_prestacion >= fecha_min) %>%
-            filter(fecha_prestacion <= fecha_max)
+          
+          tryCatch(
+            expr = {
+              opciones$fecha_rango <- input$fecha_rango
+              tabla <- paste0("ais_", input$tabla)
+              opciones$colnames <- dbListFields(
+                conn,
+                tabla)
+              opciones$colnames_num <- dbListNumericFields(
+                conn,
+                tabla)
+              fecha_min <- opciones$fecha_rango[1]
+              fecha_max <- opciones$fecha_rango[2]
+              opciones$tabla_nombre <- tabla
+              opciones$tabla_original <- conn %>%
+                tbl(tabla) %>%
+                filter(fecha_prestacion >= fecha_min) %>%
+                filter(fecha_prestacion <= fecha_max)
+              opciones$tabla <- conn %>%
+                tbl(tabla) %>%
+                filter(fecha_prestacion >= fecha_min) %>%
+                filter(fecha_prestacion <= fecha_max)
+            },
+            error = function(e) {
+              tables_query <- dbListTables(conn = conn) %>%
+                unlist() %>%
+                unname()
+              
+              tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
+                stringr::str_replace(pattern = "ais_", "")
+              
+              if (identical(character(0), tables_ais)) {
+                tables_ais <- NULL
+                updateSelectizeInput(
+                  session = session,
+                  inputId = "tabla",
+                  choices = "Ninguno"
+                )
+              } else {
+                updateSelectizeInput(
+                  session = session,
+                  inputId = "tabla",
+                  choices = c("Ninguno", tables_ais)
+                )
+              }
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = "No se pudo leer la tabla seleccionada. Valide que aun exista esta tabla o contacte a un administrador.",
+                type = "error"
+              )
+            }
+          )
         }
       })
       

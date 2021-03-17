@@ -184,7 +184,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         
         opciones$notas_tecnicas_updated
         
-        opciones$notas_tecnicas_raw <- tbl(conn, "notas_tecnicas") %>%
+        opciones$notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
           pull(notas_tecnicas)
         
         tryCatch(
@@ -517,8 +517,11 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       observeEvent(input$comparar_episodios, {
         perfil_nt <-
           opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
-        if (input$comparar_episodios && perfil_nt %in%
-              names(opciones$perfil_lista)) {
+        
+        if (input$comparar_episodios && 
+            !is.null(perfil_nt) &&
+            !is.null(opciones$perfil_lista) &&
+            perfil_nt %in% names(opciones$perfil_lista)) {
           if (!opciones$perfil_enable) {
             confirmSweetAlert(
               session = session,
@@ -528,7 +531,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                       ¿Desea utilizarlo?",
               btn_labels = c("Cancelar", "Utilizar")
             )
-          } else if (opciones$perfil_enable && 
+          } else if (opciones$perfil_enable &&
                      opciones$perfil_selected != perfil_nt) {
             confirmSweetAlert(
               session = session,
