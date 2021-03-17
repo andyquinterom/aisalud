@@ -41,24 +41,6 @@ library(dbplot)
 library(jsonlite)
 library(shinyAce)
 
-
-if (!dir.exists("datos")) {
-  dir.create("datos")
-}
-
-if (!dir.exists("secrets")) {
-  dir.create("secrets")
-}
-
-if (!dir.exists(file.path("datos", "saved"))) {
-  dir.create(file.path("datos", "saved"))
-}
-
-if (!dir.exists(file.path("datos", "nts"))) {
-  dir.create(file.path("datos", "nts"))
-}
-
-
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
     as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
