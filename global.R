@@ -72,12 +72,7 @@ conn <- dbConnect(
   bigint = "integer",
   sslmode = "require")
 
-tabla_perfiles <- dbGetQuery(
-  conn,
-  paste0("SELECT table_name FROM information_schema.tables
-       WHERE table_schema='public'")) %>%
-  unlist() %>%
-  unname()
+tabla_perfiles <- dbListTables(conn = conn)
 
 if ("perfiles_usuario" %notin% tabla_perfiles) {
   dbWriteTable(
