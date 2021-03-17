@@ -164,26 +164,40 @@ base_de_datos_server <- function(id, opciones, conn) {
       
       observe({
         if (input$tabla %notin% c("Ninguno", "")) {
-          opciones$fecha_rango <- input$fecha_rango
-          tabla <- paste0("ais_", input$tabla)
-          opciones$colnames <- dbListFields(
-            conn,
-            tabla)
-          opciones$colnames_num <- dbListNumericFields(
-            conn,
-            tabla)
-          fecha_min <- opciones$fecha_rango[1]
-          fecha_max <- opciones$fecha_rango[2]
-          opciones$tabla_nombre <- tabla
-          opciones$tabla_nombre 
-          opciones$tabla_original <- conn %>%
-            tbl(tabla) %>%
-            filter(fecha_prestacion >= fecha_min) %>%
-            filter(fecha_prestacion <= fecha_max)
-          opciones$tabla <- conn %>%
-            tbl(tabla) %>%
-            filter(fecha_prestacion >= fecha_min) %>%
-            filter(fecha_prestacion <= fecha_max)
+          
+          tryCatch(
+            expr = {
+              opciones$fecha_rango <- input$fecha_rango
+              tabla <- paste0("ais_", input$tabla)
+              opciones$colnames <- dbListFields(
+                conn,
+                tabla)
+              opciones$colnames_num <- dbListNumericFields(
+                conn,
+                tabla)
+              fecha_min <- opciones$fecha_rango[1]
+              fecha_max <- opciones$fecha_rango[2]
+              opciones$tabla_nombre <- tabla
+              opciones$tabla_nombre 
+              opciones$tabla_original <- conn %>%
+                tbl(tabla) %>%
+                filter(fecha_prestacion >= fecha_min) %>%
+                filter(fecha_prestacion <= fecha_max)
+              opciones$tabla <- conn %>%
+                tbl(tabla) %>%
+                filter(fecha_prestacion >= fecha_min) %>%
+                filter(fecha_prestacion <= fecha_max)
+            },
+            error = function(e) {
+              print(e[1])
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
         }
       })
       
