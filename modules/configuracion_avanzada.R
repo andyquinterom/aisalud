@@ -59,40 +59,60 @@ configuracion_server <- function(id, opciones) {
       })
       
       observeEvent(input$perfil_actualizar, {
-        perfil_nuevo <- data.frame("perfiles" = input$perfil_editor)
-        
-        tryCatch(
-          expr = {
-            
-            perfil_nuevo$perfiles %>%
-              prettify()
-            
-            dbWriteTable(
-              conn = conn,
-              Id(schema = "config", table = "perfiles_usuario"),
-              perfil_nuevo,
-              overwrite = TRUE
-            )
-            
-            opciones$perfil_updated <- FALSE
-            opciones$perfil_updated <- TRUE
-            
-            showNotification(
-              ui = "El perfil se a guardado.",
-              type = "message"
-            )
-            
-          },
-          error = function(e) {
-            print(e)
-            sendSweetAlert(
-              session = session,
-              title = "Error",
-              text = e[1],
-              type = "error"
-            )
-          }
+        showModal(
+          modalDialog(
+            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            passwordInput(ns("perfil_actualizar_pw"), label = NULL),
+            footer = actionButton(
+              inputId = ns("perfil_actualizar_conf"),
+              label = "Guardar perfiles")
+          )
         )
+      })
+      
+      observeEvent(input$perfil_actualizar_conf, {
+        
+        if (input$perfil_actualizar_pw == Sys.getenv("CONF_PW")) {
+          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor)
+          removeModal()
+          tryCatch(
+            expr = {
+              
+              perfil_nuevo$perfiles %>%
+                prettify()
+              
+              dbWriteTable(
+                conn = conn,
+                name = "perfiles_usuario",
+                perfil_nuevo,
+                overwrite = TRUE
+              )
+              
+              opciones$perfil_updated <- FALSE
+              opciones$perfil_updated <- TRUE
+              
+              showNotification(
+                ui = "El perfil se a guardado.",
+                type = "message"
+              )
+              
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        } else {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
+        }
         
       })
       
@@ -110,41 +130,60 @@ configuracion_server <- function(id, opciones) {
       })
       
       observeEvent(input$notas_tecnicas_actualizar, {
-        notas_tecnicas_nuevo <- data.frame(
-          "notas_tecnicas" = input$notas_tecnicas_editor)
-        
-        tryCatch(
-          expr = {
-            
-            notas_tecnicas_nuevo$notas_tecnicas  %>%
-              prettify()
-            
-            dbWriteTable(
-              conn = conn,
-              Id(schema = "config", table = "notas_tecnicas"),
-              notas_tecnicas_nuevo,
-              overwrite = TRUE
-            )
-            
-            opciones$notas_tecnicas_updated <- FALSE
-            opciones$notas_tecnicas_updated <- TRUE
-            
-            showNotification(
-              ui = "La nota técnica se a guardado.",
-              type = "message"
-            )
-            
-          },
-          error = function(e) {
-            print(e)
-            sendSweetAlert(
-              session = session,
-              title = "Error",
-              text = e[1],
-              type = "error"
-            )
-          }
+        showModal(
+          modalDialog(
+            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            passwordInput(ns("notas_tecnicas_pw"), label = NULL),
+            footer = actionButton(
+              inputId = ns("notas_tecnicas_conf"),
+              label = "Guardar notas técnicas")
+          )
         )
+      })
+      
+      observeEvent(input$notas_tecnicas_conf, {
+        if (input$notas_tecnicas_pw == Sys.getenv("CONF_PW")) {
+          notas_tecnicas_nuevo <- data.frame(
+            "notas_tecnicas" = input$notas_tecnicas_editor)
+          removeModal()
+          tryCatch(
+            expr = {
+              
+              notas_tecnicas_nuevo$notas_tecnicas  %>%
+                prettify()
+              
+              dbWriteTable(
+                conn = conn,
+                name = "perfiles_notas_tecnicas",
+                notas_tecnicas_nuevo,
+                overwrite = TRUE
+              )
+              
+              opciones$notas_tecnicas_updated <- FALSE
+              opciones$notas_tecnicas_updated <- TRUE
+              
+              showNotification(
+                ui = "La nota técnica se a guardado.",
+                type = "message"
+              )
+              
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        } else {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
+        }
         
       })
       

@@ -4,32 +4,26 @@ library(shiny)
 library(dbplyr)
 library(shinydashboard)
 library(shinyWidgets)
-library(shinythemes)
 library(feather)
 library(data.table)
 library(writexl)
-library(ggplot2)
 library(varhandle)
 library(Cairo)
 library(lubridate)
 library(stringr)
-library(ggiraph)
 library(scales)
 library(readr)
 library(plotly)
 library(tidyr)
-library(googlesheets4)
 library(DT)
 library(markdown)
 library(tableHTML)
 library(withr)
 library(shinydashboardPlus)
 library(shinyjqui)
-library(googledrive)
 library(DBI)
 library(RPostgres)
 library(dplyr)
-library(readxl)
 library(shinycssloaders)
 library(promises)
 library(future)
@@ -40,24 +34,6 @@ library(sparklyr)
 library(dbplot)
 library(jsonlite)
 library(shinyAce)
-
-
-if (!dir.exists("datos")) {
-  dir.create("datos")
-}
-
-if (!dir.exists("secrets")) {
-  dir.create("secrets")
-}
-
-if (!dir.exists(file.path("datos", "saved"))) {
-  dir.create(file.path("datos", "saved"))
-}
-
-if (!dir.exists(file.path("datos", "nts"))) {
-  dir.create(file.path("datos", "nts"))
-}
-
 
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
@@ -87,27 +63,15 @@ conn <- dbConnect(
   password = Sys.getenv("DATABASE_PW"),
   host = Sys.getenv("DATABASE_HOST"),
   port = Sys.getenv("DATABASE_PORT"),
-  options = paste0("-c search_path=", Sys.getenv("DATABASE_SCHEMA")),
   bigint = "integer",
   sslmode = "require")
 
-dbGetQuery(
-  conn,
-  str_replace_all("SET search_path = public, config, ######;",
-                  "######", Sys.getenv("DATABASE_SCHEMA"))
-)
-
-tabla_perfiles <- dbGetQuery(
-  conn,
-  paste0("SELECT table_name FROM information_schema.tables
-       WHERE table_schema='config'")) %>%
-  unlist() %>%
-  unname()
+tabla_perfiles <- dbListTables(conn = conn)
 
 if ("perfiles_usuario" %notin% tabla_perfiles) {
   dbWriteTable(
-    conn = conn,
-    Id(schema = "config", table = "perfiles_usuario"),
+    conn = conn, 
+    name = "perfiles_usuario",
     data.frame(
       "perfiles" = '
       {
@@ -126,10 +90,10 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
   )
 }
 
-if ("notas_tecnicas" %notin% tabla_perfiles) {
+if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
   dbWriteTable(
     conn = conn,
-    Id(schema = "config", table = "notas_tecnicas"),
+    name = "perfiles_notas_tecnicas",
     data.frame(
       "notas_tecnicas" = 
 '{
