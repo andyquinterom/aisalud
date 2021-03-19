@@ -4,7 +4,8 @@ shinyServer(function(input, output, session) {
     "valor_costo" = "valor",
     "tabla_nombre" = "Ninguno",
     "datos_cargados" = FALSE,
-    "perfil_enable" = FALSE
+    "perfil_enable" = FALSE,
+    "fecha_rango" = rep(Sys.Date(), 2)
   )
   
   
