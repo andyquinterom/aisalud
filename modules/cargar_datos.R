@@ -27,7 +27,7 @@ base_de_datos_ui <- function(id) {
           dateRangeInput(
             inputId = ns("fecha_rango"),
             label = "Fechas:",
-            min = NULL, 
+            min = "1970-01-01", 
             max = NULL, 
             format = "dd/mm/yyyy",
             language = "es"),
@@ -175,11 +175,18 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
+        opciones$fecha_rango[1] <- data.table::fifelse(
+          test = !is.na(input$fecha_rango[1]),
+          yes = input$fecha_rango[1], no = opciones$fecha_rango[1])
+        opciones$fecha_rango[2] <- data.table::fifelse(
+          test = !is.na(input$fecha_rango[2]),
+          yes = input$fecha_rango[2], no = opciones$fecha_rango[2])
+      })
+      
+      observe({
         if (input$tabla %notin% c("Ninguno", "")) {
-          
           tryCatch(
             expr = {
-              opciones$fecha_rango <- input$fecha_rango
               tabla <- paste0("ais_", input$tabla)
               opciones$colnames <- dbListFields(
                 conn,
