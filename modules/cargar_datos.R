@@ -88,7 +88,7 @@ base_de_datos_ui <- function(id) {
             inputId = ns("cantidad"),
             width = "100%", 
             label = "Prestaciones por cantidad", 
-            value = TRUE
+            value = FALSE
           )
         )
       )
@@ -467,6 +467,24 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       # Cantidad
+      
+      observe({
+        
+        cantidad_enable <- NULL
+        
+        if (opciones$perfil_enable) {
+          cantidad_enable <- opciones$perfil_lista[[
+            opciones$perfil_selected]][["cantidad"]]
+        }
+        
+        if (!is.null(cantidad_enable)) {
+          updateCheckboxInput(
+            inputId = "cantidad",
+            value = cantidad_enable
+          )
+        }
+        
+      })
       
       observe({
         opciones$cantidad <- input$cantidad
