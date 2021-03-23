@@ -1,5 +1,5 @@
 outliers_percentil <- function(data, columna, columna_valor, percentil,
-                             frecuencia = 1) {
+                             frecuencia = 1, frec_cantidad = FALSE) {
   
   data <- data %>%
     mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
@@ -25,7 +25,10 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
   outliers <- data %>%
     group_by(!!as.name(columna)) %>%
     summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
-              frec = n()) %>%
+              frec = ifelse(
+                test = frec_cantidad, 
+                yes = sum(cantidad, na.rm = TRUE),
+                no = n())) %>%
     mutate(porcentaje = paste0(
       round(100*valor_calculos/valor_total, digits = 2),
       "%")) %>%
@@ -40,7 +43,7 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
 }
 
 outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
-                        frecuencia = 1) {
+                        frecuencia = 1, frec_cantidad = FALSE) {
 
   multiplicativo <- as.numeric(multiplicativo)
   
@@ -72,7 +75,10 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
   outliers <- data %>%
     group_by(!!as.name(columna)) %>%
     summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
-              frec = n()) %>%
+              frec = ifelse(
+                test = frec_cantidad, 
+                yes = sum(cantidad, na.rm = TRUE),
+                no = n())) %>%
     mutate(porcentaje = paste0(
       round(100*valor_calculos/valor_total, digits = 2),
       "%")) %>%
