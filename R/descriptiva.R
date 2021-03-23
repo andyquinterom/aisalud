@@ -9,7 +9,7 @@ rango <- function(x) {
 }
 
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
-                        prestaciones = FALSE, cantidad = FALSE) {
+                        prestaciones = FALSE, frec_cantidad = FALSE) {
   
   columnas <- unique(columnas)
   
@@ -22,7 +22,8 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
     print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
       group_by(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
-      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE))
+      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
+                cantidad = 1)
   }
   
   print("Descriptiva: resumiendo los datos.")
@@ -33,7 +34,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       arrange(valor_calculos) %>%
       summarise(
         "Frecuencia" = ifelse(
-          test = prestaciones && cantidad, 
+          test = prestaciones && frec_cantidad, 
           yes = sum(cantidad, na.rm = TRUE),
           no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
@@ -56,7 +57,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       arrange(valor_calculos) %>%
       summarise(
         "Frecuencia" = ifelse(
-          test = prestaciones && cantidad, 
+          test = prestaciones && frec_cantidad, 
           yes = sum(cantidad, na.rm = TRUE),
           no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),

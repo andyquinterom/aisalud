@@ -5,7 +5,8 @@ shinyServer(function(input, output, session) {
     "tabla_nombre" = "Ninguno",
     "datos_cargados" = FALSE,
     "perfil_enable" = FALSE,
-    "fecha_rango" = rep(Sys.Date(), 2)
+    "fecha_rango" = rep(Sys.Date(), 2),
+    "cantidad" = TRUE
   )
   
   

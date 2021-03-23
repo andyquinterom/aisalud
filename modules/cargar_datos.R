@@ -75,7 +75,7 @@ base_de_datos_ui <- function(id) {
             selected = "valor")
         ),
         tabPanel(
-          title = "Perfiles",
+          title = "Opciones",
           tags$br(),
           tags$br(),
           selectizeInput(
@@ -83,7 +83,13 @@ base_de_datos_ui <- function(id) {
             width = "100%",
             "Perfil:",
             choices = "Ninguno"),
-          includeMarkdown("markdown/perfiles.md")
+          tags$hr(),
+          checkboxInput(
+            inputId = ns("cantidad"),
+            width = "100%", 
+            label = "Prestaciones por cantidad", 
+            value = TRUE
+          )
         )
       )
     ),
@@ -458,6 +464,12 @@ base_de_datos_server <- function(id, opciones, conn) {
         } else {
           opciones$perfil_enable <- FALSE
         }
+      })
+      
+      # Cantidad
+      
+      observe({
+        opciones$cantidad <- input$cantidad
       })
       
     }
