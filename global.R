@@ -64,7 +64,7 @@ conn <- dbConnect(
   host = Sys.getenv("DATABASE_HOST"),
   port = Sys.getenv("DATABASE_PORT"),
   bigint = "integer",
-  sslmode = "require")
+  sslmode = "allow")
 
 tabla_perfiles <- dbListTables(conn = conn)
 

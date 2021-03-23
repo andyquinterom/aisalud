@@ -9,7 +9,7 @@ rango <- function(x) {
 }
 
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
-                        prestaciones) {
+                        prestaciones = FALSE, cantidad = FALSE) {
   
   columnas <- unique(columnas)
   
@@ -32,7 +32,10 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!!rlang::syms(columnas)) %>%
       arrange(valor_calculos) %>%
       summarise(
-        "Frecuencia" = n(),
+        "Frecuencia" = ifelse(
+          test = prestaciones && cantidad, 
+          yes = sum(cantidad, na.rm = TRUE),
+          no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
         "Media" = round(mean(valor_calculos, na.rm = TRUE),2),
         "P25" = round(quantile(valor_calculos, probs = 0.25, na.rm = TRUE),2),
@@ -52,7 +55,10 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!!rlang::syms(columnas)) %>%
       arrange(valor_calculos) %>%
       summarise(
-        "Frecuencia" = n(),
+        "Frecuencia" = ifelse(
+          test = prestaciones && cantidad, 
+          yes = sum(cantidad, na.rm = TRUE),
+          no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
         "Media" = round(mean(valor_calculos, na.rm = TRUE),2),
         "P25" = round(quantile(valor_calculos, probs = 0.25),2),
