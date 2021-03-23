@@ -708,6 +708,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   columna_fecha = "fecha_prestacion",
                   columna_sep =   NULL,
                   columna_suma = comparar_col_valor,
+                  frec_cantidad = opciones$cantidad,
                   nivel_1 = input$episodios_jerarquia_nivel_1_order,
                   nivel_2 = input$episodios_jerarquia_nivel_2_order,
                   nivel_3 = input$episodios_jerarquia_nivel_3_order,
@@ -730,6 +731,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     nivel_2 = input$episodios_jerarquia_nivel_2_order,
                     nivel_3 = input$episodios_jerarquia_nivel_3_order,
                     nivel_4 = input$episodios_jerarquia_nivel_4_order,
+                    frec_cantidad = opciones$cantidad,
                     columna_fecha = "ais_mes_anio"
                   )
                 
@@ -739,7 +741,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   data = opciones$tabla,
                   agrupador = agrupador,
                   columna_suma = comparar_col_valor,
-                  prestaciones = (input$descriptiva_unidades == "prestacion")
+                  prestaciones = (input$descriptiva_unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad
                 )
                 
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
@@ -751,7 +754,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     columnas = c(agrupador, "ais_mes_anio"),
                     columna_suma = comparar_col_valor,
                     columna_valor = opciones$valor_costo,
-                    prestaciones = (input$descriptiva_unidades == "prestacion")
+                    prestaciones = (input$descriptiva_unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad
                   )
               }
             
