@@ -4,13 +4,12 @@ shinyUI(
     tags$head(
       tags$script(type = "text/javascript", src = "code.js"),
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
-    dashboardPagePlus(
-      collapse_sidebar = TRUE,
+    shinydashboardPlus::dashboardPage(
+      options = list(sidebarExpandOnHover = TRUE),
       skin = "blue-light",
-      dashboardHeaderPlus(
-        fixed = TRUE,
+      shinydashboardPlus::dashboardHeader(
         title = tagList(
-          span(class = "logo-lg", "Analítica Integrada Salud"), 
+          span(class = "logo-lg", "Analítica Integrada Salud"),
           img(src = "logo.svg")),
         dropdownMenu(
           icon = icon("info-circle"),
@@ -22,9 +21,8 @@ shinyUI(
             status = "info"
           )
         ),
-        enable_rightsidebar = TRUE,
-        rightSidebarIcon = "filter"),
-      sidebar = dashboardSidebar(
+        controlbarIcon = icon("filter")),
+      sidebar = shinydashboardPlus::dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
           menuItem(
@@ -33,10 +31,10 @@ shinyUI(
             icon = icon("cloud", lib = "font-awesome")),
           menuItem(
             text = "Descriptiva",
-            tabName = "episodios_modulo", 
+            tabName = "episodios_modulo",
             icon = icon("table", lib = "font-awesome")),
           menuItem(
-            text = "Nota técnica", 
+            text = "Nota técnica",
             tabName = "nota_tecnica_modulo",
             icon = icon("tags", lib = "font-awesome")),
           menuItem(
@@ -63,13 +61,13 @@ shinyUI(
             tabName = "configuracion")
         )
       ),
-      rightsidebar = rightSidebar(
+      controlbar = dashboardControlbar(
         width = 700,
-        rightSidebarTabContent(
+        controlbarItem(
           id = "filtros_sideBar",
           active = TRUE,
           filtros_ui("filtros_sideBar")
-        )
+        ) %>% controlbarMenu()
       ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
