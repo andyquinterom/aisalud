@@ -5,7 +5,6 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       uiOutput(ns("nota_tecnica_jerarquia"))
     ),
-    tags$br(),
     fluidRow(
       box(
         width = 3,
@@ -213,11 +212,12 @@ nota_tecnica_server <- function(id, opciones) {
                       items = nota_tecnica$agrupadores_items,
                       funcion_jerarquia = nota_tecnica_cajas_jerarquia,
                       ns = ns
-                    )
+                    ) %>% tagList(tags$br())
                   } else {
                     nota_tecnica_cajas_jerarquia(
                       ns = ns,
-                      items_nivel_4 = nota_tecnica$agrupadores_items)
+                      items_nivel_4 = nota_tecnica$agrupadores_items) %>% 
+                      tagList(tags$br())
                   }
                 })
               } else {
