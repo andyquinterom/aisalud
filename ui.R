@@ -71,9 +71,6 @@ shinyUI(
       ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
-        tags$div(
-          style = "min-height: 50px;"
-        ),
         tabItems(
           tabItem(
             tabName = "prepara_base_de_datos",
