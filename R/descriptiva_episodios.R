@@ -2,7 +2,7 @@
 episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
                                 nivel_4, return_list = FALSE, 
-                                columna_fecha = NULL) {
+                                columna_fecha = NULL, frec_cantidad = FALSE) {
   
   # data[, "ASIGNACION_NIVEL" := ""]
   data <- data %>% mutate(ASIGNACION_NIVEL = "")
@@ -106,7 +106,8 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       columnas = c(columnas, columna_sep),
       columna_valor = columna_valor,
       columna_suma = "",
-      prestaciones = TRUE
+      prestaciones = TRUE,
+      frec_cantidad = frec_cantidad
     )
     print("Nivel 4: Descriptiva generada.")
     episodios_nivel_4 <- data_temp[["descriptiva"]] %>%

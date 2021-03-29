@@ -5,7 +5,6 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       uiOutput(ns("nota_tecnica_jerarquia"))
     ),
-    tags$br(),
     fluidRow(
       box(
         width = 3,
@@ -213,11 +212,12 @@ nota_tecnica_server <- function(id, opciones) {
                       items = nota_tecnica$agrupadores_items,
                       funcion_jerarquia = nota_tecnica_cajas_jerarquia,
                       ns = ns
-                    )
+                    ) %>% tagList(tags$br())
                   } else {
                     nota_tecnica_cajas_jerarquia(
                       ns = ns,
-                      items_nivel_4 = nota_tecnica$agrupadores_items)
+                      items_nivel_4 = nota_tecnica$agrupadores_items) %>% 
+                      tagList(tags$br())
                   }
                 })
               } else {
@@ -430,6 +430,7 @@ nota_tecnica_server <- function(id, opciones) {
                 columna_valor = opciones$valor_costo,
                 columna_sep =   nota_tecnica_cols_sep,
                 columna_suma =  nota_tecnica_col_valor,
+                frec_cantidad = opciones$cantidad,
                 nivel_1 = input$nota_tecnica_jerarquia_nivel_1_order,
                 nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order,
                 nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order,
@@ -445,6 +446,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = FALSE)[["descriptiva"]]
                 },
                 paciente = if (test_paciente) {
@@ -455,6 +457,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = FALSE)[["descriptiva"]]
                 },
                 prestacion = if (test_prestacion) {
@@ -465,6 +468,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = test_prestacion)[["descriptiva"]]
                 }
               )

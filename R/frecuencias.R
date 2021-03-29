@@ -1,6 +1,6 @@
 frecuencias <- function(
-  data, agrupador, prestaciones, columna_fecha, columna_suma, 
-  intervalo = "mes") {
+  data, agrupador, columna_fecha, columna_suma, 
+  intervalo = "mes", prestaciones = FALSE, frec_cantidad = FALSE) {
   
   agrupador <- unique(agrupador)
   
@@ -26,13 +26,16 @@ frecuencias <- function(
 
     data <- data %>%
       group_by(!!!rlang::syms(unique(c(columna_suma, agrupador)))) %>%
-      summarise(mes_anio_num = max(mes_anio_num))
+      summarise(mes_anio_num = max(mes_anio_num), cantidad = 1)
 
   }
   
   data <- data %>%
     group_by(!!!rlang::syms(agrupador), mes_anio_num) %>%
-    summarise(Frecuencia = n()) %>%
+    summarise(Frecuencia = ifelse(
+      test = prestaciones && frec_cantidad, 
+      yes = sum(cantidad, na.rm = TRUE),
+      no = n())) %>%
     arrange(mes_anio_num) %>%
     collect() %>%
     pivot_wider(names_from = mes_anio_num, values_from = Frecuencia) 
@@ -53,7 +56,8 @@ frecuencias <- function(
 
 frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
-                                nivel_4, intervalo = "mes", return_list = FALSE) {
+                                nivel_4, intervalo = "mes", 
+                                frec_cantidad = FALSE, return_list = FALSE) {
   
   data <- data %>% 
     mutate(ASIGNACION_NIVEL = "")
@@ -157,6 +161,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       columna_fecha = columna_fecha,
       columna_suma = "nro_identificacion",
       prestaciones = TRUE,
+      frec_cantidad = frec_cantidad,
       intervalo = intervalo
     )
     print("Nivel 4: Descriptiva generada.")

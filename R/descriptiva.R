@@ -9,7 +9,7 @@ rango <- function(x) {
 }
 
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
-                        prestaciones) {
+                        prestaciones = FALSE, frec_cantidad = FALSE) {
   
   columnas <- unique(columnas)
   
@@ -22,7 +22,8 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
     print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
       group_by(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
-      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE))
+      summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
+                cantidad = 1)
   }
   
   print("Descriptiva: resumiendo los datos.")
@@ -32,9 +33,12 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!!rlang::syms(columnas)) %>%
       arrange(valor_calculos) %>%
       summarise(
-        "Frecuencia" = n(),
+        "Frecuencia" = ifelse(
+          test = prestaciones && frec_cantidad, 
+          yes = sum(cantidad, na.rm = TRUE),
+          no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
-        "Media" = round(mean(valor_calculos, na.rm = TRUE),2),
+        "Media" = NA,
         "P25" = round(quantile(valor_calculos, probs = 0.25, na.rm = TRUE),2),
         "P50" = round(quantile(valor_calculos, probs = 0.5, na.rm = TRUE),2),
         "P75" = round(quantile(valor_calculos, probs = 0.75, na.rm = TRUE),2),
@@ -52,9 +56,12 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!!rlang::syms(columnas)) %>%
       arrange(valor_calculos) %>%
       summarise(
-        "Frecuencia" = n(),
+        "Frecuencia" = ifelse(
+          test = prestaciones && frec_cantidad, 
+          yes = sum(cantidad, na.rm = TRUE),
+          no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
-        "Media" = round(mean(valor_calculos, na.rm = TRUE),2),
+        "Media" = NA,
         "P25" = round(quantile(valor_calculos, probs = 0.25),2),
         "P50" = round(quantile(valor_calculos, probs = 0.5),2),
         "P75" = round(quantile(valor_calculos, probs = 0.75),2),
@@ -68,6 +75,9 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
           min(valor_calculos, na.rm = TRUE)
       )
   }
+  
+  data_descriptiva <- data_descriptiva %>% 
+    mutate(Media = round(Suma/na_if(Frecuencia, 0),2))
   
   print("Descriptiva: datos resumidos.")
   

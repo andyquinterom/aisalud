@@ -3,95 +3,103 @@ base_de_datos_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    box(
-      style = "min-height: 650px;",
-      width = 4,
-      tabsetPanel(
-        tabPanel(
-          title = "Nube",
-          tags$br(),
-          tags$br(),
-          selectizeInput(
-            width = "100%",
-            inputId = ns("tabla"),
-            label = "Seleccionar datos",
-            choices = "Ninguno"
+    fluidRow(
+      box(
+        style = "min-height: 650px;",
+        width = 4,
+        tabsetPanel(
+          tabPanel(
+            title = "Nube",
+            tags$br(),
+            tags$br(),
+            selectizeInput(
+              width = "100%",
+              inputId = ns("tabla"),
+              label = "Seleccionar datos",
+              choices = "Ninguno"
+            ),
+            selectizeInput(
+              inputId = ns("columna_valor"),
+              label = "Columna de valor:",
+              width = "100%",
+              choices = "valor",
+              selected = "valor"
+            ),
+            dateRangeInput(
+              inputId = ns("fecha_rango"),
+              label = "Fechas:",
+              min = "1970-01-01", 
+              max = NULL, 
+              format = "dd/mm/yyyy",
+              language = "es"),
+            tags$style(HTML(".datepicker {z-index:99999 !important;}"))
           ),
-          selectizeInput(
-            inputId = ns("columna_valor"),
-            label = "Columna de valor:",
-            width = "100%",
-            choices = "valor",
-            selected = "valor"
+          tabPanel(
+            title = "Subir datos",
+            fileInput(
+              inputId = ns("file"),
+              label = "", 
+              buttonLabel = "Subir archivo",
+              placeholder = "Ningún archivo"),
+            radioButtons(
+              inputId = ns("file_type"),
+              label = "Tipo de archivo",
+              inline = TRUE, 
+              choices = c("csv", "feather")),
+            actionButton(
+              inputId = ns("file_options_open"),
+              label = "Opciones",
+              width = "100%"),
+            tags$br(),
+            tags$br(),
+            dateRangeInput(
+              inputId = ns("file_fecha_rango"),
+              label = "Fechas:",
+              min = NULL, 
+              max = NULL, 
+              format = "dd/mm/yyyy",
+              language = "es"),
+            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
+            textInput(
+              inputId = ns("file_formato_fecha"),
+              label = "Formato de Fecha",
+              value = "%d/%m/%Y"),
+            actionButton(inputId = ns("file_load"), label = "Aplicar",
+                         width = "100%"),
+            tags$br(),
+            tags$br(),
+            selectizeInput(
+              inputId = ns("file_columna_valor"),
+              label = "Columna de valor:",
+              width = "100%",
+              choices = "valor",
+              selected = "valor")
           ),
-          dateRangeInput(
-            inputId = ns("fecha_rango"),
-            label = "Fechas:",
-            min = "1970-01-01", 
-            max = NULL, 
-            format = "dd/mm/yyyy",
-            language = "es"),
-          tags$style(HTML(".datepicker {z-index:99999 !important;}"))
-        ),
-        tabPanel(
-          title = "Subir datos",
-          fileInput(
-            inputId = ns("file"),
-            label = "", 
-            buttonLabel = "Subir archivo",
-            placeholder = "Ningún archivo"),
-          radioButtons(
-            inputId = ns("file_type"),
-            label = "Tipo de archivo",
-            inline = TRUE, 
-            choices = c("csv", "feather")),
-          actionButton(
-            inputId = ns("file_options_open"),
-            label = "Opciones",
-            width = "100%"),
-          tags$br(),
-          tags$br(),
-          dateRangeInput(
-            inputId = ns("file_fecha_rango"),
-            label = "Fechas:",
-            min = NULL, 
-            max = NULL, 
-            format = "dd/mm/yyyy",
-            language = "es"),
-          tags$style(HTML(".datepicker {z-index:99999 !important;}")),
-          textInput(
-            inputId = ns("file_formato_fecha"),
-            label = "Formato de Fecha",
-            value = "%d/%m/%Y"),
-          actionButton(inputId = ns("file_load"), label = "Aplicar",
-                       width = "100%"),
-          tags$br(),
-          tags$br(),
-          selectizeInput(
-            inputId = ns("file_columna_valor"),
-            label = "Columna de valor:",
-            width = "100%",
-            choices = "valor",
-            selected = "valor")
-        ),
-        tabPanel(
-          title = "Perfiles",
-          tags$br(),
-          tags$br(),
-          selectizeInput(
-            inputId = ns("perfil"),
-            width = "100%",
-            "Perfil:",
-            choices = "Ninguno"),
-          includeMarkdown("markdown/perfiles.md")
+          tabPanel(
+            title = "Opciones",
+            tags$br(),
+            tags$br(),
+            selectizeInput(
+              inputId = ns("perfil"),
+              width = "100%",
+              "Perfil:",
+              choices = "Ninguno"),
+            tags$hr(),
+            checkboxInput(
+              inputId = ns("cantidad"),
+              width = "100%", 
+              label = "Prestaciones por cantidad", 
+              value = FALSE
+            )
+          )
         )
+      ),
+      box(
+        width = 8,
+        style = "min-height: 650px;",
+        plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
+          withSpinner()
       )
-    ),
-    box(
-      width = 8,
-      style = "min-height: 650px;",
-      plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
-        withSpinner()
     )
   )
 }
@@ -458,6 +466,30 @@ base_de_datos_server <- function(id, opciones, conn) {
         } else {
           opciones$perfil_enable <- FALSE
         }
+      })
+      
+      # Cantidad
+      
+      observe({
+        
+        cantidad_enable <- NULL
+        
+        if (opciones$perfil_enable) {
+          cantidad_enable <- opciones$perfil_lista[[
+            opciones$perfil_selected]][["cantidad"]]
+        }
+        
+        if (!is.null(cantidad_enable)) {
+          updateCheckboxInput(
+            inputId = "cantidad",
+            value = cantidad_enable
+          )
+        }
+        
+      })
+      
+      observe({
+        opciones$cantidad <- input$cantidad
       })
       
     }

@@ -424,6 +424,7 @@ episodios_server <- function(id, opciones, conn) {
                         columna_valor = opciones$valor_costo, 
                         columna_sep =   episodios_cols_sep,
                         columna_suma =  episodios_col_valor,
+                        frec_cantidad = opciones$cantidad,
                         nivel_1 = input$episodios_jerarquia_nivel_1_order,
                         nivel_2 = input$episodios_jerarquia_nivel_2_order,
                         nivel_3 = input$episodios_jerarquia_nivel_3_order,
@@ -436,6 +437,7 @@ episodios_server <- function(id, opciones, conn) {
                         columna_fecha = "fecha_prestacion",
                         columna_sep =   episodios_cols_sep,
                         columna_suma =  episodios_col_valor,
+                        frec_cantidad = opciones$cantidad,
                         nivel_1 = input$episodios_jerarquia_nivel_1_order,
                         nivel_2 = input$episodios_jerarquia_nivel_2_order,
                         nivel_3 = input$episodios_jerarquia_nivel_3_order,
@@ -452,7 +454,8 @@ episodios_server <- function(id, opciones, conn) {
                         ),
                         columna_valor = opciones$valor_costo,
                         columna_suma = input$descriptiva_unidades,
-                        prestaciones = (input$descriptiva_unidades == "prestacion")
+                        prestaciones = (input$descriptiva_unidades == "prestacion"),
+                        frec_cantidad = opciones$cantidad
                       )
                       episodios$tabla[["data"]] <- 
                         list("temporal" = episodios$tabla[["data"]])
@@ -469,6 +472,7 @@ episodios_server <- function(id, opciones, conn) {
                         ),
                         columna_suma = input$descriptiva_unidades,
                         prestaciones = (input$descriptiva_unidades == "prestacion"),
+                        frec_cantidad = opciones$cantidad,
                         intervalo = input$frecuencias_intervalo
                       )
                     }

@@ -2,7 +2,6 @@
 
 library(shiny)
 library(dbplyr)
-library(shinydashboard)
 library(shinyWidgets)
 library(feather)
 library(data.table)
@@ -19,6 +18,7 @@ library(DT)
 library(markdown)
 library(tableHTML)
 library(withr)
+library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyjqui)
 library(DBI)
@@ -64,7 +64,7 @@ conn <- dbConnect(
   host = Sys.getenv("DATABASE_HOST"),
   port = Sys.getenv("DATABASE_PORT"),
   bigint = "integer",
-  sslmode = "require")
+  sslmode = "allow")
 
 tabla_perfiles <- dbListTables(conn = conn)
 

@@ -4,31 +4,23 @@ seguimiento_notas_dashboard_ui <- function(id) {
   
   tagList(
     fluidRow(
-      column(
-        width = 12,
-        box(
-          width = 7,
-          height = "500px",
-          DT::dataTableOutput(
-            outputId = ns("indice_tabla"),
-            height = "auto") %>%
-            withSpinner()),
-        box(
-          width = 5, 
-          height = "500px",
-          leafletOutput(
-          height = "480px",
-          outputId = ns("indice_mapa")) %>%
-            withSpinner())
-      )
+      box(
+        width = 7,
+        height = "500px",
+        DT::dataTableOutput(
+          outputId = ns("indice_tabla"),
+          height = "auto") %>%
+          withSpinner()),
+      box(
+        width = 5, 
+        height = "500px",
+        leafletOutput(
+        height = "480px",
+        outputId = ns("indice_mapa")) %>%
+          withSpinner())
     ),
     fluidRow(
-      column(
-        width = 12,
-        valueBoxOutput(outputId = ns("entidad"), width = 12))),
-    fluidRow(
-      column(
-        width = 12,
+    valueBoxOutput(outputId = ns("entidad"), width = 12),
         valueBoxOutput(
           outputId = ns("valor_mes"), width = 4),
         valueBoxOutput(
@@ -36,132 +28,130 @@ seguimiento_notas_dashboard_ui <- function(id) {
           width = 4),
         valueBoxOutput(
           outputId = ns("departamento"),
-          width = 4))),
+          width = 4)),
     fluidRow(
-      column(
+      box(
         width = 12,
-        box(
-          width = 12,
-          selectizeInput(
-            inputId = ns("board_select"), 
-            width = "100%",
-            choices = "Ninguno",
-            label = "Nota técnica")),
-        box(
-          width = 12,
-          tabsetPanel(
-            tabPanel(
-              tags$br(),
-              title = "Nota técnica",
-              fluidRow(
-                column(
-                  width = 5,
-                  DT::dataTableOutput(outputId = ns("board_datos"))),
-                column(
-                  width = 7,
-                  plotlyOutput(
-                    outputId = ns("plot_agrupadores"),
-                    width = "100%",
-                    height = "600px"))),
-              uiOutput(ns("otra_informacion"))
-            ),
-            tabPanel(
-              tags$br(),
-              title = "Seguimiento",
-              fluidRow(
-                column(
-                  width = 4,
-                  checkboxInput(
-                    inputId = ns("comparar_episodios"),
-                    label = "Agrupar por episodios",
-                    value = F
-                  ),
-                  uiOutput(
-                    outputId = ns("comparar_col_valor_out")
-                  ),
-                  selectizeInput(
-                    inputId = ns("comparar_agrupador"),
-                    label = "Agrupar por:",
-                    choices = c("Ninguno"),
-                    multiple = FALSE),
-                  actionButton(
-                    inputId = ns("comparar_exe"),
-                    "Ejecutar",
-                    width = "100%"),
-                  tags$br(),
-                  tags$br(),
-                  downloadButton(
-                    outputId = ns("comparar_descargar_xlsx"), 
-                    label = "Excel",
-                    style = "width:100%;")
+        selectizeInput(
+          inputId = ns("board_select"), 
+          width = "100%",
+          choices = "Ninguno",
+          label = "Nota técnica")),
+      box(
+        width = 12,
+        tabsetPanel(
+          tabPanel(
+            tags$br(),
+            title = "Nota técnica",
+            fluidRow(
+              column(
+                width = 5,
+                DT::dataTableOutput(outputId = ns("board_datos"))),
+              column(
+                width = 7,
+                plotlyOutput(
+                  outputId = ns("plot_agrupadores"),
+                  width = "100%",
+                  height = "600px"))),
+            uiOutput(ns("otra_informacion"))
+          ),
+          tabPanel(
+            tags$br(),
+            title = "Seguimiento",
+            fluidRow(
+              column(
+                width = 4,
+                checkboxInput(
+                  inputId = ns("comparar_episodios"),
+                  label = "Agrupar por episodios",
+                  value = F
                 ),
-                column(
-                  width = 8,
-                  uiOutput(ns("comparar_jerarquia"))
-                )
+                uiOutput(
+                  outputId = ns("comparar_col_valor_out")
+                ),
+                selectizeInput(
+                  inputId = ns("comparar_agrupador"),
+                  label = "Agrupar por:",
+                  choices = c("Ninguno"),
+                  multiple = FALSE),
+                actionButton(
+                  inputId = ns("comparar_exe"),
+                  "Ejecutar",
+                  width = "100%"),
+                tags$br(),
+                tags$br(),
+                downloadButton(
+                  outputId = ns("comparar_descargar_xlsx"), 
+                  label = "Excel",
+                  style = "width:100%;")
               ),
-              tags$br(),
-              tabsetPanel(
-                tabPanel(
-                  title = "Frecuencias",
-                  tags$br(),
-                  fluidRow(
-                    column(width = 4, uiOutput(ns("frecuencias_resumen"))),
-                    column(
-                      width = 8,
-                      plotlyOutput(ns("frecuencias_plot"), height = "450px") %>%
-                        withSpinner())
-                  ),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Ejecución:"),
-                  DT::dataTableOutput(ns("frecuencias_total")) %>% withSpinner(),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Diferencias de frecuencia:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias")) %>%
-                    withSpinner(),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Diferencias de frecuencia con costos medios:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")) %>% 
-                    withSpinner(),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Diferencias de frecuencia en porcentaje:"),
-                  DT::dataTableOutput(ns("diferencias_frecuencias_porcentaje")) %>%
-                    withSpinner(),
-                  tags$hr()
+              column(
+                width = 8,
+                uiOutput(ns("comparar_jerarquia"))
+              )
+            ),
+            tags$br(),
+            tabsetPanel(
+              tabPanel(
+                title = "Frecuencias",
+                tags$br(),
+                fluidRow(
+                  column(width = 4, uiOutput(ns("frecuencias_resumen"))),
+                  column(
+                    width = 8,
+                    plotlyOutput(ns("frecuencias_plot"), height = "450px") %>%
+                      withSpinner())
                 ),
-                tabPanel(
-                  title = "Valor facturado",
-                  tags$br(),
-                  fluidRow(
-                    column(width = 4, uiOutput(ns("valor_fac_resumen"))),
-                    column(
-                      width = 8,
-                      plotlyOutput(ns("valor_fac_plot"), height = "450px") %>%
-                        withSpinner())
-                  ),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Ejecución:"),
-                  DT::dataTableOutput(ns("valor_fac_total")) %>% withSpinner(),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Diferencias de valor:"),
-                  DT::dataTableOutput(ns("diferencias_valor_fac")) %>%
-                    withSpinner(),
-                  tags$hr(),
-                  tags$br(),
-                  tags$h4("Diferencias de valor en porcentaje:"),
-                  DT::dataTableOutput(ns("diferencias_valor_fac_porcentaje")) %>%
-                    withSpinner(),
-                  tags$hr()
-                )
+                tags$hr(),
+                tags$br(),
+                tags$h4("Ejecución:"),
+                DT::dataTableOutput(ns("frecuencias_total")) %>% withSpinner(),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Diferencias de frecuencia:"),
+                DT::dataTableOutput(ns("diferencias_frecuencias")) %>%
+                  withSpinner(),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Diferencias de frecuencia con costos medios:"),
+                DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")) %>% 
+                  withSpinner(),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Diferencias de frecuencia en porcentaje:"),
+                DT::dataTableOutput(ns("diferencias_frecuencias_porcentaje")) %>%
+                  withSpinner(),
+                tags$hr()
+              ),
+              tabPanel(
+                title = "Valor facturado",
+                tags$br(),
+                fluidRow(
+                  column(width = 4, uiOutput(ns("valor_fac_resumen"))),
+                  column(
+                    width = 8,
+                    plotlyOutput(ns("valor_fac_plot"), height = "450px") %>%
+                      withSpinner())
+                ),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Ejecución:"),
+                DT::dataTableOutput(ns("valor_fac_total")) %>% withSpinner(),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Diferencias de valor:"),
+                DT::dataTableOutput(ns("diferencias_valor_fac")) %>%
+                  withSpinner(),
+                tags$hr(),
+                tags$br(),
+                tags$h4("Diferencias de valor en porcentaje:"),
+                DT::dataTableOutput(ns("diferencias_valor_fac_porcentaje")) %>%
+                  withSpinner(),
+                tags$hr()
               )
             )
-          ))))
+          )
+        )))
   )
   
 }
@@ -708,6 +698,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   columna_fecha = "fecha_prestacion",
                   columna_sep =   NULL,
                   columna_suma = comparar_col_valor,
+                  frec_cantidad = opciones$cantidad,
                   nivel_1 = input$episodios_jerarquia_nivel_1_order,
                   nivel_2 = input$episodios_jerarquia_nivel_2_order,
                   nivel_3 = input$episodios_jerarquia_nivel_3_order,
@@ -730,6 +721,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     nivel_2 = input$episodios_jerarquia_nivel_2_order,
                     nivel_3 = input$episodios_jerarquia_nivel_3_order,
                     nivel_4 = input$episodios_jerarquia_nivel_4_order,
+                    frec_cantidad = opciones$cantidad,
                     columna_fecha = "ais_mes_anio"
                   )
                 
@@ -739,7 +731,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   data = opciones$tabla,
                   agrupador = agrupador,
                   columna_suma = comparar_col_valor,
-                  prestaciones = (input$descriptiva_unidades == "prestacion")
+                  prestaciones = (input$descriptiva_unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad
                 )
                 
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
@@ -751,7 +744,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     columnas = c(agrupador, "ais_mes_anio"),
                     columna_suma = comparar_col_valor,
                     columna_valor = opciones$valor_costo,
-                    prestaciones = (input$descriptiva_unidades == "prestacion")
+                    prestaciones = (input$descriptiva_unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad
                   )
               }
             
