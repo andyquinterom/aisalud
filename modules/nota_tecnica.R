@@ -54,7 +54,7 @@ nota_tecnica_ui <- function(id) {
         downloadButton(
           outputId = ns("nota_tecnica_descargar_csv"),
           label = "CSV",
-          style = "width:100%;"),
+          style = "width:100%;")
       ),
       box(
         width = 9,
@@ -78,34 +78,29 @@ nota_tecnica_ui <- function(id) {
           label = "Juntar", 
           class = "nota_tecnica_juntar_btn")
       ),
-      fluidRow(
-        column(
-          width = 12,
-          box(
-            width = 12,
-            div(
-              style = "text-align: center;",
-              column(
-                width = 4,
-                tags$h4("Escenarios a mes")
-                ),
-              column(
-                width = 4,
-                tags$h4("Media")
-              ),
-              column(
-                width = 4,
-                tags$h4("P75")
-              )
+      box(
+        width = 12,
+        div(
+          style = "text-align: center;",
+          column(
+            width = 4,
+            tags$h4("Escenarios a mes")
             ),
-            div(
-              class = "escenarios_inline_div",
-              column(
-                width = 4,
-                uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
-              uiOutput(outputId = ns("nota_tecnica_escenarios"))
-            )
+          column(
+            width = 4,
+            tags$h4("Media")
+          ),
+          column(
+            width = 4,
+            tags$h4("P75")
           )
+        ),
+        div(
+          class = "escenarios_inline_div",
+          column(
+            width = 4,
+            uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
+          uiOutput(outputId = ns("nota_tecnica_escenarios"))
         )
       )
     )
