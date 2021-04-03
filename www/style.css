@@ -120,7 +120,7 @@ div.escenarios_inline_div td {
 }
 
 .control-sidebar-dark+.control-sidebar-bg {
-  background-color: rgba(34, 45, 50, 0.9) !important;
+  background-color: rgba(34, 45, 50, 0.7) !important;
 }
 
 .control-sidebar-open .content-wrapper {
@@ -137,4 +137,8 @@ table.dataTable.no-footer {
 
 div.dataTables_scrollBody {
   border-bottom: 0px !important;
+}
+
+.box-header.with-border {
+  display: none;
 }
