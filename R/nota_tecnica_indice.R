@@ -82,9 +82,13 @@ parse_nt_indice <- function(x, tabla_agrupadores) {
   nombres_nt <- names(x)
   
   indice_datos <- purrr::map2(x, nombres_nt,  function(y, cod_nt) {
+    prestador <- y[["prestador"]]
+    asegurador <- y[["asegurador"]]
+    
     tibble(
       cod_nt = cod_nt,
-      nom_prestador = y[["prestador"]],
+      nom_prestador = "placeholder",
+      nom_asegurador = "placeholder",
       poblacion = as.double(y[["poblacion"]]),
       departamento = y[["departamento"]],
       ciudades = y[["ciudades"]],
@@ -92,9 +96,15 @@ parse_nt_indice <- function(x, tabla_agrupadores) {
       vigente = ifelse(is.null(y[["vigente"]]),
                                yes = FALSE, 
                                no = as.logical(y[["vigente"]]))
-    )
+    ) %>%
+      {if (!is.null(prestador)) {
+        mutate(., nom_prestador = y[["prestador"]])
+      } else select(., -nom_prestador)} %>% 
+      {if (!is.null(asegurador)) {
+        mutate(., nom_asegurador = y[["asegurador"]])
+      } else select(., -nom_asegurador)}
   }) %>% 
-    rbindlist()
+    rbindlist(fill = TRUE)
   
   valores_mes <- tabla_agrupadores %>%
     group_by(nt) %>%
