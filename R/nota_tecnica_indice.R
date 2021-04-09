@@ -1,8 +1,5 @@
 mapa_valores <- function(indice, ...) {
   
-  indice <- copy(indice)
-  setDT(indice)
-  
   departamentos <- data.table::data.table(
     "id" = as.character(c(5,8,11,13,15,17,18,19,20,23,25,27,41,44,47,50,
                           52,54,63,66,68,70,73,76,81,85,86,88,91,94,95,97,99)),
@@ -29,15 +26,36 @@ mapa_valores <- function(indice, ...) {
                -72.12859569,-70.56140566,-69.41400011)
   )
   
-  datos <- merge.data.table(indice, departamentos, by.x = "cod_departamento",
-                            by.y = "id")
+  datos <- indice %>% 
+    inner_join(departamentos, by = c("cod_departamento" = "id")) %>% 
+    group_by(cod_departamento, lat, long, nombre)
   
-  datos <- datos[, list("valor_mes" = sum(valor_mes, na.rm = TRUE),
-                        "prestadores" = paste(nom_prestador, collapse = ", "),
-                        "ciudades" = paste(unique(ciudades), collapse = ", ")),
-                 by = c("cod_departamento", "lat", "long", "nombre")]
+  prestadores <- NULL
+  aseguradores <- NULL
   
-  datos[, "valor_total" := sum(valor_mes, na.rm = TRUE)]
+  if ("nom_prestador" %in% colnames(datos)) {
+    prestadores <- datos %>%
+      summarise(
+        prestadores = paste(unique(nom_prestador), collapse = ", "))
+  }
+  
+  if ("nom_asegurador" %in% colnames(datos)) {
+    aseguradores <- datos %>% 
+      summarise(
+        aseguradores = paste(unique(nom_asegurador), collapse = ", "))
+  }
+  
+  datos <- datos %>% 
+    summarise(valor_mes = sum(valor_mes, na.rm = TRUE),
+              ciudades = paste(unique(ciudades), collapse = ", ")) %>% 
+    {if (!is.null(prestadores)) {
+      left_join(., prestadores)
+    } else {.}} %>% 
+    {if (!is.null(aseguradores)) {
+      left_join(., aseguradores)
+    } else {.}} %>% 
+    ungroup() %>% 
+    mutate(valor_total = sum(valor_mes))
   
   p <- leaflet(datos) %>%
     addTiles() %>%
@@ -48,9 +66,10 @@ mapa_valores <- function(indice, ...) {
       radius = 16,
       popup = ~paste(
         paste0("<b><a>", nombre, "</a></b>"),
-        paste0("Prestadores: ", prestadores),
         paste0("Ciudades: ", ciudades),
         paste0("Valor total: <b><a>", formatAsCurrency(valor_mes), "</a></b>"),
+        if (!is.null(prestadores)) paste0("Prestadores: ", prestadores),
+        if (!is.null(aseguradores)) paste0("Prestadores: ", aseguradores),
         sep = "<br/>"
       )
     )
