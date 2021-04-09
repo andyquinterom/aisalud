@@ -87,8 +87,8 @@ parse_nt_indice <- function(x, tabla_agrupadores) {
     
     tibble(
       cod_nt = cod_nt,
-      nom_prestador = "placeholder",
-      nom_asegurador = "placeholder",
+      nom_prestador = NA,
+      nom_asegurador = NA,
       poblacion = as.double(y[["poblacion"]]),
       departamento = y[["departamento"]],
       ciudades = y[["ciudades"]],
@@ -99,12 +99,13 @@ parse_nt_indice <- function(x, tabla_agrupadores) {
     ) %>%
       {if (!is.null(prestador)) {
         mutate(., nom_prestador = y[["prestador"]])
-      } else select(., -nom_prestador)} %>% 
+      } else {.}} %>% 
       {if (!is.null(asegurador)) {
         mutate(., nom_asegurador = y[["asegurador"]])
-      } else select(., -nom_asegurador)}
+      } else {.}}
   }) %>% 
-    rbindlist(fill = TRUE)
+    rbindlist(fill = TRUE, use.names = TRUE) %>% 
+    select(where(~!all(is.na(.x))))
   
   valores_mes <- tabla_agrupadores %>%
     group_by(nt) %>%
