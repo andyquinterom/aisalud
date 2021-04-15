@@ -81,7 +81,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       filter(!!as.name(columnas) %in% nivel_1) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
-      arrange(index) %>%
+      window_order(index) %>%
       group_by(!!as.name(columna_suma)) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%

@@ -27,7 +27,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!as.name(columna_suma)) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
-      arrange(index) %>%
+      window_order(index) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
       distinct(!!as.name(columna_suma), !!as.name(columnas))
