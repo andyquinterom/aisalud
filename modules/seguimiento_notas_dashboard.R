@@ -86,7 +86,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
                   style = "width:100%;")
               ),
               column(
-                width = 8,
+                width = 7,
                 uiOutput(ns("comparar_jerarquia"))
               )
             ),
