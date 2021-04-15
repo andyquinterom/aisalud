@@ -31,7 +31,6 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   if ("data.frame" %in% class(data)) {
     data_descriptiva <- data %>%
       group_by(!!!rlang::syms(columnas)) %>%
-      arrange(valor_calculos) %>%
       summarise(
         "Frecuencia" = ifelse(
           test = prestaciones && frec_cantidad, 
@@ -54,7 +53,6 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   } else {
     data_descriptiva <- data %>%
       group_by(!!!rlang::syms(columnas)) %>%
-      arrange(valor_calculos) %>%
       summarise(
         "Frecuencia" = ifelse(
           test = prestaciones && frec_cantidad, 
@@ -77,7 +75,8 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   }
   
   data_descriptiva <- data_descriptiva %>% 
-    mutate(Media = round(Suma/na_if(Frecuencia, 0),2))
+    mutate(Media = round(Suma/na_if(Frecuencia, 0),2)) %>% 
+    arrange(Suma)
   
   print("Descriptiva: datos resumidos.")
   

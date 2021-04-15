@@ -416,8 +416,48 @@ episodios_server <- function(id, opciones, conn) {
                 episodios$cols <- episodios_cols
                 episodios$cols_sep <- episodios_cols_sep
                 withProgress(message = "Calculando descriptiva...",{
+                  
+                  episodios$n_pacientes <- paste(
+                    "Número de pacientes:",
+                    formatC(
+                      {opciones$tabla %>%
+                          group_by(nro_identificacion) %>%
+                          count() %>%
+                          ungroup() %>%
+                          count() %>%
+                          collect() %>%
+                          unlist() %>%
+                          unname()},
+                      big.mark = ".",
+                      decimal.mark = ",",
+                      format = "f",
+                      digits = 0),
+                    sep = " ")
+                  
+                  if ("nro_factura" %in% opciones$colnames) {
+                    episodios$n_facturas <- paste(
+                      "Número de facturas:",
+                      formatC(
+                        {opciones$tabla %>%
+                            group_by(nro_factura) %>%
+                            count() %>%
+                            ungroup() %>%
+                            count() %>%
+                            collect() %>%
+                            unlist() %>%
+                            unname()},
+                        big.mark = ".",
+                        decimal.mark = ",",
+                        format = "f",
+                        digits = 0
+                      ),
+                      sep = " "
+                    )
+                  }
+                  
                   if (!is.null(episodios$agrupadores_items)) {
                     if (input$descriptiva_activar) {
+                      
                       episodios$tabla <- episodios_jerarquia(
                         data = opciones$tabla,
                         columnas =      episodios_cols, 
@@ -425,10 +465,10 @@ episodios_server <- function(id, opciones, conn) {
                         columna_sep =   episodios_cols_sep,
                         columna_suma =  episodios_col_valor,
                         frec_cantidad = opciones$cantidad,
-                        nivel_1 = input$episodios_jerarquia_nivel_1_order,
-                        nivel_2 = input$episodios_jerarquia_nivel_2_order,
-                        nivel_3 = input$episodios_jerarquia_nivel_3_order,
-                        nivel_4 = input$episodios_jerarquia_nivel_4_order)
+                        nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                        nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                        nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                        nivel_4 = input$episodios_jerarquia_nivel_4_order$text)
                     }
                     if (input$frecuencias_activar) {
                       episodios$frecuencias <- frecuencias_jerarquia(
@@ -438,10 +478,10 @@ episodios_server <- function(id, opciones, conn) {
                         columna_sep =   episodios_cols_sep,
                         columna_suma =  episodios_col_valor,
                         frec_cantidad = opciones$cantidad,
-                        nivel_1 = input$episodios_jerarquia_nivel_1_order,
-                        nivel_2 = input$episodios_jerarquia_nivel_2_order,
-                        nivel_3 = input$episodios_jerarquia_nivel_3_order,
-                        nivel_4 = input$episodios_jerarquia_nivel_4_order,
+                        nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                        nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                        nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                        nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
                         intervalo = input$frecuencias_intervalo)[["descriptiva"]]
                     }
                   } else {
@@ -692,70 +732,12 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
 
-      output$descriptiva_sumas_registros <- renderText({
-        if (opciones$datos_cargados) {
-          paste("Número de registros:",
-                formatC(
-                  {opciones$tabla %>%
-                      ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
-                  big.mark = ".",
-                  decimal.mark = ",",
-                  format = "f",
-                  digits = 0
-                ),
-                sep = " "
-          )
-        }
-      })
-
       output$descriptiva_sumas_pacientes <- renderText({
-        if (opciones$datos_cargados &&
-            "nro_identificacion" %in% opciones$colnames) {
-          paste("Número de pacientes:",
-                formatC(
-                  {opciones$tabla %>%
-                      group_by(nro_identificacion) %>%
-                      count() %>%
-                      ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
-                  big.mark = ".",
-                  decimal.mark = ",",
-                  format = "f",
-                  digits = 0
-                ),
-                sep = " "
-          )
-        }
+        episodios$n_pacientes
       })
 
       output$descriptiva_sumas_facturas <- renderText({
-        if (opciones$datos_cargados &&
-            "nro_factura" %in% opciones$colnames) {
-          paste("Número de facturas:",
-                formatC(
-                  {opciones$tabla %>%
-                      group_by(nro_factura) %>%
-                      count() %>%
-                      ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
-                  big.mark = ".",
-                  decimal.mark = ",",
-                  format = "f",
-                  digits = 0
-                ),
-                sep = " "
-          )
-        }
+        episodios$n_facturas
       })
       
       output$episodios_descargar_csv <- downloadHandler(
