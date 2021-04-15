@@ -215,6 +215,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
       })
       
       output$indice_tabla <- DT::renderDataTable({
+        fields_nt <- colnames(opciones$indice_todos)
         if(!is.null(opciones$indice_todos)) {
           datatable(
             opciones$indice_todos %>%
@@ -226,7 +227,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             selection = 'none', 
             colnames = c(
               "Nombre NT",
-              "Prestador",
+              if ("nom_prestador" %in% fields_nt) "Prestador",
+              if ("nom_asegurador" %in% fields_nt) "Asegurador",
               "Población", 
               "Departamento",
               "Ciudades",
@@ -265,9 +267,16 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
 
       output$entidad <- renderValueBox({
         if(!is.null(nt_opciones$indice)) {
+          prestador <- nt_opciones$indice$nom_prestador
+          asegurador <- nt_opciones$indice$nom_asegurador
           valueBox(
-            value = nt_opciones$indice$nom_prestador,
-            subtitle = "Prestador",
+            value = paste(
+              c(prestador, asegurador),
+              collapse = " - "),
+            subtitle = paste(
+              c(if (!is.null(prestador)) prestador,
+                if (!is.null(asegurador)) asegurador),
+              collapse = " - "),
             icon = icon("stethoscope", lib = "font-awesome"),
             color = "yellow"
           )

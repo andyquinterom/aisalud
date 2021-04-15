@@ -662,10 +662,15 @@
     },
     "rsconnect": {
       "Package": "rsconnect",
-      "Version": "0.8.16",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "3924a1c20ce2479e89a08b0ca4c936c6"
+      "Version": "0.8.17",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "rsconnect",
+      "RemoteUsername": "rstudio",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "c038a64d6d7a1baf596be5c6cdf5c3e2c4e37140",
+      "Hash": "bc40230858b17943e968af1e69121e20"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
