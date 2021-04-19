@@ -667,10 +667,10 @@
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "rsconnect",
-      "RemoteUsername": "rstudio",
+      "RemoteUsername": "andyquinterom",
       "RemoteRef": "HEAD",
-      "RemoteSha": "c038a64d6d7a1baf596be5c6cdf5c3e2c4e37140",
-      "Hash": "bc40230858b17943e968af1e69121e20"
+      "RemoteSha": "b395534566eb4443a5f07fdd936dfa4ad8693477",
+      "Hash": "82389ec50d3c3082bdc9286c45100c2d"
     },
     "rstudioapi": {
       "Package": "rstudioapi",

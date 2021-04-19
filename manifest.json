@@ -3398,14 +3398,8 @@
     }
   },
   "files": {
-    ".gitattributes": {
-      "checksum": "60928855a80cb1826986205fe62acdc8"
-    },
-    ".Renviron": {
-      "checksum": "4fc11fc016e85ce9374d8376bb2e1c77"
-    },
-    ".Rprofile": {
-      "checksum": "1c44fa505e13719450f7ca9c37e79bcc"
+    ".rscignore": {
+      "checksum": "b605a8f04d040a2773f9587a41b66361"
     },
     "global.R": {
       "checksum": "87c638415055f09fa0a89436d32dcbd2"
@@ -3423,7 +3417,7 @@
       "checksum": "839422a8db96bab9ff5963b12911d1dd"
     },
     "modules/descriptiva.R": {
-      "checksum": "4ba609d96ba1e92d576ef70110f9f6aa"
+      "checksum": "f131225b818a287c4ccda62df2aec6d5"
     },
     "modules/filtros.R": {
       "checksum": "64b674f457a5364b9af2bdd1e58ef29a"
@@ -3432,7 +3426,7 @@
       "checksum": "26b8e2f1e9b9615103136a09fdb2a8f3"
     },
     "modules/nota_tecnica.R": {
-      "checksum": "c7513acf7b221373f07fe59debdd9697"
+      "checksum": "58d2f257e645d8bced73ea89181425a7"
     },
     "modules/otros_graficos.R": {
       "checksum": "1b0a56e6227c244a5955672979592bd5"
@@ -3441,7 +3435,7 @@
       "checksum": "bb532e8fb04bbe7ec76d17fd0f851b7b"
     },
     "modules/seguimiento_notas_dashboard.R": {
-      "checksum": "b1bd029057185c685f5dc0c803ee202a"
+      "checksum": "bdc03e3a4b913da1ac11670efcf05e0c"
     },
     "R/agregaciones.R": {
       "checksum": "807189188cc19fa969c3f845520157fe"
@@ -3459,16 +3453,16 @@
       "checksum": "20a6aa4bc39567b790486a7f8189087f"
     },
     "R/descriptiva_episodios.R": {
-      "checksum": "f29376ad9fbf04ec9fa7d6edc0e6acda"
+      "checksum": "8fd2e59fe946dffc8decc6f86dfe072b"
     },
     "R/descriptiva.R": {
-      "checksum": "2d07fbc06490bde0ecd05c19d74c7002"
+      "checksum": "e110659cc7ecd412a3820f19c9d0536a"
     },
     "R/format_as_currency.R": {
       "checksum": "8053748990a637e11d8a69cb968189a2"
     },
     "R/frecuencias.R": {
-      "checksum": "34ee282fd3d164a99bda00990e500343"
+      "checksum": "26cb2672d940d31a7d7ee01bcd834675"
     },
     "R/funciones_perfil.R": {
       "checksum": "4c5792fe15a49e59c62d3c368ef221ac"
@@ -3477,10 +3471,10 @@
       "checksum": "5019f9aa53ea98302721ab0954e71059"
     },
     "R/nota_tecnica_indice.R": {
-      "checksum": "1daf19d5a5fe33c2d8eaddbddacabc48"
+      "checksum": "f5fd6c3ad35a1de5a6728d54cc81b19a"
     },
     "R/nota_tenica_comparaciones.R": {
-      "checksum": "c03f8abd83d7fcc42ea8aff1d73ac3f6"
+      "checksum": "eff8da7ccb027640edadf3695953bd26"
     },
     "R/notatecnica.R": {
       "checksum": "0f1ab846d0a4281c12c44a2ad5de35d7"
@@ -3531,7 +3525,7 @@
       "checksum": "c97b70baa30962590207c4a84bba35a0"
     },
     "www/style.css": {
-      "checksum": "e28faa49df16d96b93acca639967d1ab"
+      "checksum": "0b94cd588fc12f0ef5faae29b2dde2a9"
     }
   },
   "users": null
