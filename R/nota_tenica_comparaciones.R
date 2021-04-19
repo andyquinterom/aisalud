@@ -305,28 +305,6 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
     formatRound(c(2, ncol(frecuencias_original) - 1),
                 dec.mark = ",", mark = ".", digits = 0)
   
-  numero_meses <- ncol(frecuencias_tabla) - 1
-  valor_a_ejecutar <- sum(nota_tecnica$valor_mes) * numero_meses
-  valor_ejecutado <- sum(frecuencias_original$total_valor)
-  
-  totales <- list(
-    "Valor a ejecutar:" = formatAsCurrency(valor_a_ejecutar),
-    "Valor ejecutado con costo medio:" = formatAsCurrency(valor_ejecutado),
-    "Diferencia de valor total:" = formatAsCurrency(valor_a_ejecutar - 
-                                                      valor_ejecutado),
-    "Porcentaje del valor ejecutado:" = formatAsPerc(
-      100 * valor_ejecutado / na_if(valor_a_ejecutar, 0)))
-  
-  totales_ui <- purrr::map2(
-    .x = totales, .y = names(totales),
-    .f = function(x, y) {
-      tagList(
-        tags$b(y),
-        tags$p(x)
-      )
-    }) %>%
-    tagList()
-  
   meses <- frecuencias_tabla %>%
     select(-c(rlang::sym(agrupador))) %>%
     colnames() %>%
@@ -371,6 +349,28 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
            valor_mes_esperado = as.double(sum(nota_tecnica$valor_mes)),
            numero_meses = 1:nrow(.),
            valor_a_ejecutar = valor_mes_esperado * numero_meses)
+  
+  numero_meses <- nrow(valor_acumulado)
+  valor_a_ejecutar <- sum(nota_tecnica$valor_mes) * numero_meses
+  valor_ejecutado <- sum(frecuencias_original$total_valor)
+  
+  totales <- list(
+    "Valor a ejecutar:" = formatAsCurrency(valor_a_ejecutar),
+    "Valor ejecutado con costo medio:" = formatAsCurrency(valor_ejecutado),
+    "Diferencia de valor total:" = formatAsCurrency(valor_a_ejecutar - 
+                                                      valor_ejecutado),
+    "Porcentaje del valor ejecutado:" = formatAsPerc(
+      100 * valor_ejecutado / na_if(valor_a_ejecutar, 0)))
+  
+  totales_ui <- purrr::map2(
+    .x = totales, .y = names(totales),
+    .f = function(x, y) {
+      tagList(
+        tags$b(y),
+        tags$p(x)
+      )
+    }) %>%
+    tagList()
   
   plot_valor_acumulado <- valor_acumulado %>%
     plot_ly(

@@ -1,6 +1,6 @@
 frecuencias <- function(
-  data, agrupador, prestaciones, columna_fecha, columna_suma, 
-  intervalo = "mes") {
+  data, agrupador, columna_fecha, columna_suma, 
+  intervalo = "mes", prestaciones = FALSE, frec_cantidad = FALSE) {
   
   agrupador <- unique(agrupador)
   
@@ -26,13 +26,16 @@ frecuencias <- function(
 
     data <- data %>%
       group_by(!!!rlang::syms(unique(c(columna_suma, agrupador)))) %>%
-      summarise(mes_anio_num = max(mes_anio_num))
+      summarise(mes_anio_num = max(mes_anio_num), cantidad = 1)
 
   }
   
   data <- data %>%
     group_by(!!!rlang::syms(agrupador), mes_anio_num) %>%
-    summarise(Frecuencia = n()) %>%
+    summarise(Frecuencia = ifelse(
+      test = prestaciones && frec_cantidad, 
+      yes = sum(cantidad, na.rm = TRUE),
+      no = n())) %>%
     arrange(mes_anio_num) %>%
     collect() %>%
     pivot_wider(names_from = mes_anio_num, values_from = Frecuencia) 
@@ -53,7 +56,8 @@ frecuencias <- function(
 
 frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
                                 columna_sep, nivel_1, nivel_2, nivel_3, 
-                                nivel_4, intervalo = "mes", return_list = FALSE) {
+                                nivel_4, intervalo = "mes", 
+                                frec_cantidad = FALSE, return_list = FALSE) {
   
   data <- data %>% 
     mutate(ASIGNACION_NIVEL = "")
@@ -64,7 +68,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   episodios_nivel_4 <- data.table()
   
   data_episodios <- NULL
-  if (!is.null(nivel_1)) {
+  if (!(is.null(nivel_1) || is.na(nivel_1))) {
     
     index_episodios <- data.frame(
       index = 1:length(nivel_1),
@@ -77,7 +81,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       filter(!!as.name(columnas) %in% nivel_1) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
-      arrange(index) %>%
+      window_order(index) %>%
       group_by(!!as.name(columna_suma)) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
@@ -115,7 +119,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   }
   
   episodios_nivel_2_data <- NULL
-  if (!is.null(nivel_2)) {
+  if (!(is.null(nivel_2) || is.na(nivel_2))) {
     data_temp <- frecuencias(
       data = data,
       agrupador = c(columnas, columna_sep),
@@ -132,7 +136,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   }
   
   episodios_nivel_3_data <- NULL
-  if (!is.null(nivel_3)) {
+  if (!(is.null(nivel_3) || is.na(nivel_3))) {
     data_temp <- frecuencias(
       data = data,
       agrupador = c(columnas, columna_sep),
@@ -149,7 +153,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   }
   
   episodios_nivel_4_data <- NULL
-  if (!is.null(nivel_4)) {
+  if (!(is.null(nivel_4) || is.na(nivel_4))) {
     print("Nivel 4: Generando descriptiva.")
     data_temp <- frecuencias(
       data = data,
@@ -157,6 +161,7 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       columna_fecha = columna_fecha,
       columna_suma = "nro_identificacion",
       prestaciones = TRUE,
+      frec_cantidad = frec_cantidad,
       intervalo = intervalo
     )
     print("Nivel 4: Descriptiva generada.")

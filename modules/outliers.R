@@ -129,6 +129,7 @@ outliers_server <- function(id, opciones) {
                   data =          opciones$tabla,
                   columna =       outliers_cols,
                   columna_valor = valor_costo,
+                  frec_cantidad = opciones$cantidad,
                   percentil =     input$outliers_percentil/100,
                   frecuencia =    frecuencia)
                 outliers$titulo <- paste(
@@ -142,6 +143,7 @@ outliers_server <- function(id, opciones) {
                   data =           opciones$tabla,
                   columna =        outliers_cols,
                   columna_valor =  valor_costo,
+                  frec_cantidad = opciones$cantidad,
                   multiplicativo = input$outliers_iqr,
                   frecuencia =     frecuencia)
                 outliers$titulo <- paste(

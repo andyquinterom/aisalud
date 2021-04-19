@@ -5,7 +5,6 @@ nota_tecnica_ui <- function(id) {
     fluidRow(
       uiOutput(ns("nota_tecnica_jerarquia"))
     ),
-    tags$br(),
     fluidRow(
       box(
         width = 3,
@@ -55,7 +54,7 @@ nota_tecnica_ui <- function(id) {
         downloadButton(
           outputId = ns("nota_tecnica_descargar_csv"),
           label = "CSV",
-          style = "width:100%;"),
+          style = "width:100%;")
       ),
       box(
         width = 9,
@@ -79,34 +78,29 @@ nota_tecnica_ui <- function(id) {
           label = "Juntar", 
           class = "nota_tecnica_juntar_btn")
       ),
-      fluidRow(
-        column(
-          width = 12,
-          box(
-            width = 12,
-            div(
-              style = "text-align: center;",
-              column(
-                width = 4,
-                tags$h4("Escenarios a mes")
-                ),
-              column(
-                width = 4,
-                tags$h4("Media")
-              ),
-              column(
-                width = 4,
-                tags$h4("P75")
-              )
+      box(
+        width = 12,
+        div(
+          style = "text-align: center;",
+          column(
+            width = 4,
+            tags$h4("Escenarios a mes")
             ),
-            div(
-              class = "escenarios_inline_div",
-              column(
-                width = 4,
-                uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
-              uiOutput(outputId = ns("nota_tecnica_escenarios"))
-            )
+          column(
+            width = 4,
+            tags$h4("Media")
+          ),
+          column(
+            width = 4,
+            tags$h4("P75")
           )
+        ),
+        div(
+          class = "escenarios_inline_div",
+          column(
+            width = 4,
+            uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
+          uiOutput(outputId = ns("nota_tecnica_escenarios"))
         )
       )
     )
@@ -213,11 +207,12 @@ nota_tecnica_server <- function(id, opciones) {
                       items = nota_tecnica$agrupadores_items,
                       funcion_jerarquia = nota_tecnica_cajas_jerarquia,
                       ns = ns
-                    )
+                    ) %>% tagList(tags$br())
                   } else {
                     nota_tecnica_cajas_jerarquia(
                       ns = ns,
-                      items_nivel_4 = nota_tecnica$agrupadores_items)
+                      items_nivel_4 = nota_tecnica$agrupadores_items) %>% 
+                      tagList(tags$br())
                   }
                 })
               } else {
@@ -308,10 +303,14 @@ nota_tecnica_server <- function(id, opciones) {
             test_prestacion <- FALSE
 
             if (!is.null(nota_tecnica$agrupadores_items)) {
-              test_episodio <- !is.null(input$nota_tecnica_jerarquia_nivel_1_order)
-              test_factura <- !is.null(input$nota_tecnica_jerarquia_nivel_2_order)
-              test_paciente <- !is.null(input$nota_tecnica_jerarquia_nivel_3_order)
-              test_prestacion <- !is.null(input$nota_tecnica_jerarquia_nivel_4_order)
+              test_episodio <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_1_order$text[1])
+              test_factura <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_2_order$text[1])
+              test_paciente <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_3_order$text[1])
+              test_prestacion <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_4_order$text[1])
             } else {
               test_factura <- "nro_factura" == input$descriptiva_unidades
               test_paciente <- "nro_identificacion" == input$descriptiva_unidades
@@ -430,10 +429,11 @@ nota_tecnica_server <- function(id, opciones) {
                 columna_valor = opciones$valor_costo,
                 columna_sep =   nota_tecnica_cols_sep,
                 columna_suma =  nota_tecnica_col_valor,
-                nivel_1 = input$nota_tecnica_jerarquia_nivel_1_order,
-                nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order,
-                nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order,
-                nivel_4 = input$nota_tecnica_jerarquia_nivel_4_order,
+                frec_cantidad = opciones$cantidad,
+                nivel_1 = input$nota_tecnica_jerarquia_nivel_1_order$text,
+                nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order$text,
+                nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order$text,
+                nivel_4 = input$nota_tecnica_jerarquia_nivel_4_order$text,
                 return_list = TRUE)[["descriptiva"]]
             } else {
               descriptiva_escenarios <- list(
@@ -445,6 +445,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = FALSE)[["descriptiva"]]
                 },
                 paciente = if (test_paciente) {
@@ -455,6 +456,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = FALSE)[["descriptiva"]]
                 },
                 prestacion = if (test_prestacion) {
@@ -465,6 +467,7 @@ nota_tecnica_server <- function(id, opciones) {
                       nota_tecnica_cols_sep),
                     columna_valor = opciones$valor_costo,
                     columna_suma =  input$descriptiva_unidades,
+                    frec_cantidad = opciones$cantidad,
                     prestaciones = test_prestacion)[["descriptiva"]]
                 }
               )
