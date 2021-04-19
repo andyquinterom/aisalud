@@ -303,10 +303,14 @@ nota_tecnica_server <- function(id, opciones) {
             test_prestacion <- FALSE
 
             if (!is.null(nota_tecnica$agrupadores_items)) {
-              test_episodio <- !is.null(input$nota_tecnica_jerarquia_nivel_1_order)
-              test_factura <- !is.null(input$nota_tecnica_jerarquia_nivel_2_order)
-              test_paciente <- !is.null(input$nota_tecnica_jerarquia_nivel_3_order)
-              test_prestacion <- !is.null(input$nota_tecnica_jerarquia_nivel_4_order)
+              test_episodio <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_1_order$text[1])
+              test_factura <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_2_order$text[1])
+              test_paciente <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_3_order$text[1])
+              test_prestacion <- !is.na(
+                input$nota_tecnica_jerarquia_nivel_4_order$text[1])
             } else {
               test_factura <- "nro_factura" == input$descriptiva_unidades
               test_paciente <- "nro_identificacion" == input$descriptiva_unidades
@@ -426,10 +430,10 @@ nota_tecnica_server <- function(id, opciones) {
                 columna_sep =   nota_tecnica_cols_sep,
                 columna_suma =  nota_tecnica_col_valor,
                 frec_cantidad = opciones$cantidad,
-                nivel_1 = input$nota_tecnica_jerarquia_nivel_1_order,
-                nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order,
-                nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order,
-                nivel_4 = input$nota_tecnica_jerarquia_nivel_4_order,
+                nivel_1 = input$nota_tecnica_jerarquia_nivel_1_order$text,
+                nivel_2 = input$nota_tecnica_jerarquia_nivel_2_order$text,
+                nivel_3 = input$nota_tecnica_jerarquia_nivel_3_order$text,
+                nivel_4 = input$nota_tecnica_jerarquia_nivel_4_order$text,
                 return_list = TRUE)[["descriptiva"]]
             } else {
               descriptiva_escenarios <- list(

@@ -13,7 +13,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   episodios_nivel_4 <- data.table()
   
   data_episodios <- NULL
-  if (!is.null(nivel_1)) {
+  if (!(is.null(nivel_1) || is.na(nivel_1))) {
     
     index_episodios <- data.frame(
       index = 1:length(nivel_1),
@@ -27,7 +27,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!as.name(columna_suma)) %>%
       distinct() %>%
       right_join(index_episodios, copy = TRUE) %>%
-      arrange(index) %>%
+      window_order(index) %>%
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
       distinct(!!as.name(columna_suma), !!as.name(columnas))
@@ -63,7 +63,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
   
   episodios_nivel_2_data <- NULL
-  if (!is.null(nivel_2)) {
+  if (!(is.null(nivel_2) || is.na(nivel_2))) {
     data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
@@ -81,7 +81,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
 
   episodios_nivel_3_data <- NULL
-  if (!is.null(nivel_3)) {
+  if (!(is.null(nivel_3) || is.na(nivel_3))) {
     data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
@@ -99,7 +99,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   }
 
   episodios_nivel_4_data <- NULL
-  if (!is.null(nivel_4)) {
+  if (!(is.null(nivel_4) || is.na(nivel_4))) {
     print("Nivel 4: Generando descriptiva.")
     data_temp <- descriptiva(
       data = data,
