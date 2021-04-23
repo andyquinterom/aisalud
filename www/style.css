@@ -154,3 +154,8 @@ div.dataTables_scrollBody {
 .jsoneditor-extract {
   display: none !important;
 }
+
+.jsoneditor-menu {
+  background-color: rgb(0, 148, 217) !important;
+  border-color: rgb(0, 148, 217) !important;
+}
