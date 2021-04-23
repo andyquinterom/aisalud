@@ -47,7 +47,7 @@ configuracion_server <- function(id, opciones) {
           languages = "es",
           name = "Perfiles",
           enableTransform = FALSE,
-          onCreateMenu = ''
+          schema = read_json("json_schemas/perfiles.json")
         )
       })
       

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "cantidad": {
+        "type": "boolean"
+      },
+      "jerarquia": {
+        "type": "object",
+        "properties": {
+          "episodio": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "paciente": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "factura": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "jerarquia"
+    ]
+  }
+}

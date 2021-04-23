@@ -2,7 +2,6 @@ reactiveJsonEditOutput <- function(outputId = NULL, label = NULL, height = "400p
                                    width = "100%") {
   
   script <- 'document.getElementById("button_id").onclick = function() {
-      console.log("hola");
       var listdata = HTMLWidgets.find("#outputId").editor.getText();
        Shiny.onInputChange("edit_id", listdata);
       };'
