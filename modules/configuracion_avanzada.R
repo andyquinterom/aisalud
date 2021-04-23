@@ -120,7 +120,8 @@ configuracion_server <- function(id, opciones) {
           language = "es",
           languages = "es",
           name = "Notas técnicas",
-          enableTransform = FALSE
+          enableTransform = FALSE,
+          schema = read_json("json_schemas/nota_tecnica.json")
         )
       })
       
