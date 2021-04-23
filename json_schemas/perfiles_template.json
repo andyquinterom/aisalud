@@ -1,0 +1,19 @@
+[
+  {
+    "text": "Perfil",
+    "title": "Perfil",
+    "field": "Perfil",
+    "className": "jsoneditor-duplicate",
+    "value": {
+      "cantidad": false,
+      "jerarquia": {
+        "episodio": [
+        ],
+        "paciente": [
+        ],
+        "factura": [
+        ]
+      }
+    }
+  }
+]

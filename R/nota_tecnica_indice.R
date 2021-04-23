@@ -85,10 +85,11 @@ parse_nt <- function(x) {
     agrupadores_names <- names(y[["agrupadores"]])
 
     purrr::map2(y[["agrupadores"]], agrupadores_names, function(i, w) {
-      return(data.frame("agrupador" = w, "frec_mes" = as.double(i[1]),
-                        "cm" = as.double(i[2]), 
-                        "frecuencia_pc" = as.double(i[1]/poblacion),
-                        "valor_mes" = as.double(i[1]*i[2])))
+      temp <- data.frame("agrupador" = w, "frec_mes" = as.double(i[["n"]]),
+                         "cm" = as.double(i[["cm"]]), 
+                         "frecuencia_pc" = as.double(i[["n"]]/poblacion),
+                         "valor_mes" = as.double(i[["n"]]*i[["cm"]]))
+      return(temp)
     }) %>% rbindlist()
     
   }) %>% 

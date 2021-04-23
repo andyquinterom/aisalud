@@ -40,9 +40,16 @@
       "agrupadores": {
         "type": "object",
         "additionalProperties": {
-          "type": "array",
-          "maxItems": 2,
-          "minItems": 2
+          "type": "object",
+          "properties": {
+            "cm": {
+              "type": "number"
+            },
+            "n": {
+              "type": "number"
+            }
+          },
+          "required": ["cm", "n"]
         }
       }
     },

@@ -47,7 +47,8 @@ configuracion_server <- function(id, opciones) {
           languages = "es",
           name = "Perfiles",
           enableTransform = FALSE,
-          schema = read_json("json_schemas/perfiles.json")
+          schema = read_json("json_schemas/perfiles.json"),
+          templates = read_json("json_schemas/perfiles_template.json")
         )
       })
       
@@ -121,7 +122,8 @@ configuracion_server <- function(id, opciones) {
           languages = "es",
           name = "Notas técnicas",
           enableTransform = FALSE,
-          schema = read_json("json_schemas/nota_tecnica.json")
+          schema = read_json("json_schemas/nota_tecnica.json"),
+          templates = read_json("json_schemas/nota_tecnia_template.json")
         )
       })
       
