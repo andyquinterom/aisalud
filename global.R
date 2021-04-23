@@ -35,6 +35,7 @@ library(dbplot)
 library(jsonlite)
 library(shinyAce)
 library(listviewer)
+library(jsonvalidate)
 
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 

@@ -72,23 +72,39 @@ configuracion_server <- function(id, opciones) {
           tryCatch(
             expr = {
               
-              perfil_nuevo$perfiles %>%
-                prettify()
+              validado <- json_validate(
+                json = input$perfil_editor_edit,
+                schema = "json_schemas/perfiles.json" 
+              ) 
               
-              dbWriteTable(
-                conn = conn,
-                name = "perfiles_usuario",
-                perfil_nuevo,
-                overwrite = TRUE
-              )
-              
-              opciones$perfil_updated <- FALSE
-              opciones$perfil_updated <- TRUE
-              
-              showNotification(
-                ui = "El perfil se a guardado.",
-                type = "message"
-              )
+              if (validado) {
+                
+                perfil_nuevo$perfiles %>%
+                  prettify()
+                
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_usuario",
+                  perfil_nuevo,
+                  overwrite = TRUE
+                )
+                
+                opciones$perfil_updated <- FALSE
+                opciones$perfil_updated <- TRUE
+                
+                showNotification(
+                  ui = "El perfil se a guardado.",
+                  type = "message"
+                )
+                
+              } else {
+                sendSweetAlert(
+                  session = session,
+                  title = "Error",
+                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
+                  type = "error"
+                )
+              }
               
             },
             error = function(e) {
@@ -147,23 +163,35 @@ configuracion_server <- function(id, opciones) {
           tryCatch(
             expr = {
               
-              notas_tecnicas_nuevo$notas_tecnicas  %>%
-                prettify()
+              validado <- json_validate(
+                json = input$notas_tecnicas_editor_edit,
+                schema = "json_schemas/nota_tecnica.json" 
+              ) 
               
-              dbWriteTable(
-                conn = conn,
-                name = "perfiles_notas_tecnicas",
-                notas_tecnicas_nuevo,
-                overwrite = TRUE
-              )
-              
-              opciones$notas_tecnicas_updated <- FALSE
-              opciones$notas_tecnicas_updated <- TRUE
-              
-              showNotification(
-                ui = "La nota técnica se a guardado.",
-                type = "message"
-              )
+              if (validado) {
+
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_notas_tecnicas",
+                  notas_tecnicas_nuevo,
+                  overwrite = TRUE
+                )
+                
+                opciones$notas_tecnicas_updated <- FALSE
+                opciones$notas_tecnicas_updated <- TRUE
+                
+                showNotification(
+                  ui = "La nota técnica se a guardado.",
+                  type = "message"
+                )
+              } else {
+                sendSweetAlert(
+                  session = session,
+                  title = "Error",
+                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
+                  type = "error"
+                )
+              }
               
             },
             error = function(e) {

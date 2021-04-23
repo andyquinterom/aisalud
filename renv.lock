@@ -79,6 +79,13 @@
       "Repository": "CRAN",
       "Hash": "dbb5e436998a7eba5a9d682060533338"
     },
+    "V8": {
+      "Package": "V8",
+      "Version": "3.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "89650a70bebd4af21876d06a15898dcc"
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -414,6 +421,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "98138e0994d41508c7a6b84a0600cfcb"
+    },
+    "jsonvalidate": {
+      "Package": "jsonvalidate",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "81054bf17db72db68871baefcfd209cf"
     },
     "labeling": {
       "Package": "labeling",
