@@ -9,28 +9,18 @@ configuracion_ui <- function(id) {
         tabsetPanel(
           tabPanel(
             title = "Perfiles",
-            aceEditor(
+            reactiveJsonEditOutput(
               outputId = ns("perfil_editor"),
-              mode = "json",
-              value = "", 
               height = "70vh", 
-            ),
-            actionButton(
-              inputId = ns("perfil_actualizar"),
-              label = "Guardar perfiles"
+              label = "Guardar"
             )
           ),
           tabPanel(
             title = "Notas técnicas",
-            aceEditor(
+            reactiveJsonEditOutput(
               outputId = ns("notas_tecnicas_editor"),
-              mode = "json",
-              value = "", 
               height = "70vh", 
-            ),
-            actionButton(
-              inputId = ns("notas_tecnicas_actualizar"),
-              label = "Guardar notas técnicas"
+              label = "Guardar"
             )
           )
         )
@@ -50,15 +40,15 @@ configuracion_server <- function(id, opciones) {
       
       # Perfiles ----------------
       
-      observe({
-        updateAceEditor(
-          session = session,
-          editorId = "perfil_editor",
-          value = opciones$perfil_raw
+      output$perfil_editor <- renderJsonedit({
+        jsonedit(
+          opciones$perfil_raw,
+          language = "es",
+          languages = "es"
         )
       })
       
-      observeEvent(input$perfil_actualizar, {
+      observeEvent(input$perfil_editor_save, {
         showModal(
           modalDialog(
             title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
@@ -73,7 +63,7 @@ configuracion_server <- function(id, opciones) {
       observeEvent(input$perfil_actualizar_conf, {
         
         if (input$perfil_actualizar_pw == Sys.getenv("CONF_PW")) {
-          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor)
+          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor_edit)
           removeModal()
           tryCatch(
             expr = {
@@ -121,15 +111,15 @@ configuracion_server <- function(id, opciones) {
       
       # Perfiles ----------------
       
-      observe({
-        updateAceEditor(
-          session = session,
-          editorId = "notas_tecnicas_editor",
-          value = opciones$notas_tecnicas_raw, tabSize = 2
+      output$notas_tecnicas_editor <- renderJsonedit({
+        jsonedit(
+          opciones$notas_tecnicas_raw,
+          language = "es",
+          languages = "es"
         )
       })
       
-      observeEvent(input$notas_tecnicas_actualizar, {
+      observeEvent(input$notas_tecnicas_editor_save, {
         showModal(
           modalDialog(
             title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
@@ -144,7 +134,7 @@ configuracion_server <- function(id, opciones) {
       observeEvent(input$notas_tecnicas_conf, {
         if (input$notas_tecnicas_pw == Sys.getenv("CONF_PW")) {
           notas_tecnicas_nuevo <- data.frame(
-            "notas_tecnicas" = input$notas_tecnicas_editor)
+            "notas_tecnicas" = input$notas_tecnicas_editor_edit)
           removeModal()
           tryCatch(
             expr = {

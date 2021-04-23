@@ -13,6 +13,10 @@
     "BH": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "BH",
         "Type": "Package",
@@ -35,6 +39,10 @@
     "Cairo": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "Cairo",
         "Version": "1.5-12.2",
@@ -59,6 +67,10 @@
     "DBI": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "DBI",
         "Title": "R Database Interface",
@@ -87,6 +99,10 @@
     "DT": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "DT",
         "Type": "Package",
@@ -114,6 +130,10 @@
     "MASS": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "MASS",
         "Priority": "recommended",
@@ -143,6 +163,10 @@
     "Matrix": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "Matrix",
         "Version": "1.3-2",
@@ -176,6 +200,10 @@
     "R6": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "R6",
         "Title": "Encapsulated Classes with Reference Semantics",
@@ -201,6 +229,10 @@
     "RColorBrewer": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "RColorBrewer",
         "Version": "1.1-2",
@@ -222,6 +254,10 @@
     "RPostgres": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "RPostgres",
         "Title": "'Rcpp' Interface to 'PostgreSQL'",
@@ -254,6 +290,10 @@
     "Rcpp": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "Rcpp",
         "Title": "Seamless R and C++ Integration",
@@ -279,6 +319,10 @@
     "askpass": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "askpass",
         "Type": "Package",
@@ -307,6 +351,10 @@
     "assertthat": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "assertthat",
         "Title": "Easy Pre and Post Assertions",
@@ -330,6 +378,10 @@
     "base64enc": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "base64enc",
         "Version": "0.1-3",
@@ -351,6 +403,10 @@
     "bit": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "bit",
         "Type": "Package",
@@ -379,6 +435,10 @@
     "bit64": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "bit64",
         "Type": "Package",
@@ -407,6 +467,10 @@
     "blob": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "blob",
         "Title": "A Simple S3 Class for Representing Vectors of Binary Data\n('BLOBS')",
@@ -433,6 +497,10 @@
     "bslib": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "bslib",
         "Title": "Custom 'Bootstrap' 'Sass' Themes for 'shiny' and 'rmarkdown'",
@@ -461,6 +529,10 @@
     "cachem": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "cachem",
         "Version": "1.0.4",
@@ -487,6 +559,10 @@
     "callr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "callr",
         "Title": "Call R from R",
@@ -513,6 +589,10 @@
     "cli": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "cli",
         "Title": "Helpers for Developing Command Line Interfaces",
@@ -540,6 +620,10 @@
     "clipr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "clipr",
@@ -570,6 +654,10 @@
     "codetools": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "codetools",
         "Version": "0.2-18",
@@ -591,6 +679,10 @@
     "colorspace": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "colorspace",
         "Version": "2.0-0",
@@ -619,6 +711,10 @@
     "commonmark": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "commonmark",
         "Type": "Package",
@@ -643,6 +739,10 @@
     "config": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "config",
         "Type": "Package",
@@ -671,6 +771,10 @@
     "cpp11": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "cpp11",
         "Title": "A C++11 Interface for R's C Interface",
@@ -699,6 +803,10 @@
     "crayon": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "crayon",
         "Title": "Colored Terminal Output",
@@ -726,6 +834,10 @@
     "crosstalk": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "crosstalk",
         "Type": "Package",
@@ -752,6 +864,10 @@
     "curl": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "curl",
         "Type": "Package",
@@ -782,6 +898,10 @@
     "data.table": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "data.table",
         "Version": "1.13.6",
@@ -809,6 +929,10 @@
     "dbplot": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "dbplot",
         "Version": "0.3.3",
@@ -835,6 +959,10 @@
     "dbplyr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "dbplyr",
@@ -867,6 +995,10 @@
     "digest": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "digest",
         "Author": "Dirk Eddelbuettel <edd@debian.org> with contributions \n by Antoine Lucas, Jarek Tuszynski, Henrik Bengtsson, Simon Urbanek,\n Mario Frasca, Bryan Lewis, Murray Stokely, Hannes Muehleisen,\n Duncan Murdoch, Jim Hester, Wush Wu, Qiang Kou, Thierry Onkelinx, \n Michel Lang, Viliam Simko, Kurt Hornik, Radford Neal, Kendon Bell,\n Matthew de Queljoe, Ion Suruceanu, Bill Denney, Dirk Schumacher,\n and Winston Chang.",
@@ -892,6 +1024,10 @@
     "dplyr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "dplyr",
@@ -922,6 +1058,10 @@
     "ellipsis": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "ellipsis",
         "Version": "0.3.1",
@@ -949,6 +1089,10 @@
     "fansi": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "fansi",
         "Title": "ANSI Control Sequence Aware String Functions",
@@ -977,6 +1121,10 @@
     "farver": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "farver",
         "Type": "Package",
@@ -1003,6 +1151,10 @@
     "fastmap": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "fastmap",
         "Title": "Fast Data Structures",
@@ -1028,6 +1180,10 @@
     "feather": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "feather",
         "Title": "R Bindings to the Feather 'API'",
@@ -1056,6 +1212,10 @@
     "forge": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "forge",
         "Type": "Package",
@@ -1082,6 +1242,10 @@
     "fresh": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "fresh",
         "Title": "Create Custom 'Bootstrap' Themes to Use in 'Shiny'",
@@ -1109,6 +1273,10 @@
     "fs": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "fs",
         "Title": "Cross-Platform File System Operations Based on 'libuv'",
@@ -1141,6 +1309,10 @@
     "future": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "future",
         "Version": "1.21.0",
@@ -1168,6 +1340,10 @@
     "generics": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "generics",
         "Title": "Common S3 Generics not Provided by Base R Methods Related to\nModel Fitting",
@@ -1195,6 +1371,10 @@
     "ggplot2": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "ggplot2",
         "Version": "3.3.3",
@@ -1225,6 +1405,10 @@
     "globals": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "globals",
         "Version": "0.14.0",
@@ -1251,6 +1435,10 @@
     "glue": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "glue",
         "Title": "Interpreted String Literals",
@@ -1280,6 +1468,10 @@
     "gridExtra": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "gridExtra",
         "Authors@R": "c(person(\"Baptiste\", \"Auguie\",\n    email = \"baptiste.auguie@gmail.com\",\n    role = c(\"aut\", \"cre\")), person(\"Anton\", \"Antonov\",\n    email = \"tonytonov@gmail.com\",\n    role = c(\"ctb\")))",
@@ -1304,6 +1496,10 @@
     "gtable": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "gtable",
         "Title": "Arrange 'Grobs' in Tables",
@@ -1332,6 +1528,10 @@
     "hms": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "hms",
         "Title": "Pretty Time of Day",
@@ -1360,6 +1560,10 @@
     "htmltools": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "htmltools",
         "Type": "Package",
@@ -1389,6 +1593,10 @@
     "htmlwidgets": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "htmlwidgets",
         "Type": "Package",
@@ -1416,6 +1624,10 @@
     "httpuv": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "httpuv",
         "Type": "Package",
@@ -1446,6 +1658,10 @@
     "httr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "httr",
         "Title": "Tools for Working with URLs and HTTP",
@@ -1473,6 +1689,10 @@
     "isoband": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "isoband",
         "Title": "Generate Isolines and Isobands from Regularly Spaced Elevation\nGrids",
@@ -1502,6 +1722,10 @@
     "jpeg": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "jpeg",
         "Version": "0.1-8.1",
@@ -1523,6 +1747,10 @@
     "jquerylib": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "jquerylib",
         "Title": "Obtain 'jQuery' as an HTML Dependency Object",
@@ -1547,6 +1775,10 @@
     "jsonlite": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "jsonlite",
         "Version": "1.7.2",
@@ -1573,6 +1805,10 @@
     "labeling": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "labeling",
         "Type": "Package",
@@ -1595,33 +1831,42 @@
     "later": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "later",
         "Type": "Package",
         "Title": "Utilities for Scheduling Functions to Execute Later with Event\nLoops",
-        "Version": "1.1.0.1",
-        "Authors@R": "c(\n    person(\"Joe\", \"Cheng\", role = c(\"aut\", \"cre\"), email = \"joe@rstudio.com\"),\n    person(family = \"RStudio\", role = \"cph\"),\n    person(\"Winston\", \"Chang\", role = c(\"aut\"), email = \"winston@rstudio.com\"),\n    person(\"Marcus\", \"Geelnard\", role = c(\"ctb\", \"cph\"), comment = \"TinyCThread library, https://tinycthread.github.io/\"),\n    person(\"Evan\", \"Nemerson\", role = c(\"ctb\", \"cph\"), comment = \"TinyCThread library, https://tinycthread.github.io/\")\n    )",
+        "Version": "1.2.0",
+        "Authors@R": "c(\n    person(\"Winston\", \"Chang\", role = c(\"aut\", \"cre\"), email = \"winston@rstudio.com\"),\n    person(\"Joe\", \"Cheng\", role = c(\"aut\"), email = \"joe@rstudio.com\"),\n    person(family = \"RStudio\", role = \"cph\"),\n    person(\"Marcus\", \"Geelnard\", role = c(\"ctb\", \"cph\"), comment = \"TinyCThread library, https://tinycthread.github.io/\"),\n    person(\"Evan\", \"Nemerson\", role = c(\"ctb\", \"cph\"), comment = \"TinyCThread library, https://tinycthread.github.io/\")\n    )",
         "Description": "Executes arbitrary R or C functions some time after the current\n    time, after the R execution stack has emptied. The functions are scheduled\n    in an event loop.",
         "URL": "https://github.com/r-lib/later",
         "BugReports": "https://github.com/r-lib/later/issues",
-        "License": "GPL (>= 2)",
+        "License": "MIT + file LICENSE",
         "Imports": "Rcpp (>= 0.12.9), rlang",
-        "LinkingTo": "Rcpp, BH",
-        "RoxygenNote": "7.1.0",
-        "Suggests": "knitr, rmarkdown, testthat",
+        "LinkingTo": "Rcpp",
+        "RoxygenNote": "7.1.1",
+        "SystemRequirements": "C++11",
+        "Suggests": "knitr, rmarkdown, testthat (>= 2.1.0)",
         "VignetteBuilder": "knitr",
         "NeedsCompilation": "yes",
-        "Packaged": "2020-06-02 13:23:01 UTC; winston",
-        "Author": "Joe Cheng [aut, cre],\n  RStudio [cph],\n  Winston Chang [aut],\n  Marcus Geelnard [ctb, cph] (TinyCThread library,\n    https://tinycthread.github.io/),\n  Evan Nemerson [ctb, cph] (TinyCThread library,\n    https://tinycthread.github.io/)",
-        "Maintainer": "Joe Cheng <joe@rstudio.com>",
+        "Packaged": "2021-04-20 19:31:00 UTC; winston",
+        "Author": "Winston Chang [aut, cre],\n  Joe Cheng [aut],\n  RStudio [cph],\n  Marcus Geelnard [ctb, cph] (TinyCThread library,\n    https://tinycthread.github.io/),\n  Evan Nemerson [ctb, cph] (TinyCThread library,\n    https://tinycthread.github.io/)",
+        "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2020-06-05 10:10:13 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-06-06 05:09:30 UTC; unix"
+        "Date/Publication": "2021-04-23 15:20:02 UTC",
+        "Built": "R 3.6.3; x86_64-apple-darwin15.6.0; 2021-04-23 17:23:20 UTC; unix"
       }
     },
     "lattice": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "lattice",
         "Version": "0.20-41",
@@ -1651,6 +1896,10 @@
     "lazyeval": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "lazyeval",
         "Version": "0.2.2",
@@ -1675,6 +1924,10 @@
     "leaflet": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "leaflet",
         "Type": "Package",
@@ -1703,6 +1956,10 @@
     "leaflet.providers": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "leaflet.providers",
         "Type": "Package",
@@ -1732,6 +1989,10 @@
     "lifecycle": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "lifecycle",
         "Title": "Manage the Life Cycle of your Package Functions",
@@ -1761,6 +2022,10 @@
     "listenv": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "listenv",
         "Version": "0.8.0",
@@ -1784,9 +2049,53 @@
         "Built": "R 3.6.0; ; 2019-12-06 15:32:02 UTC; unix"
       }
     },
+    "listviewer": {
+      "Source": "github",
+      "Repository": null,
+      "GithubRepo": "listviewer",
+      "GithubUsername": "andyquinterom",
+      "GithubRef": "HEAD",
+      "GithubSha1": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+      "description": {
+        "Package": "listviewer",
+        "Type": "Package",
+        "Title": "'htmlwidget' for Interactive Views of R Lists",
+        "Version": "3.0.0",
+        "Date": "2019-11-02",
+        "Authors@R": "c(\n    person(\"Jos\", \"de Jong\", role = c(\"aut\", \"cph\"), comment = \"jsoneditor.js library in htmlwidgets/jsoneditor, http://github.com/josdejong/jsoneditor/\" ),\n    person(\"Mac\",\" Gainer\", role = c(\"aut\", \"cph\"), comment = \"react-json-view library in htmlwidgets/react-json, https://github.com/mac-s-g/react-json-view\"),\n    person(\"Kent\",\"Russell\", role = c(\"aut\",\"cre\"), comment = \"R interface\" , email = \"kent.russell@timelyportfolio.com\" )\n  )",
+        "Description": "R lists, especially nested lists, can be very difficult to\n    visualize or represent. Sometimes 'str()' is not enough, so this suite of\n    htmlwidgets is designed to help see, understand, and maybe even modify your R\n    lists.  The function 'reactjson()' requires a package\n    'reactR' that can be installed from CRAN or <https://github.com/timelyportfolio/reactR>.",
+        "License": "MIT + file LICENSE",
+        "LazyData": "TRUE",
+        "URL": "https://github.com/timelyportfolio/listviewer",
+        "BugReports": "https://github.com/timelyportfolio/listviewer/issues",
+        "Imports": "htmltools, htmlwidgets, shiny",
+        "Suggests": "jsonlite, miniUI, rstudioapi",
+        "Enhances": "reactR",
+        "RoxygenNote": "6.1.1",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "listviewer",
+        "RemoteUsername": "andyquinterom",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+        "GithubRepo": "listviewer",
+        "GithubUsername": "andyquinterom",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-04-23 19:30:15 UTC; andresquintero",
+        "Author": "Jos de Jong [aut, cph] (jsoneditor.js library in\n    htmlwidgets/jsoneditor, http://github.com/josdejong/jsoneditor/),\n  Mac Gainer [aut, cph] (react-json-view library in\n    htmlwidgets/react-json, https://github.com/mac-s-g/react-json-view),\n  Kent Russell [aut, cre] (R interface)",
+        "Maintainer": "Kent Russell <kent.russell@timelyportfolio.com>",
+        "Built": "R 3.6.3; ; 2021-04-23 19:30:15 UTC; unix"
+      }
+    },
     "lubridate": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "lubridate",
@@ -1820,6 +2129,10 @@
     "magrittr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "magrittr",
@@ -1847,6 +2160,10 @@
     "maps": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "maps",
         "Title": "Draw Geographical Maps",
@@ -1870,6 +2187,10 @@
     "markdown": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "markdown",
         "Type": "Package",
@@ -1898,6 +2219,10 @@
     "mgcv": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "mgcv",
         "Version": "1.8-34",
@@ -1922,6 +2247,10 @@
     "mime": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "mime",
         "Type": "Package",
@@ -1948,6 +2277,10 @@
     "munsell": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "munsell",
         "Type": "Package",
@@ -1971,6 +2304,10 @@
     "nlme": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "nlme",
         "Version": "3.1-152",
@@ -2002,6 +2339,10 @@
     "openssl": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "openssl",
         "Type": "Package",
@@ -2027,9 +2368,43 @@
         "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-09-22 09:30:54 UTC; unix"
       }
     },
+    "packrat": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "packrat",
+        "Type": "Package",
+        "Title": "A Dependency Management System for Projects and their R Package\nDependencies",
+        "Version": "0.6.0",
+        "Author": "Kevin Ushey, Jonathan McPherson, Joe Cheng, Aron Atkins, JJ Allaire",
+        "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
+        "Description": "Manage the R packages your project depends\n    on in an isolated, portable, and reproducible way.",
+        "License": "GPL-2",
+        "Depends": "R (>= 3.0.0)",
+        "Imports": "tools, utils",
+        "Suggests": "testthat (>= 0.7), devtools, httr, knitr, rmarkdown",
+        "URL": "https://github.com/rstudio/packrat/",
+        "BugReports": "https://github.com/rstudio/packrat/issues",
+        "RoxygenNote": "6.1.1",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-03-29 20:04:21 UTC; kevinushey",
+        "Repository": "CRAN",
+        "Date/Publication": "2021-03-30 11:50:02 UTC",
+        "Built": "R 3.6.2; ; 2021-03-31 05:46:44 UTC; unix"
+      }
+    },
     "parallelly": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "parallelly",
         "Version": "1.24.0",
@@ -2055,6 +2430,10 @@
     "pillar": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "pillar",
         "Title": "Coloured Formatting for Columns",
@@ -2085,6 +2464,10 @@
     "pkgconfig": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "pkgconfig",
         "Title": "Private Configuration for 'R' Packages",
@@ -2109,6 +2492,10 @@
     "plogr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "plogr",
         "Title": "The 'plog' C++ Logging Library",
@@ -2135,6 +2522,10 @@
     "plotly": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "plotly",
         "Title": "Create Interactive Web Graphics via 'plotly.js'",
@@ -2162,6 +2553,10 @@
     "png": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "png",
         "Version": "0.1-7",
@@ -2183,6 +2578,10 @@
     "processx": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "processx",
         "Title": "Execute and Control System Processes",
@@ -2209,6 +2608,10 @@
     "promises": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "promises",
         "Type": "Package",
@@ -2239,6 +2642,10 @@
     "ps": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "ps",
         "Version": "1.6.0",
@@ -2266,6 +2673,10 @@
     "purrr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "purrr",
         "Title": "Functional Programming Tools",
@@ -2294,6 +2705,10 @@
     "r2d3": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "r2d3",
         "Type": "Package",
@@ -2323,6 +2738,10 @@
     "rappdirs": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "rappdirs",
@@ -2351,6 +2770,10 @@
     "raster": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "raster",
         "Type": "Package",
@@ -2379,6 +2802,10 @@
     "readr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "readr",
         "Title": "Read Rectangular Text Data",
@@ -2413,6 +2840,10 @@
     "rlang": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "rlang",
         "Version": "0.4.10",
@@ -2444,6 +2875,10 @@
     "rprojroot": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "rprojroot",
         "Title": "Finding Files in Project Subdirectories",
@@ -2469,9 +2904,51 @@
         "Built": "R 3.6.2; ; 2020-11-16 05:25:23 UTC; unix"
       }
     },
+    "rsconnect": {
+      "Source": "github",
+      "Repository": null,
+      "GithubRepo": "rsconnect",
+      "GithubUsername": "andyquinterom",
+      "GithubRef": "HEAD",
+      "GithubSha1": "b395534566eb4443a5f07fdd936dfa4ad8693477",
+      "description": {
+        "Package": "rsconnect",
+        "Type": "Package",
+        "Title": "Deployment Interface for R Markdown Documents and Shiny\nApplications",
+        "Version": "0.8.17",
+        "Author": "JJ Allaire",
+        "Maintainer": "Jonathan McPherson <jonathan@rstudio.com>",
+        "Description": "Programmatic deployment interface for 'RPubs', 'shinyapps.io', and\n    'RStudio Connect'. Supported content types include R Markdown documents,\n    Shiny applications, Plumber APIs, plots, and static web content.",
+        "Depends": "R (>= 3.0.0)",
+        "Imports": "curl, digest, jsonlite, openssl, packrat (>= 0.5), rstudioapi\n(>= 0.5), yaml (>= 2.1.5)",
+        "Suggests": "RCurl, callr, httpuv, knitr, plumber (>= 0.3.2), reticulate,\nrmarkdown (>= 1.1), shiny, sourcetools, testthat, xtable",
+        "License": "GPL-2",
+        "RoxygenNote": "7.1.1",
+        "Roxygen": "list(markdown = TRUE)",
+        "URL": "https://github.com/rstudio/rsconnect",
+        "BugReports": "https://github.com/rstudio/rsconnect/issues",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "rsconnect",
+        "RemoteUsername": "andyquinterom",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "b395534566eb4443a5f07fdd936dfa4ad8693477",
+        "GithubRepo": "rsconnect",
+        "GithubUsername": "andyquinterom",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "b395534566eb4443a5f07fdd936dfa4ad8693477",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-04-23 17:25:31 UTC; andresquintero",
+        "Built": "R 3.6.3; ; 2021-04-23 17:25:32 UTC; unix"
+      }
+    },
     "rstudioapi": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "rstudioapi",
         "Title": "Safely Access the RStudio API",
@@ -2497,6 +2974,10 @@
     "sass": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "sass",
@@ -2526,6 +3007,10 @@
     "scales": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "scales",
         "Title": "Scale Functions for Visualization",
@@ -2553,6 +3038,10 @@
     "shiny": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shiny",
         "Type": "Package",
@@ -2582,6 +3071,10 @@
     "shinyAce": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinyAce",
         "Type": "Package",
@@ -2610,6 +3103,10 @@
     "shinyWidgets": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinyWidgets",
         "Title": "Custom Inputs Widgets for Shiny",
@@ -2637,6 +3134,10 @@
     "shinycssloaders": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinycssloaders",
         "Type": "Package",
@@ -2664,6 +3165,10 @@
     "shinydashboard": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinydashboard",
         "Title": "Create Dashboards with 'Shiny'",
@@ -2688,6 +3193,10 @@
     "shinydashboardPlus": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinydashboardPlus",
         "Type": "Package",
@@ -2717,6 +3226,10 @@
     "shinyjqui": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "shinyjqui",
         "Type": "Package",
@@ -2746,6 +3259,10 @@
     "sourcetools": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "sourcetools",
         "Type": "Package",
@@ -2771,6 +3288,10 @@
     "sp": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "sp",
         "Version": "1.4-5",
@@ -2796,6 +3317,10 @@
     "sparklyr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Type": "Package",
         "Package": "sparklyr",
@@ -2825,6 +3350,10 @@
     "stringi": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "stringi",
         "Version": "1.5.3",
@@ -2853,6 +3382,10 @@
     "stringr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "stringr",
         "Title": "Simple, Consistent Wrappers for Common String Operations",
@@ -2881,6 +3414,10 @@
     "sys": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "sys",
         "Type": "Package",
@@ -2908,6 +3445,10 @@
     "tableHTML": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "tableHTML",
         "Type": "Package",
@@ -2936,6 +3477,10 @@
     "tibble": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "tibble",
         "Title": "Simple Data Frames",
@@ -2967,6 +3512,10 @@
     "tidyr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "tidyr",
         "Title": "Tidy Messy Data",
@@ -2998,6 +3547,10 @@
     "tidyselect": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "tidyselect",
         "Title": "Select from a Set of Strings",
@@ -3027,6 +3580,10 @@
     "utf8": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "utf8",
         "Title": "Unicode Text Processing",
@@ -3054,6 +3611,10 @@
     "uuid": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "uuid",
         "Version": "0.1-4",
@@ -3074,6 +3635,10 @@
     "varhandle": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "varhandle",
         "Version": "2.0.5",
@@ -3099,6 +3664,10 @@
     "vctrs": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "vctrs",
         "Title": "Vector Helpers",
@@ -3127,6 +3696,10 @@
     "viridis": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "viridis",
         "Type": "Package",
@@ -3156,6 +3729,10 @@
     "viridisLite": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "viridisLite",
         "Type": "Package",
@@ -3183,6 +3760,10 @@
     "waiter": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "waiter",
         "Title": "Loading Screen for 'Shiny'",
@@ -3211,6 +3792,10 @@
     "webshot": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "webshot",
         "Title": "Take Screenshots of Web Pages",
@@ -3238,10 +3823,14 @@
     "withr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "withr",
         "Title": "Run Code 'With' Temporarily Modified Global State",
-        "Version": "2.4.1",
+        "Version": "2.4.2",
         "Authors@R": "\n    c(person(given = \"Jim\",\n             family = \"Hester\",\n             role = c(\"aut\", \"cre\"),\n             email = \"jim.hester@rstudio.com\"),\n      person(given = \"Kirill\",\n             family = \"Müller\",\n             role = \"aut\",\n             email = \"krlmlr+r@mailbox.org\"),\n      person(given = \"Kevin\",\n             family = \"Ushey\",\n             role = \"aut\",\n             email = \"kevinushey@gmail.com\"),\n      person(given = \"Hadley\",\n             family = \"Wickham\",\n             role = \"aut\",\n             email = \"hadley@rstudio.com\"),\n      person(given = \"Winston\",\n             family = \"Chang\",\n             role = \"aut\"),\n      person(given = \"Jennifer\",\n             family = \"Bryan\",\n             role = \"ctb\"),\n      person(given = \"Richard\",\n             family = \"Cotton\",\n             role = \"ctb\"),\n      person(given = \"RStudio\",\n             role = \"cph\"))",
         "Description": "A set of functions to run code 'with' safely and\n    temporarily modified global state. Many of these functions were\n    originally a part of the 'devtools' package, this provides a simple\n    package with limited dependencies to provide access to these\n    functions.",
         "License": "MIT + file LICENSE",
@@ -3252,21 +3841,24 @@
         "Suggests": "covr, DBI, knitr, lattice, methods, rmarkdown, RSQLite,\ntestthat (>= 2.1.0)",
         "VignetteBuilder": "knitr",
         "Encoding": "UTF-8",
-        "LazyData": "true",
         "RoxygenNote": "7.1.1",
         "Collate": "'local_.R' 'with_.R' 'collate.R' 'compat-defer.R'\n'connection.R' 'db.R' 'defer.R' 'wrap.R' 'devices.R' 'dir.R'\n'env.R' 'file.R' 'libpaths.R' 'locale.R' 'makevars.R'\n'namespace.R' 'options.R' 'par.R' 'path.R' 'rng.R' 'seed.R'\n'sink.R' 'tempfile.R' 'timezone.R' 'torture.R' 'utils.R'\n'with.R'",
         "NeedsCompilation": "no",
-        "Packaged": "2021-01-26 14:29:58 UTC; jhester",
+        "Packaged": "2021-04-16 17:12:53 UTC; jhester",
         "Author": "Jim Hester [aut, cre],\n  Kirill Müller [aut],\n  Kevin Ushey [aut],\n  Hadley Wickham [aut],\n  Winston Chang [aut],\n  Jennifer Bryan [ctb],\n  Richard Cotton [ctb],\n  RStudio [cph]",
         "Maintainer": "Jim Hester <jim.hester@rstudio.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2021-01-26 16:20:02 UTC",
-        "Built": "R 3.6.3; ; 2021-01-27 14:40:34 UTC; unix"
+        "Date/Publication": "2021-04-18 10:20:02 UTC",
+        "Built": "R 3.6.2; ; 2021-04-19 06:39:27 UTC; unix"
       }
     },
     "writexl": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "writexl",
         "Type": "Package",
@@ -3294,6 +3886,10 @@
     "xfun": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "xfun",
         "Type": "Package",
@@ -3322,6 +3918,10 @@
     "xml2": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "xml2",
         "Title": "Parse XML",
@@ -3351,6 +3951,10 @@
     "xtable": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "xtable",
         "Version": "1.8-4",
@@ -3376,6 +3980,10 @@
     "yaml": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
       "description": {
         "Package": "yaml",
         "Type": "Package",
@@ -3399,10 +4007,10 @@
   },
   "files": {
     ".rscignore": {
-      "checksum": "b605a8f04d040a2773f9587a41b66361"
+      "checksum": "f0f2bb8f279c697f7d18df4456fffc4f"
     },
     "global.R": {
-      "checksum": "87c638415055f09fa0a89436d32dcbd2"
+      "checksum": "7639494b6b5e65c76b1c5a493f45ecb7"
     },
     "markdown/perfiles.md": {
       "checksum": "81c95eedd4deb741a09ca99f95f35efe"
@@ -3414,7 +4022,7 @@
       "checksum": "516da581e3233bb2230ee6f3177e93ab"
     },
     "modules/configuracion_avanzada.R": {
-      "checksum": "839422a8db96bab9ff5963b12911d1dd"
+      "checksum": "bc763390da99fd184c4a92be6fc872ed"
     },
     "modules/descriptiva.R": {
       "checksum": "f131225b818a287c4ccda62df2aec6d5"
@@ -3451,6 +4059,9 @@
     },
     "R/conversiones_columnas.R": {
       "checksum": "20a6aa4bc39567b790486a7f8189087f"
+    },
+    "R/deploy.R": {
+      "checksum": "24cb191dbaed5ce5d6301e7904b4b85d"
     },
     "R/descriptiva_episodios.R": {
       "checksum": "8fd2e59fe946dffc8decc6f86dfe072b"
@@ -3491,6 +4102,9 @@
     "R/quitar_duplicados.R": {
       "checksum": "87c68f20f2675207d7dbc21b6cc6ade2"
     },
+    "R/reactiveJsonEdit.R": {
+      "checksum": "1d6d8d0dba079c471f675605c5d9cadb"
+    },
     "R/referente_grafico.R": {
       "checksum": "4de4e1237bed2d4d2c924ce70e3644c7"
     },
@@ -3507,10 +4121,7 @@
       "checksum": "ac971f1d7959bc8d8df60876f6b2d848"
     },
     "ui.R": {
-      "checksum": "1e378dea3653cc485c2cfbc050066eb1"
-    },
-    "www/.DS_Store": {
-      "checksum": "c1e52985f1e64cbd03c83186bfc15e71"
+      "checksum": "219c80c036b436315ed90f82bc7887eb"
     },
     "www/code.js": {
       "checksum": "79b901cfdc04d05bbbd1880d86f99676"

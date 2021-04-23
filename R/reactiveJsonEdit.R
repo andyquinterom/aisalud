@@ -1,4 +1,5 @@
-reactiveJsonEditOutput <- function(outputId = NULL, label = NULL) {
+reactiveJsonEditOutput <- function(outputId = NULL, label = NULL, height = "400px",
+                                   width = "100%") {
   
   script <- 'document.getElementById("button_id").onclick = function() {
       console.log("hola");
@@ -12,7 +13,9 @@ reactiveJsonEditOutput <- function(outputId = NULL, label = NULL) {
   
   tagList(
     jsoneditOutput(
-      outputId = outputId
+      outputId = outputId,
+      height = height,
+      width = width
     ),
     tags$br(),
     actionButton(
