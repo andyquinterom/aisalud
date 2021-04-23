@@ -698,10 +698,8 @@ episodios_server <- function(id, opciones, conn) {
                 formatC(
                   {opciones$tabla %>%
                       ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
+                      count() %>% 
+                      pull()},
                   big.mark = ".",
                   decimal.mark = ",",
                   format = "f",
@@ -718,13 +716,9 @@ episodios_server <- function(id, opciones, conn) {
           paste("Número de pacientes:",
                 formatC(
                   {opciones$tabla %>%
-                      group_by(nro_identificacion) %>%
+                      distinct(nro_identificacion) %>%
                       count() %>%
-                      ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
+                      pull()},
                   big.mark = ".",
                   decimal.mark = ",",
                   format = "f",
@@ -741,13 +735,9 @@ episodios_server <- function(id, opciones, conn) {
           paste("Número de facturas:",
                 formatC(
                   {opciones$tabla %>%
-                      group_by(nro_factura) %>%
+                      distinct(nro_factura) %>%
                       count() %>%
-                      ungroup() %>%
-                      count() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()},
+                      pull()},
                   big.mark = ".",
                   decimal.mark = ",",
                   format = "f",
