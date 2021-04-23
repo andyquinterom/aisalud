@@ -44,7 +44,10 @@ configuracion_server <- function(id, opciones) {
         jsonedit(
           opciones$perfil_raw,
           language = "es",
-          languages = "es"
+          languages = "es",
+          name = "Perfiles",
+          enableTransform = FALSE,
+          onCreateMenu = ''
         )
       })
       
@@ -115,7 +118,9 @@ configuracion_server <- function(id, opciones) {
         jsonedit(
           opciones$notas_tecnicas_raw,
           language = "es",
-          languages = "es"
+          languages = "es",
+          name = "Notas técnicas",
+          enableTransform = FALSE
         )
       })
       

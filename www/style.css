@@ -146,3 +146,11 @@ div.dataTables_scrollBody {
 .box-header.with-border {
   display: none;
 }
+
+.jsoneditor-type-object {
+  display: none !important;
+}
+
+.jsoneditor-extract {
+  display: none !important;
+}
