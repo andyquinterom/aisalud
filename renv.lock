@@ -424,10 +424,10 @@
     },
     "later": {
       "Package": "later",
-      "Version": "1.1.0.1",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d0a62b247165aabf397fded504660d8a"
+      "Hash": "b61890ae77fea19fc8acadd25db70aa4"
     },
     "lattice": {
       "Package": "lattice",
@@ -470,6 +470,18 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0bde42ee282efb18c7c4e63822f5b4f7"
+    },
+    "listviewer": {
+      "Package": "listviewer",
+      "Version": "3.0.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "listviewer",
+      "RemoteUsername": "andyquinterom",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+      "Hash": "a7daaaae2cb3d9f0802b9d7c63c8db89"
     },
     "lubridate": {
       "Package": "lubridate",
@@ -870,10 +882,10 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "2.4.1",
+      "Version": "2.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "caf4781c674ffa549a4676d2d77b13cc"
+      "Hash": "ad03909b44677f930fa156d47d7a3aeb"
     },
     "writexl": {
       "Package": "writexl",
