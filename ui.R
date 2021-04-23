@@ -16,7 +16,7 @@ shinyUI(
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.3.3",
+            text = "Version: 2.4.0",
             icon = icon("code-branch"),
             status = "info"
           )

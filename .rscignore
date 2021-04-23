@@ -1,0 +1,9 @@
+renv
+AIS.Rproj
+.Renviron
+.git
+.gitattributes
+.DS_Store
+.Rhistory
+.Rprofile
+.gitignore
