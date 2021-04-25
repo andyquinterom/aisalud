@@ -112,3 +112,37 @@ observe({
     }
   )
 })
+```
+
+#### Evitar else
+
+Al momento de escribir if statmente, evitar else en arboles de decisión extensos. Es mejor intentar generalizar funciones para que no requieran ifelse statements.
+
+```r
+# Ejemplo de código confuso con if-else
+if (respuesta == "paciente") {
+  extraer_pacientes()
+} else if (respuesta == "factura") {
+  extraer_facturas()
+} else if (respuesta == "prestaciones") {
+  extraer_prestaciones()
+}
+```
+
+Si se quisieran agregar más posibilidades podría ser dificil de implementar. Si se puede generalizar de la siguiente manera, sería más facil de implementar a través de la aplicación.
+
+```
+extraer_unidad <- function(uni) {
+  uni_validas <- c("paciente", "factura", "prestaciones")
+  # Validar que la unidad no este vacia
+  if (is.null(uni) || is.na(uni)) stop ("Unidad vacia")
+  # Validar que sea una unidad valida
+  if (!unidad %in% uni_validas) stop("Unidad invalida")
+  # Ejecutar código
+  if (unidad == "paciente") extraer_pacientes(uni)
+  if (unidad == "factura") extraer_facturas(uni)
+  if (unidad == "prestaciones") extraer_prestaciones(uni)
+}
+```
+
+Esta función puede aplicarse en cualquier lugar de la aplicación. Además de ser segura y más facil de mantener. En caso de querer agregarse más unidades es tan simple cómo agregarlo a `uni_validas` y agregar el if.
