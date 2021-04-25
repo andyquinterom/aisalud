@@ -139,10 +139,12 @@ extraer_unidad <- function(uni) {
   # Validar que sea una unidad valida
   if (!unidad %in% uni_validas) stop("Unidad invalida")
   # Ejecutar código
-  if (unidad == "paciente") extraer_pacientes(uni)
-  if (unidad == "factura") extraer_facturas(uni)
-  if (unidad == "prestaciones") extraer_prestaciones(uni)
+  if (unidad == "paciente") extraer_pacientes()
+  if (unidad == "factura") extraer_facturas()
+  if (unidad == "prestaciones") extraer_prestaciones()
 }
+
+extraer_unidad(respuesta)
 ```
 
 Esta función puede aplicarse en cualquier lugar de la aplicación. Además de ser segura y más facil de mantener. En caso de querer agregarse más unidades es tan simple cómo agregarlo a `uni_validas` y agregar el if.
