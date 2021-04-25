@@ -131,7 +131,7 @@ if (respuesta == "paciente") {
 
 Si se quisieran agregar más posibilidades podría ser dificil de implementar. Si se puede generalizar de la siguiente manera, sería más facil de implementar a través de la aplicación.
 
-```
+```r
 extraer_unidad <- function(uni) {
   uni_validas <- c("paciente", "factura", "prestaciones")
   # Validar que la unidad no este vacia
