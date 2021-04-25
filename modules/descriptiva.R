@@ -421,13 +421,9 @@ episodios_server <- function(id, opciones, conn) {
                     "Número de pacientes:",
                     formatC(
                       {opciones$tabla %>%
-                          group_by(nro_identificacion) %>%
+                          distinct(nro_identificacion) %>%
                           count() %>%
-                          ungroup() %>%
-                          count() %>%
-                          collect() %>%
-                          unlist() %>%
-                          unname()},
+                          pull()},
                       big.mark = ".",
                       decimal.mark = ",",
                       format = "f",
@@ -439,13 +435,9 @@ episodios_server <- function(id, opciones, conn) {
                       "Número de facturas:",
                       formatC(
                         {opciones$tabla %>%
-                            group_by(nro_factura) %>%
+                            distinct(nro_factura) %>%
                             count() %>%
-                            ungroup() %>%
-                            count() %>%
-                            collect() %>%
-                            unlist() %>%
-                            unname()},
+                            pull()},
                         big.mark = ".",
                         decimal.mark = ",",
                         format = "f",

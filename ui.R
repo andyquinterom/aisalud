@@ -63,11 +63,13 @@ shinyUI(
       ),
       controlbar = dashboardControlbar(
         width = 700,
-        controlbarItem(
-          id = "filtros_sideBar",
-          active = TRUE,
-          filtros_ui("filtros_sideBar")
-        ) %>% controlbarMenu()
+        controlbarMenu(
+          controlbarItem(
+            id = "filtros_sideBar",
+            title = "Filtros",
+            filtros_ui("filtros_sideBar")
+          )
+        )
       ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
