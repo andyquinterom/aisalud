@@ -70,3 +70,45 @@ datos <- mtcars %>%
   } else {.}}
 
 ```
+
+#### Evitar loops sobre datos
+
+El rendimiento de loops y funciones recursivas en R no es el mejor. Se debe intentar delegar este trabajo a C++ con alguna librería o evitar lo por completo.
+
+Buscar algoritmos que utilicen tablas y funciones que se puedan delegar a PostgreSQL o a las una librería cómo `dplyr` o `data.table` son óptimos.
+
+#### Evitar errorer y catching
+
+Las funciones básicas de manipulación de datos nunca deben asumir un valid input. Siempre se debe intentar catch este tipo de errores antes de ejecutar código.
+
+```r
+test_error <- function(x, y, z = 1) {
+  if (is.null(x) || is.na(x)) stop("x vacio")
+  if (is.null(x) || is.na(z)) stop("y vacio")
+  if (!identical(class(z), "numeric")) stop("z no es numérico")
+  response <- rep(paste(x, y), z)
+  return(reponse)
+}
+```
+
+Evitar este tipo de errores no es necesario para todos los parametros y situaciones, solo en casos que se especule que pueden ocurrir. Este tipo de errores explicitos son necesarios dado que en las funciones que llamamos directamente desde un módulo en Shiny estarán wrapped en un `tryCatch`, lo cual logeará y mostrará el error al usuario. Entre más se pueda guiar a este mejor.
+
+```r
+observe({
+  tryCatch(
+    expr = {
+      test_error(
+        x = input$x,
+        y = input$y,
+        z = input$z)
+    },
+    error = function(e) {
+      print(e)
+      sendSweetAlert(
+        session = session,
+        title = "Error", 
+        type = "error",
+        text = e[1])
+    }
+  )
+})
