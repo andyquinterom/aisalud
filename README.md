@@ -28,6 +28,8 @@ La gran mayoria de las funciones de Shiny (especialmente las de UI) están escri
 
 Las funciones y variables de R (no Shiny) se escribirán **snake_case**. Esto también aplica para los nombres de las columnas en una tabla y los elementos de una lista o arból.
 
+Como referencia utilizar http://adv-r.had.co.nz/Style.html.
+
 ##### Variables globales y de ambiente
 
 Las variables globales (del sistema o del ambiente no generadas por R) se escribirán en **SCREAMING_SNAKE_CASE**. Esto ayudará a evitar confusión con las variables creadas por R.
