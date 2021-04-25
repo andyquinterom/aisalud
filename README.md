@@ -205,4 +205,12 @@ root/
 ├─ json_schemas/
 │  ├─ JSON Schemas y templates
 ├─ www/
+├─ man/
+│  ├─ Manuales de uso
 ```
+
+## Documentación y manuales
+
+Cada módulo debe llevar su propia documentación / manual en la carpeta `man`. Esta docuemantación debe ser de uso no de código. El código será documentado en comentarios dentro del archivo respectivo.
+
+Cada nuevo feature debe llevar su cambio correspondiente en el manual con el fir de evitar temporadas pesadas de escribir documentación antes de un nuevo release.
