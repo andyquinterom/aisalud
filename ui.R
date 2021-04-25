@@ -16,7 +16,7 @@ shinyUI(
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.4.0",
+            text = "Version: 2.4.1",
             icon = icon("code-branch"),
             status = "info"
           )
@@ -63,11 +63,13 @@ shinyUI(
       ),
       controlbar = dashboardControlbar(
         width = 700,
-        controlbarItem(
-          id = "filtros_sideBar",
-          active = TRUE,
-          filtros_ui("filtros_sideBar")
-        ) %>% controlbarMenu()
+        controlbarMenu(
+          controlbarItem(
+            id = "filtros_sideBar",
+            title = "Filtros",
+            filtros_ui("filtros_sideBar")
+          )
+        )
       ),
       dashboardBody(
   # Modulos -------------------------------------------------------------------
