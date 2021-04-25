@@ -148,3 +148,40 @@ extraer_unidad(respuesta)
 ```
 
 Esta función puede aplicarse en cualquier lugar de la aplicación. Además de ser segura y más facil de mantener. En caso de querer agregarse más unidades es tan simple cómo agregarlo a `uni_validas` y agregar el if.
+
+#### Bloques de código
+
+Para facilitar la navegación en VI los bloques de código deben mantenerse lo más corto posibles. Separar los bloques de código por una sola linea en blanco. 
+
+Dentro del server-side de los módulos, pueden existir bloques dentro observers. 
+
+Todos los outputs deben ser su propio bloque.
+
+#### Comentarios
+
+Cada función debe llevar un comentario con una breve explicación de su funcionalidad y propósito. Dentro del server side de los módulos, un comentario por bloque es necesario.
+
+EN pipelines, si existen complejidades, puede ser de gran ayudar incluir una breve documentación.
+
+#### Nested functions
+
+Para evitar highly nested functions, se puede utilizar el pipe para ayudar a resolver este problema. Sin embargo, no debe ser necesario para funciones con 2 o 3 niveles de profunidad.
+
+```r
+# Función que requiere utilizar el pipe
+as.numeric(
+  str_replace(
+    obtener_codigo(input$objeto),
+    "A", ""
+  )
+)
+
+# Tranformar a --->
+input$objeto %>%
+  obtener_codigo() %>%
+  str_replace("A", "") %>%
+  as.numeric()
+
+# Función que NO requiere pipe
+print(tbl(conn, "tabla_ejemplo"))
+```
