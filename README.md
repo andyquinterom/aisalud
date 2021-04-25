@@ -12,7 +12,7 @@ Si existen inputs que se repiten constantemente a través de los módulos, puede
 
 La comunicación entre módulos se dará solo a través de la variable `opciones`. Este variable se declara en el `server.R` y se encarga de comunicar las opciones globales a todos los módulos que la puedan necesitar. Si se requieren valores preterminados para esta variable estos se deben declarar directamente en el `server.R`.
 
-### Funciones de R
+### Funciones y Variables
 
 #### Nomenclatura (naming conventios)
 
@@ -184,4 +184,25 @@ input$objeto %>%
 
 # Función que NO requiere pipe
 print(tbl(conn, "tabla_ejemplo"))
+```
+
+### Archivos y directorios
+
+El proyecto se manejará con una sencilla estructura de archivos y directorios.
+```
+root/
+├─ global.R
+├─ ui.R
+├─ server.R
+├─ R/
+│  ├─ R Functions
+├─ modules/
+│  ├─ Shiny Modules
+├─ widgets/
+│  ├─ Widgets y UI Elements
+├─ markdown/
+│  ├─ Markdown para UI
+├─ json_schemas/
+│  ├─ JSON Schemas y templates
+├─ www/
 ```
