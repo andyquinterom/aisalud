@@ -1,8 +1,8 @@
-#Analítica Integrada Salud
+# Analítica Integrada Salud
 
 Analítica Integrada Salud (AIS) es una aplicación shiny que encapsula los procesos de MD&CO - BPMIC. Esta aplicación esta diseñada para funcionar con diversos conjuntos de datos, por lo cual sus funciones deben ser generales y amplias. Además, se busca que el uso sea intuitivo y facil para los usuarios.
 
-##Diseño y manual del código
+## Diseño y manual del código
 
 ### Shiny
 
@@ -20,23 +20,23 @@ Los nombres de las variables y funciones deben ser explicitas en su rol en la ap
 
 Se deben evitar nombres de variables muy largas. Si esto no es posible, se puede intentar agrupar en una lista almenos documentar muy bien con comentarios.
 
-#####Funciones de UI
+##### Funciones de UI
 
 La gran mayoria de las funciones de Shiny (especialmente las de UI) están escritas en **camelCase**. Por esta razón, las funciones de UI y los nombres de módulos se escribirán en **camelCase**.
 
-#####Funciones y variables de R
+##### Funciones y variables de R
 
 Las funciones y variables de R (no Shiny) se escribirán **snake_case**. Esto también aplica para los nombres de las columnas en una tabla y los elementos de una lista o arból.
 
-#####Variables globales y de ambiente
+##### Variables globales y de ambiente
 
 Las variables globales (del sistema o del ambiente no generadas por R) se escribirán en **SCREAMING_SNAKE_CASE**. Esto ayudará a evitar confusión con las variables creadas por R.
 
-#####Funciones de JavaScript
+##### Funciones de JavaScript
 
 El estandar de Nomenclatura para JS es **camelCase**.
 
-#####CSS y HTML
+##### CSS y HTML
 
 El nombre de class, id, y otros atributos de HTML se escribirán en **snake_case**.
 
