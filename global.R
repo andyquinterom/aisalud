@@ -92,13 +92,7 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
   )
 }
 
-if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
-  dbWriteTable(
-    conn = conn,
-    name = "perfiles_notas_tecnicas",
-    data.frame(
-      "notas_tecnicas" = 
-'{
+nota_tecnica_v1 <- '{
   "Ambito": {
       "poblacion": 40000,
       "prestador": "MD&CO Cali",
@@ -140,7 +134,21 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
       }
   }
 }'
-    )
+ 
+
+if ("perfiles_notas_tecnicas_v2" %notin% tabla_perfiles) {
+  if ("perfiles_notas_tecnicas_v2" %in% tabla_perfiles) {
+    nota_tecnica_v1 <- tbl(conn, "perfiles_notas_tecnicas_v2") %>%
+      pull(notas_tecnicas)
+  }
+
+  dbWriteTable(
+    conn = conn,
+    name = "perfiles_notas_tecnicas_v2",
+    data.frame(
+      "fecha_editado" = Sys.time(),
+      "notas_tecnicas" = nota_tecnica_v1 
+   )
   )
 }
 
