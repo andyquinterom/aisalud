@@ -1,3 +1,10 @@
+# El módulo de cargar_datos tiene como proposito alimentar los datos de
+# toda la aplicación. La varaible principal en la cual se almacenan los datos
+# es la opciones. Esta se declara en el server.R y se muta dentro de este
+# módulo. Si algun otro modulo desea cambiar algun dato global se puede hacer
+# un request a través de la misma variable opciones. Sin embargo, los datos
+# no deben ser mutados.
+
 cargar_datos_ui <- function(id) {
   
   ns <- NS(id)
@@ -132,42 +139,43 @@ cargar_datos_server <- function(id, opciones, conn) {
     module = function(input, output, session) {
 
       ns <- NS(id)
-      base_de_datos <- reactiveValues()
+
+      # La varaible prepara opciones guarda cambios dentro del módulo.
       prepara_opciones <- reactiveValues()
 
+      # Se obtienen las tablas dentro de la base de datos del usuario
+      # y se actualiza el selectizeInput.
       observe({
         tables_query <- dbListTables(conn = conn) %>%
           unlist() %>%
           unname()
+        # AIS solo puede leer tablas que tengan el prefix "ais_"
         tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
           stringr::str_replace(pattern = "ais_", "")
-        if (identical(character(0), tables_ais)) {
-          tables_ais <- NULL
-          updateSelectizeInput(
-            session = session,
-            inputId = "tabla",
-            choices = "Ninguno"
-          )
-        } else {
-          updateSelectizeInput(
-            session = session,
-            inputId = "tabla",
-            choices = c("Ninguno", tables_ais)
-          )
-        }
+        # Si no exsiten tablas validas
+        if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+        updateSelectizeInput(
+          session = session,
+          inputId = "tabla",
+          choices = unique(c("Ninguno", tables_ais)) 
+        )
       })
-      
+     
+      # Se observa el input del usuario al seleccionar una tabla
       observeEvent(input$tabla, {
         tabla <- paste0("ais_", input$tabla)
+        # El input no puede estar vacio ni puede ser "Ninguno"
         if (input$tabla %notin% c("Ninguno", "")) {
           tryCatch(
             expr = {
+              # Se obtienen columnas para el definir la columna de valor
               prepara_opciones$colnames <- dbListFields(
                 conn,
                 tabla)
               updateSelectizeInput(
                 session = session,
                 inputId = "columna_valor",
+                # se selecciona valor por defecto
                 selected = opciones$valor_costo,
                 choices = prepara_opciones$colnames
               )
@@ -185,6 +193,8 @@ cargar_datos_server <- function(id, opciones, conn) {
         }
       })
       
+      # Si se esta trabajando con datos locales se utilizan diferentes
+      # inputs del valor
       observe({
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
@@ -192,15 +202,18 @@ cargar_datos_server <- function(id, opciones, conn) {
             test = input$columna_valor != "",
             yes = input$columna_valor,
             no = opciones$valor_costo)
-        } else if (opciones$datos_cargados) {
+        }
+        if (opciones$datos_cargados) {
           opciones$valor_costo <- ifelse(
             test = input$file_columna_valor != "",
             yes = input$file_columna_valor,
             no = opciones$valor_costo)
         }
       })
-      
+     
+      # Se definen los rangos de fechas a utilizar
       observe({
+        # Si la fecha es invalida, se utilizará la última selección
         opciones$fecha_rango[1] <- data.table::fifelse(
           test = !is.na(input$fecha_rango[1]),
           yes = input$fecha_rango[1], no = opciones$fecha_rango[1])
@@ -214,6 +227,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           tryCatch(
             expr = {
               tabla <- paste0("ais_", input$tabla)
+              # Lectura de la tabla seleccionada
               opciones$colnames <- dbListFields(
                 conn,
                 tabla)
@@ -223,6 +237,8 @@ cargar_datos_server <- function(id, opciones, conn) {
               fecha_min <- opciones$fecha_rango[1]
               fecha_max <- opciones$fecha_rango[2]
               opciones$tabla_nombre <- tabla
+              # Se crea una imagen de la versión original de los datos
+              # necesaria para los filtros
               opciones$tabla_original <- conn %>%
                 tbl(tabla) %>%
                 filter(fecha_prestacion >= fecha_min) %>%
@@ -233,25 +249,18 @@ cargar_datos_server <- function(id, opciones, conn) {
                 filter(fecha_prestacion <= fecha_max)
             },
             error = function(e) {
+              # Si la lectura de los datos da un error, se volverá  a leer
+              # las tablas para evitar futuros errores
               tables_query <- dbListTables(conn = conn) %>%
                 unlist() %>%
                 unname()
               tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
                 stringr::str_replace(pattern = "ais_", "")
-              if (identical(character(0), tables_ais)) {
-                tables_ais <- NULL
-                updateSelectizeInput(
-                  session = session,
-                  inputId = "tabla",
-                  choices = "Ninguno"
-                )
-              } else {
-                updateSelectizeInput(
-                  session = session,
-                  inputId = "tabla",
-                  choices = c("Ninguno", tables_ais)
-                )
-              }
+              if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+              updateSelectizeInput(
+                session = session,
+                inputId = "tabla",
+                choices = unique(c("Ninguno", tables_ais)) )
               print(e)
               sendSweetAlert(
                 session = session,
@@ -264,7 +273,9 @@ cargar_datos_server <- function(id, opciones, conn) {
         }
       })
       
+      # Se actualiza la seleccion de columnas de valor
       observe({
+        # Si los datos se seleccionan de la nube
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
           updateSelectizeInput(
@@ -273,7 +284,9 @@ cargar_datos_server <- function(id, opciones, conn) {
             choices = opciones$colnames_num,
             selected = "valor"
           )
-        } else if (opciones$datos_cargados) {
+        }
+        # Si los datos son locales
+        if (opciones$datos_cargados) {
           updateSelectizeInput(
             session = session,
             inputId = "file_columna_valor",
