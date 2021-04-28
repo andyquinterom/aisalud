@@ -108,19 +108,17 @@ base_de_datos_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       ns <- NS(id)
       base_de_datos <- reactiveValues()
       prepara_opciones <- reactiveValues()
-      
+
       observe({
         tables_query <- dbListTables(conn = conn) %>%
           unlist() %>%
           unname()
-        
         tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
           stringr::str_replace(pattern = "ais_", "")
-        
         if (identical(character(0), tables_ais)) {
           tables_ais <- NULL
           updateSelectizeInput(
@@ -139,7 +137,6 @@ base_de_datos_server <- function(id, opciones, conn) {
       
       observeEvent(input$tabla, {
         tabla <- paste0("ais_", input$tabla)
-        
         if (input$tabla %notin% c("Ninguno", "")) {
           tryCatch(
             expr = {
@@ -218,10 +215,8 @@ base_de_datos_server <- function(id, opciones, conn) {
               tables_query <- dbListTables(conn = conn) %>%
                 unlist() %>%
                 unname()
-              
               tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
                 stringr::str_replace(pattern = "ais_", "")
-              
               if (identical(character(0), tables_ais)) {
                 tables_ais <- NULL
                 updateSelectizeInput(
@@ -346,14 +341,11 @@ base_de_datos_server <- function(id, opciones, conn) {
       observeEvent(input$file_load, {
         tryCatch(expr = {
           if (!is.null(input$file)) {
-            
             opciones$fecha_rango <- input$file_fecha_rango
-            
             value_delimitador <- ifelse(
               test = file_opciones$value_delimitador == "Espacios",
               yes = "\t",
               no = file_opciones$value_delimitador)
-            
             if (input$file_type == "csv") {
               datos_read <- readr::read_delim(
                 file = input$file$datapath, 
@@ -363,26 +355,19 @@ base_de_datos_server <- function(id, opciones, conn) {
             } else if (input$file_type == "feather") {
               datos_read <- read_feather(path = input$file$datapath)
             }
-            
             opciones$tabla_original <- datos_read %>%
               rename_with(tolower) %>%
               mutate(fecha_prestacion = as.Date(
                 fecha_prestacion, format = input$file_formato_fecha)) %>%
               filter(fecha_prestacion >= as.Date(input$file_fecha_rango[1]) &
                        fecha_prestacion <= as.Date(input$file_fecha_rango[2]))
-            
             opciones$tabla <- opciones$tabla_original
-            
             opciones$colnames <- opciones$tabla %>%
               colnames()
-            
             testfor_numeric <- opciones$tabla %>%
               summarise_all(class) == "numeric"
-            
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
-            
             file_opciones$enabled <- TRUE
-            
           }},
           error = function(e) {
             print(e[1])
@@ -421,32 +406,23 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
-        
         opciones$perfil_updated
-        
         perfil_raw <- tbl(conn, "perfiles_usuario") %>%
           pull(perfiles)
-        
         tryCatch(
           expr = {
-            
             opciones$perfil_raw <- perfil_raw %>%
               prettify()
-            
             opciones$perfil_lista <- opciones$perfil_raw %>%
               parse_json(simplifyVector = TRUE)
-            
             updateSelectizeInput(
               session = session,
               inputId = "perfil",
               choices = c("Ninguno", names(opciones$perfil_lista))
             )
-            
           },
-          
           error = function(e) {
             opciones$perfil_raw <- perfil_raw
-            
             print(e)
             sendSweetAlert(
               session = session,
@@ -456,7 +432,6 @@ base_de_datos_server <- function(id, opciones, conn) {
             )
           }
         )
-        
       })
       
       observe({
@@ -471,27 +446,51 @@ base_de_datos_server <- function(id, opciones, conn) {
       # Cantidad
       
       observe({
-        
         cantidad_enable <- NULL
-        
         if (opciones$perfil_enable) {
           cantidad_enable <- opciones$perfil_lista[[
             opciones$perfil_selected]][["cantidad"]]
         }
-        
         if (!is.null(cantidad_enable)) {
           updateCheckboxInput(
             inputId = "cantidad",
             value = cantidad_enable
           )
         }
-        
       })
       
       observe({
         opciones$cantidad <- input$cantidad
       })
       
+      # Notas tecnicas
+
+      observe({
+        opciones$notas_tecnicas_updated
+        opciones$notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
+          pull(notas_tecnicas)
+        tryCatch(
+          expr = {
+            opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
+              parse_json(simplifyVector = TRUE)
+            opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
+              parse_nt()
+            opciones$indice_todos <- parse_nt_indice(
+              opciones$notas_tecnicas_lista,
+              tabla_agrupadores = opciones$notas_tecnicas)
+          },
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
+        )
+      })
+
     }
   )
 }
