@@ -1,0 +1,12 @@
+{
+  "Perfil de ejemplo": {
+    "jerarquia": {
+      "episodio": [
+        "HOSPITALARIO"
+        ],
+      "paciente": [
+        "AMBULATORIO"
+        ]
+      }
+    }
+}

@@ -1,0 +1,42 @@
+{
+  "Ambito": {
+      "poblacion": 40000,
+      "prestador": "MD&CO Cali",
+      "departamento": "Valle del Cauca",
+      "cod_departamento": 76,
+      "ciudades": "Cali, Palmira",
+      "vigente": true,
+      "agrupadores": {
+          "HOSPITALARIO": {"n": 4230, "cm": 150000},
+          "AMBULATORIO": {"n": 504, "cm": 278714},
+          "URGENCIAS": {"n": 153, "cm": 42235}
+      }
+  },
+  "Tipo de servicio": {
+      "poblacion": 40000,
+      "prestador": "MD&CO Bogotá",
+      "departamento": "Bogotá D.C",
+      "cod_departamento": 11,
+      "ciudades": "Bogotá D.C",
+      "vigente": false,
+      "agrupadores": {
+          "APOYO_D": {"n": 110, "cm": 183425},
+          "PRC": {"n": 1199, "cm": 85912},
+          "TERAPIAS": {"n": 131, "cm": 16823},
+          "LABORATORIO": {"n": 322, "cm": 16688},
+          "MEDICAMENTOS": {"n": 1534, "cm": 111809},
+          "HONORARIOS": {"n": 240, "cm": 46624},
+          "PARTO": {"n": 2, "cm": 173236},
+          "ESTANCIA": {"n": 224, "cm": 317270},
+          "INSUMO": {"n": 858, "cm": 30591},
+          "CIRUGIA": {"n": 147, "cm": 1150662},
+          "OXIGENO": {"n": 52, "cm": 63063},
+          "QUIMIOTERAPIA": {"n": 53, "cm": 579845},
+          "BANCO DE SANGRE": {"n": 1, "cm": 373880},
+          "RADIOTERAPIA": {"n": 10, "cm": 6049302},
+          "TRANSLADOS": {"n": 1, "cm": 102200},
+          "AMBULANCIA": {"n": 1, "cm": 230534},
+          "CUIDADO DOMICILIARIO": {"n": 2, "cm": 153030}
+      }
+  }
+}
