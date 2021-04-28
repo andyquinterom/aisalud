@@ -158,7 +158,6 @@ configuracion_server <- function(id, opciones) {
       observeEvent(input$notas_tecnicas_conf, {
         if (input$notas_tecnicas_pw == Sys.getenv("CONF_PW")) {
           notas_tecnicas_nuevo <- data.frame(
-            "fecha_editado" = Sys.time(),
             "notas_tecnicas" = input$notas_tecnicas_editor_edit)
           removeModal()
           tryCatch(
@@ -170,10 +169,12 @@ configuracion_server <- function(id, opciones) {
               ) 
               
               if (validado) {
-                dbAppendTable(
+
+                dbWriteTable(
                   conn = conn,
-                  name = "perfiles_notas_tecnicas_v2",
-                  notas_tecnicas_nuevo
+                  name = "perfiles_notas_tecnicas",
+                  notas_tecnicas_nuevo,
+                  overwrite = TRUE
                 )
                 
                 opciones$notas_tecnicas_updated <- FALSE
