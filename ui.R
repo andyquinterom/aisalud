@@ -27,7 +27,7 @@ shinyUI(
         sidebarMenu(
           menuItem(
             text = "Cargar datos",
-            tabName = "prepara_base_de_datos",
+            tabName = "cargar_datos",
             icon = icon("cloud", lib = "font-awesome")),
           menuItem(
             text = "Descriptiva",
@@ -54,11 +54,7 @@ shinyUI(
           menuItem(
             text = "Seguimiento",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "seguimiento_modulo_dash"),
-          menuItem(
-            text = "Configuración",
-            icon = icon("cog", lib = "font-awesome"),
-            tabName = "configuracion")
+            tabName = "seguimiento_modulo_dash")
         )
       ),
       controlbar = dashboardControlbar(
@@ -75,8 +71,8 @@ shinyUI(
   # Modulos -------------------------------------------------------------------
         tabItems(
           tabItem(
-            tabName = "prepara_base_de_datos",
-            cargar_datos_ui("prepara_base_de_datos")
+            tabName = "cargar_datos",
+            cargar_datos_ui("cargar_datos")
           ),
           tabItem(
             tabName = "outliers_modulo",
@@ -101,10 +97,6 @@ shinyUI(
           tabItem(
             tabName = "seguimiento_modulo_dash",
             seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
-          ),
-          tabItem(
-            tabName = "configuracion",
-            configuracion_ui("configuracion")
           )
         )
       )

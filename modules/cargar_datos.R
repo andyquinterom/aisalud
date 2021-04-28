@@ -3,6 +3,7 @@ cargar_datos_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
+    tags$script(type = "text/javascript", src = "reactiveJsonEdit.js"),
     fluidRow(
       box(
         style = "min-height: 650px;",
@@ -97,8 +98,29 @@ cargar_datos_ui <- function(id) {
       box(
         width = 8,
         style = "min-height: 650px;",
-        plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
-          withSpinner()
+        tabsetPanel(
+          tabPanel(
+            title = "Resumen",
+            plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
+              withSpinner()
+          ),
+          tabPanel(
+            title = "Perfiles",
+            reactiveJsonEditOutput(
+              outputId = ns("perfil_editor"),
+              height = "630px", 
+              label = "Guardar"
+            )
+          ),
+          tabPanel(
+            title = "Notas técnicas",
+            reactiveJsonEditOutput(
+              outputId = ns("notas_tecnicas_editor"),
+              height = "630px", 
+              label = "Guardar"
+            )
+          )
+        )
       )
     )
   )
@@ -161,7 +183,6 @@ cargar_datos_server <- function(id, opciones, conn) {
             }
           )
         }
-
       })
       
       observe({
@@ -418,6 +439,7 @@ cargar_datos_server <- function(id, opciones, conn) {
             updateSelectizeInput(
               session = session,
               inputId = "perfil",
+              selected = opciones$perfil_selected,
               choices = c("Ninguno", names(opciones$perfil_lista))
             )
           },
@@ -440,6 +462,86 @@ cargar_datos_server <- function(id, opciones, conn) {
           opciones$perfil_selected <- input$perfil
         } else {
           opciones$perfil_enable <- FALSE
+        }
+      })
+
+      output$perfil_editor <- renderJsonedit({
+        jsonedit(
+          opciones$perfil_raw,
+          language = "es",
+          languages = "es",
+          name = "Perfiles",
+          enableTransform = FALSE,
+          schema = read_json("json_schemas/perfiles.json"),
+          templates = read_json("json_schemas/perfiles_template.json")
+        )
+      })
+      
+      observeEvent(input$perfil_editor_save, {
+        showModal(
+          modalDialog(
+            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            passwordInput(ns("perfil_actualizar_pw"), label = NULL),
+            footer = actionButton(
+              inputId = ns("perfil_actualizar_conf"),
+              label = "Guardar perfiles")
+          )
+        )
+      })
+
+      observe({
+        print(input$test)
+      })
+      
+      observeEvent(input$perfil_actualizar_conf, {
+        if (input$perfil_actualizar_pw == Sys.getenv("CONF_PW")) {
+          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor_edit)
+          removeModal()
+          tryCatch(
+            expr = {
+              validado <- json_validate(
+                json = input$perfil_editor_edit,
+                schema = "json_schemas/perfiles.json" 
+              ) 
+              if (validado) {
+                perfil_nuevo$perfiles %>%
+                  prettify()
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_usuario",
+                  perfil_nuevo,
+                  overwrite = TRUE
+                )
+                opciones$perfil_updated <- FALSE
+                opciones$perfil_updated <- TRUE
+                showNotification(
+                  ui = "El perfil se a guardado.",
+                  type = "message"
+                )
+              } else {
+                sendSweetAlert(
+                  session = session,
+                  title = "Error",
+                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
+                  type = "error"
+                )
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        } else {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
         }
       })
       
@@ -491,6 +593,81 @@ cargar_datos_server <- function(id, opciones, conn) {
         )
       })
 
+      output$notas_tecnicas_editor <- renderJsonedit({
+        jsonedit(
+          opciones$notas_tecnicas_raw,
+          language = "es",
+          languages = "es",
+          name = "Notas técnicas",
+          enableTransform = FALSE,
+          schema = read_json("json_schemas/nota_tecnica.json"),
+          templates = read_json("json_schemas/nota_tecnica_template.json")
+        )
+      })
+      
+      observeEvent(input$notas_tecnicas_editor_save, {
+        showModal(
+          modalDialog(
+            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            passwordInput(ns("notas_tecnicas_pw"), label = NULL),
+            footer = actionButton(
+              inputId = ns("notas_tecnicas_conf"),
+              label = "Guardar notas técnicas")
+          )
+        )
+      })
+      
+      observeEvent(input$notas_tecnicas_conf, {
+        if (input$notas_tecnicas_pw == Sys.getenv("CONF_PW")) {
+          notas_tecnicas_nuevo <- data.frame(
+            "notas_tecnicas" = input$notas_tecnicas_editor_edit)
+          removeModal()
+          tryCatch(
+            expr = {
+              validado <- json_validate(
+                json = input$notas_tecnicas_editor_edit,
+                schema = "json_schemas/nota_tecnica.json" 
+              ) 
+              if (validado) {
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_notas_tecnicas",
+                  notas_tecnicas_nuevo,
+                  overwrite = TRUE
+                )
+                opciones$notas_tecnicas_updated <- FALSE
+                opciones$notas_tecnicas_updated <- TRUE
+                showNotification(
+                  ui = "La nota técnica se a guardado.",
+                  type = "message"
+                )
+              } else {
+                sendSweetAlert(
+                  session = session,
+                  title = "Error",
+                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
+                  type = "error"
+                )
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        } else {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
+        }
+      })
+ 
     }
   )
 }
