@@ -169,7 +169,45 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         # "datos" = nota_tecnica, 
         # "inclusiones" = inclusiones
       )
-     
+
+      observe({
+        
+        opciones$notas_tecnicas_updated
+        
+        opciones$notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas_v2") %>%
+          collect() %>%
+          tail(1) %>%
+          pull(notas_tecnicas)
+        
+        tryCatch(
+          expr = {
+
+            opciones$notas_tecnicas_lista <- opciones$notas_tecnicas_raw %>%
+              parse_json(simplifyVector = TRUE)
+            
+            opciones$notas_tecnicas <- opciones$notas_tecnicas_lista %>%
+              parse_nt()
+            
+            opciones$indice_todos <- parse_nt_indice(
+              opciones$notas_tecnicas_lista,
+              tabla_agrupadores = opciones$notas_tecnicas
+            )
+        
+          },
+          
+          error = function(e) {
+            print(e)
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = e[1],
+              type = "error"
+            )
+          }
+        )
+        
+      })
+      
       observeEvent(names(opciones$notas_tecnicas_lista), {
         updateSelectizeInput(
           session = session,
