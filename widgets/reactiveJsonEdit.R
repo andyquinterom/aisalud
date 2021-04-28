@@ -3,7 +3,6 @@ reactiveJsonEditOutput <- function(outputId = NULL, label = NULL, height = "400p
   
   script <- '
   $(document).on("shiny:value", function(e) {
-    console.log(e.name);
     if (e.name === "###outputId###") {
       reactiveJsonEditMod(e)
     }
