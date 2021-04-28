@@ -139,7 +139,7 @@ configuracion_server <- function(id, opciones) {
           name = "Notas técnicas",
           enableTransform = FALSE,
           schema = read_json("json_schemas/nota_tecnica.json"),
-          templates = read_json("json_schemas/nota_tecnia_template.json")
+          templates = read_json("json_schemas/nota_tecnica_template.json")
         )
       })
       

@@ -1,4 +1,4 @@
-base_de_datos_ui <- function(id) {
+cargar_datos_ui <- function(id) {
   
   ns <- NS(id)
   
@@ -104,7 +104,7 @@ base_de_datos_ui <- function(id) {
   )
 }
 
-base_de_datos_server <- function(id, opciones, conn) {
+cargar_datos_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {

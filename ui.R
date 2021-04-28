@@ -76,7 +76,7 @@ shinyUI(
         tabItems(
           tabItem(
             tabName = "prepara_base_de_datos",
-            base_de_datos_ui("prepara_base_de_datos")
+            cargar_datos_ui("prepara_base_de_datos")
           ),
           tabItem(
             tabName = "outliers_modulo",

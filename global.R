@@ -85,7 +85,7 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
     conn = conn, 
     name = "perfiles_usuario",
     data.frame(
-      "perfiles" = readChar("json_schemas/perfiles_default.json") 
+      "perfiles" = read_file("json_schemas/perfiles_default.json") 
     )
   )
 }
@@ -97,7 +97,7 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
     conn = conn,
     name = "perfiles_notas_tecnicas",
     data.frame(
-      "notas_tecnicas" = readChar("json_schemas/nota_tecnica_defualt.json")
+      "notas_tecnicas" = read_file("json_schemas/nota_tecnica_defualt.json")
     )
   )
 }

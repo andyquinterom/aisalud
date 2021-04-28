@@ -34,7 +34,7 @@ shinyServer(function(input, output, session) {
   
  # Modulo prepara ---------------------------------------------
   
-  base_de_datos_server(
+  cargar_datos_server(
     id = "prepara_base_de_datos",
     opciones = opciones,
     conn = conn
