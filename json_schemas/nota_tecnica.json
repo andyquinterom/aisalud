@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "poblacion": {
+        "type": "number"
+      },
+      "prestador": {
+        "type": "string"
+      },
+      "asegurador": {
+        "type": "string"
+      },
+      "departamento": {
+        "type": "string"
+      },
+      "cod_departamento": {
+        "type": "integer"
+      },
+      "ciudades": {
+        "type": "string"
+      },
+      "vigente": {
+        "type": "boolean"
+      },
+      "perfil": {
+        "type": "string"
+      },
+      "notas": {
+        "type": "string"
+      },
+      "exclusiones": {
+        "type": "array"
+      },
+      "inclusiones": {
+        "type": "array"
+      },
+      "agrupadores": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "cm": {
+              "type": "number"
+            },
+            "n": {
+              "type": "number"
+            }
+          },
+          "required": ["cm", "n"]
+        }
+      }
+    },
+    "required": [
+      "poblacion",
+      "departamento",
+      "cod_departamento",
+      "ciudades",
+      "vigente",
+      "agrupadores"
+    ]
+  }
+}

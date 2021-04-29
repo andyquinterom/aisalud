@@ -1,0 +1,33 @@
+[
+  {
+    "text": "Nota técnica",
+    "title": "Nota técnica",
+    "field": "Nota técnica",
+    "className": "jsoneditor-duplicate",
+    "value": {
+      "poblacion": 1,
+      "prestador": "Prestador",
+      "asegurador": "Asegurador",
+      "departamento": "Valle del Cauca",
+      "cod_departamento": 76,
+      "ciudades": "Cali",
+      "vigente": false,
+      "agrupadores": {
+          "AGRUPADOR": {
+            "n": 1,
+            "cm": 1
+          }
+      }
+  }
+  },
+  {
+    "text": "Agrupador",
+    "title": "Agrupador",
+    "field": "Agrupador",
+    "className": "jsoneditor-duplicate",
+    "value": {
+            "n": 1,
+            "cm": 1
+   }
+  }
+]
