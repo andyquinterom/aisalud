@@ -146,3 +146,16 @@ div.dataTables_scrollBody {
 .box-header.with-border {
   display: none;
 }
+
+.jsoneditor-type-object {
+  display: none !important;
+}
+
+.jsoneditor-extract {
+  display: none !important;
+}
+
+.jsoneditor-menu {
+  background-color: rgb(0, 148, 217) !important;
+  border-color: rgb(0, 148, 217) !important;
+}

@@ -34,6 +34,8 @@ library(sparklyr)
 library(dbplot)
 library(jsonlite)
 library(shinyAce)
+library(listviewer)
+library(jsonvalidate)
 
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
@@ -103,11 +105,11 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
       "departamento": "Valle del Cauca",
       "cod_departamento": 76,
       "ciudades": "Cali, Palmira",
-      "vigente": 1,
+      "vigente": true,
       "agrupadores": {
-          "HOSPITALARIO": [4230, 150000],
-          "AMBULATORIO": [504, 278714],
-          "URGENCIAS": [153, 42235]
+          "HOSPITALARIO": {"n": 4230, "cm": 150000},
+          "AMBULATORIO": {"n": 504, "cm": 278714},
+          "URGENCIAS": {"n": 153, "cm": 42235}
       }
   },
   "Tipo de servicio": {
@@ -116,25 +118,25 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
       "departamento": "Bogotá D.C",
       "cod_departamento": 11,
       "ciudades": "Bogotá D.C",
-      "vigente": 0,
+      "vigente": false,
       "agrupadores": {
-          "APOYO_D": [110, 183425],
-          "PRC": [1199, 85912],
-          "TERAPIAS": [131, 16823],
-          "LABORATORIO": [322, 16688],
-          "MEDICAMENTOS": [1534, 111809],
-          "HONORARIOS": [240, 46624],
-          "PARTO": [2, 173236],
-          "ESTANCIA": [224, 317270],
-          "INSUMO": [858, 30591],
-          "CIRUGIA": [147, 1150662],
-          "OXIGENO": [52, 63063],
-          "QUIMIOTERAPIA": [53, 579845],
-          "BANCO DE SANGRE": [1, 373880],
-          "RADIOTERAPIA": [10, 6049302],
-          "TRANSLADOS": [1, 102200],
-          "AMBULANCIA": [1, 230534],
-          "CUIDADO DOMICILIARIO": [2, 153030]
+          "APOYO_D": {"n": 110, "cm": 183425},
+          "PRC": {"n": 1199, "cm": 85912},
+          "TERAPIAS": {"n": 131, "cm": 16823},
+          "LABORATORIO": {"n": 322, "cm": 16688},
+          "MEDICAMENTOS": {"n": 1534, "cm": 111809},
+          "HONORARIOS": {"n": 240, "cm": 46624},
+          "PARTO": {"n": 2, "cm": 173236},
+          "ESTANCIA": {"n": 224, "cm": 317270},
+          "INSUMO": {"n": 858, "cm": 30591},
+          "CIRUGIA": {"n": 147, "cm": 1150662},
+          "OXIGENO": {"n": 52, "cm": 63063},
+          "QUIMIOTERAPIA": {"n": 53, "cm": 579845},
+          "BANCO DE SANGRE": {"n": 1, "cm": 373880},
+          "RADIOTERAPIA": {"n": 10, "cm": 6049302},
+          "TRANSLADOS": {"n": 1, "cm": 102200},
+          "AMBULANCIA": {"n": 1, "cm": 230534},
+          "CUIDADO DOMICILIARIO": {"n": 2, "cm": 153030}
       }
   }
 }'
