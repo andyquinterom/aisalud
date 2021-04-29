@@ -90,9 +90,4 @@ shinyServer(function(input, output, session) {
     id = "seguimiento_notas_dash",
     opciones = opciones)
   
-  configuracion_server(
-    id = "configuracion",
-    opciones = opciones
-  )
-
 })

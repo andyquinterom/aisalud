@@ -13,7 +13,7 @@ cargar_datos_ui <- function(id) {
     tags$script(type = "text/javascript", src = "reactiveJsonEdit.js"),
     fluidRow(
       box(
-        style = "min-height: 650px;",
+        style = "min-height: 692px;",
         width = 4,
         tabsetPanel(
           tabPanel(

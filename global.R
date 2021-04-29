@@ -52,14 +52,13 @@ options(spinner.color = "#222d32")
 
 # Carga de funciones -----------------------------------------------------------
 
-for (i in paste0("R/", list.files("R/"))) {
-  source(i)
+source_dir <- function(path) {
+  purrr::map(file.path(path, list.files(path)), source)
 }
 
-for (i in paste0("modules/", list.files("modules/"))) {
-  source(i)
-}
-
+source_dir("R")
+source_dir("modules")
+source_dir("widgets")
 # Carga de datos ---------------------------------------------------------------
 
 # Se establece conexión a una instancia de PostgrSQL
