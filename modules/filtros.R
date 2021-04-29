@@ -33,8 +33,10 @@ filtros_server <- function(id, opciones) {
     id = id,
     module = function(input, output, session) {
       
-      n_num = 3
-      n_char = 5
+      # cantidad de filtros numericos
+      n_num <- 3
+      # cantidad de filtros de variables caracteres
+      n_char <- 5
       
       observeEvent(opciones$colnames, {
         lapply(
@@ -104,9 +106,7 @@ filtros_server <- function(id, opciones) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
                       distinct() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()
+                      pull()
                   } else {
                     "Ninguno"
                   }
@@ -130,12 +130,9 @@ filtros_server <- function(id, opciones) {
                   if (columna_seleccionada %notin% c("Ninguno", "")) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
-                      transmute(min = min(!!as.name(columna_seleccionada),
+                      summarise(min = min(!!as.name(columna_seleccionada),
                                           na.rm = TRUE)) %>%
-                      distinct() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()
+                      pull()
                   } else {
                     0
                   }
@@ -149,12 +146,9 @@ filtros_server <- function(id, opciones) {
                   if (columna_seleccionada %notin% c("Ninguno", "")) {
                     opciones$tabla_original %>%
                       select(!!as.name(columna_seleccionada)) %>%
-                      transmute(max = max(!!as.name(columna_seleccionada),
+                      summarise(max = max(!!as.name(columna_seleccionada),
                                           na.rm = TRUE)) %>%
-                      distinct() %>%
-                      collect() %>%
-                      unlist() %>%
-                      unname()
+                      pull()
                   } else {
                     0
                   }
