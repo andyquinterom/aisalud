@@ -10,7 +10,6 @@ cargar_datos_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
-    tags$script(type = "text/javascript", src = "reactiveJsonEdit.js"),
     fluidRow(
       box(
         style = "min-height: 692px;",
@@ -113,18 +112,18 @@ cargar_datos_ui <- function(id) {
           ),
           tabPanel(
             title = "Perfiles",
-            reactiveJsonEditOutput(
+            jsoneditOutput(
               outputId = ns("perfil_editor"),
-              height = "630px", 
-              label = "Guardar"
+              height = "630px",
+              width = "100%"
             )
           ),
           tabPanel(
             title = "Notas técnicas",
-            reactiveJsonEditOutput(
+            jsoneditOutput(
               outputId = ns("notas_tecnicas_editor"),
               height = "630px", 
-              label = "Guardar"
+              width = "100%"
             )
           )
         )
@@ -296,43 +295,46 @@ cargar_datos_server <- function(id, opciones, conn) {
         }
       })
       
+      # Resumen de valores en el tiempo seleccionado
       output$valor_con_tiempo <- renderPlotly({
         if (opciones$datos_cargados) {
-            tabla <- opciones$tabla_nombre
-            valor_costo <- opciones$valor_costo
-            fecha_min <- opciones$fecha_rango[1]
-            fecha_max <- opciones$fecha_rango[2]
-            datos <- opciones$tabla %>%
-              mutate(
-                mes_temporal = year(fecha_prestacion)*100 +
+          valor_costo <- opciones$valor_costo
+          # Se genera gráfico de barras por mes y año
+          opciones$tabla %>%
+            mutate(
+              # genera id de mes y año
+              mes_temporal = year(fecha_prestacion)*100 +
                   month(fecha_prestacion)) %>%
-              group_by(mes_temporal) %>%
-              summarise(suma = sum(
-                as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
-              collect() %>%
-              mutate(mes_label_temporal = paste(
-                sep = " - ",
-                substr(mes_temporal, 1, 4),
-                mes_spanish(
-                as.numeric(substr(mes_temporal, 5, 6))))) %>%
-              arrange(mes_temporal) %>%
-              plot_ly(x = ~mes_label_temporal,
-                      y = ~suma,
-                      type = "bar") %>%
-              config(locale = "es") %>%
-              layout(
-                title = "Suma del valor a mes",
-                xaxis = list(
-                  title = "Mes",
-                  categoryorder = "array",
-                  categoryarray = ~mes_temporal),
-                yaxis = list(title = "Suma",
-                             tickformat = ",.2f"))
+            group_by(mes_temporal) %>%
+            summarise(suma = sum(
+              as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
+            collect() %>%
+            mutate(mes_label_temporal = paste(
+              sep = " - ",
+              substr(mes_temporal, 1, 4),
+              mes_spanish(
+              as.numeric(substr(mes_temporal, 5, 6))))) %>%
+            arrange(mes_temporal) %>%
+            plot_ly(
+              x = ~mes_label_temporal,
+              y = ~suma,
+              type = "bar") %>%
+            config(locale = "es") %>%
+            layout(
+              title = "Suma del valor a mes",
+              xaxis = list(
+                title = "Mes",
+                categoryorder = "array",
+                categoryarray = ~mes_temporal),
+              yaxis = list(
+                title = "Suma",
+                tickformat = ",.2f"))
         }
       })
       
       # Cargar datos locales -----------------
       
+      # Variables necesarias para lectura de datos tabulados en csv
       file_opciones <- reactiveValues(
         "value_decimal" = ".",
         "value_delimitador" = ",",
@@ -341,6 +343,7 @@ cargar_datos_server <- function(id, opciones, conn) {
         "enabled" = FALSE
       )
       
+      # se abre modal con las opciones para la subida de los datos
       observeEvent(input$file_options_open, {
         showModal(
           session = session,
@@ -348,6 +351,7 @@ cargar_datos_server <- function(id, opciones, conn) {
             title = "Opciones archivo",
             easyClose = TRUE,
             fade = TRUE,
+            # UI con las opciones de los datos
             datos_opciones_ui(
               id = id,
               file_type = input$file_type,
@@ -363,6 +367,7 @@ cargar_datos_server <- function(id, opciones, conn) {
         )
       })
       
+      # Guardar opciones de los datos locales en la variable file_opciones
       observeEvent(input$file_opciones_guardar, {
         file_opciones$value_decimal <- input$value_decimal
         file_opciones$value_delimitador <- input$value_delimitador
@@ -372,23 +377,32 @@ cargar_datos_server <- function(id, opciones, conn) {
         removeModal(session = session)
       })
       
+      # Lectura de los datos
       observeEvent(input$file_load, {
         tryCatch(expr = {
+          # Solo se lee si existe un archivo subido
           if (!is.null(input$file)) {
+            # Rango de fechas seleccionada por el usuario
             opciones$fecha_rango <- input$file_fecha_rango
             value_delimitador <- ifelse(
               test = file_opciones$value_delimitador == "Espacios",
               yes = "\t",
               no = file_opciones$value_delimitador)
+            # Lectura de archivo en csv
+            datos_read <- NULL
             if (input$file_type == "csv") {
               datos_read <- readr::read_delim(
                 file = input$file$datapath, 
                 delim = value_delimitador, 
                 locale = locale(
                   decimal_mark = file_opciones$value_decimal))
-            } else if (input$file_type == "feather") {
+            }
+            # Lectura de archivo en feather
+            if (input$file_type == "feather") {
               datos_read <- read_feather(path = input$file$datapath)
             }
+            # Si el input de tipo de archivo es invalido stop.
+            if (is.null(datos_read)) stop("No se pudo leer el archivo")
             opciones$tabla_original <- datos_read %>%
               rename_with(tolower) %>%
               mutate(fecha_prestacion = as.Date(
@@ -398,40 +412,47 @@ cargar_datos_server <- function(id, opciones, conn) {
             opciones$tabla <- opciones$tabla_original
             opciones$colnames <- opciones$tabla %>%
               colnames()
+            # Se guardan las variables numéricas
             testfor_numeric <- opciones$tabla %>%
               summarise_all(class) == "numeric"
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
             file_opciones$enabled <- TRUE
-          }},
-          error = function(e) {
-            print(e[1])
-            sendSweetAlert(
-              session = session,
-              title = "Error",
-              text = e[1],
-              type = "error"
-            )
-          })
+          }
+        },
+        error = function(e) {
+          print(e[1])
+          sendSweetAlert(
+            session = session,
+            title = "Error",
+            text = e[1],
+            type = "error"
+          )
+        })
       })
       
-      
-      # Enable tabla
-      
+      # Validación de que los datos esten subido o seleccionados 
       observe({
+        opciones$datos_cargados <- FALSE
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
+          # Si se seleccionan datos de la nube se
+          # desactivarán los datos locales
+          file_opciones$enabled <- FALSE
           opciones$datos_cargados <- TRUE
-        } else if (input$tabla == "Ninguno" &&
-                   file_opciones$enabled) {
+        }
+        if (input$tabla == "Ninguno" &&
+            file_opciones$enabled) {
           opciones$datos_cargados <- TRUE
-        } else {
-          opciones$datos_cargados <- FALSE
         }
       })
       
-      # Perfiles ----------------------------------------------------
-      
+      # Sección de Perfiles ---------------------------------------------------
+     
+      perfil_opciones <- reactiveValues()
+
       observe({
+        # Se observan cambios a opciones$perfil_selected en caso de que
+        # el modulo de seguimiento pida un cambio de perfil
         updateSelectizeInput(
           session = session,
           inputId = "perfil",
@@ -440,11 +461,15 @@ cargar_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
+        # Se observan cambios a opciones$perfiles_updated
+        # (cuando haya un cambio a los perfiles)
         opciones$perfil_updated
+        # Pull los perfiles en formato json
         perfil_raw <- tbl(conn, "perfiles_usuario") %>%
           pull(perfiles)
         tryCatch(
           expr = {
+            # Prettify y parsing del raw JSON
             opciones$perfil_raw <- perfil_raw %>%
               prettify()
             opciones$perfil_lista <- opciones$perfil_raw %>%
@@ -452,11 +477,14 @@ cargar_datos_server <- function(id, opciones, conn) {
             updateSelectizeInput(
               session = session,
               inputId = "perfil",
+              # Si no es eliminado el perfil seleccionado se mantiene
               selected = opciones$perfil_selected,
               choices = c("Ninguno", names(opciones$perfil_lista))
             )
           },
           error = function(e) {
+            # Si se da un error, el raw json se cargará para que el usuario
+            # lo pueda editar
             opciones$perfil_raw <- perfil_raw
             print(e)
             sendSweetAlert(
@@ -469,15 +497,16 @@ cargar_datos_server <- function(id, opciones, conn) {
         )
       })
       
+      # Validación de que haya un perfil seleccionado
       observe({
-        if (input$perfil != "Ninguno") {
+        opciones$perfil_enable <- FALSE
+        if (input$perfil %notin% c("Ninguno", "")) {
           opciones$perfil_enable <- TRUE
           opciones$perfil_selected <- input$perfil
-        } else {
-          opciones$perfil_enable <- FALSE
         }
       })
 
+      # Editor de JSON interactivo
       output$perfil_editor <- renderJsonedit({
         jsonedit(
           opciones$perfil_raw,
@@ -485,37 +514,54 @@ cargar_datos_server <- function(id, opciones, conn) {
           languages = "es",
           name = "Perfiles",
           enableTransform = FALSE,
+          guardar = ns("perfil_editor_edit"),
+          # Se lee JSONSchema para perfiles
           schema = read_json("json_schemas/perfiles.json"),
+          # Se lee el template para perfiles
           templates = read_json("json_schemas/perfiles_template.json")
         )
       })
       
-      observeEvent(input$perfil_editor_save, {
+      # Guardar cambios a perfiles
+      observeEvent(input$perfil_editor_edit, {
         showModal(
           modalDialog(
-            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            # Se exige una contraseña en caso de encontrarse en las variables
+            # de ambiente
+            title = "Contraseña", size = "s", fade = TRUE, easyClose = TRUE,
             passwordInput(ns("perfil_actualizar_pw"), label = NULL),
-            footer = actionButton(
-              inputId = ns("perfil_actualizar_conf"),
-              label = "Guardar perfiles")
+            footer = shinyWidgets::actionGroupButtons(
+              inputIds = ns(c("perfil_actualizar_close",
+                "perfil_actualizar_conf")),
+              labels = c("Cerrar", "Guardar"),
+              fullwidth = TRUE
+            )
           )
         )
       })
 
-      observe({
-        print(input$test)
+      observeEvent(input$perfil_actualizar_close, {
+        removeModal()
       })
-      
+
       observeEvent(input$perfil_actualizar_conf, {
-        if (input$perfil_actualizar_pw == Sys.getenv("CONF_PW")) {
-          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor_edit)
+        # Se valida que la contraseña ingresada por el usuario
+        # sea identica a la que se encuentra en las variables de ambiente
+        password_correct <- identical(
+          input$perfil_actualizar_pw,
+          Sys.getenv("CONF_PW"))
+        if (password_correct) {
+          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor_edit$raw)
           removeModal()
           tryCatch(
             expr = {
+              # Se valida el json con el JSONSchemad de perfiles
               validado <- json_validate(
-                json = input$perfil_editor_edit,
+                json = input$perfil_editor_edit$raw,
                 schema = "json_schemas/perfiles.json" 
-              ) 
+              )
+              # Si no se valida se generará error
+              if (!validado) stop("El formato de los perfiles es invalido.")
               if (validado) {
                 perfil_nuevo$perfiles %>%
                   prettify()
@@ -525,18 +571,12 @@ cargar_datos_server <- function(id, opciones, conn) {
                   perfil_nuevo,
                   overwrite = TRUE
                 )
+                # Se envia mensaje de actualización de los perfiles
                 opciones$perfil_updated <- FALSE
                 opciones$perfil_updated <- TRUE
                 showNotification(
                   ui = "El perfil se a guardado.",
                   type = "message"
-                )
-              } else {
-                sendSweetAlert(
-                  session = session,
-                  title = "Error",
-                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
-                  type = "error"
                 )
               }
             },
@@ -550,7 +590,8 @@ cargar_datos_server <- function(id, opciones, conn) {
               )
             }
           )
-        } else {
+        }
+        if (!password_correct) {
           showNotification(
             ui = "La contraseña no es correcta.",
             type = "error"
@@ -613,32 +654,40 @@ cargar_datos_server <- function(id, opciones, conn) {
           languages = "es",
           name = "Notas técnicas",
           enableTransform = FALSE,
+          guardar = ns("notas_tecnicas_editor_edit"),
           schema = read_json("json_schemas/nota_tecnica.json"),
           templates = read_json("json_schemas/nota_tecnica_template.json")
         )
       })
       
-      observeEvent(input$notas_tecnicas_editor_save, {
+      observeEvent(input$notas_tecnicas_editor_edit, {
         showModal(
           modalDialog(
             title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
             passwordInput(ns("notas_tecnicas_pw"), label = NULL),
-            footer = actionButton(
-              inputId = ns("notas_tecnicas_conf"),
-              label = "Guardar notas técnicas")
+            footer = shinyWidgets::actionGroupButtons(
+              inputIds = ns(c("notas_tecnicas_close",
+                "notas_tecnicas_conf")),
+              labels = c("Cerrar", "Guardar"),
+              fullwidth = TRUE
+            )
           )
         )
       })
+
+      observeEvent(input$notas_tecnicas_close, {
+        removeModal()
+      })
       
       observeEvent(input$notas_tecnicas_conf, {
-        if (input$notas_tecnicas_pw == Sys.getenv("CONF_PW")) {
+        if (identical(input$notas_tecnicas_pw, Sys.getenv("CONF_PW"))) {
           notas_tecnicas_nuevo <- data.frame(
-            "notas_tecnicas" = input$notas_tecnicas_editor_edit)
+            "notas_tecnicas" = input$notas_tecnicas_editor_edit$raw)
           removeModal()
           tryCatch(
             expr = {
               validado <- json_validate(
-                json = input$notas_tecnicas_editor_edit,
+                json = input$notas_tecnicas_editor_edit$raw,
                 schema = "json_schemas/nota_tecnica.json" 
               ) 
               if (validado) {
