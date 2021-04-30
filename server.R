@@ -1,3 +1,25 @@
+# El backend de Analítica Integrada Salud seguira una estructura modular.
+# El flow de datos empieza en el módulo carga_datos y alimentan a los otros.
+# La información compartida se manifiesta en la variable opciones.
+# ┌────────────┐   ┌─────┐
+# │            │◄──┤ pSQL│
+# │            │   ├─────┤
+# │cargar_datos│◄──┤ UI  │
+# │            │   ├─────┤
+# │            │◄──┤ WEB │
+# └─────┬──────┘   └─────┘
+#       │
+#       │    ┌───────────┐
+#       │◄──►│  Filtros  │
+#       │    └───────────┘
+#       ▼
+# ┌──────────────────────┐
+# │        Módulos       │
+# └──────────────────────┘
+#
+# Los módulos deben ser self containing. No deben afectar el comportamiento
+# de otros módulos. Solamente el módulo de filtros podrá cambiar datos.
+
 shinyServer(function(input, output, session) {
   
   opciones <- reactiveValues(
@@ -12,8 +34,8 @@ shinyServer(function(input, output, session) {
   
  # Modulo prepara ---------------------------------------------
   
-  base_de_datos_server(
-    id = "prepara_base_de_datos",
+  cargar_datos_server(
+    id = "cargar_datos",
     opciones = opciones,
     conn = conn
   )
@@ -68,9 +90,4 @@ shinyServer(function(input, output, session) {
     id = "seguimiento_notas_dash",
     opciones = opciones)
   
-  configuracion_server(
-    id = "configuracion",
-    opciones = opciones
-  )
-
 })

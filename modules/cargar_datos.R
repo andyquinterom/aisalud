@@ -1,11 +1,18 @@
-base_de_datos_ui <- function(id) {
+# El módulo de cargar_datos tiene como proposito alimentar los datos de
+# toda la aplicación. La varaible principal en la cual se almacenan los datos
+# es la opciones. Esta se declara en el server.R y se muta dentro de este
+# módulo. Si algun otro modulo desea cambiar algun dato global se puede hacer
+# un request a través de la misma variable opciones. Sin embargo, los datos
+# no deben ser mutados.
+
+cargar_datos_ui <- function(id) {
   
   ns <- NS(id)
   
   tagList(
     fluidRow(
       box(
-        style = "min-height: 650px;",
+        style = "min-height: 692px;",
         width = 4,
         tabsetPanel(
           tabPanel(
@@ -97,55 +104,77 @@ base_de_datos_ui <- function(id) {
       box(
         width = 8,
         style = "min-height: 650px;",
-        plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
-          withSpinner()
+        tabsetPanel(
+          tabPanel(
+            title = "Resumen",
+            plotlyOutput(outputId = ns("valor_con_tiempo"), height = "630px") %>%
+              withSpinner()
+          ),
+          tabPanel(
+            title = "Perfiles",
+            jsoneditOutput(
+              outputId = ns("perfil_editor"),
+              height = "630px",
+              width = "100%"
+            )
+          ),
+          tabPanel(
+            title = "Notas técnicas",
+            jsoneditOutput(
+              outputId = ns("notas_tecnicas_editor"),
+              height = "630px", 
+              width = "100%"
+            )
+          )
+        )
       )
     )
   )
 }
 
-base_de_datos_server <- function(id, opciones, conn) {
+cargar_datos_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
 
       ns <- NS(id)
-      base_de_datos <- reactiveValues()
+
+      # La varaible prepara opciones guarda cambios dentro del módulo.
       prepara_opciones <- reactiveValues()
 
+      # Se obtienen las tablas dentro de la base de datos del usuario
+      # y se actualiza el selectizeInput.
       observe({
         tables_query <- dbListTables(conn = conn) %>%
           unlist() %>%
           unname()
+        # AIS solo puede leer tablas que tengan el prefix "ais_"
         tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
           stringr::str_replace(pattern = "ais_", "")
-        if (identical(character(0), tables_ais)) {
-          tables_ais <- NULL
-          updateSelectizeInput(
-            session = session,
-            inputId = "tabla",
-            choices = "Ninguno"
-          )
-        } else {
-          updateSelectizeInput(
-            session = session,
-            inputId = "tabla",
-            choices = c("Ninguno", tables_ais)
-          )
-        }
+        # Si no exsiten tablas validas
+        if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+        updateSelectizeInput(
+          session = session,
+          inputId = "tabla",
+          choices = unique(c("Ninguno", tables_ais)) 
+        )
       })
-      
+     
+      # Se observa el input del usuario al seleccionar una tabla
       observeEvent(input$tabla, {
         tabla <- paste0("ais_", input$tabla)
+        # El input no puede estar vacio ni puede ser "Ninguno"
         if (input$tabla %notin% c("Ninguno", "")) {
           tryCatch(
             expr = {
+              # Se obtienen columnas para el definir la columna de valor
               prepara_opciones$colnames <- dbListFields(
                 conn,
                 tabla)
               updateSelectizeInput(
                 session = session,
                 inputId = "columna_valor",
+                # se selecciona valor por defecto
                 selected = opciones$valor_costo,
                 choices = prepara_opciones$colnames
               )
@@ -161,9 +190,10 @@ base_de_datos_server <- function(id, opciones, conn) {
             }
           )
         }
-
       })
       
+      # Si se esta trabajando con datos locales se utilizan diferentes
+      # inputs del valor
       observe({
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
@@ -171,15 +201,18 @@ base_de_datos_server <- function(id, opciones, conn) {
             test = input$columna_valor != "",
             yes = input$columna_valor,
             no = opciones$valor_costo)
-        } else if (opciones$datos_cargados) {
+        }
+        if (opciones$datos_cargados) {
           opciones$valor_costo <- ifelse(
             test = input$file_columna_valor != "",
             yes = input$file_columna_valor,
             no = opciones$valor_costo)
         }
       })
-      
+     
+      # Se definen los rangos de fechas a utilizar
       observe({
+        # Si la fecha es invalida, se utilizará la última selección
         opciones$fecha_rango[1] <- data.table::fifelse(
           test = !is.na(input$fecha_rango[1]),
           yes = input$fecha_rango[1], no = opciones$fecha_rango[1])
@@ -193,6 +226,7 @@ base_de_datos_server <- function(id, opciones, conn) {
           tryCatch(
             expr = {
               tabla <- paste0("ais_", input$tabla)
+              # Lectura de la tabla seleccionada
               opciones$colnames <- dbListFields(
                 conn,
                 tabla)
@@ -202,6 +236,8 @@ base_de_datos_server <- function(id, opciones, conn) {
               fecha_min <- opciones$fecha_rango[1]
               fecha_max <- opciones$fecha_rango[2]
               opciones$tabla_nombre <- tabla
+              # Se crea una imagen de la versión original de los datos
+              # necesaria para los filtros
               opciones$tabla_original <- conn %>%
                 tbl(tabla) %>%
                 filter(fecha_prestacion >= fecha_min) %>%
@@ -212,25 +248,18 @@ base_de_datos_server <- function(id, opciones, conn) {
                 filter(fecha_prestacion <= fecha_max)
             },
             error = function(e) {
+              # Si la lectura de los datos da un error, se volverá  a leer
+              # las tablas para evitar futuros errores
               tables_query <- dbListTables(conn = conn) %>%
                 unlist() %>%
                 unname()
               tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
                 stringr::str_replace(pattern = "ais_", "")
-              if (identical(character(0), tables_ais)) {
-                tables_ais <- NULL
-                updateSelectizeInput(
-                  session = session,
-                  inputId = "tabla",
-                  choices = "Ninguno"
-                )
-              } else {
-                updateSelectizeInput(
-                  session = session,
-                  inputId = "tabla",
-                  choices = c("Ninguno", tables_ais)
-                )
-              }
+              if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+              updateSelectizeInput(
+                session = session,
+                inputId = "tabla",
+                choices = unique(c("Ninguno", tables_ais)) )
               print(e)
               sendSweetAlert(
                 session = session,
@@ -243,7 +272,9 @@ base_de_datos_server <- function(id, opciones, conn) {
         }
       })
       
+      # Se actualiza la seleccion de columnas de valor
       observe({
+        # Si los datos se seleccionan de la nube
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
           updateSelectizeInput(
@@ -252,7 +283,9 @@ base_de_datos_server <- function(id, opciones, conn) {
             choices = opciones$colnames_num,
             selected = "valor"
           )
-        } else if (opciones$datos_cargados) {
+        }
+        # Si los datos son locales
+        if (opciones$datos_cargados) {
           updateSelectizeInput(
             session = session,
             inputId = "file_columna_valor",
@@ -262,43 +295,46 @@ base_de_datos_server <- function(id, opciones, conn) {
         }
       })
       
+      # Resumen de valores en el tiempo seleccionado
       output$valor_con_tiempo <- renderPlotly({
         if (opciones$datos_cargados) {
-            tabla <- opciones$tabla_nombre
-            valor_costo <- opciones$valor_costo
-            fecha_min <- opciones$fecha_rango[1]
-            fecha_max <- opciones$fecha_rango[2]
-            datos <- opciones$tabla %>%
-              mutate(
-                mes_temporal = year(fecha_prestacion)*100 +
+          valor_costo <- opciones$valor_costo
+          # Se genera gráfico de barras por mes y año
+          opciones$tabla %>%
+            mutate(
+              # genera id de mes y año
+              mes_temporal = year(fecha_prestacion)*100 +
                   month(fecha_prestacion)) %>%
-              group_by(mes_temporal) %>%
-              summarise(suma = sum(
-                as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
-              collect() %>%
-              mutate(mes_label_temporal = paste(
-                sep = " - ",
-                substr(mes_temporal, 1, 4),
-                mes_spanish(
-                as.numeric(substr(mes_temporal, 5, 6))))) %>%
-              arrange(mes_temporal) %>%
-              plot_ly(x = ~mes_label_temporal,
-                      y = ~suma,
-                      type = "bar") %>%
-              config(locale = "es") %>%
-              layout(
-                title = "Suma del valor a mes",
-                xaxis = list(
-                  title = "Mes",
-                  categoryorder = "array",
-                  categoryarray = ~mes_temporal),
-                yaxis = list(title = "Suma",
-                             tickformat = ",.2f"))
+            group_by(mes_temporal) %>%
+            summarise(suma = sum(
+              as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
+            collect() %>%
+            mutate(mes_label_temporal = paste(
+              sep = " - ",
+              substr(mes_temporal, 1, 4),
+              mes_spanish(
+              as.numeric(substr(mes_temporal, 5, 6))))) %>%
+            arrange(mes_temporal) %>%
+            plot_ly(
+              x = ~mes_label_temporal,
+              y = ~suma,
+              type = "bar") %>%
+            config(locale = "es") %>%
+            layout(
+              title = "Suma del valor a mes",
+              xaxis = list(
+                title = "Mes",
+                categoryorder = "array",
+                categoryarray = ~mes_temporal),
+              yaxis = list(
+                title = "Suma",
+                tickformat = ",.2f"))
         }
       })
       
       # Cargar datos locales -----------------
       
+      # Variables necesarias para lectura de datos tabulados en csv
       file_opciones <- reactiveValues(
         "value_decimal" = ".",
         "value_delimitador" = ",",
@@ -307,6 +343,7 @@ base_de_datos_server <- function(id, opciones, conn) {
         "enabled" = FALSE
       )
       
+      # se abre modal con las opciones para la subida de los datos
       observeEvent(input$file_options_open, {
         showModal(
           session = session,
@@ -314,6 +351,7 @@ base_de_datos_server <- function(id, opciones, conn) {
             title = "Opciones archivo",
             easyClose = TRUE,
             fade = TRUE,
+            # UI con las opciones de los datos
             datos_opciones_ui(
               id = id,
               file_type = input$file_type,
@@ -329,6 +367,7 @@ base_de_datos_server <- function(id, opciones, conn) {
         )
       })
       
+      # Guardar opciones de los datos locales en la variable file_opciones
       observeEvent(input$file_opciones_guardar, {
         file_opciones$value_decimal <- input$value_decimal
         file_opciones$value_delimitador <- input$value_delimitador
@@ -338,23 +377,32 @@ base_de_datos_server <- function(id, opciones, conn) {
         removeModal(session = session)
       })
       
+      # Lectura de los datos
       observeEvent(input$file_load, {
         tryCatch(expr = {
+          # Solo se lee si existe un archivo subido
           if (!is.null(input$file)) {
+            # Rango de fechas seleccionada por el usuario
             opciones$fecha_rango <- input$file_fecha_rango
             value_delimitador <- ifelse(
               test = file_opciones$value_delimitador == "Espacios",
               yes = "\t",
               no = file_opciones$value_delimitador)
+            # Lectura de archivo en csv
+            datos_read <- NULL
             if (input$file_type == "csv") {
               datos_read <- readr::read_delim(
                 file = input$file$datapath, 
                 delim = value_delimitador, 
                 locale = locale(
                   decimal_mark = file_opciones$value_decimal))
-            } else if (input$file_type == "feather") {
+            }
+            # Lectura de archivo en feather
+            if (input$file_type == "feather") {
               datos_read <- read_feather(path = input$file$datapath)
             }
+            # Si el input de tipo de archivo es invalido stop.
+            if (is.null(datos_read)) stop("No se pudo leer el archivo")
             opciones$tabla_original <- datos_read %>%
               rename_with(tolower) %>%
               mutate(fecha_prestacion = as.Date(
@@ -364,40 +412,47 @@ base_de_datos_server <- function(id, opciones, conn) {
             opciones$tabla <- opciones$tabla_original
             opciones$colnames <- opciones$tabla %>%
               colnames()
+            # Se guardan las variables numéricas
             testfor_numeric <- opciones$tabla %>%
               summarise_all(class) == "numeric"
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
             file_opciones$enabled <- TRUE
-          }},
-          error = function(e) {
-            print(e[1])
-            sendSweetAlert(
-              session = session,
-              title = "Error",
-              text = e[1],
-              type = "error"
-            )
-          })
+          }
+        },
+        error = function(e) {
+          print(e[1])
+          sendSweetAlert(
+            session = session,
+            title = "Error",
+            text = e[1],
+            type = "error"
+          )
+        })
       })
       
-      
-      # Enable tabla
-      
+      # Validación de que los datos esten subido o seleccionados 
       observe({
+        opciones$datos_cargados <- FALSE
         if (input$tabla != "Ninguno" &&
             input$tabla != "") {
+          # Si se seleccionan datos de la nube se
+          # desactivarán los datos locales
+          file_opciones$enabled <- FALSE
           opciones$datos_cargados <- TRUE
-        } else if (input$tabla == "Ninguno" &&
-                   file_opciones$enabled) {
+        }
+        if (input$tabla == "Ninguno" &&
+            file_opciones$enabled) {
           opciones$datos_cargados <- TRUE
-        } else {
-          opciones$datos_cargados <- FALSE
         }
       })
       
-      # Perfiles ----------------------------------------------------
-      
+      # Sección de Perfiles ---------------------------------------------------
+     
+      perfil_opciones <- reactiveValues()
+
       observe({
+        # Se observan cambios a opciones$perfil_selected en caso de que
+        # el modulo de seguimiento pida un cambio de perfil
         updateSelectizeInput(
           session = session,
           inputId = "perfil",
@@ -406,11 +461,15 @@ base_de_datos_server <- function(id, opciones, conn) {
       })
       
       observe({
+        # Se observan cambios a opciones$perfiles_updated
+        # (cuando haya un cambio a los perfiles)
         opciones$perfil_updated
+        # Pull los perfiles en formato json
         perfil_raw <- tbl(conn, "perfiles_usuario") %>%
           pull(perfiles)
         tryCatch(
           expr = {
+            # Prettify y parsing del raw JSON
             opciones$perfil_raw <- perfil_raw %>%
               prettify()
             opciones$perfil_lista <- opciones$perfil_raw %>%
@@ -418,10 +477,14 @@ base_de_datos_server <- function(id, opciones, conn) {
             updateSelectizeInput(
               session = session,
               inputId = "perfil",
+              # Si no es eliminado el perfil seleccionado se mantiene
+              selected = opciones$perfil_selected,
               choices = c("Ninguno", names(opciones$perfil_lista))
             )
           },
           error = function(e) {
+            # Si se da un error, el raw json se cargará para que el usuario
+            # lo pueda editar
             opciones$perfil_raw <- perfil_raw
             print(e)
             sendSweetAlert(
@@ -434,12 +497,105 @@ base_de_datos_server <- function(id, opciones, conn) {
         )
       })
       
+      # Validación de que haya un perfil seleccionado
       observe({
-        if (input$perfil != "Ninguno") {
+        opciones$perfil_enable <- FALSE
+        if (input$perfil %notin% c("Ninguno", "")) {
           opciones$perfil_enable <- TRUE
           opciones$perfil_selected <- input$perfil
-        } else {
-          opciones$perfil_enable <- FALSE
+        }
+      })
+
+      # Editor de JSON interactivo
+      output$perfil_editor <- renderJsonedit({
+        jsonedit(
+          opciones$perfil_raw,
+          language = "es",
+          languages = "es",
+          name = "Perfiles",
+          enableTransform = FALSE,
+          guardar = ns("perfil_editor_edit"),
+          # Se lee JSONSchema para perfiles
+          schema = read_json("json_schemas/perfiles.json"),
+          # Se lee el template para perfiles
+          templates = read_json("json_schemas/perfiles_template.json")
+        )
+      })
+      
+      # Guardar cambios a perfiles
+      observeEvent(input$perfil_editor_edit, {
+        showModal(
+          modalDialog(
+            # Se exige una contraseña en caso de encontrarse en las variables
+            # de ambiente
+            title = "Contraseña", size = "s", fade = TRUE, easyClose = TRUE,
+            passwordInput(ns("perfil_actualizar_pw"), label = NULL),
+            footer = shinyWidgets::actionGroupButtons(
+              inputIds = ns(c("perfil_actualizar_close",
+                "perfil_actualizar_conf")),
+              labels = c("Cerrar", "Guardar"),
+              fullwidth = TRUE
+            )
+          )
+        )
+      })
+
+      observeEvent(input$perfil_actualizar_close, {
+        removeModal()
+      })
+
+      observeEvent(input$perfil_actualizar_conf, {
+        # Se valida que la contraseña ingresada por el usuario
+        # sea identica a la que se encuentra en las variables de ambiente
+        password_correct <- identical(
+          input$perfil_actualizar_pw,
+          Sys.getenv("CONF_PW"))
+        if (password_correct) {
+          perfil_nuevo <- data.frame("perfiles" = input$perfil_editor_edit$raw)
+          removeModal()
+          tryCatch(
+            expr = {
+              # Se valida el json con el JSONSchemad de perfiles
+              validado <- json_validate(
+                json = input$perfil_editor_edit$raw,
+                schema = "json_schemas/perfiles.json" 
+              )
+              # Si no se valida se generará error
+              if (!validado) stop("El formato de los perfiles es invalido.")
+              if (validado) {
+                perfil_nuevo$perfiles %>%
+                  prettify()
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_usuario",
+                  perfil_nuevo,
+                  overwrite = TRUE
+                )
+                # Se envia mensaje de actualización de los perfiles
+                opciones$perfil_updated <- FALSE
+                opciones$perfil_updated <- TRUE
+                showNotification(
+                  ui = "El perfil se a guardado.",
+                  type = "message"
+                )
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        }
+        if (!password_correct) {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
         }
       })
       
@@ -491,6 +647,89 @@ base_de_datos_server <- function(id, opciones, conn) {
         )
       })
 
+      output$notas_tecnicas_editor <- renderJsonedit({
+        jsonedit(
+          opciones$notas_tecnicas_raw,
+          language = "es",
+          languages = "es",
+          name = "Notas técnicas",
+          enableTransform = FALSE,
+          guardar = ns("notas_tecnicas_editor_edit"),
+          schema = read_json("json_schemas/nota_tecnica.json"),
+          templates = read_json("json_schemas/nota_tecnica_template.json")
+        )
+      })
+      
+      observeEvent(input$notas_tecnicas_editor_edit, {
+        showModal(
+          modalDialog(
+            title = "Contraseña", size = "s", easyClose = TRUE,fade = TRUE,
+            passwordInput(ns("notas_tecnicas_pw"), label = NULL),
+            footer = shinyWidgets::actionGroupButtons(
+              inputIds = ns(c("notas_tecnicas_close",
+                "notas_tecnicas_conf")),
+              labels = c("Cerrar", "Guardar"),
+              fullwidth = TRUE
+            )
+          )
+        )
+      })
+
+      observeEvent(input$notas_tecnicas_close, {
+        removeModal()
+      })
+      
+      observeEvent(input$notas_tecnicas_conf, {
+        if (identical(input$notas_tecnicas_pw, Sys.getenv("CONF_PW"))) {
+          notas_tecnicas_nuevo <- data.frame(
+            "notas_tecnicas" = input$notas_tecnicas_editor_edit$raw)
+          removeModal()
+          tryCatch(
+            expr = {
+              validado <- json_validate(
+                json = input$notas_tecnicas_editor_edit$raw,
+                schema = "json_schemas/nota_tecnica.json" 
+              ) 
+              if (validado) {
+                dbWriteTable(
+                  conn = conn,
+                  name = "perfiles_notas_tecnicas",
+                  notas_tecnicas_nuevo,
+                  overwrite = TRUE
+                )
+                opciones$notas_tecnicas_updated <- FALSE
+                opciones$notas_tecnicas_updated <- TRUE
+                showNotification(
+                  ui = "La nota técnica se a guardado.",
+                  type = "message"
+                )
+              } else {
+                sendSweetAlert(
+                  session = session,
+                  title = "Error",
+                  text = "No se ha podido guardar. Valida que todos los parametros esten presentes y completos.",
+                  type = "error"
+                )
+              }
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                text = e[1],
+                type = "error"
+              )
+            }
+          )
+        } else {
+          showNotification(
+            ui = "La contraseña no es correcta.",
+            type = "error"
+          )
+        }
+      })
+ 
     }
   )
 }
