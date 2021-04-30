@@ -33,7 +33,7 @@
         "Packaged": "2021-01-09 03:50:01 UTC; edd",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-11 22:50:06 UTC",
-        "Built": "R 3.6.2; ; 2021-01-12 06:17:04 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:25 UTC; unix"
       }
     },
     "Cairo": {
@@ -61,7 +61,7 @@
         "Packaged": "2020-07-02 06:40:14 UTC; ripley",
         "Repository": "CRAN",
         "Date/Publication": "2020-07-07 06:11:04 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-07-08 04:24:36 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:26 UTC; unix"
       }
     },
     "DBI": {
@@ -93,7 +93,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-15 10:10:07 UTC",
-        "Built": "R 3.6.2; ; 2021-01-16 07:35:38 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:27 UTC; unix"
       }
     },
     "DT": {
@@ -124,7 +124,7 @@
         "Author": "Yihui Xie [aut, cre],\n  Joe Cheng [aut],\n  Xianying Tan [aut],\n  JJ Allaire [ctb],\n  Maximilian Girlich [ctb],\n  Greg Freedman Ellis [ctb],\n  Johannes Rauh [ctb],\n  jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),\n  SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),\n  Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),\n  Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),\n  Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),\n  RStudio, PBC [cph]",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-06 16:01:25 UTC",
-        "Built": "R 3.6.2; ; 2021-01-07 05:44:53 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:46 UTC; unix"
       }
     },
     "MASS": {
@@ -157,7 +157,7 @@
         "Maintainer": "Brian Ripley <ripley@stats.ox.ac.uk>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-12 10:25:50 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-13 06:59:42 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:50:12 UTC; unix"
       }
     },
     "Matrix": {
@@ -194,7 +194,7 @@
         "Author": "Douglas Bates [aut],\n  Martin Maechler [aut, cre] (<https://orcid.org/0000-0002-8685-9910>),\n  Timothy A. Davis [ctb] (SuiteSparse and 'cs' C libraries, notably\n    CHOLMOD, AMD; collaborators listed in dir(pattern =\n    '^[A-Z]+[.]txt$', full.names=TRUE, system.file('doc',\n    'SuiteSparse', package='Matrix'))),\n  Jens Oehlschlägel [ctb] (initial nearPD()),\n  Jason Riedy [ctb] (condest() and onenormest() for octave, Copyright:\n    Regents of the University of California),\n  R Core Team [ctb] (base R matrix implementation)",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-06 17:40:19 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-07 05:36:56 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:50:15 UTC; unix"
       }
     },
     "R6": {
@@ -223,7 +223,7 @@
         "Maintainer": "Winston Chang <winston@stdout.org>",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-28 19:30:02 UTC",
-        "Built": "R 3.6.2; ; 2020-10-29 05:59:24 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:16:27 UTC; unix"
       }
     },
     "RColorBrewer": {
@@ -248,7 +248,7 @@
         "NeedsCompilation": "no",
         "Repository": "CRAN",
         "Date/Publication": "2014-12-07 08:28:55",
-        "Built": "R 3.6.0; ; 2019-04-26 19:50:52 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:47 UTC; unix"
       }
     },
     "RPostgres": {
@@ -284,7 +284,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-19 13:50:05 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-20 05:33:52 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:52:07 UTC; unix"
       }
     },
     "Rcpp": {
@@ -313,7 +313,41 @@
         "Packaged": "2021-01-14 13:44:02 UTC; edd",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-15 13:10:13 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-16 05:32:55 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:42 UTC; unix"
+      }
+    },
+    "V8": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "V8",
+        "Type": "Package",
+        "Title": "Embedded JavaScript and WebAssembly Engine for R",
+        "Version": "3.4.1",
+        "Authors@R": "person(\"Jeroen\", \"Ooms\", role = c(\"aut\", \"cre\"), email = \"jeroen@berkeley.edu\",\n    comment = c(ORCID = \"0000-0002-4035-0289\"))",
+        "Description": "An R interface to V8: Google's open source JavaScript and WebAssembly \n    engine. This package can be compiled either with V8 version 6 and up, a NodeJS\n    shared library, or the legacy 3.14/3.15 branch of V8.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/jeroen/v8 (devel) https://v8.dev (upstream)",
+        "BugReports": "https://github.com/jeroen/v8/issues",
+        "SystemRequirements": "V8 engine version 6+ is needed for modern JS and\nWASM support. On Debian / Ubuntu install either libv8-dev or\nlibnode-dev, on Fedora use v8-devel. The readme has\ninstructions for installing backports on Ubuntu Xenial and\nBionic. It is still possible to build this package against the\nlegacy libv8 version 3.14 branch, but these engines only\nsupport traditional JavaScript (ES5).",
+        "NeedsCompilation": "yes",
+        "VignetteBuilder": "knitr",
+        "Imports": "Rcpp (>= 0.12.12), jsonlite (>= 1.0), curl (>= 1.0), utils",
+        "LinkingTo": "Rcpp",
+        "Suggests": "testthat, knitr, rmarkdown",
+        "RoxygenNote": "7.1.1",
+        "Language": "en-US",
+        "Encoding": "UTF-8",
+        "Packaged": "2021-04-23 08:03:46 UTC; jeroen",
+        "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>)",
+        "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
+        "Repository": "CRAN",
+        "Date/Publication": "2021-04-23 08:50:10 UTC",
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 20:09:29 UTC; unix"
       }
     },
     "askpass": {
@@ -345,7 +379,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2019-01-13 12:50:03 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 22:26:39 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:11 UTC; unix"
       }
     },
     "assertthat": {
@@ -372,7 +406,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-03-21 14:53:46 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:49:57 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:52:46 UTC; unix"
       }
     },
     "base64enc": {
@@ -397,7 +431,7 @@
         "Packaged": "2015-02-04 20:31:00 UTC; svnuser",
         "Repository": "CRAN",
         "Date/Publication": "2015-07-28 08:03:37",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:50:57 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:36 UTC; unix"
       }
     },
     "bit": {
@@ -429,7 +463,7 @@
         "Packaged": "2020-08-03 12:14:34 UTC; jo",
         "Repository": "CRAN",
         "Date/Publication": "2020-08-04 04:20:08 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-08-05 05:52:41 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:48 UTC; unix"
       }
     },
     "bit64": {
@@ -461,7 +495,7 @@
         "Date/Publication": "2020-08-30 07:20:02 UTC",
         "NeedsCompilation": "yes",
         "Packaged": "2020-08-29 10:56:45 UTC; jo",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-08-31 05:52:08 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:51 UTC; unix"
       }
     },
     "blob": {
@@ -491,7 +525,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2020-01-20 22:50:02 UTC",
-        "Built": "R 3.6.0; ; 2020-01-21 14:02:14 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:54 UTC; unix"
       }
     },
     "bslib": {
@@ -523,7 +557,7 @@
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-25 08:00:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-26 13:29:57 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:46 UTC; unix"
       }
     },
     "cachem": {
@@ -553,7 +587,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-13 07:30:05 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-14 12:37:20 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:53:48 UTC; unix"
       }
     },
     "callr": {
@@ -583,7 +617,7 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-28 06:51:10 UTC",
-        "Built": "R 3.6.2; ; 2021-03-29 06:20:15 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:51 UTC; unix"
       }
     },
     "cli": {
@@ -614,7 +648,7 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-04-05 14:20:11 UTC",
-        "Built": "R 3.6.3; ; 2021-04-05 21:26:41 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:52 UTC; unix"
       }
     },
     "clipr": {
@@ -648,7 +682,7 @@
         "Maintainer": "Matthew Lincoln <matthew.d.lincoln@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-08 14:00:05 UTC",
-        "Built": "R 3.6.2; ; 2020-10-09 04:25:38 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:54 UTC; unix"
       }
     },
     "codetools": {
@@ -673,7 +707,7 @@
         "Packaged": "2020-11-02 14:45:50 UTC; luke",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-04 17:12:32 UTC",
-        "Built": "R 3.6.2; ; 2020-11-05 05:24:43 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:50:08 UTC; unix"
       }
     },
     "colorspace": {
@@ -705,7 +739,7 @@
         "Maintainer": "Achim Zeileis <Achim.Zeileis@R-project.org>",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-11 07:40:15 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-11-12 06:50:25 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:53:54 UTC; unix"
       }
     },
     "commonmark": {
@@ -733,7 +767,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2018-12-01 12:30:03 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 20:04:11 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:37 UTC; unix"
       }
     },
     "config": {
@@ -765,7 +799,7 @@
         "Maintainer": "Andrie de Vries <apdevries@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-17 11:00:06 UTC",
-        "Built": "R 3.6.2; ; 2020-12-18 13:56:13 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:57 UTC; unix"
       }
     },
     "cpp11": {
@@ -797,7 +831,7 @@
         "Maintainer": "Jim Hester <jim.hester@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-29 14:20:04 UTC",
-        "Built": "R 3.6.2; ; 2021-03-30 05:10:54 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:53:57 UTC; unix"
       }
     },
     "crayon": {
@@ -828,7 +862,7 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-08 19:50:02 UTC",
-        "Built": "R 3.6.2; ; 2021-02-09 05:25:43 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:15:32 UTC; unix"
       }
     },
     "crosstalk": {
@@ -858,7 +892,7 @@
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-12 10:00:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-13 07:15:15 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:29 UTC; unix"
       }
     },
     "curl": {
@@ -892,7 +926,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2019-12-02 14:00:03 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-12-03 15:59:32 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:22 UTC; unix"
       }
     },
     "data.table": {
@@ -923,7 +957,7 @@
         "Maintainer": "Matt Dowle <mattjdowle@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-30 15:50:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-12-31 05:38:51 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:53:58 UTC; unix"
       }
     },
     "dbplot": {
@@ -953,7 +987,7 @@
         "Maintainer": "Edgar Ruiz <edgararuiz@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-02-07 01:10:09 UTC",
-        "Built": "R 3.6.0; ; 2020-02-07 22:26:11 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:53 UTC; unix"
       }
     },
     "dbplyr": {
@@ -989,7 +1023,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-03 21:20:03 UTC",
-        "Built": "R 3.6.2; ; 2021-02-04 07:14:31 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:54 UTC; unix"
       }
     },
     "digest": {
@@ -1018,7 +1052,7 @@
         "Packaged": "2020-10-20 13:03:32 UTC; edd",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-24 22:10:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-10-25 04:24:42 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:33 UTC; unix"
       }
     },
     "dplyr": {
@@ -1052,7 +1086,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-05 11:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-06 07:25:23 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:54:12 UTC; unix"
       }
     },
     "ellipsis": {
@@ -1064,26 +1098,25 @@
       "GithubSha1": null,
       "description": {
         "Package": "ellipsis",
-        "Version": "0.3.1",
+        "Version": "0.3.2",
         "Title": "Tools for Working with ...",
         "Description": "The ellipsis is a powerful tool for extending functions. Unfortunately \n    this power comes at a cost: misspelled arguments will be silently ignored. \n    The ellipsis package provides a collection of functions to catch problems\n    and alert the user.",
         "Authors@R": "c(\n      person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", role = c(\"aut\", \"cre\")),\n      person(\"RStudio\", role = \"cph\")\n    )",
-        "License": "GPL-3",
+        "License": "MIT + file LICENSE",
         "Encoding": "UTF-8",
-        "LazyData": "true",
-        "RoxygenNote": "7.1.0",
+        "RoxygenNote": "7.1.1",
         "URL": "https://ellipsis.r-lib.org, https://github.com/r-lib/ellipsis",
         "BugReports": "https://github.com/r-lib/ellipsis/issues",
         "Depends": "R (>= 3.2)",
         "Imports": "rlang (>= 0.3.0)",
         "Suggests": "covr, testthat",
         "NeedsCompilation": "yes",
-        "Packaged": "2020-05-15 05:57:33 UTC; lionel",
+        "Packaged": "2021-04-29 12:06:44 UTC; lionel",
         "Author": "Hadley Wickham [aut, cre],\n  RStudio [cph]",
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2020-05-15 14:10:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-05-16 10:15:11 UTC; unix"
+        "Date/Publication": "2021-04-29 12:40:02 UTC",
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-30 16:12:17 UTC; unix"
       }
     },
     "fansi": {
@@ -1115,7 +1148,7 @@
         "Maintainer": "Brodie Gaslam <brodie.gaslam@yahoo.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-15 12:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-16 06:44:18 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:26 UTC; unix"
       }
     },
     "farver": {
@@ -1145,7 +1178,7 @@
         "Author": "Thomas Lin Pedersen [cre, aut]\n    (<https://orcid.org/0000-0002-5147-4711>),\n  Berendea Nicolae [aut] (Author of the ColorSpace C++ library),\n  Romain François [aut] (<https://orcid.org/0000-0002-2444-4226>)",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-28 19:30:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-01 12:56:26 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:54:32 UTC; unix"
       }
     },
     "fastmap": {
@@ -1174,7 +1207,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-25 21:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-26 15:29:49 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:53:47 UTC; unix"
       }
     },
     "feather": {
@@ -1206,7 +1239,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-09-15 00:10:22 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-09-15 11:47:00 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:54:57 UTC; unix"
       }
     },
     "forge": {
@@ -1236,7 +1269,7 @@
         "Maintainer": "Kevin Kuo <kevin.kuo@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-02-26 16:00:03 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 20:57:59 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:55:11 UTC; unix"
       }
     },
     "fresh": {
@@ -1267,7 +1300,7 @@
         "Maintainer": "Victor Perrier <victor.perrier@dreamrs.fr>",
         "Repository": "CRAN",
         "Date/Publication": "2020-05-29 14:40:02 UTC",
-        "Built": "R 3.6.2; ; 2020-05-30 10:32:52 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:33 UTC; unix"
       }
     },
     "fs": {
@@ -1303,7 +1336,7 @@
         "Maintainer": "Jim Hester <james.f.hester@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-07-31 21:30:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-08-01 06:59:29 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:16:08 UTC; unix"
       }
     },
     "future": {
@@ -1334,7 +1367,7 @@
         "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-10 09:00:05 UTC",
-        "Built": "R 3.6.2; ; 2020-12-11 05:41:08 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:36 UTC; unix"
       }
     },
     "generics": {
@@ -1365,7 +1398,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-31 06:10:15 UTC",
-        "Built": "R 3.6.2; ; 2020-11-01 05:58:39 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:55 UTC; unix"
       }
     },
     "ggplot2": {
@@ -1399,7 +1432,7 @@
         "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-30 15:30:02 UTC",
-        "Built": "R 3.6.2; ; 2020-12-31 07:06:44 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:47 UTC; unix"
       }
     },
     "globals": {
@@ -1429,7 +1462,7 @@
         "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-22 17:00:02 UTC",
-        "Built": "R 3.6.2; ; 2020-11-23 13:25:30 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:34 UTC; unix"
       }
     },
     "glue": {
@@ -1462,7 +1495,7 @@
         "Maintainer": "Jim Hester <james.f.hester@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-08-27 13:50:06 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2020-08-27 19:57:42 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:30 UTC; unix"
       }
     },
     "gridExtra": {
@@ -1490,7 +1523,7 @@
         "Maintainer": "Baptiste Auguie <baptiste.auguie@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2017-09-09 14:12:08 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:51:13 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:38 UTC; unix"
       }
     },
     "gtable": {
@@ -1522,7 +1555,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-03-25 19:50:02 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:50:48 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:17 UTC; unix"
       }
     },
     "hms": {
@@ -1554,7 +1587,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-13 17:30:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-14 05:35:21 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:54 UTC; unix"
       }
     },
     "htmltools": {
@@ -1587,7 +1620,7 @@
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-22 22:40:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-23 05:25:48 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:19 UTC; unix"
       }
     },
     "htmlwidgets": {
@@ -1618,7 +1651,7 @@
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-10 17:30:02 UTC",
-        "Built": "R 3.6.2; ; 2020-12-11 07:11:10 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:51:29 UTC; unix"
       }
     },
     "httpuv": {
@@ -1633,26 +1666,26 @@
         "Type": "Package",
         "Encoding": "UTF-8",
         "Title": "HTTP and WebSocket Server Library",
-        "Version": "1.5.5",
-        "Authors@R": "c(\n    person(\"Joe\", \"Cheng\", role = c(\"aut\"), email = \"joe@rstudio.com\"),\n    person(\"Winston\", \"Chang\", role = c(\"aut\", \"cre\"), email = \"winston@rstudio.com\"),\n    person(family = \"RStudio, PBC\", role = \"cph\"),\n    person(\"Hector\", \"Corrada Bravo\", role = \"ctb\"),\n    person(\"Jeroen\", \"Ooms\", role = \"ctb\")\n    )",
+        "Version": "1.6.0",
+        "Authors@R": "c(\n    person(\"Joe\", \"Cheng\", role = c(\"aut\"), email = \"joe@rstudio.com\"),\n    person(\"Winston\", \"Chang\", role = c(\"aut\", \"cre\"), email = \"winston@rstudio.com\"),\n    person(family = \"RStudio, PBC\", role = \"cph\"),\n    person(\"Hector\", \"Corrada Bravo\", role = \"ctb\"),\n    person(\"Jeroen\", \"Ooms\", role = \"ctb\"),\n    person(\"Andrzej\", \"Krzemienski\", role = \"cph\", comment = \"optional.hpp\")\n    )",
         "Copyright": "RStudio, PBC; Joyent, Inc.; Nginx Inc.; Igor Sysoev; Niels\nProvos; Internet Systems Consortium, Inc.; Alexander Chemeris;\nBerkeley Software Design; Google Inc.; Sony Mobile\nCommunications AB; Alexander Peslyak; Free Software Foundation,\nInc.; X Consortium; Ben Noordhuis; StrongLoop, Inc.; Saúl\nIbarra Corretgé; Bert Belder; Fedor Indutny; libuv project;\nRefael Ackermann; Kenneth MacKay; Emergya; Diego Pettenò; xine\nproject, The Regents of the University of California, Dariusz\nDwornikowski",
         "Description": "Provides low-level socket and protocol support for handling\n    HTTP and WebSocket requests directly from within R. It is primarily\n    intended as a building block for other packages, rather than making it\n    particularly easy to create complete web applications using httpuv alone.\n    httpuv is built on top of the libuv and http-parser C libraries, both of\n    which were developed by Joyent, Inc. (See LICENSE file for libuv and\n    http-parser license information.)",
         "License": "GPL (>= 2) | file LICENSE",
         "Depends": "R (>= 2.15.1)",
         "Imports": "Rcpp (>= 0.11.0), utils, R6, promises, later (>= 0.8.0)",
-        "LinkingTo": "Rcpp, BH, later",
+        "LinkingTo": "Rcpp, later",
         "URL": "https://github.com/rstudio/httpuv",
-        "SystemRequirements": "GNU make",
+        "SystemRequirements": "GNU make, C++11",
         "RoxygenNote": "7.1.1",
         "Suggests": "testthat, callr, curl, websocket",
         "Collate": "'RcppExports.R' 'httpuv.R' 'random_port.R' 'server.R'\n'static_paths.R' 'utils.R'",
         "NeedsCompilation": "yes",
-        "Packaged": "2021-01-12 21:21:08 UTC; winston",
-        "Author": "Joe Cheng [aut],\n  Winston Chang [aut, cre],\n  RStudio, PBC [cph],\n  Hector Corrada Bravo [ctb],\n  Jeroen Ooms [ctb]",
+        "Packaged": "2021-04-23 17:53:30 UTC; winston",
+        "Author": "Joe Cheng [aut],\n  Winston Chang [aut, cre],\n  RStudio, PBC [cph],\n  Hector Corrada Bravo [ctb],\n  Jeroen Ooms [ctb],\n  Andrzej Krzemienski [cph] (optional.hpp)",
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2021-01-13 06:40:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-14 05:30:08 UTC; unix"
+        "Date/Publication": "2021-04-23 18:50:02 UTC",
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-30 16:12:17 UTC; unix"
       }
     },
     "httr": {
@@ -1683,7 +1716,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-07-20 23:40:04 UTC",
-        "Built": "R 3.6.2; ; 2020-07-21 04:26:12 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:17:44 UTC; unix"
       }
     },
     "isoband": {
@@ -1716,7 +1749,7 @@
         "Maintainer": "Claus O. Wilke <wilke@austin.utexas.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-03 17:10:20 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-04 16:36:19 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:54:17 UTC; unix"
       }
     },
     "jpeg": {
@@ -1741,7 +1774,7 @@
         "NeedsCompilation": "yes",
         "Repository": "CRAN",
         "Date/Publication": "2019-10-24 14:51:52 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-11-05 19:35:57 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:56:38 UTC; unix"
       }
     },
     "jquerylib": {
@@ -1754,22 +1787,22 @@
       "description": {
         "Package": "jquerylib",
         "Title": "Obtain 'jQuery' as an HTML Dependency Object",
-        "Version": "0.1.3",
+        "Version": "0.1.4",
         "Authors@R": "c(\n    person(\"Carson\", \"Sievert\", role = c(\"aut\", \"cre\"), email = \"carson@rstudio.com\", comment = c(ORCID = \"0000-0002-4958-2844\")),\n    person(\"Joe\", \"Cheng\", role = \"aut\", email = \"joe@rstudio.com\"),\n    person(family = \"RStudio\", role = \"cph\"),\n    person(family = \"jQuery Foundation\", role = \"cph\",\n    comment = \"jQuery library and jQuery UI library\"),\n    person(family = \"jQuery contributors\", role = c(\"ctb\", \"cph\"),\n    comment = \"jQuery library; authors listed in inst/lib/jquery-AUTHORS.txt\")\n    )",
         "Description": "Obtain any major version of 'jQuery' (<https://code.jquery.com/>) and use it in any webpage generated by 'htmltools' (e.g. 'shiny', 'htmlwidgets', and 'rmarkdown').\n    Most R users don't need to use this package directly, but other R packages (e.g. 'shiny', 'rmarkdown', etc.) depend on this package to avoid bundling redundant copies of 'jQuery'.",
         "License": "MIT + file LICENSE",
         "Encoding": "UTF-8",
-        "LazyData": "true",
+        "Config/testthat/edition": "3",
         "RoxygenNote": "7.0.2",
         "Imports": "htmltools",
         "Suggests": "testthat",
         "NeedsCompilation": "no",
-        "Packaged": "2020-12-17 16:05:25 UTC; cpsievert",
+        "Packaged": "2021-04-26 16:40:21 UTC; cpsievert",
         "Author": "Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),\n  Joe Cheng [aut],\n  RStudio [cph],\n  jQuery Foundation [cph] (jQuery library and jQuery UI library),\n  jQuery contributors [ctb, cph] (jQuery library; authors listed in\n    inst/lib/jquery-AUTHORS.txt)",
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2020-12-17 16:40:03 UTC",
-        "Built": "R 3.6.2; ; 2020-12-18 15:47:01 UTC; unix"
+        "Date/Publication": "2021-04-26 17:10:02 UTC",
+        "Built": "R 3.6.3; ; 2021-04-30 16:12:16 UTC; unix"
       }
     },
     "jsonlite": {
@@ -1799,7 +1832,38 @@
         "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>),\n  Duncan Temple Lang [ctb],\n  Lloyd Hilaiel [cph] (author of bundled libyajl)",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-09 17:40:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-12-10 07:20:27 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:16:25 UTC; unix"
+      }
+    },
+    "jsonvalidate": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "GithubRepo": null,
+      "GithubUsername": null,
+      "GithubRef": null,
+      "GithubSha1": null,
+      "description": {
+        "Package": "jsonvalidate",
+        "Title": "Validate 'JSON'",
+        "Version": "1.1.0",
+        "Authors@R": "c(person(\"Rich\", \"FitzJohn\", role = c(\"aut\", \"cre\"),\n    email = \"rich.fitzjohn@gmail.com\"),\n    person(\"Ian\", \"Lyttle\", role = \"ctb\"),\n    person(\"Kara\", \"Woo\", role = \"ctb\"),\n    person(\"Mathias\", \"Buus\", role = \"cph\"),\n    person(\"Evgeny\", \"Poberezkin\", role = \"cph\"))",
+        "Maintainer": "Rich FitzJohn <rich.fitzjohn@gmail.com>",
+        "Description": "Uses the node library 'is-my-json-valid' or 'ajv' to\n    validate 'JSON' against a 'JSON' schema.  Drafts 04, 06 and 07 of\n    'JSON' schema are supported.",
+        "License": "MIT + file LICENSE",
+        "LazyData": "true",
+        "URL": "https://github.com/ropensci/jsonvalidate",
+        "BugReports": "https://github.com/ropensci/jsonvalidate/issues",
+        "Imports": "V8",
+        "Suggests": "knitr, rmarkdown, testthat",
+        "RoxygenNote": "6.1.1",
+        "VignetteBuilder": "knitr",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2019-06-25 07:13:19 UTC; rfitzjoh",
+        "Author": "Rich FitzJohn [aut, cre],\n  Ian Lyttle [ctb],\n  Kara Woo [ctb],\n  Mathias Buus [cph],\n  Evgeny Poberezkin [cph]",
+        "Repository": "CRAN",
+        "Date/Publication": "2019-06-25 09:00:03 UTC",
+        "Built": "R 3.6.3; ; 2021-04-27 20:09:35 UTC; unix"
       }
     },
     "labeling": {
@@ -1825,7 +1889,7 @@
         "Packaged": "2020-10-18 12:56:46 UTC; nuno",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-20 07:00:09 UTC",
-        "Built": "R 3.6.2; ; 2020-10-21 13:17:09 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:44 UTC; unix"
       }
     },
     "later": {
@@ -1857,7 +1921,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-04-23 15:20:02 UTC",
-        "Built": "R 3.6.3; x86_64-apple-darwin15.6.0; 2021-04-23 17:23:20 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 20:08:33 UTC; unix"
       }
     },
     "lattice": {
@@ -1890,7 +1954,7 @@
         "Maintainer": "Deepayan Sarkar <deepayan.sarkar@r-project.org>",
         "Repository": "CRAN",
         "Date/Publication": "2020-04-02 12:00:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-04-10 07:15:18 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:50:08 UTC; unix"
       }
     },
     "lazyeval": {
@@ -1918,7 +1982,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-03-15 17:50:07 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:50:46 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:18 UTC; unix"
       }
     },
     "leaflet": {
@@ -1950,7 +2014,7 @@
         "Maintainer": "Joe Cheng <joe@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-07 07:00:26 UTC",
-        "Built": "R 3.6.2; ; 2021-01-08 07:30:05 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:40 UTC; unix"
       }
     },
     "leaflet.providers": {
@@ -1983,7 +2047,7 @@
         "Maintainer": "Barret Schloerke <barret@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-11-09 23:40:09 UTC",
-        "Built": "R 3.6.0; ; 2019-11-11 01:13:46 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:39 UTC; unix"
       }
     },
     "lifecycle": {
@@ -2016,7 +2080,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-15 15:20:06 UTC",
-        "Built": "R 3.6.2; ; 2021-02-16 07:02:19 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:17:12 UTC; unix"
       }
     },
     "listenv": {
@@ -2046,7 +2110,7 @@
         "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-12-05 21:40:02 UTC",
-        "Built": "R 3.6.0; ; 2019-12-06 15:32:02 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:35 UTC; unix"
       }
     },
     "listviewer": {
@@ -2055,7 +2119,7 @@
       "GithubRepo": "listviewer",
       "GithubUsername": "andyquinterom",
       "GithubRef": "HEAD",
-      "GithubSha1": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+      "GithubSha1": "fd95c8c36673dc4fd78bbc53744cfe2e1f17b601",
       "description": {
         "Package": "listviewer",
         "Type": "Package",
@@ -2077,16 +2141,16 @@
         "RemoteRepo": "listviewer",
         "RemoteUsername": "andyquinterom",
         "RemoteRef": "HEAD",
-        "RemoteSha": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+        "RemoteSha": "fd95c8c36673dc4fd78bbc53744cfe2e1f17b601",
         "GithubRepo": "listviewer",
         "GithubUsername": "andyquinterom",
         "GithubRef": "HEAD",
-        "GithubSHA1": "bd7bc022fb886bb7075518ee074d21daaef7ee1e",
+        "GithubSHA1": "fd95c8c36673dc4fd78bbc53744cfe2e1f17b601",
         "NeedsCompilation": "no",
-        "Packaged": "2021-04-23 19:30:15 UTC; andresquintero",
+        "Packaged": "2021-04-30 16:13:13 UTC; andres",
         "Author": "Jos de Jong [aut, cph] (jsoneditor.js library in\n    htmlwidgets/jsoneditor, http://github.com/josdejong/jsoneditor/),\n  Mac Gainer [aut, cph] (react-json-view library in\n    htmlwidgets/react-json, https://github.com/mac-s-g/react-json-view),\n  Kent Russell [aut, cre] (R interface)",
         "Maintainer": "Kent Russell <kent.russell@timelyportfolio.com>",
-        "Built": "R 3.6.3; ; 2021-04-23 19:30:15 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-30 16:13:13 UTC; unix"
       }
     },
     "lubridate": {
@@ -2123,7 +2187,7 @@
         "Author": "Vitalie Spinu [aut, cre],\n  Garrett Grolemund [aut],\n  Hadley Wickham [aut],\n  Ian Lyttle [ctb],\n  Imanuel Costigan [ctb],\n  Jason Law [ctb],\n  Doug Mitarotonda [ctb],\n  Joseph Larmarange [ctb],\n  Jonathan Boiser [ctb],\n  Chel Hee Lee [ctb],\n  Google Inc. [ctb, cph]",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-26 15:00:09 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-27 05:27:18 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:55 UTC; unix"
       }
     },
     "magrittr": {
@@ -2154,7 +2218,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-17 16:20:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-11-18 06:53:33 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:16:04 UTC; unix"
       }
     },
     "maps": {
@@ -2181,7 +2245,7 @@
         "Repository": "CRAN",
         "Packaged": "2018-04-03 07:33:40 UTC; dalex",
         "Date/Publication": "2018-04-03 08:24:49 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:58:07 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:57:41 UTC; unix"
       }
     },
     "markdown": {
@@ -2213,7 +2277,7 @@
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
         "Date/Publication": "2019-08-07 16:30:02 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-08-08 12:53:01 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:13 UTC; unix"
       }
     },
     "mgcv": {
@@ -2241,7 +2305,7 @@
         "Packaged": "2021-02-16 11:38:19 UTC; sw283",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-16 18:50:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-17 07:10:28 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:02 UTC; unix"
       }
     },
     "mime": {
@@ -2271,7 +2335,7 @@
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-13 07:30:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-14 06:02:15 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:23 UTC; unix"
       }
     },
     "munsell": {
@@ -2298,7 +2362,7 @@
         "Packaged": "2018-06-11 23:15:15 UTC; wickhamc",
         "Repository": "CRAN",
         "Date/Publication": "2018-06-12 04:29:06 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 22:27:02 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:45 UTC; unix"
       }
     },
     "nlme": {
@@ -2333,7 +2397,7 @@
         "Maintainer": "R-core <R-core@R-project.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-04 07:02:30 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-05 06:57:35 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:50:56 UTC; unix"
       }
     },
     "openssl": {
@@ -2365,7 +2429,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2020-09-18 12:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-09-22 09:30:54 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:26 UTC; unix"
       }
     },
     "packrat": {
@@ -2395,7 +2459,7 @@
         "Packaged": "2021-03-29 20:04:21 UTC; kevinushey",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-30 11:50:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-31 05:46:44 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:43 UTC; unix"
       }
     },
     "parallelly": {
@@ -2424,7 +2488,7 @@
         "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-14 15:50:10 UTC",
-        "Built": "R 3.6.2; ; 2021-03-15 17:18:59 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:35 UTC; unix"
       }
     },
     "pillar": {
@@ -2458,7 +2522,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-05 18:20:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-06 07:22:18 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:08 UTC; unix"
       }
     },
     "pkgconfig": {
@@ -2486,7 +2550,7 @@
         "Packaged": "2019-09-22 08:42:40 UTC; gaborcsardi",
         "Repository": "CRAN",
         "Date/Publication": "2019-09-22 09:20:02 UTC",
-        "Built": "R 3.6.0; ; 2019-09-23 16:47:11 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:15:31 UTC; unix"
       }
     },
     "plogr": {
@@ -2516,7 +2580,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2018-03-25 15:25:27 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:51:26 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:52:07 UTC; unix"
       }
     },
     "plotly": {
@@ -2547,7 +2611,7 @@
         "Maintainer": "Carson Sievert <cpsievert1@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-10 14:30:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-11 07:34:40 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:49 UTC; unix"
       }
     },
     "png": {
@@ -2572,7 +2636,7 @@
         "NeedsCompilation": "yes",
         "Repository": "CRAN",
         "Date/Publication": "2013-12-03 22:25:05",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:51:32 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:56:39 UTC; unix"
       }
     },
     "processx": {
@@ -2602,7 +2666,7 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-23 17:50:05 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-24 06:20:16 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:53:49 UTC; unix"
       }
     },
     "promises": {
@@ -2636,7 +2700,7 @@
         "Maintainer": "Joe Cheng <joe@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-11 19:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-12 12:58:21 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:51:41 UTC; unix"
       }
     },
     "ps": {
@@ -2667,7 +2731,7 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-28 20:50:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-01 07:09:21 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:16 UTC; unix"
       }
     },
     "purrr": {
@@ -2699,7 +2763,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-04-17 12:10:07 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-04-18 04:34:07 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:21 UTC; unix"
       }
     },
     "r2d3": {
@@ -2732,7 +2796,7 @@
         "Maintainer": "Nick Strayer <nick.strayer@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-18 06:20:03 UTC",
-        "Built": "R 3.6.2; ; 2020-12-19 08:02:35 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:52 UTC; unix"
       }
     },
     "rappdirs": {
@@ -2764,7 +2828,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-31 05:40:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-01 06:48:04 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:52:46 UTC; unix"
       }
     },
     "raster": {
@@ -2796,7 +2860,7 @@
         "Maintainer": "Robert J. Hijmans <r.hijmans@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-14 15:30:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-11-15 07:00:19 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:56:43 UTC; unix"
       }
     },
     "readr": {
@@ -2834,7 +2898,7 @@
         "Maintainer": "Jim Hester <james.hester@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-10-05 08:50:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-10-06 06:13:37 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:57:53 UTC; unix"
       }
     },
     "rlang": {
@@ -2869,7 +2933,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-12-30 15:00:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-12-31 05:26:20 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:59 UTC; unix"
       }
     },
     "rprojroot": {
@@ -2901,7 +2965,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-15 13:30:03 UTC",
-        "Built": "R 3.6.2; ; 2020-11-16 05:25:23 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:15:32 UTC; unix"
       }
     },
     "rsconnect": {
@@ -2914,32 +2978,31 @@
       "description": {
         "Package": "rsconnect",
         "Type": "Package",
-        "Title": "Deployment Interface for R Markdown Documents and Shiny\nApplications",
+        "Title": "Deployment Interface for R Markdown Documents and Shiny Applications",
         "Version": "0.8.17",
         "Author": "JJ Allaire",
         "Maintainer": "Jonathan McPherson <jonathan@rstudio.com>",
         "Description": "Programmatic deployment interface for 'RPubs', 'shinyapps.io', and\n    'RStudio Connect'. Supported content types include R Markdown documents,\n    Shiny applications, Plumber APIs, plots, and static web content.",
         "Depends": "R (>= 3.0.0)",
-        "Imports": "curl, digest, jsonlite, openssl, packrat (>= 0.5), rstudioapi\n(>= 0.5), yaml (>= 2.1.5)",
-        "Suggests": "RCurl, callr, httpuv, knitr, plumber (>= 0.3.2), reticulate,\nrmarkdown (>= 1.1), shiny, sourcetools, testthat, xtable",
+        "Imports": "curl,\ndigest,\njsonlite,\nopenssl,\npackrat (>= 0.5),\nrstudioapi (>= 0.5),\nyaml (>= 2.1.5)",
+        "Suggests": "RCurl,\ncallr,\nhttpuv,\nknitr,\nplumber (>= 0.3.2),\nreticulate,\nrmarkdown (>= 1.1),\nshiny,\nsourcetools,\ntestthat,\nxtable",
         "License": "GPL-2",
         "RoxygenNote": "7.1.1",
         "Roxygen": "list(markdown = TRUE)",
         "URL": "https://github.com/rstudio/rsconnect",
         "BugReports": "https://github.com/rstudio/rsconnect/issues",
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:38 UTC; unix",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "rsconnect",
         "RemoteUsername": "andyquinterom",
         "RemoteRef": "HEAD",
         "RemoteSha": "b395534566eb4443a5f07fdd936dfa4ad8693477",
+        "GithubHost": "api.github.com",
         "GithubRepo": "rsconnect",
         "GithubUsername": "andyquinterom",
         "GithubRef": "HEAD",
-        "GithubSHA1": "b395534566eb4443a5f07fdd936dfa4ad8693477",
-        "NeedsCompilation": "no",
-        "Packaged": "2021-04-23 17:25:31 UTC; andresquintero",
-        "Built": "R 3.6.3; ; 2021-04-23 17:25:32 UTC; unix"
+        "GithubSHA1": "b395534566eb4443a5f07fdd936dfa4ad8693477"
       }
     },
     "rstudioapi": {
@@ -2968,7 +3031,7 @@
         "Author": "Kevin Ushey [aut, cre],\n  JJ Allaire [aut],\n  Hadley Wickham [aut],\n  Gary Ritchie [aut],\n  RStudio [cph]",
         "Repository": "CRAN",
         "Date/Publication": "2020-11-12 21:50:02 UTC",
-        "Built": "R 3.6.2; ; 2020-11-13 05:25:20 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:15:35 UTC; unix"
       }
     },
     "sass": {
@@ -3001,7 +3064,7 @@
         "Maintainer": "Carson Sievert <carson@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-24 17:10:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-25 07:08:56 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:52:47 UTC; unix"
       }
     },
     "scales": {
@@ -3032,7 +3095,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-05-11 23:20:05 UTC",
-        "Built": "R 3.6.2; ; 2020-05-12 04:25:13 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:46 UTC; unix"
       }
     },
     "shiny": {
@@ -3065,7 +3128,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-25 21:50:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-27 07:07:47 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:25 UTC; unix"
       }
     },
     "shinyAce": {
@@ -3097,7 +3160,7 @@
         "Maintainer": "Vincent Nijs <radiant@rady.ucsd.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2019-09-24 10:10:07 UTC",
-        "Built": "R 3.6.0; ; 2019-09-26 13:21:04 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:40 UTC; unix"
       }
     },
     "shinyWidgets": {
@@ -3128,7 +3191,7 @@
         "Maintainer": "Victor Perrier <victor.perrier@dreamrs.fr>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-15 20:50:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-16 04:33:01 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:40 UTC; unix"
       }
     },
     "shinycssloaders": {
@@ -3159,7 +3222,7 @@
         "Maintainer": "Dean Attali <daattali@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-07-28 16:20:03 UTC",
-        "Built": "R 3.6.2; ; 2020-07-29 06:31:49 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:42 UTC; unix"
       }
     },
     "shinydashboard": {
@@ -3187,7 +3250,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2018-10-17 18:00:02 UTC",
-        "Built": "R 3.6.0; ; 2019-04-27 04:16:31 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:43 UTC; unix"
       }
     },
     "shinydashboardPlus": {
@@ -3220,7 +3283,7 @@
         "Author": "David Granjon [aut, cre],\n  RinteRface [cph],\n  Almasaeed Studio [ctb, cph] (AdminLTE2 theme for Bootstrap 3),\n  Guang Yang [ctb, cph] (ygdashboard original template),\n  Winston Chang [ctb, cph] (Functions from shinydashboard),\n  Victor Perrier [ctb] (improved the shinydashboardPlusGallery)",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-07 17:10:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-08 05:30:43 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:45 UTC; unix"
       }
     },
     "shinyjqui": {
@@ -3253,7 +3316,7 @@
         "Author": "Yang Tang [aut, cre]",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-23 07:00:02 UTC",
-        "Built": "R 3.6.2; ; 2021-02-24 05:48:50 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:46 UTC; unix"
       }
     },
     "sourcetools": {
@@ -3282,7 +3345,7 @@
         "Packaged": "2018-04-25 03:19:22 UTC; kevin",
         "Repository": "CRAN",
         "Date/Publication": "2018-04-25 03:38:09 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:50:45 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:56:23 UTC; unix"
       }
     },
     "sp": {
@@ -3311,7 +3374,7 @@
         "Maintainer": "Edzer Pebesma <edzer.pebesma@uni-muenster.de>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-10 13:10:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-01-11 07:37:21 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:56:39 UTC; unix"
       }
     },
     "sparklyr": {
@@ -3344,7 +3407,7 @@
         "Author": "Javier Luraschi [aut],\n  Kevin Kuo [aut] (<https://orcid.org/0000-0001-7803-7901>),\n  Kevin Ushey [aut],\n  JJ Allaire [aut],\n  Samuel Macedo [ctb],\n  Hossein Falaki [aut],\n  Lu Wang [aut],\n  Andy Zhang [aut],\n  Yitao Li [aut, cre] (<https://orcid.org/0000-0002-1261-905X>),\n  Jozef Hajnala [ctb],\n  Maciej Szymkiewicz [ctb] (<https://orcid.org/0000-0003-1469-9396>),\n  Wil Davis [ctb],\n  RStudio [cph],\n  The Apache Software Foundation [aut, cph]",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-30 13:20:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-31 05:56:02 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:48 UTC; unix"
       }
     },
     "stringi": {
@@ -3376,7 +3439,7 @@
         "Packaged": "2020-09-04 06:13:18 UTC; gagolews",
         "Repository": "CRAN",
         "Date/Publication": "2020-09-09 06:40:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-09-10 06:07:38 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:16:31 UTC; unix"
       }
     },
     "stringr": {
@@ -3408,7 +3471,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-02-10 03:40:03 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 22:26:53 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:17:22 UTC; unix"
       }
     },
     "sys": {
@@ -3439,7 +3502,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2020-07-23 04:30:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-07-24 05:00:01 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:16 UTC; unix"
       }
     },
     "tableHTML": {
@@ -3471,7 +3534,7 @@
         "Maintainer": "Theo Boutaris <teoboot2007@hotmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-21 15:40:02 UTC",
-        "Built": "R 3.6.2; ; 2021-03-22 15:39:01 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:56 UTC; unix"
       }
     },
     "tibble": {
@@ -3506,7 +3569,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-02-25 15:50:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-02-26 07:13:03 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:54:09 UTC; unix"
       }
     },
     "tidyr": {
@@ -3541,7 +3604,7 @@
         "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-03 09:20:06 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-04 07:12:04 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:57:45 UTC; unix"
       }
     },
     "tidyselect": {
@@ -3574,7 +3637,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-05-11 23:10:07 UTC",
-        "Built": "R 3.6.2; ; 2020-05-12 04:30:56 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:11 UTC; unix"
       }
     },
     "utf8": {
@@ -3605,7 +3668,7 @@
         "Maintainer": "Kirill Müller <krlmlr+r@mailbox.org>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-12 21:30:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-13 07:08:01 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:28 UTC; unix"
       }
     },
     "uuid": {
@@ -3629,7 +3692,7 @@
         "Packaged": "2020-02-25 22:42:43 UTC; svnuser",
         "Repository": "CRAN",
         "Date/Publication": "2020-02-26 19:50:05 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2020-02-27 17:49:11 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:58:48 UTC; unix"
       }
     },
     "varhandle": {
@@ -3658,7 +3721,7 @@
         "Packaged": "2020-02-20 17:37:07 UTC; mehrad",
         "Repository": "CRAN",
         "Date/Publication": "2020-02-21 00:30:02 UTC",
-        "Built": "R 3.6.0; ; 2020-02-21 23:55:10 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:57 UTC; unix"
       }
     },
     "vctrs": {
@@ -3690,7 +3753,7 @@
         "Maintainer": "Lionel Henry <lionel@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-29 10:20:05 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-30 06:18:34 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:28 UTC; unix"
       }
     },
     "viridis": {
@@ -3723,7 +3786,7 @@
         "Author": "Simon Garnier [aut, cre],\n  Noam Ross [ctb, cph],\n  Bob Rudis [ctb, cph],\n  Marco Sciaini [ctb, cph],\n  Cédric Scherer [ctb, cph]",
         "Repository": "CRAN",
         "Date/Publication": "2018-03-29 15:48:56 UTC",
-        "Built": "R 3.6.0; ; 2019-04-27 04:15:59 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:57:38 UTC; unix"
       }
     },
     "viridisLite": {
@@ -3754,7 +3817,7 @@
         "Author": "Simon Garnier [aut, cre],\n  Noam Ross [ctb, cph],\n  Bob Rudis [ctb, cph],\n  Marco Sciaini [ctb, cph],\n  Cédric Scherer [ctb, cph]",
         "Repository": "CRAN",
         "Date/Publication": "2018-02-01 22:45:56 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:50:56 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:54:45 UTC; unix"
       }
     },
     "waiter": {
@@ -3786,7 +3849,7 @@
         "Maintainer": "John Coene <jcoenep@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-01-14 22:20:02 UTC",
-        "Built": "R 3.6.2; ; 2021-01-15 19:21:41 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:43 UTC; unix"
       }
     },
     "webshot": {
@@ -3817,7 +3880,7 @@
         "Maintainer": "Winston Chang <winston@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2019-11-22 21:50:02 UTC",
-        "Built": "R 3.6.0; ; 2019-11-23 15:12:58 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:58:55 UTC; unix"
       }
     },
     "withr": {
@@ -3849,7 +3912,7 @@
         "Maintainer": "Jim Hester <jim.hester@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2021-04-18 10:20:02 UTC",
-        "Built": "R 3.6.2; ; 2021-04-19 06:39:27 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-26 23:16:04 UTC; unix"
       }
     },
     "writexl": {
@@ -3880,7 +3943,7 @@
         "Maintainer": "Jeroen Ooms <jeroen@berkeley.edu>",
         "Repository": "CRAN",
         "Date/Publication": "2020-08-26 16:10:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-08-27 12:14:39 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-27 06:58:58 UTC; unix"
       }
     },
     "xfun": {
@@ -3912,7 +3975,7 @@
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
         "Date/Publication": "2021-03-11 07:50:02 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2021-03-12 06:12:27 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:16:05 UTC; unix"
       }
     },
     "xml2": {
@@ -3945,7 +4008,7 @@
         "Maintainer": "Jim Hester <jim.hester@rstudio.com>",
         "Repository": "CRAN",
         "Date/Publication": "2020-04-23 22:00:03 UTC",
-        "Built": "R 3.6.2; x86_64-apple-darwin15.6.0; 2020-04-24 04:24:46 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:17:03 UTC; unix"
       }
     },
     "xtable": {
@@ -3974,7 +4037,7 @@
         "Packaged": "2019-04-21 10:56:51 UTC; dsco036",
         "Author": "David B. Dahl [aut],\n  David Scott [aut, cre],\n  Charles Roosen [aut],\n  Arni Magnusson [aut],\n  Jonathan Swinton [aut],\n  Ajay Shah [ctb],\n  Arne Henningsen [ctb],\n  Benno Puetz [ctb],\n  Bernhard Pfaff [ctb],\n  Claudio Agostinelli [ctb],\n  Claudius Loehnert [ctb],\n  David Mitchell [ctb],\n  David Whiting [ctb],\n  Fernando da Rosa [ctb],\n  Guido Gay [ctb],\n  Guido Schulz [ctb],\n  Ian Fellows [ctb],\n  Jeff Laake [ctb],\n  John Walker [ctb],\n  Jun Yan [ctb],\n  Liviu Andronic [ctb],\n  Markus Loecher [ctb],\n  Martin Gubri [ctb],\n  Matthieu Stigler [ctb],\n  Robert Castelo [ctb],\n  Seth Falcon [ctb],\n  Stefan Edwards [ctb],\n  Sven Garbade [ctb],\n  Uwe Ligges [ctb]",
         "Date/Publication": "2019-04-21 12:20:03 UTC",
-        "Built": "R 3.6.0; ; 2019-04-26 19:49:57 UTC; unix"
+        "Built": "R 3.6.3; ; 2021-04-27 06:56:22 UTC; unix"
       }
     },
     "yaml": {
@@ -4001,7 +4064,7 @@
         "Packaged": "2020-01-30 20:29:56 UTC; stephej1",
         "Repository": "CRAN",
         "Date/Publication": "2020-02-01 05:50:02 UTC",
-        "Built": "R 3.6.0; x86_64-apple-darwin15.6.0; 2020-02-02 13:10:02 UTC; unix"
+        "Built": "R 3.6.3; x86_64-pc-linux-gnu; 2021-04-26 23:15:24 UTC; unix"
       }
     }
   },
@@ -4009,26 +4072,44 @@
     ".rscignore": {
       "checksum": "f0f2bb8f279c697f7d18df4456fffc4f"
     },
+    "deploy.R": {
+      "checksum": "24cb191dbaed5ce5d6301e7904b4b85d"
+    },
     "global.R": {
-      "checksum": "7639494b6b5e65c76b1c5a493f45ecb7"
+      "checksum": "0a9c8bb3c3a81d49c176f415600782da"
+    },
+    "json_schemas/nota_tecnica_defualt.json": {
+      "checksum": "45399131fbb3bbac37994c73188916d4"
+    },
+    "json_schemas/nota_tecnica_template.json": {
+      "checksum": "6f4b4f51986cef9ab86c123d5e1aa03f"
+    },
+    "json_schemas/nota_tecnica.json": {
+      "checksum": "41c8918719c89c036e60bf3d90c778b2"
+    },
+    "json_schemas/perfiles_default.json": {
+      "checksum": "0cdd6442f8a3fd9a63f5774142355760"
+    },
+    "json_schemas/perfiles_template.json": {
+      "checksum": "ee980e0ad4f6d65abc26f9817c7a8fe7"
+    },
+    "json_schemas/perfiles.json": {
+      "checksum": "84920da0c0c3afb05046ad3127f10104"
     },
     "markdown/perfiles.md": {
       "checksum": "81c95eedd4deb741a09ca99f95f35efe"
     },
     "modules/cargar_datos.R": {
-      "checksum": "e69e2fb452fa1c328bcb55328bf7f976"
+      "checksum": "d99d0aae6f6ffcdc46418fc59c86569f"
     },
     "modules/composicion.R": {
       "checksum": "516da581e3233bb2230ee6f3177e93ab"
     },
-    "modules/configuracion_avanzada.R": {
-      "checksum": "bc763390da99fd184c4a92be6fc872ed"
-    },
     "modules/descriptiva.R": {
-      "checksum": "f131225b818a287c4ccda62df2aec6d5"
+      "checksum": "0e74f90ab7152684d426a9a9777c9e80"
     },
     "modules/filtros.R": {
-      "checksum": "64b674f457a5364b9af2bdd1e58ef29a"
+      "checksum": "950e67402ae51fa5ce5d1433183401cb"
     },
     "modules/jerarquia_ui.R": {
       "checksum": "26b8e2f1e9b9615103136a09fdb2a8f3"
@@ -4043,7 +4124,7 @@
       "checksum": "bb532e8fb04bbe7ec76d17fd0f851b7b"
     },
     "modules/seguimiento_notas_dashboard.R": {
-      "checksum": "bdc03e3a4b913da1ac11670efcf05e0c"
+      "checksum": "1db71758af8d064addaecfd2930e5b51"
     },
     "R/agregaciones.R": {
       "checksum": "807189188cc19fa969c3f845520157fe"
@@ -4060,8 +4141,8 @@
     "R/conversiones_columnas.R": {
       "checksum": "20a6aa4bc39567b790486a7f8189087f"
     },
-    "R/deploy.R": {
-      "checksum": "24cb191dbaed5ce5d6301e7904b4b85d"
+    "R/counter.R": {
+      "checksum": "7c6afcc92e5d0a65d7bf16a0ac0e760e"
     },
     "R/descriptiva_episodios.R": {
       "checksum": "8fd2e59fe946dffc8decc6f86dfe072b"
@@ -4082,7 +4163,7 @@
       "checksum": "5019f9aa53ea98302721ab0954e71059"
     },
     "R/nota_tecnica_indice.R": {
-      "checksum": "f5fd6c3ad35a1de5a6728d54cc81b19a"
+      "checksum": "06a297f6a36224d96849ae0a2bfdcf71"
     },
     "R/nota_tenica_comparaciones.R": {
       "checksum": "eff8da7ccb027640edadf3695953bd26"
@@ -4102,9 +4183,6 @@
     "R/quitar_duplicados.R": {
       "checksum": "87c68f20f2675207d7dbc21b6cc6ade2"
     },
-    "R/reactiveJsonEdit.R": {
-      "checksum": "1d6d8d0dba079c471f675605c5d9cadb"
-    },
     "R/referente_grafico.R": {
       "checksum": "4de4e1237bed2d4d2c924ce70e3644c7"
     },
@@ -4117,11 +4195,14 @@
     "R/separar_spanish.R": {
       "checksum": "e28e6e74cd02226d4edff6758b825a7c"
     },
+    "README.md": {
+      "checksum": "baa3db4acc50d87033f3067a0a73c997"
+    },
     "server.R": {
-      "checksum": "ac971f1d7959bc8d8df60876f6b2d848"
+      "checksum": "aed8206d9aa34c7e6018894dfd62d466"
     },
     "ui.R": {
-      "checksum": "219c80c036b436315ed90f82bc7887eb"
+      "checksum": "854f66b8b718f3b2ccede7f11f73583a"
     },
     "www/code.js": {
       "checksum": "79b901cfdc04d05bbbd1880d86f99676"
@@ -4136,7 +4217,7 @@
       "checksum": "c97b70baa30962590207c4a84bba35a0"
     },
     "www/style.css": {
-      "checksum": "0b94cd588fc12f0ef5faae29b2dde2a9"
+      "checksum": "a523cd6983a1555ae4ba27a7f6c5d147"
     }
   },
   "users": null
