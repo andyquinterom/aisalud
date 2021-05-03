@@ -244,6 +244,13 @@ filtros_server <- function(id, opciones) {
 
 # Funciones ----------------
 
+addPreserveSearch <- function(x) {
+  preserve_search <- htmlDependency(
+    "preserve_search", "1.0", "www",
+    script = "preserve_search.js")
+  attachDependencies(x, c(htmlDependencies(x), list(preserve_search)))
+}
+
 filtro_discreto_ui_fila <- function(ns, position = 1) {
   fluidRow(
     column(
@@ -266,13 +273,14 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
     ),
     column(
       width = 5,
-      selectizeInput(
+      addPreserveSearch(selectizeInput(
         inputId = ns(paste("filtro_char_valor", position, sep = "_")),
         label = NULL,
         choices = "Ninguno",
         selected = "Ninguno",
+        options = list(plugins = list('preserve_search')),
         multiple = TRUE
-      ))
+      )))
   )
 }
 

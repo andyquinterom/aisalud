@@ -1,108 +1,104 @@
+# El módulo de descriptiva y episodios encapsula las funciones básicas
+# de descripcion de los datos. 
+# La tabla general de descriptiva, frecuencias y gráficos.
+
 episodios_ui <- function(id) {
   ns <- NS(id)
-  
   tagList(
     fluidRow(
-      box(
-        width = 3,
-        tabsetPanel(
-          tabPanel(
-            title = "Generales",
-            tags$br(),
-            checkboxInput(
-              inputId = ns("episodios_enable"),
-              label = "Agrupar por episodios",
-              value = FALSE
+    box(
+      width = 4,
+      style = "min-height: 600px",
+      tabsetPanel(
+        tabPanel(
+          title = "Generales",
+          tags$br(),
+          selectizeInput(
+            inputId = ns("agrupador"),
+            label = "Agrupador principal:",
+            choices = NULL, 
+            multiple = FALSE),
+          selectizeInput(
+            inputId = ns("separadores"),
+            label = "Separadores:",
+            choices = NULL,
+            multiple = TRUE),
+          checkboxGroupInput(
+            inputId = ns("tablas"),
+            label = "Tablas a generar:",
+            choices = c(
+              "Descripiva" = "descriptiva",
+              "Frecuencias" = "frecuencias"),
+            selected = "descriptiva",
+            inline = TRUE,
+            width = "100%"),
+          radioButtons(
+            inputId = ns("intervalo"),
+            choiceNames = c("Mes", "Semana", "Día"),
+            choiceValues = c("mes", "semana", "dia"),
+            label = "Intervalo para frecuencias"),
+          checkboxInput(
+            inputId = ns("episodios"),
+            label = "Agrupador por episodios",
+            value = FALSE),
+          uiOutput(outputId = ns("episodios_col_rel")),
+          tags$div(
+            style = "overflow-y: scroll; max-height: 300px;",
+            uiOutput(outputId = ns("episodios_jerarquia"))),
+          tags$br(),
+          textOutput(outputId = ns("descriptiva_sumas_registros")),
+          textOutput(outputId = ns("descriptiva_sumas_pacientes")),
+          textOutput(outputId = ns("descriptiva_sumas_facturas")),
+          textOutput(outputId = ns("descriptiva_sumas_valor")),
+          tags$br(),
+          actionButton(ns("descriptiva_exe"), "Generar")
+        ),
+        tabPanel(
+          title = "Descargas",
+          tags$br(),
+          tags$b("Descriptiva:"),
+          fluidRow(
+            column(
+              width = 6,
+              downloadButton(
+                outputId = ns("descriptiva_descargar_csv"),
+                label = "CSV",
+                style = "width:100%;")
             ),
-            uiOutput(
-              outputId = ns("episodios_col_valor_out")
-            ),  
-            selectizeInput(
-              inputId = ns("episodios_cols"),
-              label = "Agrupar por:",
-              choices = NULL, 
-              multiple = FALSE),
-            selectizeInput(
-              inputId = ns("episodios_cols_sep"),
-              label = "Separar por:",
-              choices = NULL,
-              multiple = TRUE),
-            textOutput(outputId = ns("descriptiva_sumas_registros")),
-            textOutput(outputId = ns("descriptiva_sumas_pacientes")),
-            textOutput(outputId = ns("descriptiva_sumas_facturas")),
-            textOutput(outputId = ns("descriptiva_sumas_valor")),
-            tags$br(),
-            uiOutput(
-              outputId = ns("episodios_jerarquia")
-            ),
-            tags$br(),
-            actionButton(ns("episodios_exe"), "Confirmar"),
-            tags$br()
-          ),
-          tabPanel(
-            title = "Avanzado",
-            tags$br(),
-            tags$p("Para poder hacer uso de los gráficos se debe generar la descriptiva"),
-            checkboxInput(inputId = ns("descriptiva_activar"),
-                          label = "Generar descriptiva",
-                          value = TRUE),
-            checkboxInput(inputId = ns("frecuencias_activar"),
-                          label = "Calcular frecuencias",
-                          value = FALSE),
-            radioButtons(
-              inputId = ns("frecuencias_intervalo"),
-              choiceNames = c("Mes", "Semana", "Día"),
-              choiceValues = c("mes", "semana", "dia"),
-              label = "Intervalo para frecuencias"
+            column(
+              width = 6,
+              downloadButton(
+                outputId = ns("descriptiva_descargar_xlsx"),
+                label = "Excel",
+                style = "width:100%;")
             )
           ),
-          tabPanel(
-            title = "Descargas",
-            tags$br(),
-            tags$b("Descriptiva:"),
-            fluidRow(
-              column(
-                width = 6,
-                downloadButton(
-                  outputId = ns("episodios_descargar_csv"),
-                  label = "CSV",
-                  style = "width:100%;")
-              ),
-              column(
-                width = 6,
-                downloadButton(
-                  outputId = ns("episodios_descargar_xlsx"),
-                  label = "Excel",
-                  style = "width:100%;")
-              )
+          tags$br(),
+          tags$b("Frecuencias:"),
+          fluidRow(
+            column(
+              width = 6,
+              downloadButton(
+                outputId = ns("frecuencias_descargar_csv"),
+                label = "CSV",
+                style = "width:100%;")
             ),
-            tags$br(),
-            tags$b("Frecuencias:"),
-            fluidRow(
-              column(
-                width = 6,
-                downloadButton(
-                  outputId = ns("frecuencias_descargar_csv"),
-                  label = "CSV",
-                  style = "width:100%;")
-              ),
-              column(
-                width = 6,
-                downloadButton(
-                  outputId = ns("frecuencias_descargar_xlsx"),
-                  label = "Excel",
-                  style = "width:100%;")
-              )
+            column(
+              width = 6,
+              downloadButton(
+                outputId = ns("frecuencias_descargar_xlsx"),
+                label = "Excel",
+                style = "width:100%;")
             )
           )
-        )),
+        )
+        )
+      ),
     box(
-      width = 9,
+      width = 8,
       tabsetPanel(
         tabPanel(
           title = "Tabla",
-          tags$br(),
-          tags$h2(textOutput(ns("tabla_titulo")), class = "titulo_center"),
           tags$br(),
           div(
             DT::dataTableOutput(outputId = ns("episodios_tabla")) %>%
@@ -236,114 +232,93 @@ episodios_server <- function(id, opciones, conn) {
         agrupadores_items = NULL)
       
       observeEvent(opciones$colnames, {
-        if (input$episodios_enable) {
+        if (input$episodios) {
           updateSelectizeInput(
             session = session,
-            inputId = "episodios_col_valor",
+            inputId = "episodios_col_rel",
             choices = opciones$colnames,
-            selected = "nro_identificacion"
+            selected = "nro_factura"
           )
         }
         updateSelectizeInput(
           session = session,
-          inputId = "episodios_cols",
+          inputId = "agrupador",
           choices = c("Ninguno", opciones$colnames)
         )
         updateSelectizeInput(
           session = session,
-          inputId = "episodios_cols_sep",
+          inputId = "separadores",
           choices = opciones$colnames
         )
       })
       
-      observeEvent(input$episodios_enable, {
-        if (input$episodios_enable) {
-          output$episodios_col_valor_out <- renderUI({
+      observeEvent(input$episodios, {
+        if (!input$episodios) output$episodios_col_rel <- renderUI({})
+        if (input$episodios) {
+          output$episodios_col_rel <- renderUI({
             selectizeInput(
-              inputId = ns("episodios_col_valor"),
-              label = "Sumar valor por:",
+              inputId = ns("episodios_col_rel"),
+              label = "Relacionar episodios por:",
               choices = opciones$colnames,
-              selected = "nro_identificacion",
+              selected = "nro_factura",
               multiple = FALSE)
           })
-        } else {
-          output$episodios_col_valor_out <- renderUI({})
         }
       })
       
       cambio_columnas <- reactive({
-        list(input$episodios_cols, input$episodios_enable)
+        list(input$agrupador, input$episodios)
       })
       
       observeEvent(cambio_columnas(), {
         if (!is.null(opciones$colnames) && 
-            input$episodios_cols %notin% c("", "Ninguno")) {
+            input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
-              if (input$episodios_enable) {
+              widget_jerarquia <- radioButtons(
+                inputId = ns("unidades"),
+                label = "Unidad de descriptiva",
+                selected = episodios$unidad_descriptiva,
+                choiceNames = c("Prestación", "Paciente", "Factura"),
+                choiceValues = c(
+                  "prestacion",
+                  "nro_identificacion",
+                  "nro_factura"
+                )
+              )
+              episodios$agrupadores_items <- NULL
+              if (input$episodios) {
                 episodios$agrupadores_items <- opciones$tabla %>%
-                  select(!!as.name(input$episodios_cols)) %>%
+                  select(!!as.name(input$agrupador)) %>%
                   distinct() %>%
-                  pull(!!as.name(input$episodios_cols))
+                  pull(!!as.name(input$agrupador))
                 if (length(episodios$agrupadores_items) <= 60) {
-                  output$episodios_jerarquia <- renderUI({
                     if (opciones$perfil_enable) {
-                      perfil_jerarquia(
+                      widget_jerarquia <- perfil_jerarquia(
                         perfiles = opciones$perfil_lista,
                         perfil_select = opciones$perfil_selected,
                         items = episodios$agrupadores_items,
                         funcion_jerarquia = descriptiva_jerarquia,
                         ns = ns
                       )
-                    } else {
-                      descriptiva_jerarquia(
+                    }
+                    if (!opciones$perfil_enable) {
+                      widget_jerarquia <- descriptiva_jerarquia(
                         ns = ns,
                         items_nivel_4 = episodios$agrupadores_items
                       )
                     }
-                  })
-                } else {
-                  episodios$agrupadores_items <- NULL
-                  output$episodios_jerarquia <- renderUI({
-                    radioButtons(
-                      inputId = ns("descriptiva_unidades"),
-                      label = "Unidad de descriptiva",
-                      selected = episodios$unidad_descriptiva,
-                      choiceNames = c(
-                        "Prestación",
-                        "Paciente",
-                        "Factura"
-                      ),
-                      choiceValues = c(
-                        "prestacion",
-                        "nro_identificacion",
-                        "nro_factura"
-                      )
-                    )
-                  })
-                  episodios$unidad_descriptiva <- input$descriptiva_unidades
                 }
-              } else {
-                episodios$agrupadores_items <- NULL
-                output$episodios_jerarquia <- renderUI({
-                  radioButtons(
-                    inputId = ns("descriptiva_unidades"),
-                    label = "Unidad de descriptiva",
-                    selected = episodios$unidad_descriptiva,
-                    choiceNames = c(
-                      "Prestación",
-                      "Paciente",
-                      "Factura"
-                    ),
-                    choiceValues = c(
-                      "prestacion",
-                      "nro_identificacion",
-                      "nro_factura"
-                    )
+                if (length(episodios$agrupadores_items) > 60) {
+                  episodios$agrupadores_items <- NULL
+                  updateCheckboxInput(
+                    inputId = "episodios",
+                    value = FALSE
                   )
-                })
-                episodios$unidad_descriptiva <- input$descriptiva_unidades
+                }
               }
+              output$episodios_jerarquia <- renderUI({widget_jerarquia})
+              episodios$unidad_descriptiva <- input$descriptiva_unidades
             },
             error = function(e) {
               print(e)
@@ -351,9 +326,7 @@ episodios_server <- function(id, opciones, conn) {
                 session = session,
                 title = "Error", 
                 type = "error",
-                text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+                text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
               )
             }
           )
@@ -400,23 +373,12 @@ episodios_server <- function(id, opciones, conn) {
         })
       })
       
-      
-      observeEvent(input$episodios_exe, {
-        
+      observeEvent(input$descriptiva_exe, {
         if(!is.null(opciones$colnames)) {
-          if(!is.null(input$episodios_cols) &&
-             input$episodios_cols %notin% c("", "Ninguno")) {
+          if(input$agrupador %notin% c("", "Ninguno")) {
             tryCatch(
               expr = {
-                episodios_cols <- input$episodios_cols
-                if (input$episodios_enable) {
-                  episodios_col_valor <- input$episodios_col_valor
-                }
-                episodios_cols_sep <- input$episodios_cols_sep
-                episodios$cols <- episodios_cols
-                episodios$cols_sep <- episodios_cols_sep
                 withProgress(message = "Calculando descriptiva...",{
-                  
                   episodios$n_pacientes <- paste(
                     "Número de pacientes:",
                     formatC(
@@ -429,7 +391,6 @@ episodios_server <- function(id, opciones, conn) {
                       format = "f",
                       digits = 0),
                     sep = " ")
-                  
                   if ("nro_factura" %in% opciones$colnames) {
                     episodios$n_facturas <- paste(
                       "Número de facturas:",
@@ -446,90 +407,6 @@ episodios_server <- function(id, opciones, conn) {
                       sep = " "
                     )
                   }
-                  
-                  if (!is.null(episodios$agrupadores_items)) {
-                    if (input$descriptiva_activar) {
-                      
-                      episodios$tabla <- episodios_jerarquia(
-                        data = opciones$tabla,
-                        columnas =      episodios_cols, 
-                        columna_valor = opciones$valor_costo, 
-                        columna_sep =   episodios_cols_sep,
-                        columna_suma =  episodios_col_valor,
-                        frec_cantidad = opciones$cantidad,
-                        nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                        nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                        nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                        nivel_4 = input$episodios_jerarquia_nivel_4_order$text)
-                    }
-                    if (input$frecuencias_activar) {
-                      episodios$frecuencias <- frecuencias_jerarquia(
-                        data = opciones$tabla,
-                        columnas =      episodios_cols, 
-                        columna_fecha = "fecha_prestacion",
-                        columna_sep =   episodios_cols_sep,
-                        columna_suma =  episodios_col_valor,
-                        frec_cantidad = opciones$cantidad,
-                        nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                        nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                        nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                        nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                        intervalo = input$frecuencias_intervalo)[["descriptiva"]]
-                    }
-                  } else {
-                    if (input$descriptiva_activar) {
-                      episodios$tabla <- descriptiva(
-                        data = opciones$tabla,
-                        columnas = c(
-                          episodios_cols,
-                          episodios_cols_sep
-                        ),
-                        columna_valor = opciones$valor_costo,
-                        columna_suma = input$descriptiva_unidades,
-                        prestaciones = (input$descriptiva_unidades == "prestacion"),
-                        frec_cantidad = opciones$cantidad
-                      )
-                      episodios$tabla[["data"]] <- 
-                        list("temporal" = episodios$tabla[["data"]])
-                      names(episodios$tabla[["data"]]) <-
-                        input$descriptiva_unidades
-                    }
-                    if (input$frecuencias_activar) {
-                      episodios$frecuencias <- frecuencias(
-                        columna_fecha = "fecha_prestacion",
-                        data = opciones$tabla,
-                        agrupador = c(
-                          episodios_cols,
-                          episodios_cols_sep
-                        ),
-                        columna_suma = input$descriptiva_unidades,
-                        prestaciones = (input$descriptiva_unidades == "prestacion"),
-                        frec_cantidad = opciones$cantidad,
-                        intervalo = input$frecuencias_intervalo
-                      )
-                    }
-                  }
-                  
-                  if (input$descriptiva_activar) {
-                    episodios$lista_agrupadores <- 
-                      episodios$tabla[["descriptiva"]][, c(
-                        episodios_cols, episodios_cols_sep), with = FALSE]
-                    
-                    output$tabla_titulo <- renderText({
-                      paste(
-                        "Descriptiva de",
-                        episodios_cols,
-                        ifelse(
-                          test = is.null(episodios_cols_sep),
-                          yes = "",
-                          no = "separada por"
-                        ),
-                        separar_spanish(episodios_cols_sep),
-                        collapse = " "
-                      )
-                    })
-                  }
-                  
                 })
               },
               error = function(e) {
@@ -538,12 +415,87 @@ episodios_server <- function(id, opciones, conn) {
                   session = session,
                   title = "Error", 
                   type = "error",
-                  text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+                  text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
                 )
               }
             )
+          }
+        }
+      })
+
+      observeEvent(input$descriptiva_exe, {
+        if(opciones$datos_cargados &&
+          input$agrupador %notin% c("", "Ninguno")) {
+          print(input$tablas)
+          print(input$unidades)
+          agrupador <- input$agrupador
+          if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+          separadores <- input$separadores
+          episodios$agrupador <- agrupador
+          episodios$separadores <- separadores
+          if ("descriptiva" %in% input$tablas) {
+            if (input$episodios) {
+              episodios$tabla <- episodios_jerarquia(
+                data = opciones$tabla,
+                columnas =      agrupador, 
+                columna_valor = opciones$valor_costo, 
+                columna_sep =   separadores,
+                columna_suma =  episodios_col_rel,
+                nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                frec_cantidad = opciones$cantidad)
+            }
+            if (!input$episodios) {
+              episodios$tabla <- descriptiva(
+                data = opciones$tabla,
+                columnas = c(agrupador, separadores),
+                columna_valor = opciones$valor_costo,
+                columna_suma = input$unidades,
+                prestaciones = (input$unidades == "prestacion"),
+                frec_cantidad = opciones$cantidad)
+              episodios$tabla[["data"]] <-
+                list("temporal" = episodios$tabla[["data"]])
+              names(episodios$tabla[["data"]]) <- input$unidades
+            }
+            episodios$lista_agrupadores <- 
+              episodios$tabla[["descriptiva"]][, c(
+                agrupador, separadores), with = FALSE]
+            episodios$tabla_titulo <- paste(
+              "Descriptiva de", agrupador,
+              ifelse(
+                test = is.null(separadores),
+                yes = "", no = "separada por"),
+              separar_spanish(separadores),
+              collapse = " ")
+          }
+          if ("frecuencias" %in% input$tablas) {
+            if (input$episodios) {
+              episodios$frecuencias <- frecuencias_jerarquia(
+                data = opciones$tabla,
+                columnas =      agrupador, 
+                columna_fecha = "fecha_prestacion",
+                columna_sep =   separadores,
+                columna_suma =  episodios_col_rel,
+                frec_cantidad = opciones$cantidad,
+                nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                intervalo = input$intervalo)[["descriptiva"]]
+            }
+            if (!input$episodios) {
+              episodios$frecuencias <- frecuencias(
+                data = opciones$tabla,
+                agrupador = c(agrupador, separadores),
+                columna_fecha = "fecha_prestacion",
+                columna_suma = input$unidades,
+                prestaciones = (input$unidades == "prestacion"),
+                frec_cantidad = opciones$cantidad,
+                intervalo = input$intervalo
+              )
+            }
           }
         }
       })
@@ -559,7 +511,7 @@ episodios_server <- function(id, opciones, conn) {
               autoWidth = FALSE,
               ordering=T, 
               scrollX = TRUE,
-              scrollY = "60vh"),
+              scrollY = "500px"),
             rownames= FALSE) %>%
             formatCurrency(
               c('P25','P50','P75','P90','Media','Desv.tipica'),
@@ -582,7 +534,7 @@ episodios_server <- function(id, opciones, conn) {
             autoWidth = FALSE,
             ordering= TRUE, 
             scrollX = TRUE,
-            scrollY = "60vh"),
+            scrollY = "500px"),
           rownames= FALSE)
       })
       
@@ -591,7 +543,7 @@ episodios_server <- function(id, opciones, conn) {
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
               episodios$tabla[["descriptiva"]][, c(
-                episodios$cols, episodios$cols_sep), with = FALSE],
+                episodios$agrupador, episodios$separadores), with = FALSE],
               options = list(
                 language = list(
                   url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
@@ -603,7 +555,8 @@ episodios_server <- function(id, opciones, conn) {
                 scrollY = "370px"),
               rownames = FALSE) %>%
               formatStyle(
-                columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+                columns = 1:length(
+                  c(episodios$agrupador, episodios$separadores)),
                 fontSize = '95%')
           }
       })
@@ -612,11 +565,11 @@ episodios_server <- function(id, opciones, conn) {
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
           DT::datatable(
             episodios$tabla[["descriptiva"]][, c(
-              episodios$cols, episodios$cols_sep), with = FALSE],
+              episodios$agrupador, episodios$separadores), with = FALSE],
             options = list(
               language = list(
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              pageLength = 10000,
+              pageLength = 25,
               dom = 'ft',
               autoWidth = FALSE,
               ordering = TRUE, 
@@ -624,7 +577,8 @@ episodios_server <- function(id, opciones, conn) {
               scrollY = "370px"),
             rownames = FALSE) %>%
             formatStyle(
-              columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+              columns = 1:length(
+                c(episodios$agrupador, episodios$separadores)),
               fontSize = '95%')
         }
       })
@@ -634,7 +588,7 @@ episodios_server <- function(id, opciones, conn) {
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
               episodios$tabla[["descriptiva"]][, c(
-                episodios$cols, episodios$cols_sep), with = FALSE],
+                episodios$agrupador, episodios$separadores), with = FALSE],
               options = list(
                 language = list(
                   url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
@@ -646,7 +600,8 @@ episodios_server <- function(id, opciones, conn) {
                 scrollY = "370px"),
               rownames = FALSE) %>%
               formatStyle(
-                columns = 1:length(c(episodios$cols, episodios$cols_sep)),
+                columns = 1:length(
+                  c(episodios$agrupadores, episodios$separadores)),
                 fontSize = '95%')
           }
         })
@@ -732,14 +687,14 @@ episodios_server <- function(id, opciones, conn) {
         episodios$n_facturas
       })
       
-      output$episodios_descargar_csv <- downloadHandler(
+      output$descriptiva_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
                 ".csv", sep = "")
         },
         content = function(file) {
           write.csv(
-            x = episodios$tabla[["descriptiva"]],
+            x = as.data.frame(episodios$tabla[["descriptiva"]]),
             file = file, 
             row.names = FALSE,
             na = "")
@@ -747,7 +702,7 @@ episodios_server <- function(id, opciones, conn) {
         contentType = "text/csv"
       )
       
-      output$episodios_descargar_xlsx <- downloadHandler(
+      output$descriptiva_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
                 ".xlsx", sep = "")
@@ -791,5 +746,3 @@ episodios_server <- function(id, opciones, conn) {
     
   )
 }
-  
-  

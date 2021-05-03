@@ -1,4 +1,17 @@
+.main-header {
+  position: fixed;
+}
+
+.main-sidebar {
+  position: fixed;
+}
+
+.control-sidebar {
+  position: fixed;
+}
+
 .content {
+  padding-top: 60px;
   overflow: hidden !important;
 }
 
@@ -34,13 +47,14 @@ div[class^="tooltip_svg_"] {
 
 html {
   overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 .wrapper {
     background-color: #ecf0f5 !important;
     overflow-y: hidden;
     overflow: hidden;
+    height: 100%;
+    min-height: 100vh;
 }
 
 .btn {

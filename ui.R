@@ -8,6 +8,7 @@ shinyUI(
       options = list(sidebarExpandOnHover = TRUE),
       skin = "blue-light",
       shinydashboardPlus::dashboardHeader(
+        fixed = TRUE,
         title = tagList(
           span(class = "logo-lg", "Analítica Integrada Salud"),
           img(src = "logo.svg")),
