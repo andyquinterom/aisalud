@@ -49,7 +49,7 @@ shinyServer(function(input, output, session) {
   
   # Modulo descriptiva y episodios --------------------------------------------
   
-  episodios_server(
+  descriptiva_server(
     id = "episodios_modulo",
     opciones = opciones,
     conn = conn

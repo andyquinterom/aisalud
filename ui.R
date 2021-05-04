@@ -81,7 +81,7 @@ shinyUI(
           ),
           tabItem(
             tabName = "episodios_modulo",
-            episodios_ui("episodios_modulo")
+            descriptiva_ui("episodios_modulo")
           ),
           tabItem(
             tabName = "nota_tecnica_modulo",

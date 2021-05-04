@@ -2,7 +2,7 @@
 # de descripcion de los datos. 
 # La tabla general de descriptiva, frecuencias y gráficos.
 
-episodios_ui <- function(id) {
+descriptiva_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
@@ -223,18 +223,23 @@ episodios_ui <- function(id) {
   )
 }
 
-episodios_server <- function(id, opciones, conn) {
+# Server module para descriptiva
+descriptiva_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
       
       ns <- NS(id)
       
+      # Valores reactivos necesarios para la ejecución del módulo
       episodios <- reactiveValues(
         tabla = list("descriptiva" = data.table(), "data" = data.table()),
         agrupadores_items = NULL)
       
+      # Se observa cambios en los nombres de columnas para actulizar
+      # selectizeInputs
       observeEvent(opciones$colnames, {
+        # Solo se actualiza si los episodios estan prendidos
         if (input$episodios) {
           updateSelectizeInput(
             session = session,
@@ -255,7 +260,9 @@ episodios_server <- function(id, opciones, conn) {
         )
       })
       
+      # Cambios a la seleccion de episodios
       observeEvent(input$episodios, {
+        # Si es FALSE no se muestra el input de columnad de relacion
         if (!input$episodios) output$episodios_col_rel <- renderUI({})
         if (input$episodios) {
           output$episodios_col_rel <- renderUI({
@@ -269,15 +276,18 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
+      # Reactive que observa cambbios a input$agrupador e input$episodios
       cambio_columnas <- reactive({
         list(input$agrupador, input$episodios)
       })
       
       observeEvent(cambio_columnas(), {
+        # Si hay cambios al agrupador o a episodios se ejecutará
         if (!is.null(opciones$colnames) && 
             input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
+              # Widget de unidades de descriptiva
               widget_jerarquia <- radioButtons(
                 inputId = ns("unidades"),
                 label = "Unidad de descriptiva",
@@ -290,29 +300,36 @@ episodios_server <- function(id, opciones, conn) {
                 )
               )
               episodios$agrupadores_items <- NULL
+              # Si la opción de episodios es verdadera y la columna contiene
+              # menos de 60 agrupadores únicos entonces se genera widget de
+              # jerarquia de episodios
               if (input$episodios) {
                 episodios$agrupadores_items <- opciones$tabla %>%
                   select(!!as.name(input$agrupador)) %>%
                   distinct() %>%
                   pull(!!as.name(input$agrupador))
                 if (length(episodios$agrupadores_items) <= 60) {
-                    if (opciones$perfil_enable) {
-                      widget_jerarquia <- perfil_jerarquia(
-                        perfiles = opciones$perfil_lista,
-                        perfil_select = opciones$perfil_selected,
-                        items = episodios$agrupadores_items,
-                        funcion_jerarquia = descriptiva_jerarquia,
-                        ns = ns
-                      )
-                    }
-                    if (!opciones$perfil_enable) {
-                      widget_jerarquia <- descriptiva_jerarquia(
-                        ns = ns,
-                        items_nivel_4 = episodios$agrupadores_items
-                      )
-                    }
+                  # Se decide si utilizar jerarquia con perfil
+                  if (opciones$perfil_enable) {
+                    widget_jerarquia <- perfil_jerarquia(
+                      perfiles = opciones$perfil_lista,
+                      perfil_select = opciones$perfil_selected,
+                      items = episodios$agrupadores_items,
+                      funcion_jerarquia = descriptiva_jerarquia,
+                      ns = ns
+                    )
+                  }
+                  if (!opciones$perfil_enable) {
+                    widget_jerarquia <- descriptiva_jerarquia(
+                      ns = ns,
+                      items_nivel_4 = episodios$agrupadores_items
+                    )
+                  }
                 }
                 if (length(episodios$agrupadores_items) > 60) {
+                  # Si hay mas de 60 agrupadores únicos se agapará la opción
+                  # de episodios y se volvera a correr el código del observer
+                  # (tipo recursivo)
                   episodios$agrupadores_items <- NULL
                   updateCheckboxInput(
                     inputId = "episodios",
@@ -336,6 +353,11 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
+      # Se observa que el usuario haga click en los titulos de las unidades
+      # de conteo en el widget de jerarquia. 
+      # De esta manera se pueden mover los diferentes agrupadores de manera
+      # sencilla entre unidades.
+
       observeEvent(input$seleccionar_episodio, {
         output$episodios_jerarquia <- renderUI({
           tagList(
@@ -377,66 +399,67 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       observeEvent(input$descriptiva_exe, {
-        if(!is.null(opciones$colnames)) {
-          if(input$agrupador %notin% c("", "Ninguno")) {
-            tryCatch(
-              expr = {
-                withProgress(message = "Calculando descriptiva...",{
-                  episodios$n_pacientes <- paste(
-                    "Número de pacientes:",
+        # Se valide que hayan datos cargados y un agrupador seleccionado
+        if(opciones$datos_cargados && 
+          input$agrupador %notin% c("", "Ninguno")) {
+          tryCatch(
+            expr = {
+              withProgress(message = "Calculando descriptiva...",{
+                # Se calcula el total de algunos indicadores necesarios
+                episodios$n_pacientes <- paste(
+                  "Número de pacientes:",
+                  formatC(
+                    {opciones$tabla %>%
+                        distinct(nro_identificacion) %>%
+                        count() %>%
+                        pull()},
+                    big.mark = ".",
+                    decimal.mark = ",",
+                    format = "f",
+                    digits = 0),
+                  sep = " ")
+                if ("nro_factura" %in% opciones$colnames) {
+                  episodios$n_facturas <- paste(
+                    "Número de facturas:",
                     formatC(
                       {opciones$tabla %>%
-                          distinct(nro_identificacion) %>%
+                          distinct(nro_factura) %>%
                           count() %>%
                           pull()},
                       big.mark = ".",
                       decimal.mark = ",",
                       format = "f",
-                      digits = 0),
-                    sep = " ")
-                  if ("nro_factura" %in% opciones$colnames) {
-                    episodios$n_facturas <- paste(
-                      "Número de facturas:",
-                      formatC(
-                        {opciones$tabla %>%
-                            distinct(nro_factura) %>%
-                            count() %>%
-                            pull()},
-                        big.mark = ".",
-                        decimal.mark = ",",
-                        format = "f",
-                        digits = 0
-                      ),
-                      sep = " "
-                    )
-                  }
-                })
-              },
-              error = function(e) {
-                print(e)
-                sendSweetAlert(
-                  session = session,
-                  title = "Error", 
-                  type = "error",
-                  text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
-                )
-              }
-            )
-          }
+                      digits = 0
+                    ),
+                    sep = " "
+                  )
+                }
+              })
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error", 
+                type = "error",
+                text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
+              )
+            }
+          )
         }
       })
 
+      # Generar descriptiva
       observeEvent(input$descriptiva_exe, {
         if(opciones$datos_cargados &&
           input$agrupador %notin% c("", "Ninguno")) {
-          print(input$tablas)
-          print(input$unidades)
           agrupador <- input$agrupador
           if (input$episodios) episodios_col_rel <- input$episodios_col_rel
           separadores <- input$separadores
           episodios$agrupador <- agrupador
           episodios$separadores <- separadores
           if ("descriptiva" %in% input$tablas) {
+            # Si se va a generar por episodios
             if (input$episodios) {
               episodios$tabla <- episodios_jerarquia(
                 data = opciones$tabla,
@@ -451,6 +474,7 @@ episodios_server <- function(id, opciones, conn) {
                 frec_cantidad = opciones$cantidad)
             }
             if (!input$episodios) {
+              # Si se va a generar de manera tradicional
               episodios$tabla <- descriptiva(
                 data = opciones$tabla,
                 columnas = c(agrupador, separadores),
@@ -462,9 +486,10 @@ episodios_server <- function(id, opciones, conn) {
                 list("temporal" = episodios$tabla[["data"]])
               names(episodios$tabla[["data"]]) <- input$unidades
             }
+            # lista de los agrupadores únicos
             episodios$lista_agrupadores <- 
-              episodios$tabla[["descriptiva"]][, c(
-                agrupador, separadores), with = FALSE]
+              episodios$tabla[["descriptiva"]] %>%
+                select(!!!rlang::syms(unique(c(agrupador, separadores))))
             episodios$tabla_titulo <- paste(
               "Descriptiva de", agrupador,
               ifelse(
@@ -474,6 +499,7 @@ episodios_server <- function(id, opciones, conn) {
               collapse = " ")
           }
           if ("frecuencias" %in% input$tablas) {
+            # Validacion por episodio o tradicional
             if (input$episodios) {
               episodios$frecuencias <- frecuencias_jerarquia(
                 data = opciones$tabla,
@@ -503,10 +529,12 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
+      # Render tabla de descriptiva
       output$episodios_tabla <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
           agrupador <- episodios$agrupador
           separadores <- episodios$separadores
+          # Número total de agrupadores únicos
           distinct_agrupadores <- n_distinct(c(agrupador, separadores))
           DT::datatable(
             episodios$tabla[["descriptiva"]],
@@ -532,9 +560,11 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
+      # Render tabla de frecuencias
       output$frecuencias_tabla <- DT::renderDataTable({
         agrupador <- episodios$agrupador
         separadores <- episodios$separadores
+        # Número de agrupadores únicos
         distinct_agrupadores <- n_distinct(c(agrupador, separadores))
         DT::datatable(
           episodios$frecuencias,
@@ -551,6 +581,7 @@ episodios_server <- function(id, opciones, conn) {
           rownames= FALSE)
       })
       
+      # Gráfico de barras
       output$grafico_barras_select_agrupador <- 
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
@@ -574,6 +605,7 @@ episodios_server <- function(id, opciones, conn) {
           }
       })
       
+      # Histograma
       output$histograma_select_agrupador <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
           DT::datatable(
@@ -596,6 +628,7 @@ episodios_server <- function(id, opciones, conn) {
         }
       })
       
+      # Caja de bigotes
       output$caja_de_bigotes_select_agrupador <- 
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
@@ -627,17 +660,21 @@ episodios_server <- function(id, opciones, conn) {
         "Distribución de valores"
       })
       
+      # Generar histograma
       observeEvent(input$histograma_ejecutar, {
         if (!is.null(input$histograma_select_agrupador_rows_selected)) {
           tryCatch(
             expr = {
+              # Selección del número de bins
               if (input$histograma_numero_columnas == "Auto") {
                 numero_bins <- 20
               } else {
                 numero_bins <- input$histograma_numero_columnas
               }
+              # Se genera el histograma
               episodios$histograma_plot <- histograma_agrupador(
                 titulo = "Histograma",
+                # Se utiliza episodios$tabla[["data"]] para no utilizar collect
                 data = episodios$tabla[["data"]],
                 columnas_sep = episodios$lista_agrupadores[
                   input$histograma_select_agrupador_rows_selected],
@@ -660,6 +697,7 @@ episodios_server <- function(id, opciones, conn) {
         episodios$histograma_plot
       })
       
+      # Se genera el gráfico de tabla de bigotes
       observeEvent(input$caja_de_bigotes_ejecutar, {
         if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
           episodios$caja_de_bigotes_plot <- caja_de_bigotes_agrupador(
@@ -674,6 +712,7 @@ episodios_server <- function(id, opciones, conn) {
         episodios$caja_de_bigotes_plot
       })
       
+      # se genera grafico de barras
       observeEvent(input$grafico_barras_ejecutar, {
         if (!is.null(input$grafico_barras_select_agrupador_rows_selected)) {
           episodios$grafico_barras_plot <- grafico_barras_descriptiva(
@@ -690,6 +729,7 @@ episodios_server <- function(id, opciones, conn) {
         episodios$grafico_barras_plot
       })
       
+      # Se suma el valor total en la descriptiva
       output$descriptiva_sumas_valor <- renderText({
         if (!is.null(opciones$colnames)) {
           if(nrow(episodios$tabla[["descriptiva"]]) > 0) {
@@ -712,6 +752,7 @@ episodios_server <- function(id, opciones, conn) {
         episodios$n_facturas
       })
       
+      # Botones de descarga
       output$descriptiva_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
