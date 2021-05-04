@@ -122,6 +122,7 @@ episodios_ui <- function(id) {
               tags$h3(
                 textOutput(ns("histograma_titulo")), class = "titulo_center"),
               plotlyOutput(
+                height = "500px", 
                 outputId = ns("histograma_render")
               ) %>%
                 withSpinner()
@@ -157,6 +158,7 @@ episodios_ui <- function(id) {
               tags$h3(
                 textOutput(ns("caja_de_bigotes_titulo")), class = "titulo_center"),
               plotlyOutput(
+                height = "500px",
                 outputId = ns("caja_de_bigotes_render")
               ) %>%
                 withSpinner()
@@ -185,6 +187,7 @@ episodios_ui <- function(id) {
               tags$h3(
                 textOutput(ns("grafico_barras_titulo")), class = "titulo_center"),
               plotlyOutput(
+                height = "500px",
                 outputId = ns("grafico_barras_render")
               ) %>%
                 withSpinner()
@@ -507,7 +510,7 @@ episodios_server <- function(id, opciones, conn) {
             options = list(
               language = list(
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              pageLength = 50,
+              pageLength = 20,
               autoWidth = FALSE,
               ordering=T, 
               scrollX = TRUE,
@@ -530,7 +533,7 @@ episodios_server <- function(id, opciones, conn) {
           options = list(
             language = list(
               url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-            pageLength = 50,
+            pageLength = 20,
             autoWidth = FALSE,
             ordering= TRUE, 
             scrollX = TRUE,
@@ -547,8 +550,8 @@ episodios_server <- function(id, opciones, conn) {
               options = list(
                 language = list(
                   url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                pageLength = 10000,
-                dom = 'ft',
+                pageLength = 20,
+                dom = 'ftp',
                 autoWidth = FALSE,
                 ordering= TRUE, 
                 scrollX = TRUE,
@@ -569,8 +572,8 @@ episodios_server <- function(id, opciones, conn) {
             options = list(
               language = list(
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-              pageLength = 25,
-              dom = 'ft',
+              pageLength = 20,
+              dom = 'ftp',
               autoWidth = FALSE,
               ordering = TRUE, 
               scrollX = TRUE,
@@ -593,7 +596,7 @@ episodios_server <- function(id, opciones, conn) {
                 language = list(
                   url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
                 pageLength = 10000,
-                dom = 'ft',
+                dom = 'ftp',
                 autoWidth = FALSE,
                 ordering = TRUE, 
                 scrollX = TRUE,
@@ -616,17 +619,29 @@ episodios_server <- function(id, opciones, conn) {
       
       observeEvent(input$histograma_ejecutar, {
         if (!is.null(input$histograma_select_agrupador_rows_selected)) {
-          if (input$histograma_numero_columnas == "Auto") {
-            numero_bins <- 20
-          } else {
-            numero_bins <- input$histograma_numero_columnas
-          }
-          episodios$histograma_plot <- histograma_agrupador(
-            titulo = "Histograma",
-            data = episodios$tabla[["data"]],
-            columnas_sep = episodios$lista_agrupadores[
-              input$histograma_select_agrupador_rows_selected],
-            numero_bins = numero_bins
+          tryCatch(
+            expr = {
+              if (input$histograma_numero_columnas == "Auto") {
+                numero_bins <- 20
+              } else {
+                numero_bins <- input$histograma_numero_columnas
+              }
+              episodios$histograma_plot <- histograma_agrupador(
+                titulo = "Histograma",
+                data = episodios$tabla[["data"]],
+                columnas_sep = episodios$lista_agrupadores[
+                  input$histograma_select_agrupador_rows_selected],
+                numero_bins = numero_bins
+              )
+            },
+            error = function(e) {
+              sendSweetAlert(
+                session = session,
+                title = "Error", 
+                type = "error",
+                text = "Error generando histograma. Es posible que la frecuencia sea demasiado baja."
+              )
+            }
           )
         }
       })

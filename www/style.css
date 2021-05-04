@@ -1,3 +1,29 @@
+body::-webkit-scrollbar {
+  width: 7px;
+  border-radius: 10px;
+  background-color: rgba(192,192,192,0.1);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(192,192,192, 1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(192,192,192,0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(0, 148, 217); 
+  border-radius: 10px;
+}
+
 .main-header {
   position: fixed;
 }
@@ -8,6 +34,8 @@
 
 .control-sidebar {
   position: fixed;
+  padding-top: 0;
+  margin-top: 50px;
 }
 
 .content {
