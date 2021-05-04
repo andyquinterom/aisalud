@@ -505,9 +505,14 @@ episodios_server <- function(id, opciones, conn) {
       
       output$episodios_tabla <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
+          agrupador <- episodios$agrupador
+          separadores <- episodios$separadores
+          distinct_agrupadores <- n_distinct(c(agrupador, separadores))
           DT::datatable(
             episodios$tabla[["descriptiva"]],
+            extensions = 'FixedColumns',
             options = list(
+              fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
               pageLength = 20,
@@ -528,9 +533,14 @@ episodios_server <- function(id, opciones, conn) {
       })
       
       output$frecuencias_tabla <- DT::renderDataTable({
+        agrupador <- episodios$agrupador
+        separadores <- episodios$separadores
+        distinct_agrupadores <- n_distinct(c(agrupador, separadores))
         DT::datatable(
           episodios$frecuencias,
+          extensions = 'FixedColumns',
           options = list(
+            fixedColumns = list(leftColumns = distinct_agrupadores),
             language = list(
               url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
             pageLength = 20,
