@@ -27,7 +27,6 @@ library(dplyr)
 library(shinycssloaders)
 library(promises)
 library(future)
-library(leaflet)
 library(maps)
 library(htmltools)
 library(sparklyr)
@@ -36,6 +35,7 @@ library(jsonlite)
 library(shinyAce)
 library(listviewer)
 library(jsonvalidate)
+library(mapview)
 
 # Si el administrador define el maxRequestSize en las variables de ambiente
 # entonces esta se utilizará. De esta manera se puede limitar cuantos
@@ -101,3 +101,5 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
   )
 }
 
+# Se lee RData de departamentos de colombia
+departamentos <- readRDS("rds/departamentos_simplificado.rds")

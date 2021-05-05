@@ -14,9 +14,9 @@ seguimiento_notas_dashboard_ui <- function(id) {
       box(
         width = 5, 
         height = "500px",
-        leafletOutput(
-        height = "480px",
-        outputId = ns("indice_mapa")) %>%
+        mapviewOutput(
+          height = "480px",
+          outputId = ns("indice_mapa")) %>%
           withSpinner())
     ),
     fluidRow(
@@ -214,9 +214,12 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         }
       })
       
-      output$indice_mapa <- renderLeaflet({
-        mapa_valores(opciones$indice_todos %>%
-                       filter(vigente))
+      observe({
+        indice_todos <- opciones$indice_todos %>%
+          filter(vigente)
+        output$indice_mapa <- renderMapview({
+          mapa_valores(indice_todos, departamentos)
+        })
       })
       
       observe({
