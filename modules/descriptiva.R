@@ -556,7 +556,8 @@ descriptiva_server <- function(id, opciones, conn) {
                         dec.mark = ",", mark = ".", digits = 2) %>%
             formatCurrency(c('Suma','Min.','Max.','Rango'),
                            digits=0,
-                           dec.mark = ",", mark = ".")
+                           dec.mark = ",", mark = ".") %>%
+            formatStyle(TRUE, backgroundColor = 'white')
         }
       })
       
@@ -578,7 +579,8 @@ descriptiva_server <- function(id, opciones, conn) {
             ordering= TRUE, 
             scrollX = TRUE,
             scrollY = "500px"),
-          rownames= FALSE)
+          rownames= FALSE) %>%
+        formatStyle(TRUE, backgroundColor = 'white')
       })
       
       # Gráfico de barras
@@ -598,10 +600,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 scrollX = TRUE,
                 scrollY = "370px"),
               rownames = FALSE) %>%
-              formatStyle(
-                columns = 1:length(
-                  c(episodios$agrupador, episodios$separadores)),
-                fontSize = '95%')
+              formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
           }
       })
       
@@ -621,10 +620,7 @@ descriptiva_server <- function(id, opciones, conn) {
               scrollX = TRUE,
               scrollY = "370px"),
             rownames = FALSE) %>%
-            formatStyle(
-              columns = 1:length(
-                c(episodios$agrupador, episodios$separadores)),
-              fontSize = '95%')
+            formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
         }
       })
       
@@ -645,10 +641,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 scrollX = TRUE,
                 scrollY = "370px"),
               rownames = FALSE) %>%
-              formatStyle(
-                columns = 1:length(
-                  c(episodios$agrupadores, episodios$separadores)),
-                fontSize = '95%')
+              formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
           }
         })
       
@@ -767,7 +760,7 @@ descriptiva_server <- function(id, opciones, conn) {
         }, 
         contentType = "text/csv"
       )
-      
+    
       output$descriptiva_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
@@ -809,6 +802,5 @@ descriptiva_server <- function(id, opciones, conn) {
         contentType = "xlsx"
       )
     }
-    
   )
 }
