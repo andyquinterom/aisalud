@@ -419,6 +419,7 @@ cargar_datos_server <- function(id, opciones, conn) {
               summarise_all(class) == "numeric"
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
             file_opciones$enabled <- TRUE
+            opciones$aplicar_filtros <- aplicar_filtros() 
           }
         },
         error = function(e) {
