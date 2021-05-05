@@ -138,6 +138,7 @@ cargar_datos_server <- function(id, opciones, conn) {
     module = function(input, output, session) {
 
       ns <- NS(id)
+      aplicar_filtros <- counter()
 
       # La varaible prepara opciones guarda cambios dentro del módulo.
       prepara_opciones <- reactiveValues()
@@ -246,6 +247,7 @@ cargar_datos_server <- function(id, opciones, conn) {
                 tbl(tabla) %>%
                 filter(fecha_prestacion >= fecha_min) %>%
                 filter(fecha_prestacion <= fecha_max)
+              opciones$aplicar_filtros <- aplicar_filtros() 
             },
             error = function(e) {
               # Si la lectura de los datos da un error, se volverá  a leer

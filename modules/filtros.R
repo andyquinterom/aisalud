@@ -19,7 +19,7 @@ filtros_ui <- function(id) {
       ),
       tags$div(
         class = "filtros_char",
-          filtro_discreto_ui_insert(ns = ns, n = 5),
+          filtro_discreto_ui_insert(ns = ns, n = 6),
           filtros_pacientes_ui_fila(ns)
         ),
       filtro_numerico_ui_insert(ns = ns, n = 3),
@@ -36,7 +36,7 @@ filtros_server <- function(id, opciones) {
       # cantidad de filtros numericos
       n_num <- 3
       # cantidad de filtros de variables caracteres
-      n_char <- 5
+      n_char <- 6
       
       observeEvent(opciones$colnames, {
         lapply(
@@ -159,12 +159,14 @@ filtros_server <- function(id, opciones) {
         }
       )
       
-      observeEvent(input$aplicar_filtros, {
-        
+      # Se observa el botón aplicar_filtros y la opcion global
+      aplicar_filtros <- reactive({
+        list(input$aplicar_filtros, opciones$aplicar_filtros)
+      })
+
+      observeEvent(aplicar_filtros(), {
         opciones$tabla <- opciones$tabla_original
-        
         inputs_filtros_char <- c()
-        
         inputs_filtros_char <- unlist(
           lapply(
             X = 1:n_char,
@@ -174,8 +176,11 @@ filtros_server <- function(id, opciones) {
             }
           )
         )
+
+        n_filtros_char <- sum(inputs_filtros_char)
         
         if (!is.null(input$filtros_paciente_valor)) {
+          n_filtros_char <- n_filtros_char + 1
           valores_filtro <- input$filtros_paciente_valor
           if (input$filtro_paciente_incluir) {
             opciones$tabla <<- opciones$tabla %>%
@@ -191,13 +196,12 @@ filtros_server <- function(id, opciones) {
           FUN = function(i) {
             valores_filtro <- input[[paste0("filtro_char_valor_", i)]]
             if (input[[paste0("filtro_char_incluir_", i)]]) {
+              columna <- input[[paste0("filtro_char_columna_", i)]]
               opciones$tabla <<- opciones$tabla %>%
-                filter(!!as.name(input[[paste0("filtro_char_columna_", i)]]) %in%
-                         valores_filtro)
+                filter(!!as.name(columna) %in% valores_filtro)
             } else {
               opciones$tabla <<- opciones$tabla %>%
-                filter(!(!!as.name(input[[paste0("filtro_char_columna_", i)]]) %in%
-                           valores_filtro))
+                filter(!(!!as.name(columna) %in% valores_filtro))
             }
           }
         )
@@ -211,13 +215,14 @@ filtros_server <- function(id, opciones) {
             }
           )
         )
-        
+
+        n_filtros_num <- sum(inputs_filtros_num)
+
         lapply(
           X = (1:n_num)[inputs_filtros_num],
           FUN = function(i) {
             minimo <- input[[paste0("filtro_num_min_", i)]]
             maximo <- input[[paste0("filtro_num_max_", i)]]
-            
             if (!is.na(minimo) && !is.na(maximo)) {
               columna <- input[[paste0("filtro_num_columna_", i)]]
               opciones$tabla <<- opciones$tabla %>%
@@ -229,12 +234,13 @@ filtros_server <- function(id, opciones) {
                 type = "error"
               )
             }
-            
           }
         )
-        
+
+        n_filtros_total <- n_filtros_char + n_filtros_num
+
         showNotification(
-          ui = "Filtros aplicados.",
+          ui = paste("Se aplicaron", n_filtros_total, "filtros."),
           duration = 4
         )
       })
