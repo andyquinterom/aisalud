@@ -1,5 +1,5 @@
 # El módulo de descriptiva y episodios encapsula las funciones básicas
-# de descripcion de los datos. 
+# de descripcion de los datos.
 # La tabla general de descriptiva, frecuencias y gráficos.
 
 descriptiva_ui <- function(id) {
@@ -16,7 +16,7 @@ descriptiva_ui <- function(id) {
           selectizeInput(
             inputId = ns("agrupador"),
             label = "Agrupador principal:",
-            choices = NULL, 
+            choices = NULL,
             multiple = FALSE),
           selectizeInput(
             inputId = ns("separadores"),
@@ -122,7 +122,7 @@ descriptiva_ui <- function(id) {
               tags$h3(
                 textOutput(ns("histograma_titulo")), class = "titulo_center"),
               plotlyOutput(
-                height = "500px", 
+                height = "500px",
                 outputId = ns("histograma_render")
               ) %>%
                 withSpinner()
@@ -140,7 +140,7 @@ descriptiva_ui <- function(id) {
                 inputId = ns("histograma_numero_columnas"),
                 label = "Número de columnas",
                 choices = c("Auto", 5, 10, 20, 25, 50),
-                width = "100%", 
+                width = "100%",
                 selected = "Auto"
               ),
               DT::dataTableOutput(
@@ -200,7 +200,7 @@ descriptiva_ui <- function(id) {
                 label = "Indicador:",
                 choices = c("Suma" = "Suma",
                             "Frecuencia" = "Frecuencia",
-                            "Media" = "Media", 
+                            "Media" = "Media",
                             "Mediana" = "P50",
                             "Variación" = "Coef.var")
               ),
@@ -228,14 +228,15 @@ descriptiva_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       ns <- NS(id)
-      
+
       # Valores reactivos necesarios para la ejecución del módulo
       episodios <- reactiveValues(
         tabla = list("descriptiva" = data.table(), "data" = data.table()),
+        frecuencias = data.table(),
         agrupadores_items = NULL)
-      
+
       # Se observa cambios en los nombres de columnas para actulizar
       # selectizeInputs
       observeEvent(opciones$colnames, {
@@ -259,7 +260,7 @@ descriptiva_server <- function(id, opciones, conn) {
           choices = opciones$colnames
         )
       })
-      
+
       # Cambios a la seleccion de episodios
       observeEvent(input$episodios, {
         # Si es FALSE no se muestra el input de columnad de relacion
@@ -275,15 +276,15 @@ descriptiva_server <- function(id, opciones, conn) {
           })
         }
       })
-      
+
       # Reactive que observa cambbios a input$agrupador e input$episodios
       cambio_columnas <- reactive({
         list(input$agrupador, input$episodios)
       })
-      
+
       observeEvent(cambio_columnas(), {
         # Si hay cambios al agrupador o a episodios se ejecutará
-        if (!is.null(opciones$colnames) && 
+        if (!is.null(opciones$colnames) &&
             input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
@@ -344,7 +345,7 @@ descriptiva_server <- function(id, opciones, conn) {
               print(e)
               sendSweetAlert(
                 session = session,
-                title = "Error", 
+                title = "Error",
                 type = "error",
                 text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
               )
@@ -352,9 +353,9 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       # Se observa que el usuario haga click en los titulos de las unidades
-      # de conteo en el widget de jerarquia. 
+      # de conteo en el widget de jerarquia.
       # De esta manera se pueden mover los diferentes agrupadores de manera
       # sencilla entre unidades.
 
@@ -367,7 +368,7 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_factura, {
         output$episodios_jerarquia <- renderUI({
           tagList(
@@ -377,7 +378,7 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_paciente, {
         output$episodios_jerarquia <- renderUI({
           tagList(
@@ -387,7 +388,7 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_prestacion, {
         output$episodios_jerarquia <- renderUI({
           tagList(
@@ -397,10 +398,10 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         })
       })
-      
+
       observeEvent(input$descriptiva_exe, {
         # Se valide que hayan datos cargados y un agrupador seleccionado
-        if(opciones$datos_cargados && 
+        if(opciones$datos_cargados &&
           input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
@@ -440,7 +441,7 @@ descriptiva_server <- function(id, opciones, conn) {
               print(e)
               sendSweetAlert(
                 session = session,
-                title = "Error", 
+                title = "Error",
                 type = "error",
                 text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
               )
@@ -463,8 +464,8 @@ descriptiva_server <- function(id, opciones, conn) {
             if (input$episodios) {
               episodios$tabla <- episodios_jerarquia(
                 data = opciones$tabla,
-                columnas =      agrupador, 
-                columna_valor = opciones$valor_costo, 
+                columnas =      agrupador,
+                columna_valor = opciones$valor_costo,
                 columna_sep =   separadores,
                 columna_suma =  episodios_col_rel,
                 nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
@@ -487,7 +488,7 @@ descriptiva_server <- function(id, opciones, conn) {
               names(episodios$tabla[["data"]]) <- input$unidades
             }
             # lista de los agrupadores únicos
-            episodios$lista_agrupadores <- 
+            episodios$lista_agrupadores <-
               episodios$tabla[["descriptiva"]] %>%
                 select(!!!rlang::syms(unique(c(agrupador, separadores))))
             episodios$tabla_titulo <- paste(
@@ -503,7 +504,7 @@ descriptiva_server <- function(id, opciones, conn) {
             if (input$episodios) {
               episodios$frecuencias <- frecuencias_jerarquia(
                 data = opciones$tabla,
-                columnas =      agrupador, 
+                columnas =      agrupador,
                 columna_fecha = "fecha_prestacion",
                 columna_sep =   separadores,
                 columna_suma =  episodios_col_rel,
@@ -528,7 +529,7 @@ descriptiva_server <- function(id, opciones, conn) {
           }
         }
       })
-      
+
       # Render tabla de descriptiva
       output$episodios_tabla <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
@@ -545,7 +546,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
               pageLength = 20,
               autoWidth = FALSE,
-              ordering=T, 
+              ordering=T,
               scrollX = TRUE,
               scrollY = "500px"),
             rownames= FALSE) %>%
@@ -560,31 +561,33 @@ descriptiva_server <- function(id, opciones, conn) {
             formatStyle(TRUE, backgroundColor = 'white')
         }
       })
-      
+
       # Render tabla de frecuencias
       output$frecuencias_tabla <- DT::renderDataTable({
-        agrupador <- episodios$agrupador
-        separadores <- episodios$separadores
-        # Número de agrupadores únicos
-        distinct_agrupadores <- n_distinct(c(agrupador, separadores))
-        DT::datatable(
-          episodios$frecuencias,
-          extensions = 'FixedColumns',
-          options = list(
-            fixedColumns = list(leftColumns = distinct_agrupadores),
-            language = list(
-              url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-            pageLength = 20,
-            autoWidth = FALSE,
-            ordering= TRUE, 
-            scrollX = TRUE,
-            scrollY = "500px"),
-          rownames= FALSE) %>%
-        formatStyle(TRUE, backgroundColor = 'white')
+        if (nrow(episodios$frecuencias) != 0) {
+          agrupador <- episodios$agrupador
+          separadores <- episodios$separadores
+          # Número de agrupadores únicos
+          distinct_agrupadores <- n_distinct(c(agrupador, separadores))
+          DT::datatable(
+            episodios$frecuencias,
+            extensions = 'FixedColumns',
+            options = list(
+              fixedColumns = list(leftColumns = distinct_agrupadores),
+              language = list(
+                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+              pageLength = 20,
+              autoWidth = FALSE,
+              ordering= TRUE,
+              scrollX = TRUE,
+              scrollY = "500px"),
+            rownames= FALSE) %>%
+          formatStyle(TRUE, backgroundColor = 'white')
+        }
       })
-      
+
       # Gráfico de barras
-      output$grafico_barras_select_agrupador <- 
+      output$grafico_barras_select_agrupador <-
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
@@ -596,14 +599,14 @@ descriptiva_server <- function(id, opciones, conn) {
                 pageLength = 20,
                 dom = 'ftp',
                 autoWidth = FALSE,
-                ordering= TRUE, 
+                ordering= TRUE,
                 scrollX = TRUE,
                 scrollY = "370px"),
               rownames = FALSE) %>%
               formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
           }
       })
-      
+
       # Histograma
       output$histograma_select_agrupador <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
@@ -616,16 +619,16 @@ descriptiva_server <- function(id, opciones, conn) {
               pageLength = 20,
               dom = 'ftp',
               autoWidth = FALSE,
-              ordering = TRUE, 
+              ordering = TRUE,
               scrollX = TRUE,
               scrollY = "370px"),
             rownames = FALSE) %>%
             formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
         }
       })
-      
+
       # Caja de bigotes
-      output$caja_de_bigotes_select_agrupador <- 
+      output$caja_de_bigotes_select_agrupador <-
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
@@ -637,22 +640,22 @@ descriptiva_server <- function(id, opciones, conn) {
                 pageLength = 10000,
                 dom = 'ftp',
                 autoWidth = FALSE,
-                ordering = TRUE, 
+                ordering = TRUE,
                 scrollX = TRUE,
                 scrollY = "370px"),
               rownames = FALSE) %>%
               formatStyle(TRUE, fontSize = '95%', backgroundColor = 'white')
           }
         })
-      
+
       output$histograma_titulo <- renderText({
         "Histograma de valores"
       })
-      
+
       output$caja_de_bigotes_titulo <- renderText({
         "Distribución de valores"
       })
-      
+
       # Generar histograma
       observeEvent(input$histograma_ejecutar, {
         if (!is.null(input$histograma_select_agrupador_rows_selected)) {
@@ -677,7 +680,7 @@ descriptiva_server <- function(id, opciones, conn) {
             error = function(e) {
               sendSweetAlert(
                 session = session,
-                title = "Error", 
+                title = "Error",
                 type = "error",
                 text = "Error generando histograma. Es posible que la frecuencia sea demasiado baja."
               )
@@ -685,11 +688,11 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       output$histograma_render <- renderPlotly({
         episodios$histograma_plot
       })
-      
+
       # Se genera el gráfico de tabla de bigotes
       observeEvent(input$caja_de_bigotes_ejecutar, {
         if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
@@ -700,11 +703,11 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       output$caja_de_bigotes_render <- renderPlotly({
         episodios$caja_de_bigotes_plot
       })
-      
+
       # se genera grafico de barras
       observeEvent(input$grafico_barras_ejecutar, {
         if (!is.null(input$grafico_barras_select_agrupador_rows_selected)) {
@@ -717,15 +720,15 @@ descriptiva_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       output$grafico_barras_render <- renderPlotly({
         episodios$grafico_barras_plot
       })
-      
+
       # Se suma el valor total en la descriptiva
       output$descriptiva_sumas_valor <- renderText({
         if (!is.null(opciones$colnames)) {
-          if(nrow(episodios$tabla[["descriptiva"]]) > 0) {
+          if (nrow(episodios$tabla[["descriptiva"]]) > 0) {
             paste("Total",
                   paste0(tolower(opciones$valor_costo), ":"),
                   formatAsCurrency(
@@ -744,7 +747,7 @@ descriptiva_server <- function(id, opciones, conn) {
       output$descriptiva_sumas_facturas <- renderText({
         episodios$n_facturas
       })
-      
+
       # Botones de descarga
       output$descriptiva_descargar_csv <- downloadHandler(
         filename = function() {
@@ -754,13 +757,13 @@ descriptiva_server <- function(id, opciones, conn) {
         content = function(file) {
           write.csv(
             x = as.data.frame(episodios$tabla[["descriptiva"]]),
-            file = file, 
+            file = file,
             row.names = FALSE,
             na = "")
-        }, 
+        },
         contentType = "text/csv"
       )
-    
+
       output$descriptiva_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Descriptiva",
@@ -770,10 +773,10 @@ descriptiva_server <- function(id, opciones, conn) {
           write_xlsx(
             x = as.data.frame(episodios$tabla[["descriptiva"]]),
             path = file)
-        }, 
+        },
         contentType = "xlsx"
       )
-      
+
       output$frecuencias_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
@@ -782,13 +785,13 @@ descriptiva_server <- function(id, opciones, conn) {
         content = function(file) {
           write.csv(
             x = episodios$frecuencias,
-            file = file, 
+            file = file,
             row.names = FALSE,
             na = "")
-        }, 
+        },
         contentType = "text/csv"
       )
-      
+
       output$frecuencias_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Frecuencias",
@@ -798,7 +801,7 @@ descriptiva_server <- function(id, opciones, conn) {
           write_xlsx(
             x = as.data.frame(episodios$frecuencias),
             path = file)
-        }, 
+        },
         contentType = "xlsx"
       )
     }

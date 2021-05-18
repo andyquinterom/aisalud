@@ -44,7 +44,7 @@ library(mapview)
 maxRequestSize <- 300 * 1024 ^ 2
 if (Sys.getenv("maxRequestSize") != "") {
   maxRequestSize <- 
-    as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
+    as.numeric(as.character(Sys.getenv("maxRequestSize"))) * 1024^2
 }
 
 options(shiny.maxRequestSize = maxRequestSize)
@@ -81,10 +81,10 @@ tabla_perfiles <- dbListTables(conn = conn)
 
 if ("perfiles_usuario" %notin% tabla_perfiles) {
   dbWriteTable(
-    conn = conn, 
+    conn = conn,
     name = "perfiles_usuario",
     data.frame(
-      "perfiles" = read_file("json_schemas/perfiles_default.json") 
+      "perfiles" = read_file("json_schemas/perfiles_default.json")
     )
   )
 }
