@@ -543,7 +543,7 @@ descriptiva_server <- function(id, opciones, conn) {
             options = list(
               fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = 20,
               autoWidth = FALSE,
               ordering=T,
@@ -575,7 +575,7 @@ descriptiva_server <- function(id, opciones, conn) {
             options = list(
               fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = 20,
               autoWidth = FALSE,
               ordering= TRUE,
@@ -595,7 +595,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 episodios$agrupador, episodios$separadores), with = FALSE],
               options = list(
                 language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                  url = dt_spanish),
                 pageLength = 20,
                 dom = 'ftp',
                 autoWidth = FALSE,
@@ -615,7 +615,7 @@ descriptiva_server <- function(id, opciones, conn) {
               episodios$agrupador, episodios$separadores), with = FALSE],
             options = list(
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = 20,
               dom = 'ftp',
               autoWidth = FALSE,
@@ -636,7 +636,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 episodios$agrupador, episodios$separadores), with = FALSE],
               options = list(
                 language = list(
-                  url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                  url = dt_spanish),
                 pageLength = 10000,
                 dom = 'ftp',
                 autoWidth = FALSE,

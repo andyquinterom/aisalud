@@ -43,7 +43,7 @@ library(mapview)
 
 maxRequestSize <- 300 * 1024 ^ 2
 if (Sys.getenv("maxRequestSize") != "") {
-  maxRequestSize <- 
+  maxRequestSize <-
     as.numeric(as.character(Sys.getenv("maxRequestSize"))) * 1024^2
 }
 
@@ -103,3 +103,6 @@ if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
 
 # Se lee RData de departamentos de colombia
 departamentos <- readRDS("rds/departamentos_simplificado.rds")
+
+# DT Spanish json
+dt_spanish <- "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
