@@ -201,7 +201,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             options = list(
               dom='ft',
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = 10, 
               ordering = FALSE, 
               scrollX = TRUE,
@@ -421,7 +421,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             options = list(
               dom='ft',
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = nrow(nt_opciones$datos),
               ordering = FALSE,
               scrollX = TRUE,

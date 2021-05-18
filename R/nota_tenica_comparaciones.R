@@ -178,7 +178,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
       pageLength = nrow(comparacion_frecs),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatStyle(columns = 1:ncol(comparacion_frecs), backgroundColor = 'white') %>%
     formatCurrency(
       table = .,
@@ -213,7 +213,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
       pageLength = nrow(comparacion_x_cme),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatStyle(columns = 1:ncol(comparacion_x_cme), backgroundColor = 'white') %>%
     formatCurrency(
       table = .,
@@ -249,7 +249,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
       pageLength = nrow(comparacion_porcentaje),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatStyle(columns = 1:ncol(comparacion_porcentaje),
                 backgroundColor = 'white') %>%
     formatPercentage(
@@ -296,7 +296,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
       pageLength = nrow(frecuencias_original),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatStyle(columns = 1:ncol(frecuencias_original), backgroundColor = 'white') %>%
     formatCurrency(
       table = .,
@@ -445,7 +445,7 @@ comparacion_valor_facturado <- function(
       pageLength = nrow(comparaciones[["suma"]]),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatCurrency(
       columns = 2:ncol(comparaciones[["suma"]]),
       dec.mark = ",", mark = ".", digits = 0)
@@ -463,7 +463,7 @@ comparacion_valor_facturado <- function(
       pageLength = nrow(comparaciones[["diff"]]),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatCurrency(
       columns = 2:ncol(comparaciones[["diff"]]),
       dec.mark = ",", mark = ".", digits = 0) %>%
@@ -489,7 +489,7 @@ comparacion_valor_facturado <- function(
       pageLength = nrow(comparaciones[["perc"]]),
       scrollX = TRUE,
       language = list(
-        url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'))) %>%
+        url = dt_spanish))) %>%
     formatPercentage(
       columns = 3:(ncol(comparaciones[["perc"]]) - 1),
       dec.mark = ",", mark = ".", digits = 0) %>%

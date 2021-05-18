@@ -181,7 +181,7 @@ composicion_server <- function(id, opciones, conn) {
               scrollX = TRUE,
               fixedColumns = list(leftColumns = 5),
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')),
+                url = dt_spanish)),
             selection = 'none'
           ) %>%
             formatPercentage(c("% de participación",
