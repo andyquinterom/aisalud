@@ -21,7 +21,7 @@
 # de otros módulos. Solamente el módulo de filtros podrá cambiar datos.
 
 shinyServer(function(input, output, session) {
-  
+
   opciones <- reactiveValues(
     "valor_costo" = "valor",
     "tabla_nombre" = "Ninguno",
@@ -30,56 +30,53 @@ shinyServer(function(input, output, session) {
     "fecha_rango" = rep(Sys.Date(), 2),
     "cantidad" = FALSE
   )
-  
-  
- # Modulo prepara ---------------------------------------------
-  
+
+  # Modulo prepara ------------------------------------------------------------
+
   cargar_datos_server(
     id = "cargar_datos",
     opciones = opciones,
     conn = conn
   )
-  
-  # Modulo filtros --------------------------------------------
-  
+
+  # Modulo filtros ------------------------------------------------------------
+
   filtros_server(
     id = "filtros_sideBar",
     opciones = opciones
   )
-  
+
   # Modulo descriptiva y episodios --------------------------------------------
-  
+
   descriptiva_server(
     id = "episodios_modulo",
     opciones = opciones,
     conn = conn
   )
-  
-  # # Modulo outliers -----------------------------------------------------------
-  # 
+
+  # Modulo outliers -----------------------------------------------------------
+
   outliers_server(
     id = "outliers_modulo",
     opciones = opciones
   )
-  # 
-  # 
-  # # Modulo generar nota técnica -----------------------------------------------
-  # 
-  
+
+  # Modulo generar nota técnica -----------------------------------------------
+
   nota_tecnica_server(
     id = "nota_tecnica_modulo",
     opciones = opciones
   )
-  
-  # # Modulo otros gráficos -----------------------------------------------------
+
+  # # Modulo otros gráficos ---------------------------------------------------
 
   otros_graficos_server(
     id = "otros_graficos_modulo",
     opciones = opciones
   )
-  
+
   # Modulo de composicion
-  
+
   composicion_server(
     id = "composicion_modulo",
     opciones = opciones,
@@ -89,5 +86,5 @@ shinyServer(function(input, output, session) {
   seguimiento_notas_dashboard_server(
     id = "seguimiento_notas_dash",
     opciones = opciones)
-  
+
 })

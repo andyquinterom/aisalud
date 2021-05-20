@@ -144,7 +144,7 @@ descriptiva_ui <- function(id) {
                 selected = "Auto"
               ),
               DT::dataTableOutput(
-                outputId = ns("histograma_select_agrupador")
+                outputId = ns("histograma_agrupador")
               )
             )
           )
@@ -173,7 +173,7 @@ descriptiva_ui <- function(id) {
               tags$br(),
               tags$br(),
               DT::dataTableOutput(
-                outputId = ns("caja_de_bigotes_select_agrupador")
+                outputId = ns("bigotes_agrupador")
               )
             )
           )
@@ -185,7 +185,9 @@ descriptiva_ui <- function(id) {
             column(
               width = 8,
               tags$h3(
-                textOutput(ns("grafico_barras_titulo")), class = "titulo_center"),
+                textOutput(
+                  outputId = ns("grafico_barras_titulo")),
+                class = "titulo_center"),
               plotlyOutput(
                 height = "500px",
                 outputId = ns("grafico_barras_render")
@@ -212,7 +214,7 @@ descriptiva_ui <- function(id) {
               tags$br(),
               tags$br(),
               DT::dataTableOutput(
-                outputId = ns("grafico_barras_select_agrupador")
+                outputId = ns("barras_agrupador")
               )
             )
           )
@@ -401,19 +403,20 @@ descriptiva_server <- function(id, opciones, conn) {
 
       observeEvent(input$descriptiva_exe, {
         # Se valide que hayan datos cargados y un agrupador seleccionado
-        if(opciones$datos_cargados &&
+        if (opciones$datos_cargados &&
           input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
-              withProgress(message = "Calculando descriptiva...",{
+              withProgress(message = "Calculando descriptiva...", {
                 # Se calcula el total de algunos indicadores necesarios
                 episodios$n_pacientes <- paste(
                   "Número de pacientes:",
-                  formatC(
-                    {opciones$tabla %>%
-                        distinct(nro_identificacion) %>%
-                        count() %>%
-                        pull()},
+                  formatC({
+                    opciones$tabla %>%
+                      distinct(nro_identificacion) %>%
+                      count() %>%
+                      pull()
+                    },
                     big.mark = ".",
                     decimal.mark = ",",
                     format = "f",
@@ -422,11 +425,12 @@ descriptiva_server <- function(id, opciones, conn) {
                 if ("nro_factura" %in% opciones$colnames) {
                   episodios$n_facturas <- paste(
                     "Número de facturas:",
-                    formatC(
-                      {opciones$tabla %>%
-                          distinct(nro_factura) %>%
-                          count() %>%
-                          pull()},
+                    formatC({
+                      opciones$tabla %>%
+                        distinct(nro_factura) %>%
+                        count() %>%
+                        pull()
+                      },
                       big.mark = ".",
                       decimal.mark = ",",
                       format = "f",
@@ -452,7 +456,7 @@ descriptiva_server <- function(id, opciones, conn) {
 
       # Generar descriptiva
       observeEvent(input$descriptiva_exe, {
-        if(opciones$datos_cargados &&
+        if (opciones$datos_cargados &&
           input$agrupador %notin% c("", "Ninguno")) {
           agrupador <- input$agrupador
           if (input$episodios) episodios_col_rel <- input$episodios_col_rel
@@ -539,26 +543,26 @@ descriptiva_server <- function(id, opciones, conn) {
           distinct_agrupadores <- n_distinct(c(agrupador, separadores))
           DT::datatable(
             episodios$tabla[["descriptiva"]],
-            extensions = 'FixedColumns',
+            extensions = "FixedColumns",
             options = list(
               fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
                 url = dt_spanish),
               pageLength = 20,
               autoWidth = FALSE,
-              ordering=T,
+              ordering = TRUE,
               scrollX = TRUE,
               scrollY = "500px"),
-            rownames= FALSE) %>%
+            rownames = FALSE) %>%
             formatCurrency(
-              c('P25','P50','P75','P90','Media','Desv.tipica'),
+              c("P25", "P50", "P75", "P90", "Media", "Desv.tipica"),
               dec.mark = ",", mark = ".") %>%
             formatRound("Coef.var",
                         dec.mark = ",", mark = ".", digits = 2) %>%
-            formatCurrency(c('Suma','Min.','Max.','Rango'),
-                           digits=0,
+            formatCurrency(c("Suma", "Min.", "Max.", "Rango"),
+                           digits = 0,
                            dec.mark = ",", mark = ".") %>%
-            formatStyle(TRUE, backgroundColor = 'white')
+            formatStyle(TRUE, backgroundColor = "white")
         }
       })
 
@@ -571,23 +575,23 @@ descriptiva_server <- function(id, opciones, conn) {
           distinct_agrupadores <- n_distinct(c(agrupador, separadores))
           DT::datatable(
             episodios$frecuencias,
-            extensions = 'FixedColumns',
+            extensions = "FixedColumns",
             options = list(
               fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
                 url = dt_spanish),
               pageLength = 20,
               autoWidth = FALSE,
-              ordering= TRUE,
+              ordering = TRUE,
               scrollX = TRUE,
               scrollY = "500px"),
-            rownames= FALSE) %>%
-          formatStyle(TRUE, backgroundColor = 'white')
+            rownames = FALSE) %>%
+          formatStyle(TRUE, backgroundColor = "white")
         }
       })
 
       # Gráfico de barras
-      output$grafico_barras_select_agrupador <-
+      output$barras_agrupador <-
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
@@ -608,7 +612,7 @@ descriptiva_server <- function(id, opciones, conn) {
       })
 
       # Histograma
-      output$histograma_select_agrupador <- DT::renderDataTable({
+      output$histograma_agrupador <- DT::renderDataTable({
         if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
           DT::datatable(
             episodios$tabla[["descriptiva"]][, c(
@@ -628,7 +632,7 @@ descriptiva_server <- function(id, opciones, conn) {
       })
 
       # Caja de bigotes
-      output$caja_de_bigotes_select_agrupador <-
+      output$bigotes_agrupador <-
         DT::renderDataTable({
           if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
             DT::datatable(
@@ -658,7 +662,7 @@ descriptiva_server <- function(id, opciones, conn) {
 
       # Generar histograma
       observeEvent(input$histograma_ejecutar, {
-        if (!is.null(input$histograma_select_agrupador_rows_selected)) {
+        if (!is.null(input$histograma_agrupador_rows_selected)) {
           tryCatch(
             expr = {
               # Selección del número de bins
@@ -673,7 +677,7 @@ descriptiva_server <- function(id, opciones, conn) {
                 # Se utiliza episodios$tabla[["data"]] para no utilizar collect
                 data = episodios$tabla[["data"]],
                 columnas_sep = episodios$lista_agrupadores[
-                  input$histograma_select_agrupador_rows_selected],
+                  input$histograma_agrupador_rows_selected],
                 numero_bins = numero_bins
               )
             },
@@ -695,11 +699,11 @@ descriptiva_server <- function(id, opciones, conn) {
 
       # Se genera el gráfico de tabla de bigotes
       observeEvent(input$caja_de_bigotes_ejecutar, {
-        if (!is.null(input$caja_de_bigotes_select_agrupador_rows_selected)) {
+        if (!is.null(input$bigotes_agrupador_rows_selected)) {
           episodios$caja_de_bigotes_plot <- caja_de_bigotes_agrupador(
             data = episodios$tabla[["descriptiva"]],
             columnas_sep = episodios$lista_agrupadores[
-              input$caja_de_bigotes_select_agrupador_rows_selected]
+              input$bigotes_agrupador_rows_selected]
           )
         }
       })
@@ -710,12 +714,12 @@ descriptiva_server <- function(id, opciones, conn) {
 
       # se genera grafico de barras
       observeEvent(input$grafico_barras_ejecutar, {
-        if (!is.null(input$grafico_barras_select_agrupador_rows_selected)) {
+        if (!is.null(input$barras_agrupador_rows_selected)) {
           episodios$grafico_barras_plot <- grafico_barras_descriptiva(
             data = episodios$tabla[["descriptiva"]],
             columna_numeros = input$grafico_barras_indicador,
             columnas_sep = episodios$lista_agrupadores[
-              input$grafico_barras_select_agrupador_rows_selected
+              input$barras_agrupador_rows_selected
             ]
           )
         }
