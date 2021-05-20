@@ -6,9 +6,9 @@
 # no deben ser mutados.
 
 cargar_datos_ui <- function(id) {
-  
+
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
@@ -35,8 +35,8 @@ cargar_datos_ui <- function(id) {
             dateRangeInput(
               inputId = ns("fecha_rango"),
               label = "Fechas:",
-              min = "1970-01-01", 
-              max = NULL, 
+              min = "1970-01-01",
+              max = NULL,
               format = "dd/mm/yyyy",
               language = "es"),
             tags$style(HTML(".datepicker {z-index:99999 !important;}"))
@@ -45,13 +45,13 @@ cargar_datos_ui <- function(id) {
             title = "Subir datos",
             fileInput(
               inputId = ns("file"),
-              label = "", 
+              label = "",
               buttonLabel = "Subir archivo",
               placeholder = "Ningún archivo"),
             radioButtons(
               inputId = ns("file_type"),
               label = "Tipo de archivo",
-              inline = TRUE, 
+              inline = TRUE,
               choices = c("csv", "feather")),
             actionButton(
               inputId = ns("file_options_open"),
@@ -62,8 +62,8 @@ cargar_datos_ui <- function(id) {
             dateRangeInput(
               inputId = ns("file_fecha_rango"),
               label = "Fechas:",
-              min = NULL, 
-              max = NULL, 
+              min = NULL,
+              max = NULL,
               format = "dd/mm/yyyy",
               language = "es"),
             tags$style(HTML(".datepicker {z-index:99999 !important;}")),
@@ -94,8 +94,8 @@ cargar_datos_ui <- function(id) {
             tags$hr(),
             checkboxInput(
               inputId = ns("cantidad"),
-              width = "100%", 
-              label = "Prestaciones por cantidad", 
+              width = "100%",
+              label = "Prestaciones por cantidad",
               value = FALSE
             )
           )
@@ -122,7 +122,7 @@ cargar_datos_ui <- function(id) {
             title = "Notas técnicas",
             jsoneditOutput(
               outputId = ns("notas_tecnicas_editor"),
-              height = "630px", 
+              height = "630px",
               width = "100%"
             )
           )
@@ -153,14 +153,14 @@ cargar_datos_server <- function(id, opciones, conn) {
         tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
           stringr::str_replace(pattern = "ais_", "")
         # Si no exsiten tablas validas
-        if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+        if (identical(character(0), tables_ais)) tables_ais <- "Ninguno"
         updateSelectizeInput(
           session = session,
           inputId = "tabla",
-          choices = unique(c("Ninguno", tables_ais)) 
+          choices = unique(c("Ninguno", tables_ais))
         )
       })
-     
+
       # Se observa el input del usuario al seleccionar una tabla
       observeEvent(input$tabla, {
         tabla <- paste0("ais_", input$tabla)
@@ -192,7 +192,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       # Si se esta trabajando con datos locales se utilizan diferentes
       # inputs del valor
       observe({
@@ -210,7 +210,7 @@ cargar_datos_server <- function(id, opciones, conn) {
             no = opciones$valor_costo)
         }
       })
-     
+
       # Se definen los rangos de fechas a utilizar
       observe({
         # Si la fecha es invalida, se utilizará la última selección
@@ -221,7 +221,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           test = !is.na(input$fecha_rango[2]),
           yes = input$fecha_rango[2], no = opciones$fecha_rango[2])
       })
-      
+
       observe({
         if (input$tabla %notin% c("Ninguno", "")) {
           tryCatch(
@@ -247,7 +247,7 @@ cargar_datos_server <- function(id, opciones, conn) {
                 tbl(tabla) %>%
                 filter(fecha_prestacion >= fecha_min) %>%
                 filter(fecha_prestacion <= fecha_max)
-              opciones$aplicar_filtros <- aplicar_filtros() 
+              opciones$aplicar_filtros <- aplicar_filtros()
             },
             error = function(e) {
               # Si la lectura de los datos da un error, se volverá  a leer
@@ -257,7 +257,7 @@ cargar_datos_server <- function(id, opciones, conn) {
                 unname()
               tables_ais <- tables_query[str_starts(tables_query, "ais_")] %>%
                 stringr::str_replace(pattern = "ais_", "")
-              if (identical(character(0), tables_ais)) tables_ais <- "Ninguno" 
+              if (identical(character(0), tables_ais)) tables_ais <- "Ninguno"
               updateSelectizeInput(
                 session = session,
                 inputId = "tabla",
@@ -273,7 +273,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       # Se actualiza la seleccion de columnas de valor
       observe({
         # Si los datos se seleccionan de la nube
@@ -296,7 +296,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       # Resumen de valores en el tiempo seleccionado
       output$valor_con_tiempo <- renderPlotly({
         if (opciones$datos_cargados) {
@@ -333,9 +333,9 @@ cargar_datos_server <- function(id, opciones, conn) {
                 tickformat = ",.2f"))
         }
       })
-      
+
       # Cargar datos locales -----------------
-      
+
       # Variables necesarias para lectura de datos tabulados en csv
       file_opciones <- reactiveValues(
         "value_decimal" = ".",
@@ -344,7 +344,7 @@ cargar_datos_server <- function(id, opciones, conn) {
         "value_range" = NULL,
         "enabled" = FALSE
       )
-      
+
       # se abre modal con las opciones para la subida de los datos
       observeEvent(input$file_options_open, {
         showModal(
@@ -368,7 +368,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         )
       })
-      
+
       # Guardar opciones de los datos locales en la variable file_opciones
       observeEvent(input$file_opciones_guardar, {
         file_opciones$value_decimal <- input$value_decimal
@@ -378,7 +378,7 @@ cargar_datos_server <- function(id, opciones, conn) {
         file_opciones$value_file <- input$value_file
         removeModal(session = session)
       })
-      
+
       # Lectura de los datos
       observeEvent(input$file_load, {
         tryCatch(expr = {
@@ -394,8 +394,8 @@ cargar_datos_server <- function(id, opciones, conn) {
             datos_read <- NULL
             if (input$file_type == "csv") {
               datos_read <- readr::read_delim(
-                file = input$file$datapath, 
-                delim = value_delimitador, 
+                file = input$file$datapath,
+                delim = value_delimitador,
                 locale = locale(
                   decimal_mark = file_opciones$value_decimal))
             }
@@ -419,7 +419,7 @@ cargar_datos_server <- function(id, opciones, conn) {
               summarise_all(class) == "numeric"
             opciones$colnames_num <- opciones$colnames[testfor_numeric]
             file_opciones$enabled <- TRUE
-            opciones$aplicar_filtros <- aplicar_filtros() 
+            opciones$aplicar_filtros <- aplicar_filtros()
           }
         },
         error = function(e) {
@@ -432,8 +432,8 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         })
       })
-      
-      # Validación de que los datos esten subido o seleccionados 
+
+      # Validación de que los datos esten subido o seleccionados
       observe({
         opciones$datos_cargados <- FALSE
         if (input$tabla != "Ninguno" &&
@@ -448,9 +448,9 @@ cargar_datos_server <- function(id, opciones, conn) {
           opciones$datos_cargados <- TRUE
         }
       })
-      
+
       # Sección de Perfiles ---------------------------------------------------
-     
+
       perfil_opciones <- reactiveValues()
 
       observe({
@@ -462,7 +462,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           selected = opciones$perfil_selected
         )
       })
-      
+
       observe({
         # Se observan cambios a opciones$perfiles_updated
         # (cuando haya un cambio a los perfiles)
@@ -499,7 +499,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           }
         )
       })
-      
+
       # Validación de que haya un perfil seleccionado
       observe({
         opciones$perfil_enable <- FALSE
@@ -524,7 +524,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           templates = read_json("json_schemas/perfiles_template.json")
         )
       })
-      
+
       # Guardar cambios a perfiles
       observeEvent(input$perfil_editor_edit, {
         showModal(
@@ -561,7 +561,7 @@ cargar_datos_server <- function(id, opciones, conn) {
               # Se valida el json con el JSONSchemad de perfiles
               validado <- json_validate(
                 json = input$perfil_editor_edit$raw,
-                schema = "json_schemas/perfiles.json" 
+                schema = "json_schemas/perfiles.json"
               )
               # Si no se valida se generará error
               if (!validado) stop("El formato de los perfiles es invalido.")
@@ -602,9 +602,9 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       # Opciones para el conteo por cantidades
-      
+
       observe({
         cantidad_enable <- NULL
         # Si se tiene un perfil seleccionado se utilizará la opción del
@@ -621,12 +621,12 @@ cargar_datos_server <- function(id, opciones, conn) {
           )
         }
       })
-      
+
       observe({
         # Se observan cambios al checkboxInput
         opciones$cantidad <- input$cantidad
       })
-      
+
       # Notas tecnicas editor
       # Este tipo de funcion se puede generalizar en un futuro
       # El código es practicamente igual al de perfiles
@@ -635,8 +635,9 @@ cargar_datos_server <- function(id, opciones, conn) {
         # (cuando hayan cambios a las notas técnicas)
         opciones$notas_tecnicas_updated
         # Pull las notas tecnicas en formato json
-        opciones$notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
-          pull(notas_tecnicas)
+        opciones$notas_tecnicas_raw <-
+          tbl(conn, "perfiles_notas_tecnicas_v2") %>%
+            pull(notas_tecnicas)
         tryCatch(
           expr = {
             # parsing del raw JSON
@@ -677,7 +678,7 @@ cargar_datos_server <- function(id, opciones, conn) {
           templates = read_json("json_schemas/nota_tecnica_template.json")
         )
       })
-      
+
       # Guardar cambios a notas técnicas
       observeEvent(input$notas_tecnicas_editor_edit, {
         showModal(
@@ -698,7 +699,7 @@ cargar_datos_server <- function(id, opciones, conn) {
       observeEvent(input$notas_tecnicas_close, {
         removeModal()
       })
-     
+
       # la sección de validacion se puede generalizar facilmente
       # Es exactamente igual a la seccion de los perfiles
       observeEvent(input$notas_tecnicas_conf, {

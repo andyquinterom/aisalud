@@ -1,7 +1,7 @@
 seguimiento_notas_dashboard_ui <- function(id) {
-  
+
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
@@ -12,7 +12,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
           height = "auto") %>%
           withSpinner()),
       box(
-        width = 5, 
+        width = 5,
         height = "500px",
         mapviewOutput(
           height = "480px",
@@ -33,7 +33,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
       box(
         width = 12,
         selectizeInput(
-          inputId = ns("board_select"), 
+          inputId = ns("board_select"),
           width = "100%",
           choices = "Ninguno",
           label = "Nota técnica")),
@@ -81,7 +81,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
                 tags$br(),
                 tags$br(),
                 downloadButton(
-                  outputId = ns("comparar_descargar_xlsx"), 
+                  outputId = ns("comparar_descargar_xlsx"),
                   label = "Excel",
                   style = "width:100%;")
               ),
@@ -114,7 +114,7 @@ seguimiento_notas_dashboard_ui <- function(id) {
                 tags$hr(),
                 tags$br(),
                 tags$h4("Diferencias de frecuencia con costos medios:"),
-                DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")) %>% 
+                DT::dataTableOutput(ns("diferencias_frecuencias_x_cme")) %>%
                   withSpinner(),
                 tags$hr(),
                 tags$br(),
@@ -153,23 +153,23 @@ seguimiento_notas_dashboard_ui <- function(id) {
           )
         )))
   )
-  
+
 }
 
 seguimiento_notas_dashboard_server <- function(id, opciones) {
-  
+
   ns <- NS(id)
-  
+
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       nt_opciones <- reactiveValues(
         # "indice" = indice,
-        # "datos" = nota_tecnica, 
+        # "datos" = nota_tecnica,
         # "inclusiones" = inclusiones
       )
-      
+
       observeEvent(names(opciones$notas_tecnicas_lista), {
         updateSelectizeInput(
           session = session,
@@ -177,7 +177,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           choices = names(opciones$notas_tecnicas_lista)
         )
       })
-      
+
       output$indice_tabla <- DT::renderDataTable({
         fields_nt <- colnames(opciones$indice_todos)
         if(!is.null(opciones$indice_todos)) {
@@ -187,13 +187,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                 vigente ~ "Vigente",
                 TRUE ~ "No vigente")) %>%
               select(-c(cod_departamento, vigente)),
-            rownames = F, 
-            selection = 'none', 
+            rownames = F,
+            selection = 'none',
             colnames = c(
               "Nombre NT",
               if ("nom_prestador" %in% fields_nt) "Prestador",
               if ("nom_asegurador" %in% fields_nt) "Asegurador",
-              "Población", 
+              "Población",
               "Departamento",
               "Ciudades",
               "Valor a mes",
@@ -202,8 +202,8 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               dom='ft',
               language = list(
                 url = dt_spanish),
-              pageLength = 10, 
-              ordering = FALSE, 
+              pageLength = 10,
+              ordering = FALSE,
               scrollX = TRUE,
               scrollY = "400px")) %>%
             DT::formatCurrency(
@@ -213,7 +213,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                             digits = 0)
         }
       })
-      
+
       observe({
         indice_todos <- opciones$indice_todos %>%
           filter(vigente)
@@ -221,7 +221,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           mapa_valores(indice_todos, departamentos)
         })
       })
-      
+
       observe({
         if (input$board_select %notin% c("Ninguno", "")) {
           nt_opciones$datos <- opciones$notas_tecnicas %>%
@@ -314,17 +314,17 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         }
       })
-      
+
       output$otra_informacion <- renderUI({
-        
+
         if (!is.null(opciones$indice_todos) &&
             input$board_select %notin% c("Ninguno", "")) {
-          
+
           otra_informacion_datos <-
             opciones$notas_tecnicas_lista[[input$board_select]]
-          
-          
-          
+
+
+
           tagList(
             if (!is.null(otra_informacion_datos$inclusiones) ||
                 !is.null(otra_informacion_datos$exclusiones)) {
@@ -360,11 +360,11 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             if (!is.null(otra_informacion_datos$perfil)) {
               if (otra_informacion_datos$perfil %in%
                   names(opciones$perfil_lista)) {
-                perfil_nota_tecnica <- 
+                perfil_nota_tecnica <-
                   opciones$perfil_lista[[otra_informacion_datos$perfil]]
-                
+
                 width_row <- 12/length(names(perfil_nota_tecnica[["jerarquia"]]))
-                
+
                   column(
                     width = 12,
                     tags$hr(),
@@ -391,13 +391,13 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                         })
                     )
                   )
-                
+
               }
             }
           )
-          
+
         }
-        
+
       })
 
       output$plot_agrupadores <- renderPlotly({
@@ -436,16 +436,16 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               backgroundColor = "white")
         }
       })
-      
+
       # Comparacion ------------------
-      
+
       comparar <- reactiveValues(
         datos = list(),
         agrupadores_items = NULL,
         frecs = list(),
         valor_fac = list()
       )
-      
+
       observeEvent(opciones$colnames, {
         if (input$comparar_episodios) {
           updateSelectizeInput(
@@ -460,7 +460,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           choices = c("Ninguno", opciones$colnames)
         )
       })
-      
+
       observeEvent(input$comparar_episodios, {
         if (input$comparar_episodios) {
           output$comparar_col_valor_out <- renderUI({
@@ -475,16 +475,16 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           output$comparar_col_valor_out <- renderUI({})
         }
       })
-      
+
       cambio_columnas <- reactive({
         list(input$comparar_agrupador, input$comparar_episodios)
       })
-      
+
       observeEvent(input$comparar_episodios, {
         perfil_nt <-
           opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
-        
-        if (input$comparar_episodios && 
+
+        if (input$comparar_episodios &&
             !is.null(perfil_nt) &&
             !is.null(opciones$perfil_lista) &&
             perfil_nt %in% names(opciones$perfil_lista)) {
@@ -511,7 +511,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           }
         }
       })
-      
+
       observeEvent(input$comparar_cambiar_perfil, {
         if (input$comparar_cambiar_perfil) {
           opciones$perfil_selected <- NULL
@@ -519,9 +519,9 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             opciones$notas_tecnicas_lista[[input$board_select]][["perfil"]]
         }
       })
-      
+
       observeEvent(cambio_columnas(), {
-        if (!is.null(opciones$colnames) && 
+        if (!is.null(opciones$colnames) &&
             input$comparar_agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
@@ -600,7 +600,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               print(e)
               sendSweetAlert(
                 session = session,
-                title = "Error", 
+                title = "Error",
                 type = "error",
                 text = "Por favor revisar los parametros de carga de datos,
                 columnas, formato de fecha y los datos. Si este problema persiste
@@ -610,7 +610,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         }
       })
-      
+
       observeEvent(input$seleccionar_episodio, {
         output$comparar_jerarquia <- renderUI({
           tagList(
@@ -621,7 +621,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_factura, {
         output$comparar_jerarquia <- renderUI({
           tagList(
@@ -632,7 +632,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_paciente, {
         output$comparar_jerarquia <- renderUI({
           tagList(
@@ -643,7 +643,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         })
       })
-      
+
       observeEvent(input$seleccionar_prestacion, {
         output$comparar_jerarquia <- renderUI({
           tagList(
@@ -654,11 +654,11 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
           )
         })
       })
-      
+
       observeEvent(input$comparar_exe, {
-        
+
         comparar$nt_name <- input$board_select
-        
+
         if (!is.null(opciones$colnames) && !is.null(input$comparar_agrupador) &&
             input$comparar_agrupador %notin% c("", "Ninguno")) {
           comparar$frecs <- list()
@@ -679,11 +679,11 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
                   nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
                   nivel_4 = input$episodios_jerarquia_nivel_4_order$text)[["descriptiva"]]
-                
+
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
                   group_by(!!!rlang::syms(comparar_col_valor)) %>%
                   mutate(
-                    ais_mes_anio = 
+                    ais_mes_anio =
                       year(fecha_prestacion) * 100 +
                       month(fecha_prestacion)) %>%
                   ungroup() %>%
@@ -700,7 +700,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     frec_cantidad = opciones$cantidad,
                     columna_fecha = "ais_mes_anio"
                   )
-                
+
               } else {
                 comparar$datos$frecuencias_tabla <- frecuencias(
                   columna_fecha = "fecha_prestacion",
@@ -710,10 +710,10 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                   prestaciones = (input$descriptiva_unidades == "prestacion"),
                   frec_cantidad = opciones$cantidad
                 )
-                
+
                 comparar$datos$valor_factura_tabla <- opciones$tabla %>%
                   mutate(
-                    ais_mes_anio = 
+                    ais_mes_anio =
                       year(fecha_prestacion) * 100 +
                       month(fecha_prestacion)) %>%
                   descriptiva(
@@ -724,9 +724,9 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                     frec_cantidad = opciones$cantidad
                   )
               }
-            
+
               nt_test <- nt_opciones$datos
-              
+
               comparar$frecs <- comparacion_frecuencias(
                 frecuencias_tabla = comparar$datos$frecuencias_tabla,
                 nota_tecnica = nt_test,
@@ -734,7 +734,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
               )
 
               comparar$valor_fac <- comparacion_valor_facturado(
-                descriptiva_tabla = 
+                descriptiva_tabla =
                   comparar$datos$valor_factura_tabla[["descriptiva"]] %>%
                     ungroup() %>%
                     mutate(
@@ -744,7 +744,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
                 agrupador = agrupador,
                 col_mes = "ais_mes", col_anio = "ais_anio"
               )
-              
+
             },
             error = function(e) {
               print(e)
@@ -757,29 +757,29 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
             }
           )
         }
-        
+
       })
-      
+
       output$frecuencias_resumen <- renderUI({comparar$frecs$totales})
-      
+
       output$frecuencias_plot <- renderPlotly({
         comparar$frecs$plot_valor_acumulado
       })
-      
+
       output$frecuencias_total <-
         DT::renderDataTable({comparar$frecs$frecuencias_original_dt})
-      
-      output$diferencias_frecuencias <- 
+
+      output$diferencias_frecuencias <-
         DT::renderDataTable({comparar$frecs$comparacion_frecs_dt})
-      
-      output$diferencias_frecuencias_x_cme <- 
+
+      output$diferencias_frecuencias_x_cme <-
         DT::renderDataTable({comparar$frecs$comparacion_x_cme_dt})
-      
-      output$diferencias_frecuencias_porcentaje <- 
+
+      output$diferencias_frecuencias_porcentaje <-
         DT::renderDataTable({comparar$frecs$comparacion_porcentaje_dt})
 
       output$valor_fac_resumen <- renderUI({comparar$valor_fac$totales})
-      
+
       output$valor_fac_plot <- renderPlotly({
         comparar$valor_fac$plot_valor_acumulado
       })
@@ -792,7 +792,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
 
       output$diferencias_valor_fac_porcentaje <-
         DT::renderDataTable({comparar$valor_fac$comparacion_porcentaje_dt})
-  
+
       output$comparar_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste0("Seguimiento de ", comparar$nt_name, ".xlsx")
@@ -814,7 +814,7 @@ seguimiento_notas_dashboard_server <- function(id, opciones) {
         },
         contentType = "xlsx"
       )
-      
+
   })
-  
+
 }

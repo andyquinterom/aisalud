@@ -91,12 +91,35 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
 
 # Si la tabla de notas tecncias no existe se genera.
 
-if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
+check_nt_v2 <- "perfiles_notas_tecnicas_v2" %notin% tabla_perfiles
+
+if (check_nt_v2 && "perfiles_notas_tecnicas" %in% tabla_perfiles) {
+  tryCatch(
+    expr = {
+      notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
+        pull(notas_tecnicas)
+      notas_tecnicas_lista <- notas_tecnicas_raw %>%
+        parse_json(simplifyVector = TRUE)
+      notas_tecnicas_v2 <- notas_tecnicas_lista %>%
+        parse_nt_v1_v2()
+    },
+    error = function(e) {
+      print(e)
+      notas_tecnicas_v2 <- NULL
+    }
+  )
+}
+
+if (check_nt_v2) {
+  if (is.null(notas_tecnicas_v2)) {
+    notas_tecnicas_v2 <-  read_file(
+      file = "json_schemas/nota_tecnica_default.json")
+  }
   dbWriteTable(
     conn = conn,
-    name = "perfiles_notas_tecnicas",
+    name = "perfiles_notas_tecnicas_v2",
     data.frame(
-      "notas_tecnicas" = read_file("json_schemas/nota_tecnica_defualt.json")
+      "notas_tecnicas" = notas_tecnicas_v2
     )
   )
 }
