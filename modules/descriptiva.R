@@ -156,7 +156,8 @@ descriptiva_ui <- function(id) {
             column(
               width = 8,
               tags$h3(
-                textOutput(ns("caja_de_bigotes_titulo")), class = "titulo_center"),
+                textOutput(ns("caja_de_bigotes_titulo")),
+                class = "titulo_center"),
               plotlyOutput(
                 height = "500px",
                 outputId = ns("caja_de_bigotes_render")
@@ -340,7 +341,9 @@ descriptiva_server <- function(id, opciones, conn) {
                   )
                 }
               }
-              output$episodios_jerarquia <- renderUI({widget_jerarquia})
+              output$episodios_jerarquia <- renderUI({
+                widget_jerarquia
+              })
               episodios$unidad_descriptiva <- input$descriptiva_unidades
             },
             error = function(e) {
@@ -576,6 +579,9 @@ descriptiva_server <- function(id, opciones, conn) {
           DT::datatable(
             episodios$frecuencias,
             extensions = "FixedColumns",
+            colnames = c(
+              "Frecuencia media" = "frec_media",
+              "Frecuencia total" = "frec_suma"),
             options = list(
               fixedColumns = list(leftColumns = distinct_agrupadores),
               language = list(
