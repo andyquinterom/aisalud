@@ -83,8 +83,8 @@ shinyServer(function(input, output, session) {
     conn = conn
   )
 
-  seguimiento_notas_dashboard_server(
-    id = "seguimiento_notas_dash",
+  nt_dashboard_server(
+    id = "nt_dashboard",
     opciones = opciones)
 
 })

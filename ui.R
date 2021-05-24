@@ -53,9 +53,9 @@ shinyUI(
             tabName = "composicion_modulo"
           ),
           menuItem(
-            text = "Seguimiento",
+            text = "Dashboard Contratos",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "seguimiento_modulo_dash")
+            tabName = "nt_dashboard")
         )
       ),
       controlbar = dashboardControlbar(
@@ -96,8 +96,8 @@ shinyUI(
             composicion_ui("composicion_modulo")
           ),
           tabItem(
-            tabName = "seguimiento_modulo_dash",
-            seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
+            tabName = "nt_dashboard",
+            nt_dashboard_ui("nt_dashboard")
           )
         )
       )

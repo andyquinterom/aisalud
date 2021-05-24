@@ -92,20 +92,17 @@ comparar_nt_frecuencias <- function(frecuencias, nota_tecnica, agrupador,
     group_by(agrupador, frec_mes, cm, valor_mes)
 
   frec_y_nt %>%
+    rename(media = frec_media, total = frec_suma) %>%
     mutate(across(.fns = replace_na, replace = 0)) %>%
     {if (indicador == "diff") {
       mutate(., across(.fns = ~ .x - frec_mes))
     } else if (indicador == "perc") {
       mutate(., across(.fns = ~ .x / na_if(frec_mes, 0))) %>%
-      mutate(media = rowMeans(across(), na.rm = TRUE),
-             media_valor = media * valor_mes)
+      mutate(media_valor = media * valor_mes)
     } else if (indicador == "diff_cm") {
       mutate(., across(.fns = ~ (.x - frec_mes) * cm))
     } else if (indicador == "cm") {
       mutate(., across(.fns = ~ .x * cm))
-    } else {.}} %>%
-    {if (indicador %in% c("diff", "diff_cm")) {
-      mutate(., total = rowSums(across(), na.rm = TRUE))
     } else {.}} %>%
     {if (indicador == "diff") {
       mutate(., total_valor = total * cm)
@@ -303,38 +300,27 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica, agrupador) 
     formatRound(c(2, ncol(frecuencias_original) - 1),
                 dec.mark = ",", mark = ".", digits = 0)
 
-  meses <- frecuencias_tabla %>%
-    select(-c(rlang::sym(agrupador))) %>%
-    colnames() %>%
-    mes_spanish_inv() %>%
-    as.numeric()
+  valor_acumulado <- comparar_nt_frecuencias(
+    frecuencias = frecuencias_tabla,
+    nota_tecnica = nota_tecnica,
+    agrupador = agrupador,
+    indicador = "cm")
 
-  minimo_mes <- min(meses)
-  maximo_mes <- max(meses)
+  print(valor_acumulado)
 
-  meses_completos <- tibble("ais_mes_anio" = seq(minimo_mes, maximo_mes)) %>%
-    mutate(ais_anio = substr(ais_mes_anio, 1, 4) %>% as.numeric(),
-           ais_mes  = substr(ais_mes_anio, 5, 6) %>% as.numeric()) %>%
-    filter(ais_mes >= 1 & ais_mes <= 12) %>%
-    rename(mes_anio_num = ais_mes_anio)
-
-  valor_acumulado <- meses_completos %>%
-    left_join(
-      comparar_nt_frecuencias(
-        frecuencias = frecuencias_tabla,
-        nota_tecnica = nota_tecnica,
-        agrupador = agrupador,
-        indicador = "cm") %>%
-        ungroup() %>%
-        select(-c(cm, frec_mes, valor_mes)) %>%
-        pivot_longer(
-          cols = -c(agrupador),
-          names_to = "mes_anio",
-          values_to = "valor") %>%
-        group_by(mes_anio) %>%
-        summarise(suma = sum(valor, na.rm = TRUE)) %>%
-        mutate(mes_anio_num = mes_spanish_inv(mes_anio))
-    ) %>%
+  valor_acumulado <- valor_acumulado %>%
+    ungroup() %>%
+    select(-c(cm, frec_mes, valor_mes, total, media)) %>%
+    pivot_longer(
+      cols = -c(agrupador),
+      names_to = "mes_anio",
+      values_to = "valor") %>%
+    group_by(mes_anio) %>%
+    summarise(suma = sum(valor, na.rm = TRUE)) %>%
+    mutate(
+      mes_anio_num = mes_spanish_inv(mes_anio),
+      ais_mes = mes_anio_num %% 100,
+      ais_anio = mes_anio_num %/% 100) %>%
     mutate(numero_meses = 1:nrow(.), suma = replace_na(suma, 0),
            mes_anio = mes_spanish_juntos(mes_anio_num),
            mes_anio_num = do.call(purrr::map(

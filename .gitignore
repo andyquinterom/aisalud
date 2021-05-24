@@ -8,3 +8,5 @@ secrets/
 datos/
 .Rapp.history
 rsconnect/
+.pid
+.Rprofile
