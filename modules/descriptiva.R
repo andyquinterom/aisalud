@@ -6,221 +6,221 @@ descriptiva_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-    box(
-      width = 4,
-      style = "min-height: 600px",
-      tabsetPanel(
-        tabPanel(
-          title = "Generales",
-          tags$br(),
-          selectizeInput(
-            inputId = ns("agrupador"),
-            label = "Agrupador principal:",
-            choices = NULL,
-            multiple = FALSE),
-          selectizeInput(
-            inputId = ns("separadores"),
-            label = "Separadores:",
-            choices = NULL,
-            multiple = TRUE),
-          checkboxGroupInput(
-            inputId = ns("tablas"),
-            label = "Tablas a generar:",
-            choices = c(
-              "Descripiva" = "descriptiva",
-              "Frecuencias" = "frecuencias"),
-            selected = "descriptiva",
-            inline = TRUE,
-            width = "100%"),
-          radioButtons(
-            inputId = ns("intervalo"),
-            choiceNames = c("Mes", "Semana", "Día"),
-            choiceValues = c("mes", "semana", "dia"),
-            label = "Intervalo para frecuencias"),
-          checkboxInput(
-            inputId = ns("episodios"),
-            label = "Agrupador por episodios",
-            value = FALSE),
-          uiOutput(outputId = ns("episodios_col_rel")),
-          tags$div(
-            style = "overflow-y: scroll; max-height: 300px;",
-            uiOutput(outputId = ns("episodios_jerarquia"))),
-          tags$br(),
-          textOutput(outputId = ns("descriptiva_sumas_registros")),
-          textOutput(outputId = ns("descriptiva_sumas_pacientes")),
-          textOutput(outputId = ns("descriptiva_sumas_facturas")),
-          textOutput(outputId = ns("descriptiva_sumas_valor")),
-          tags$br(),
-          actionButton(ns("descriptiva_exe"), "Generar")
-        ),
-        tabPanel(
-          title = "Descargas",
-          tags$br(),
-          tags$b("Descriptiva:"),
-          fluidRow(
-            column(
-              width = 6,
-              downloadButton(
-                outputId = ns("descriptiva_descargar_csv"),
-                label = "CSV",
-                style = "width:100%;")
-            ),
-            column(
-              width = 6,
-              downloadButton(
-                outputId = ns("descriptiva_descargar_xlsx"),
-                label = "Excel",
-                style = "width:100%;")
-            )
+      box(
+        width = 4,
+        style = "min-height: 600px",
+        tabsetPanel(
+          tabPanel(
+            title = "Generales",
+            tags$br(),
+            selectizeInput(
+              inputId = ns("agrupador"),
+              label = "Agrupador principal:",
+              choices = NULL,
+              multiple = FALSE),
+            selectizeInput(
+              inputId = ns("separadores"),
+              label = "Separadores:",
+              choices = NULL,
+              multiple = TRUE),
+            checkboxGroupInput(
+              inputId = ns("tablas"),
+              label = "Tablas a generar:",
+              choices = c(
+                "Descripiva" = "descriptiva",
+                "Frecuencias" = "frecuencias"),
+              selected = "descriptiva",
+              inline = TRUE,
+              width = "100%"),
+            radioButtons(
+              inputId = ns("intervalo"),
+              choiceNames = c("Mes", "Semana", "Día"),
+              choiceValues = c("mes", "semana", "dia"),
+              label = "Intervalo para frecuencias"),
+            checkboxInput(
+              inputId = ns("episodios"),
+              label = "Agrupador por episodios",
+              value = FALSE),
+            uiOutput(outputId = ns("episodios_col_rel")),
+            tags$div(
+              style = "overflow-y: scroll; max-height: 300px;",
+              uiOutput(outputId = ns("episodios_jerarquia"))),
+            tags$br(),
+            textOutput(outputId = ns("descriptiva_sumas_registros")),
+            textOutput(outputId = ns("descriptiva_sumas_pacientes")),
+            textOutput(outputId = ns("descriptiva_sumas_facturas")),
+            textOutput(outputId = ns("descriptiva_sumas_valor")),
+            tags$br(),
+            actionButton(ns("descriptiva_exe"), "Generar")
           ),
-          tags$br(),
-          tags$b("Frecuencias:"),
-          fluidRow(
-            column(
-              width = 6,
-              downloadButton(
-                outputId = ns("frecuencias_descargar_csv"),
-                label = "CSV",
-                style = "width:100%;")
+          tabPanel(
+            title = "Descargas",
+            tags$br(),
+            tags$b("Descriptiva:"),
+            fluidRow(
+              column(
+                width = 6,
+                downloadButton(
+                  outputId = ns("descriptiva_descargar_csv"),
+                  label = "CSV",
+                  style = "width:100%;")
+              ),
+              column(
+                width = 6,
+                downloadButton(
+                  outputId = ns("descriptiva_descargar_xlsx"),
+                  label = "Excel",
+                  style = "width:100%;")
+              )
             ),
-            column(
-              width = 6,
-              downloadButton(
-                outputId = ns("frecuencias_descargar_xlsx"),
-                label = "Excel",
-                style = "width:100%;")
+            tags$br(),
+            tags$b("Frecuencias:"),
+            fluidRow(
+              column(
+                width = 6,
+                downloadButton(
+                  outputId = ns("frecuencias_descargar_csv"),
+                  label = "CSV",
+                  style = "width:100%;")
+              ),
+              column(
+                width = 6,
+                downloadButton(
+                  outputId = ns("frecuencias_descargar_xlsx"),
+                  label = "Excel",
+                  style = "width:100%;")
+              )
             )
           )
-        )
         )
       ),
-    box(
-      width = 8,
-      tabsetPanel(
-        tabPanel(
-          title = "Tabla",
-          tags$br(),
-          div(
-            DT::dataTableOutput(outputId = ns("episodios_tabla")) %>%
-              withSpinner(),
-            style = "font-size:90%")
-        ),
-        tabPanel(
-          title = "Frecuencias",
-          tags$br(),
-          div(
-            DT::dataTableOutput(outputId = ns("frecuencias_tabla")) %>%
-              withSpinner(),
-            style = "font-size:90%")
-        ),
-        tabPanel(
-          title = "Histogramas",
-          tags$br(),
-          fluidRow(
-            column(
-              width = 8,
-              tags$h3(
-                textOutput(ns("histograma_titulo")), class = "titulo_center"),
-              plotlyOutput(
-                height = "500px",
-                outputId = ns("histograma_render")
-              ) %>%
-                withSpinner()
-            ),
-            column(
-              width = 4,
-              actionButton(
-                inputId = ns("histograma_ejecutar"),
-                label = "Generar histograma",
-                width = "100%"
+      box(
+        width = 8,
+        tabsetPanel(
+          tabPanel(
+            title = "Tabla",
+            tags$br(),
+            div(
+              DT::dataTableOutput(outputId = ns("episodios_tabla")) %>%
+                withSpinner(),
+              style = "font-size:90%")
+          ),
+          tabPanel(
+            title = "Frecuencias",
+            tags$br(),
+            div(
+              DT::dataTableOutput(outputId = ns("frecuencias_tabla")) %>%
+                withSpinner(),
+              style = "font-size:90%")
+          ),
+          tabPanel(
+            title = "Histogramas",
+            tags$br(),
+            fluidRow(
+              column(
+                width = 8,
+                tags$h3(
+                  textOutput(ns("histograma_titulo")), class = "titulo_center"),
+                plotlyOutput(
+                  height = "500px",
+                  outputId = ns("histograma_render")
+                ) %>%
+                  withSpinner()
               ),
-              tags$br(),
-              tags$br(),
-              sliderTextInput(
-                inputId = ns("histograma_numero_columnas"),
-                label = "Número de columnas",
-                choices = c("Auto", 5, 10, 20, 25, 50),
-                width = "100%",
-                selected = "Auto"
-              ),
-              DT::dataTableOutput(
-                outputId = ns("histograma_agrupador")
+              column(
+                width = 4,
+                actionButton(
+                  inputId = ns("histograma_ejecutar"),
+                  label = "Generar histograma",
+                  width = "100%"
+                ),
+                tags$br(),
+                tags$br(),
+                sliderTextInput(
+                  inputId = ns("histograma_numero_columnas"),
+                  label = "Número de columnas",
+                  choices = c("Auto", 5, 10, 20, 25, 50),
+                  width = "100%",
+                  selected = "Auto"
+                ),
+                DT::dataTableOutput(
+                  outputId = ns("histograma_agrupador")
+                )
               )
             )
-          )
-        ),
-        tabPanel(
-          title = "Caja de bigotes",
-          tags$br(),
-          fluidRow(
-            column(
-              width = 8,
-              tags$h3(
-                textOutput(ns("caja_de_bigotes_titulo")),
-                class = "titulo_center"),
-              plotlyOutput(
-                height = "500px",
-                outputId = ns("caja_de_bigotes_render")
-              ) %>%
-                withSpinner()
-            ),
-            column(
-              width = 4,
-              actionButton(
-                inputId = ns("caja_de_bigotes_ejecutar"),
-                label = "Generar caja de bigotes",
-                width = "100%"
+          ),
+          tabPanel(
+            title = "Caja de bigotes",
+            tags$br(),
+            fluidRow(
+              column(
+                width = 8,
+                tags$h3(
+                  textOutput(ns("caja_de_bigotes_titulo")),
+                  class = "titulo_center"),
+                plotlyOutput(
+                  height = "500px",
+                  outputId = ns("caja_de_bigotes_render")
+                ) %>%
+                  withSpinner()
               ),
-              tags$br(),
-              tags$br(),
-              DT::dataTableOutput(
-                outputId = ns("bigotes_agrupador")
+              column(
+                width = 4,
+                actionButton(
+                  inputId = ns("caja_de_bigotes_ejecutar"),
+                  label = "Generar caja de bigotes",
+                  width = "100%"
+                ),
+                tags$br(),
+                tags$br(),
+                DT::dataTableOutput(
+                  outputId = ns("bigotes_agrupador")
+                )
               )
             )
-          )
-        ),
-        tabPanel(
-          title = "Gráfico de barras",
-          tags$br(),
-          fluidRow(
-            column(
-              width = 8,
-              tags$h3(
-                textOutput(
-                  outputId = ns("grafico_barras_titulo")),
-                class = "titulo_center"),
-              plotlyOutput(
-                height = "500px",
-                outputId = ns("grafico_barras_render")
-              ) %>%
-                withSpinner()
-            ),
-            column(
-              width = 4,
-              selectizeInput(
-                width = "100%",
-                inputId = ns("grafico_barras_indicador"),
-                label = "Indicador:",
-                choices = c("Suma" = "Suma",
-                            "Frecuencia" = "Frecuencia",
-                            "Media" = "Media",
-                            "Mediana" = "P50",
-                            "Variación" = "Coef.var")
+          ),
+          tabPanel(
+            title = "Gráfico de barras",
+            tags$br(),
+            fluidRow(
+              column(
+                width = 8,
+                tags$h3(
+                  textOutput(
+                    outputId = ns("grafico_barras_titulo")),
+                  class = "titulo_center"),
+                plotlyOutput(
+                  height = "500px",
+                  outputId = ns("grafico_barras_render")
+                ) %>%
+                  withSpinner()
               ),
-              actionButton(
-                inputId = ns("grafico_barras_ejecutar"),
-                label = "Generar gráfico",
-                width = "100%"
-              ),
-              tags$br(),
-              tags$br(),
-              DT::dataTableOutput(
-                outputId = ns("barras_agrupador")
+              column(
+                width = 4,
+                selectizeInput(
+                  width = "100%",
+                  inputId = ns("grafico_barras_indicador"),
+                  label = "Indicador:",
+                  choices = c("Suma" = "Suma",
+                              "Frecuencia" = "Frecuencia",
+                              "Media" = "Media",
+                              "Mediana" = "P50",
+                              "Variación" = "Coef.var")
+                ),
+                actionButton(
+                  inputId = ns("grafico_barras_ejecutar"),
+                  label = "Generar gráfico",
+                  width = "100%"
+                ),
+                tags$br(),
+                tags$br(),
+                DT::dataTableOutput(
+                  outputId = ns("barras_agrupador")
+                )
               )
             )
           )
         )
-      )
       )
     )
   )

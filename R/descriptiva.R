@@ -1,39 +1,22 @@
-numerize <- function(x) {
-  return(as.numeric(as.character(x)))
-}
-coe.variacion <- function(x) {
-  return(sd(x, na.rm = TRUE)/mean(x, na.rm = TRUE))
-}
-rango <- function(x) {
-  return(max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
-}
-
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
                         prestaciones = FALSE, frec_cantidad = FALSE) {
-  
+
   columnas <- unique(columnas)
-  
-  print("Descriptiva: convirtiendo valor a numérico.")
-  
   data <- data %>%
     mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
-  
+
   if (!prestaciones) {
-    print("Descriptiva: calculando valor por paciente.")
     data <- data %>%
       group_by(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
       summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE),
                 cantidad = 1)
   }
-  
-  print("Descriptiva: resumiendo los datos.")
-  
   if ("data.frame" %in% class(data)) {
     data_descriptiva <- data %>%
       group_by(!!!rlang::syms(columnas)) %>%
       summarise(
         "Frecuencia" = ifelse(
-          test = prestaciones && frec_cantidad, 
+          test = prestaciones && frec_cantidad,
           yes = sum(cantidad, na.rm = TRUE),
           no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
@@ -47,7 +30,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
                              na_if(mean(valor_calculos, na.rm = TRUE), 0), 2),
         "Min." = min(valor_calculos, na.rm = TRUE),
         "Max." = max(valor_calculos, na.rm = TRUE),
-        "Rango" = max(valor_calculos, na.rm = TRUE) - 
+        "Rango" = max(valor_calculos, na.rm = TRUE) -
           min(valor_calculos, na.rm = TRUE)
       )
   } else {
@@ -55,7 +38,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       group_by(!!!rlang::syms(columnas)) %>%
       summarise(
         "Frecuencia" = ifelse(
-          test = prestaciones && frec_cantidad, 
+          test = prestaciones && frec_cantidad,
           yes = sum(cantidad, na.rm = TRUE),
           no = n()),
         "Suma" = sum(valor_calculos, na.rm = TRUE),
@@ -69,33 +52,25 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
                              na_if(mean(valor_calculos, na.rm = TRUE), 0), 2),
         "Min." = min(valor_calculos, na.rm = TRUE),
         "Max." = max(valor_calculos, na.rm = TRUE),
-        "Rango" = max(valor_calculos, na.rm = TRUE) - 
+        "Rango" = max(valor_calculos, na.rm = TRUE) -
           min(valor_calculos, na.rm = TRUE)
       )
   }
-  
-  data_descriptiva <- data_descriptiva %>% 
-    mutate(Media = round(Suma/na_if(Frecuencia, 0),2)) %>% 
+
+  data_descriptiva <- data_descriptiva %>%
+    mutate(Media = round(Suma/na_if(Frecuencia, 0),2)) %>%
     arrange(Suma)
-  
-  print("Descriptiva: datos resumidos.")
-  
-  fields <- data_descriptiva %>% colnames()
-  
+  fields <- data_descriptiva %>%
+    colnames()
+
   if (".add" %in% fields) {
     data_descriptiva <- data_descriptiva %>%
       select(-`.add`)
   }
-  
-  print("Descriptiva: descargando los datos.")
-  
   data_descriptiva <- data_descriptiva %>%
     collect()
-  
-  print("Descriptiva: datos descargados.")
-  
   setDT(data_descriptiva)
-  
+
   setnames(
     data_descriptiva,
     c(columnas,
@@ -117,14 +92,3 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
     "data" = data
   ))
 }
-
-extractCol <- function(x, col) {
-    x <- as.data.table(x)
-    vector <- x[, col, with = FALSE]
-    return(unlist(vector)) 
-    x <- NULL
-}
-
-
-
-
