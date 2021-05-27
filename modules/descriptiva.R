@@ -238,7 +238,17 @@ descriptiva_server <- function(id, opciones, conn) {
       episodios <- reactiveValues(
         tabla = list("descriptiva" = data.table(), "data" = data.table()),
         frecuencias = data.table(),
-        agrupadores_items = NULL)
+        agrupadores_items = NULL,
+        widget_jerarquia = radioButtons(
+                inputId = ns("unidades"),
+                label = "Unidad de descriptiva",
+                choiceNames = c("Prestación", "Paciente", "Factura"),
+                choiceValues = c(
+                  "prestacion",
+                  "nro_identificacion",
+                  "nro_factura"
+                )
+              ))
 
       # Se observa cambios en los nombres de columnas para actulizar
       # selectizeInputs
@@ -286,24 +296,18 @@ descriptiva_server <- function(id, opciones, conn) {
       })
 
       observeEvent(cambio_columnas(), {
+        cache_id <- digest(
+          object = list("agrup", cambio_columnas(), opciones$tabla_query),
+          algo = "xxhash32",
+          seed = 1)
+        check_cache <- cache_id %in% names(opciones$cache)
         # Si hay cambios al agrupador o a episodios se ejecutará
         if (!is.null(opciones$colnames) &&
-            input$agrupador %notin% c("", "Ninguno")) {
+            input$agrupador %notin% c("", "Ninguno") &&
+            !check_cache) {
           tryCatch(
             expr = {
-              # Widget de unidades de descriptiva
-              widget_jerarquia <- radioButtons(
-                inputId = ns("unidades"),
-                label = "Unidad de descriptiva",
-                selected = episodios$unidad_descriptiva,
-                choiceNames = c("Prestación", "Paciente", "Factura"),
-                choiceValues = c(
-                  "prestacion",
-                  "nro_identificacion",
-                  "nro_factura"
-                )
-              )
-              episodios$agrupadores_items <- NULL
+              episodios$agrupadores_items <- list()
               # Si la opción de episodios es verdadera y la columna contiene
               # menos de 60 agrupadores únicos entonces se genera widget de
               # jerarquia de episodios
@@ -312,38 +316,14 @@ descriptiva_server <- function(id, opciones, conn) {
                   select(!!as.name(input$agrupador)) %>%
                   distinct() %>%
                   pull(!!as.name(input$agrupador))
-                if (length(episodios$agrupadores_items) <= 60) {
-                  # Se decide si utilizar jerarquia con perfil
-                  if (opciones$perfil_enable) {
-                    widget_jerarquia <- perfil_jerarquia(
-                      perfiles = opciones$perfil_lista,
-                      perfil_select = opciones$perfil_selected,
-                      items = episodios$agrupadores_items,
-                      funcion_jerarquia = descriptiva_jerarquia,
-                      ns = ns
-                    )
-                  }
-                  if (!opciones$perfil_enable) {
-                    widget_jerarquia <- descriptiva_jerarquia(
-                      ns = ns,
-                      items_nivel_4 = episodios$agrupadores_items
-                    )
-                  }
-                }
                 if (length(episodios$agrupadores_items) > 60) {
                   # Si hay mas de 60 agrupadores únicos se agapará la opción
                   # de episodios y se volvera a correr el código del observer
                   # (tipo recursivo)
-                  episodios$agrupadores_items <- NULL
-                  updateCheckboxInput(
-                    inputId = "episodios",
-                    value = FALSE
-                  )
+                  episodios$agrupadores_items <- list()
                 }
               }
-              output$episodios_jerarquia <- renderUI({
-                widget_jerarquia
-              })
+              opciones$cache[[cache_id]] <- episodios$agrupadores_items
               episodios$unidad_descriptiva <- input$descriptiva_unidades
             },
             error = function(e) {
@@ -357,6 +337,53 @@ descriptiva_server <- function(id, opciones, conn) {
             }
           )
         }
+        if (check_cache) {
+          episodios$agrupadores_items <- opciones$cache[[cache_id]]
+        }
+      })
+
+      observe({
+        cambio_columnas()
+        if (length(episodios$agrupadores_items) == 0) {
+          # Widget de unidades de descriptiva
+          episodios$widget_jerarquia <- radioButtons(
+            inputId = ns("unidades"),
+            label = "Unidad de descriptiva",
+            selected = episodios$unidad_descriptiva,
+            choiceNames = c("Prestación", "Paciente", "Factura"),
+            choiceValues = c(
+              "prestacion",
+              "nro_identificacion",
+              "nro_factura"
+            )
+          )
+          updateCheckboxInput(
+            inputId = "episodios",
+            value = FALSE
+          )
+        }
+        if (length(episodios$agrupadores_items) > 0) {
+          # Se decide si utilizar jerarquia con perfil
+          if (opciones$perfil_enable) {
+            episodios$widget_jerarquia <- perfil_jerarquia(
+              perfiles = opciones$perfil_lista,
+              perfil_select = opciones$perfil_selected,
+              items = episodios$agrupadores_items,
+              funcion_jerarquia = descriptiva_jerarquia,
+              ns = ns
+            )
+          }
+          if (!opciones$perfil_enable) {
+            episodios$widget_jerarquia <- descriptiva_jerarquia(
+              ns = ns,
+              items_nivel_4 = episodios$agrupadores_items
+            )
+          }
+        }
+      })
+
+      output$episodios_jerarquia <- renderUI({
+        episodios$widget_jerarquia
       })
 
       # Se observa que el usuario haga click en los titulos de las unidades
@@ -410,37 +437,53 @@ descriptiva_server <- function(id, opciones, conn) {
           input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
-              withProgress(message = "Calculando descriptiva...", {
+              withProgress(message = "Calculando datos iniciales...", {
+                cache_id <- digest(
+                  object = list("desc_inf", opciones$tabla_query),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
                 # Se calcula el total de algunos indicadores necesarios
-                episodios$n_pacientes <- paste(
-                  "Número de pacientes:",
-                  formatC({
-                    opciones$tabla %>%
-                      distinct(nro_identificacion) %>%
-                      count() %>%
-                      pull()
-                    },
-                    big.mark = ".",
-                    decimal.mark = ",",
-                    format = "f",
-                    digits = 0),
-                  sep = " ")
-                if ("nro_factura" %in% opciones$colnames) {
-                  episodios$n_facturas <- paste(
-                    "Número de facturas:",
+                if (check_cache) {
+                  episodios$n_pacientes <- 
+                    opciones$cache[[cache_id]][["n_pacientes"]]
+                  episodios$n_facturas <-
+                    opciones$cache[[cache_id]][["n_facturas"]]
+                }
+                if (!check_cache) {
+                  episodios$n_pacientes <- paste(
+                    "Número de pacientes:",
                     formatC({
                       opciones$tabla %>%
-                        distinct(nro_factura) %>%
+                        distinct(nro_identificacion) %>%
                         count() %>%
                         pull()
                       },
                       big.mark = ".",
                       decimal.mark = ",",
                       format = "f",
-                      digits = 0
-                    ),
-                    sep = " "
-                  )
+                      digits = 0),
+                    sep = " ")
+                  if ("nro_factura" %in% opciones$colnames) {
+                    episodios$n_facturas <- paste(
+                      "Número de facturas:",
+                      formatC({
+                        opciones$tabla %>%
+                          distinct(nro_factura) %>%
+                          count() %>%
+                          pull()
+                        },
+                        big.mark = ".",
+                        decimal.mark = ",",
+                        format = "f",
+                        digits = 0
+                      ),
+                      sep = " "
+                    )
+                  }
+                  opciones$cache[[cache_id]] <- list(
+                    n_pacientes = episodios$n_pacientes,
+                    n_facturas = episodios$n_facturas)
                 }
               })
             },
@@ -459,87 +502,177 @@ descriptiva_server <- function(id, opciones, conn) {
 
       # Generar descriptiva
       observeEvent(input$descriptiva_exe, {
-        if (opciones$datos_cargados &&
-          input$agrupador %notin% c("", "Ninguno")) {
-          agrupador <- input$agrupador
-          if (input$episodios) episodios_col_rel <- input$episodios_col_rel
-          separadores <- input$separadores
-          episodios$agrupador <- agrupador
-          episodios$separadores <- separadores
-          if ("descriptiva" %in% input$tablas) {
-            # Si se va a generar por episodios
-            if (input$episodios) {
-              episodios$tabla <- episodios_jerarquia(
-                data = opciones$tabla,
-                columnas =      agrupador,
-                columna_valor = opciones$valor_costo,
-                columna_sep =   separadores,
-                columna_suma =  episodios_col_rel,
-                nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                frec_cantidad = opciones$cantidad)
-            }
-            if (!input$episodios) {
-              # Si se va a generar de manera tradicional
-              episodios$tabla <- descriptiva(
-                data = opciones$tabla,
-                columnas = c(agrupador, separadores),
-                columna_valor = opciones$valor_costo,
-                columna_suma = input$unidades,
-                prestaciones = (input$unidades == "prestacion"),
-                frec_cantidad = opciones$cantidad)
-              episodios$tabla[["data"]] <-
-                list("temporal" = episodios$tabla[["data"]])
-              names(episodios$tabla[["data"]]) <- input$unidades
-            }
-            # lista de los agrupadores únicos
-            episodios$lista_agrupadores <-
-              episodios$tabla[["descriptiva"]] %>%
-                select(!!!rlang::syms(unique(c(agrupador, separadores))))
-            episodios$tabla_titulo <- paste(
-              "Descriptiva de", agrupador,
-              ifelse(
-                test = is.null(separadores),
-                yes = "", no = "separada por"),
-              separar_spanish(separadores),
-              collapse = " ")
+        withProgress(message = "Calculando descriptiva", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno") &&
+            "descriptiva" %in% input$tablas) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- input$separadores
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
+              # Si se va a generar por episodios
+              if (input$episodios) {
+                # Se genera un ID para el cache y se busca si ya ha sido
+                # generado en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc_ep", opciones$tabla_query,
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (!check_cache) {
+                  episodios$tabla <- episodios_jerarquia(
+                    data = opciones$tabla,
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad)
+                  opciones$cache[[cache_id]] <- episodios$tabla
+                }
+              }
+              if (!input$episodios) {
+                # Si se va a generar de manera tradicional
+                # Se checkea un ID para el cache y se busca si ha sido
+                # generada en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc", opciones$tabla_query,
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (!check_cache) {
+                  episodios$tabla <- descriptiva(
+                    data = opciones$tabla,
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad)
+                  episodios$tabla[["data"]] <-
+                    list("temporal" = episodios$tabla[["data"]])
+                  names(episodios$tabla[["data"]]) <- input$unidades
+                  opciones$cache[[cache_id]] <- episodios$tabla
+                }
+              }
+              # lista de los agrupadores únicos
+              episodios$lista_agrupadores <-
+                episodios$tabla[["descriptiva"]] %>%
+                  select(!!!rlang::syms(unique(c(agrupador, separadores))))
+              episodios$tabla_titulo <- paste(
+                "Descriptiva de", agrupador,
+                ifelse(
+                  test = is.null(separadores),
+                  yes = "", no = "separada por"),
+                separar_spanish(separadores),
+                collapse = " ")
           }
-          if ("frecuencias" %in% input$tablas) {
+        })
+      })
+
+      # Generar frecuencias
+      observeEvent(input$descriptiva_exe, {
+        withProgress(message = "Calculando frecuencias", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno") &&
+            "frecuencias" %in% input$tablas) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- input$separadores
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
             # Validacion por episodio o tradicional
             if (input$episodios) {
-              episodios$frecuencias <- frecuencias_jerarquia(
-                data = opciones$tabla,
-                columnas =      agrupador,
-                columna_fecha = "fecha_prestacion",
-                columna_sep =   separadores,
-                columna_suma =  episodios_col_rel,
-                frec_cantidad = opciones$cantidad,
-                nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                intervalo = input$intervalo)[["descriptiva"]]
+              cache_id <- digest(
+                object = list(
+                  "frec_ep", opciones$tabla_query,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = input$intervalo),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias_jerarquia(
+                  data = opciones$tabla,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = input$intervalo)[["descriptiva"]]
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
             }
             if (!input$episodios) {
-              episodios$frecuencias <- frecuencias(
-                data = opciones$tabla,
-                agrupador = c(agrupador, separadores),
-                columna_fecha = "fecha_prestacion",
-                columna_suma = input$unidades,
-                prestaciones = (input$unidades == "prestacion"),
-                frec_cantidad = opciones$cantidad,
-                intervalo = input$intervalo
-              )
+              cache_id <- digest(
+                object = list(
+                  "frec", opciones$tabla_query,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = input$intervalo),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias(
+                  data = opciones$tabla,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = input$intervalo
+                )
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
             }
           }
-        }
+        })
       })
 
       # Render tabla de descriptiva
       output$episodios_tabla <- DT::renderDataTable({
-        if (nrow(episodios$tabla[["descriptiva"]]) != 0) {
+        if (nrow(episodios$tabla[["descriptiva"]]) > 0) {
           agrupador <- episodios$agrupador
           separadores <- episodios$separadores
           # Número total de agrupadores únicos

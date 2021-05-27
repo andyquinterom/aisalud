@@ -36,6 +36,7 @@ library(shinyAce)
 library(listviewer)
 library(jsonvalidate)
 library(mapview)
+library(digest)
 
 # Si el administrador define el maxRequestSize en las variables de ambiente
 # entonces esta se utilizará. De esta manera se puede limitar cuantos

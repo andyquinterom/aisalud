@@ -28,7 +28,8 @@ shinyServer(function(input, output, session) {
     "datos_cargados" = FALSE,
     "perfil_enable" = FALSE,
     "fecha_rango" = rep(Sys.Date(), 2),
-    "cantidad" = FALSE
+    "cantidad" = FALSE,
+    "cache" = list()
   )
 
   # Modulo prepara ------------------------------------------------------------
@@ -83,8 +84,18 @@ shinyServer(function(input, output, session) {
     conn = conn
   )
 
+  # Modulo de dashboard de notas técnicas
+
   nt_dashboard_server(
     id = "nt_dashboard",
-    opciones = opciones)
+    opciones = opciones
+  )
+
+  # Modulo de seguimiento
+
+  seguimiento_server(
+    id = "seguimiento",
+    opciones = opciones
+  )
 
 })

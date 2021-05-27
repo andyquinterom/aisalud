@@ -55,9 +55,13 @@ shinyUI(
           menuItem(
             text = "Dashboard Contratos",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "nt_dashboard")
-        )
-      ),
+            tabName = "nt_dashboard"),
+          menuItem(
+            text = "Evaluación Contratos",
+            icon = icon("dollar-sign", lib = "font-awesome"),
+            tabName = "seguimiento")
+          )
+    ),
       controlbar = dashboardControlbar(
         width = 700,
         controlbarMenu(
@@ -98,6 +102,10 @@ shinyUI(
           tabItem(
             tabName = "nt_dashboard",
             nt_dashboard_ui("nt_dashboard")
+          ),
+          tabItem(
+            tabName = "seguimiento",
+            seguimiento_ui("seguimiento")
           )
         )
       )

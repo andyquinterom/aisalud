@@ -272,7 +272,8 @@ cargar_datos_server <- function(id, opciones, conn) {
             }
           )
         }
-      })
+      }) %>%
+      bindEvent(input$tabla, opciones$fecha_rango)
 
       # Se actualiza la seleccion de columnas de valor
       observe({
@@ -300,39 +301,53 @@ cargar_datos_server <- function(id, opciones, conn) {
       # Resumen de valores en el tiempo seleccionado
       output$valor_con_tiempo <- renderPlotly({
         if (opciones$datos_cargados) {
-          valor_costo <- opciones$valor_costo
-          # Se genera gráfico de barras por mes y año
-          opciones$tabla %>%
-            mutate(
-              # genera id de mes y año
-              mes_temporal = year(fecha_prestacion)*100 +
-                  month(fecha_prestacion)) %>%
-            group_by(mes_temporal) %>%
-            summarise(suma = sum(
-              as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
-            collect() %>%
-            mutate(mes_label_temporal = paste(
-              sep = " - ",
-              substr(mes_temporal, 1, 4),
-              mes_spanish(
-              as.numeric(substr(mes_temporal, 5, 6))))) %>%
-            arrange(mes_temporal) %>%
-            plot_ly(
-              x = ~mes_label_temporal,
-              y = ~suma,
-              type = "bar") %>%
-            config(locale = "es") %>%
-            layout(
-              title = "Suma del valor a mes",
-              xaxis = list(
-                title = "Mes",
-                categoryorder = "array",
-                categoryarray = ~mes_temporal),
-              yaxis = list(
-                title = "Suma",
-                tickformat = ",.2f"))
+          cache_id <- digest(
+            object = list("hist_val", opciones$tabla_query),
+            algo = "xxhash32",
+            seed = 1)
+          check_cache <- cache_id %in% names(opciones$cache)
+          if (!check_cache) {
+            valor_costo <- opciones$valor_costo
+            # Se genera gráfico de barras por mes y año
+            opciones$cache[[cache_id]] <- opciones$tabla %>%
+              mutate(
+                # genera id de mes y año
+                mes_temporal = year(fecha_prestacion)*100 +
+                    month(fecha_prestacion)) %>%
+              group_by(mes_temporal) %>%
+              summarise(suma = sum(
+                as.numeric(!!as.name(valor_costo)), na.rm = TRUE)) %>%
+              collect() %>%
+              mutate(mes_label_temporal = paste(
+                sep = " - ",
+                substr(mes_temporal, 1, 4),
+                mes_spanish(
+                as.numeric(substr(mes_temporal, 5, 6))))) %>%
+              arrange(mes_temporal) %>%
+              plot_ly(
+                x = ~mes_label_temporal,
+                y = ~suma,
+                type = "bar") %>%
+              config(locale = "es") %>%
+              layout(
+                title = "Suma del valor a mes",
+                xaxis = list(
+                  title = "Mes",
+                  categoryorder = "array",
+                  categoryarray = ~mes_temporal),
+                yaxis = list(
+                  title = "Suma",
+                  tickformat = ",.2f"))
+          }
+          opciones$cache[[cache_id]]
         }
       })
+
+      observe({
+        opciones$tabla_query <- opciones$tabla %>%
+          sql_render()
+      }) %>%
+      bindEvent(opciones$tabla)
 
       # Cargar datos locales -----------------
 
