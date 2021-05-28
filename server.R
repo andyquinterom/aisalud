@@ -40,6 +40,13 @@ shinyServer(function(input, output, session) {
     conn = conn
   )
 
+  # Modulo de opciones adicionales --------------------------------------------
+
+  opciones_adicionales_server(
+    id = "opciones_adicionales",
+    opciones = opciones
+  )
+
   # Modulo filtros ------------------------------------------------------------
 
   filtros_server(

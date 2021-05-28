@@ -69,7 +69,11 @@ shinyUI(
             id = "filtros_sideBar",
             title = "Filtros",
             filtros_ui("filtros_sideBar")
-          )
+          ),
+          controlbarItem(
+            id = "opciones_sideBar",
+            title = "Opciones adicionales",
+            opciones_adicionales_ui("opciones_adicionales"))
         )
       ),
       dashboardBody(
