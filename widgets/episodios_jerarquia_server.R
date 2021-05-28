@@ -126,12 +126,12 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
           perfiles = opciones$perfil_lista,
           perfil_select = opciones$perfil_selected,
           items = episodios$agrupadores_items,
-          funcion_jerarquia = descriptiva_jerarquia,
+          funcion_jerarquia = jerarquia,
           ns = ns
         )
       }
       if (!opciones$perfil_enable) {
-        episodios$widget_jerarquia <- descriptiva_jerarquia(
+        episodios$widget_jerarquia <- jerarquia(
           ns = ns,
           items_nivel_4 = episodios$agrupadores_items
         )
@@ -147,7 +147,7 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
   observeEvent(input$seleccionar_episodio, {
     output$episodios_jerarquia <- renderUI({
       tagList(
-        descriptiva_jerarquia(
+        jerarquia(
           ns = ns,
           items_nivel_1 = episodios$agrupadores_items)
       )
@@ -157,7 +157,7 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
   observeEvent(input$seleccionar_factura, {
     output$episodios_jerarquia <- renderUI({
       tagList(
-        descriptiva_jerarquia(
+        jerarquia(
           ns = ns,
           items_nivel_2 = episodios$agrupadores_items)
       )
@@ -167,7 +167,7 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
   observeEvent(input$seleccionar_paciente, {
     output$episodios_jerarquia <- renderUI({
       tagList(
-        descriptiva_jerarquia(
+        jerarquia(
           ns = ns,
           items_nivel_3 = episodios$agrupadores_items)
       )
@@ -177,7 +177,7 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
   observeEvent(input$seleccionar_prestacion, {
     output$episodios_jerarquia <- renderUI({
       tagList(
-        descriptiva_jerarquia(
+        jerarquia(
           ns = ns,
           items_nivel_4 = episodios$agrupadores_items)
       )
