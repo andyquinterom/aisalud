@@ -13,38 +13,24 @@ descriptiva_ui <- function(id) {
           tabPanel(
             title = "Generales",
             tags$br(),
-            selectizeInput(
-              inputId = ns("agrupador"),
-              label = "Agrupador principal:",
-              choices = NULL,
-              multiple = FALSE),
-            selectizeInput(
-              inputId = ns("separadores"),
-              label = "Separadores:",
-              choices = NULL,
-              multiple = TRUE),
-            checkboxGroupInput(
-              inputId = ns("tablas"),
-              label = "Tablas a generar:",
-              choices = c(
-                "Descripiva" = "descriptiva",
-                "Frecuencias" = "frecuencias"),
-              selected = "descriptiva",
-              inline = TRUE,
-              width = "100%"),
-            radioButtons(
-              inputId = ns("intervalo"),
-              choiceNames = c("Mes", "Semana", "Día"),
-              choiceValues = c("mes", "semana", "dia"),
-              label = "Intervalo para frecuencias"),
-            checkboxInput(
-              inputId = ns("episodios"),
-              label = "Agrupador por episodios",
-              value = FALSE),
-            uiOutput(outputId = ns("episodios_col_rel")),
-            tags$div(
-              style = "overflow-y: scroll; max-height: 300px;",
-              uiOutput(outputId = ns("episodios_jerarquia"))),
+            agrupadores_widget(
+              id = id,
+              separadores = TRUE,
+              checkboxGroupInput(
+                inputId = ns("tablas"),
+                label = "Tablas a generar:",
+                choices = c(
+                  "Descripiva" = "descriptiva",
+                  "Frecuencias" = "frecuencias"),
+                selected = "descriptiva",
+                inline = TRUE,
+                width = "100%"),
+              radioButtons(
+                inputId = ns("intervalo"),
+                choiceNames = c("Mes", "Semana", "Día"),
+                choiceValues = c("mes", "semana", "dia"),
+                label = "Intervalo para frecuencias")
+            ),
             tags$br(),
             textOutput(outputId = ns("descriptiva_sumas_registros")),
             textOutput(outputId = ns("descriptiva_sumas_pacientes")),
@@ -238,198 +224,18 @@ descriptiva_server <- function(id, opciones, conn) {
       episodios <- reactiveValues(
         tabla = list("descriptiva" = data.table(), "data" = data.table()),
         frecuencias = data.table(),
-        agrupadores_items = NULL,
-        widget_jerarquia = radioButtons(
-                inputId = ns("unidades"),
-                label = "Unidad de descriptiva",
-                choiceNames = c("Prestación", "Paciente", "Factura"),
-                choiceValues = c(
-                  "prestacion",
-                  "nro_identificacion",
-                  "nro_factura"
-                )
-              ))
-
-      # Se observa cambios en los nombres de columnas para actulizar
-      # selectizeInputs
-      observeEvent(opciones$colnames, {
-        # Solo se actualiza si los episodios estan prendidos
-        if (input$episodios) {
-          updateSelectizeInput(
-            session = session,
-            inputId = "episodios_col_rel",
-            choices = opciones$colnames,
-            selected = "nro_factura"
-          )
-        }
-        updateSelectizeInput(
-          session = session,
-          inputId = "agrupador",
-          choices = c("Ninguno", opciones$colnames)
-        )
-        updateSelectizeInput(
-          session = session,
-          inputId = "separadores",
-          choices = opciones$colnames
-        )
-      })
-
-      # Cambios a la seleccion de episodios
-      observeEvent(input$episodios, {
-        # Si es FALSE no se muestra el input de columnad de relacion
-        if (!input$episodios) output$episodios_col_rel <- renderUI({})
-        if (input$episodios) {
-          output$episodios_col_rel <- renderUI({
-            selectizeInput(
-              inputId = ns("episodios_col_rel"),
-              label = "Relacionar episodios por:",
-              choices = opciones$colnames,
-              selected = "nro_factura",
-              multiple = FALSE)
-          })
-        }
-      })
-
-      # Reactive que observa cambbios a input$agrupador e input$episodios
-      cambio_columnas <- reactive({
-        list(input$agrupador, input$episodios)
-      })
-
-      observeEvent(cambio_columnas(), {
-        cache_id <- digest(
-          object = list("agrup", cambio_columnas(), opciones$tabla_query),
-          algo = "xxhash32",
-          seed = 1)
-        check_cache <- cache_id %in% names(opciones$cache)
-        # Si hay cambios al agrupador o a episodios se ejecutará
-        if (!is.null(opciones$colnames) &&
-            input$agrupador %notin% c("", "Ninguno") &&
-            !check_cache) {
-          tryCatch(
-            expr = {
-              episodios$agrupadores_items <- list()
-              # Si la opción de episodios es verdadera y la columna contiene
-              # menos de 60 agrupadores únicos entonces se genera widget de
-              # jerarquia de episodios
-              if (input$episodios) {
-                episodios$agrupadores_items <- opciones$tabla %>%
-                  select(!!as.name(input$agrupador)) %>%
-                  distinct() %>%
-                  pull(!!as.name(input$agrupador))
-                if (length(episodios$agrupadores_items) > 60) {
-                  # Si hay mas de 60 agrupadores únicos se agapará la opción
-                  # de episodios y se volvera a correr el código del observer
-                  # (tipo recursivo)
-                  episodios$agrupadores_items <- list()
-                }
-              }
-              opciones$cache[[cache_id]] <- episodios$agrupadores_items
-              episodios$unidad_descriptiva <- input$descriptiva_unidades
-            },
-            error = function(e) {
-              print(e)
-              sendSweetAlert(
-                session = session,
-                title = "Error",
-                type = "error",
-                text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
-              )
-            }
-          )
-        }
-        if (check_cache) {
-          episodios$agrupadores_items <- opciones$cache[[cache_id]]
-        }
-      })
-
-      observe({
-        cambio_columnas()
-        if (length(episodios$agrupadores_items) == 0) {
-          # Widget de unidades de descriptiva
-          episodios$widget_jerarquia <- radioButtons(
-            inputId = ns("unidades"),
-            label = "Unidad de descriptiva",
-            selected = episodios$unidad_descriptiva,
-            choiceNames = c("Prestación", "Paciente", "Factura"),
-            choiceValues = c(
-              "prestacion",
-              "nro_identificacion",
-              "nro_factura"
-            )
-          )
-          updateCheckboxInput(
-            inputId = "episodios",
-            value = FALSE
-          )
-        }
-        if (length(episodios$agrupadores_items) > 0) {
-          # Se decide si utilizar jerarquia con perfil
-          if (opciones$perfil_enable) {
-            episodios$widget_jerarquia <- perfil_jerarquia(
-              perfiles = opciones$perfil_lista,
-              perfil_select = opciones$perfil_selected,
-              items = episodios$agrupadores_items,
-              funcion_jerarquia = descriptiva_jerarquia,
-              ns = ns
-            )
-          }
-          if (!opciones$perfil_enable) {
-            episodios$widget_jerarquia <- descriptiva_jerarquia(
-              ns = ns,
-              items_nivel_4 = episodios$agrupadores_items
-            )
-          }
-        }
-      })
-
-      output$episodios_jerarquia <- renderUI({
-        episodios$widget_jerarquia
-      })
+        agrupadores_items = NULL)
 
       # Se observa que el usuario haga click en los titulos de las unidades
       # de conteo en el widget de jerarquia.
       # De esta manera se pueden mover los diferentes agrupadores de manera
       # sencilla entre unidades.
 
-      observeEvent(input$seleccionar_episodio, {
-        output$episodios_jerarquia <- renderUI({
-          tagList(
-            descriptiva_jerarquia(
-              ns = ns,
-              items_nivel_1 = episodios$agrupadores_items)
-          )
-        })
-      })
-
-      observeEvent(input$seleccionar_factura, {
-        output$episodios_jerarquia <- renderUI({
-          tagList(
-            descriptiva_jerarquia(
-              ns = ns,
-              items_nivel_2 = episodios$agrupadores_items)
-          )
-        })
-      })
-
-      observeEvent(input$seleccionar_paciente, {
-        output$episodios_jerarquia <- renderUI({
-          tagList(
-            descriptiva_jerarquia(
-              ns = ns,
-              items_nivel_3 = episodios$agrupadores_items)
-          )
-        })
-      })
-
-      observeEvent(input$seleccionar_prestacion, {
-        output$episodios_jerarquia <- renderUI({
-          tagList(
-            descriptiva_jerarquia(
-              ns = ns,
-              items_nivel_4 = episodios$agrupadores_items)
-          )
-        })
-      })
+      episodios_jerarquia_server(
+        episodios = episodios,
+        opciones = opciones,
+        id = id,
+        separadores = TRUE)
 
       observeEvent(input$descriptiva_exe, {
         # Se valide que hayan datos cargados y un agrupador seleccionado
