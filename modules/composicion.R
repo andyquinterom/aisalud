@@ -1,6 +1,6 @@
 composicion_ui <- function(id) {
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
@@ -9,19 +9,19 @@ composicion_ui <- function(id) {
           inputId = ns("composicion_suma_valor"),
           label = "Sumar valor por:",
           choices = NULL,
-          multiple = FALSE, 
+          multiple = FALSE,
           width = "100%"),
         selectizeInput(
           inputId = ns("composicion_episodios"),
           label = "Episodios:",
           choices = NULL,
-          multiple = FALSE, 
+          multiple = FALSE,
           width = "100%"),
         selectizeInput(
           inputId = ns("composicion_episodios_agrupadores"),
           label = "Agrupadores:",
           choices = NULL,
-          multiple = TRUE, 
+          multiple = TRUE,
           width = "100%"),
         selectizeInput(
           inputId = ns("composicion_grupos"),
@@ -58,9 +58,9 @@ composicion_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       composicion <- reactiveValues(agrupadores = c(), tabla = data.frame())
-      
+
       observeEvent(opciones$colnames, {
         updateSelectizeInput(
           session = session,
@@ -76,7 +76,7 @@ composicion_server <- function(id, opciones, conn) {
           inputId = "composicion_grupos",
           choices = opciones$colnames)
       })
-      
+
       observe({
         if (input$composicion_episodios != "" &&
             opciones$datos_cargados &&
@@ -100,11 +100,11 @@ composicion_server <- function(id, opciones, conn) {
           }
         }
       })
-      
+
       observe({
         composicion$agrupadores <- input$composicion_episodios_agrupadores
       })
-      
+
       observeEvent(input$composicion_ejecutar, {
         tryCatch(
           expr = {
@@ -122,42 +122,42 @@ composicion_server <- function(id, opciones, conn) {
                 prioridad = input$composicion_episodios_agrupadores
               ) %>%
                 collect() %>%
-                mutate(participacion_en_episodios = 
-                         participacion_en_episodios/100,
-                       participacion_valor = participacion_valor/100)
+                mutate(participacion_en_episodios =
+                         participacion_en_episodios / 100,
+                       participacion_valor = participacion_valor / 100)
             }
           },
           error = function(e) {
             print(e)
             sendSweetAlert(
               session = session,
-              title = "Error", 
+              title = "Error",
               type = "error",
               text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+                columnas, formato de fecha y los datos. Si este problema
+                persiste ponerse en contacto con un administrador."
             )
           })
       })
-      
+
       callback_js <- JS(
         "table.on('click', 'tr.dtrg-group', function () {",
         "  var rowsCollapse = $(this).nextUntil('.dtrg-group');",
         "  $(rowsCollapse).toggleClass('hidden');",
         "});"
       )
-      
+
       output$tabla_composicion <- DT::renderDT({
-        
+
         if (nrow(composicion$tabla) > 0) {
-          style_color_participacion_valor <- styleColorBar(
+          style_color_valor <- styleColorBar(
             data = composicion$tabla$participacion_valor,
             color = "#87CEEB")
-          
+
           style_color_participacion <- styleColorBar(
             data = composicion$tabla$participacion_en_episodios,
             color = "#87CEEB")
-          
+
           datatable(
             composicion$tabla,
             rownames = FALSE,
@@ -173,7 +173,7 @@ composicion_server <- function(id, opciones, conn) {
               "Valor medio a explorar de registro" = "media_explorar_registro",
               "Valor medio a explorar por episodio" = "media_explorar_episodio",
               "Valor medio de episodio" = "media_episodio"),
-            extensions = c('FixedColumns'),
+            extensions = c("FixedColumns"),
             options = list(
               pageLength = nrow(composicion$tabla),
               orderFixed = c(0, "desc"),
@@ -182,7 +182,7 @@ composicion_server <- function(id, opciones, conn) {
               fixedColumns = list(leftColumns = 5),
               language = list(
                 url = dt_spanish)),
-            selection = 'none'
+            selection = "none"
           ) %>%
             formatPercentage(c("% de participación",
                                "% del valor total"),
@@ -193,7 +193,7 @@ composicion_server <- function(id, opciones, conn) {
                              "Valor medio de episodio",
                              "Valor medio a explorar por episodio"),
                            dec.mark = ",", mark = ".", digits = 0) %>%
-            formatRound(c("Número de episodios", "Número de registros", 
+            formatRound(c("Número de episodios", "Número de registros",
                           "Incluida en episodios"),
                         dec.mark = ",", mark = ".", digits = 0) %>%
             formatRound("Registros por episodio",
@@ -201,25 +201,24 @@ composicion_server <- function(id, opciones, conn) {
             formatStyle(
               c("% de participación"),
               background = style_color_participacion,
-              backgroundSize = '100% 90%',
-              backgroundRepeat = 'no-repeat',
-              backgroundPosition = 'center') %>%
+              backgroundSize = "100% 90%",
+              backgroundRepeat = "no-repeat",
+              backgroundPosition = "center") %>%
             formatStyle(
               c("% del valor total"),
-              background = style_color_participacion_valor,
-              backgroundSize = '100% 90%',
-              backgroundRepeat = 'no-repeat',
-              backgroundPosition = 'center')
+              background = style_color_valor,
+              backgroundSize = "100% 90%",
+              backgroundRepeat = "no-repeat",
+              backgroundPosition = "center")
         } else {
           data.frame()
         }
-        
       })
-      
+
       output$composicion_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Composicion",
-                ".csv", sep="")
+                ".csv", sep = "")
         },
         content = function(file) {
           write.csv(
@@ -233,21 +232,23 @@ composicion_server <- function(id, opciones, conn) {
                 "% del valor total" = "participacion_valor",
                 "Número de registros" = "n_registros",
                 "Registros por episodio" = "registros_por_episodios",
-                "Valor medio a explorar de registro" = "media_explorar_registro",
-                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio a explorar de registro" =
+                  "media_explorar_registro",
+                "Valor medio a explorar por episodio" =
+                  "media_explorar_episodio",
                 "Valor medio de episodio" = "media_episodio"
               ),
-            file = file, 
+            file = file,
             row.names = FALSE,
-            na="")
-        }, 
+            na = "")
+        },
         contentType = "text/csv"
       )
-      
+
       output$composicion_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Composicion",
-                ".xlsx", sep="")
+                ".xlsx", sep = "")
         },
         content = function(file) {
           write_xlsx(
@@ -261,15 +262,17 @@ composicion_server <- function(id, opciones, conn) {
                 "% del valor total" = "participacion_valor",
                 "Número de registros" = "n_registros",
                 "Registros por episodio" = "registros_por_episodios",
-                "Valor medio a explorar de registro" = "media_explorar_registro",
-                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio a explorar de registro" =
+                  "media_explorar_registro",
+                "Valor medio a explorar por episodio" =
+                  "media_explorar_episodio",
                 "Valor medio de episodio" = "media_episodio"
               ),
             path = file)
-        }, 
+        },
         contentType = "xlsx"
       )
-        
+
     }
   )
 }
