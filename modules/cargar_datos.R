@@ -25,13 +25,6 @@ cargar_datos_ui <- function(id) {
               label = "Seleccionar datos",
               choices = "Ninguno"
             ),
-            selectizeInput(
-              inputId = ns("columna_valor"),
-              label = "Columna de valor:",
-              width = "100%",
-              choices = "valor",
-              selected = "valor"
-            ),
             dateRangeInput(
               inputId = ns("fecha_rango"),
               label = "Fechas:",
@@ -74,13 +67,7 @@ cargar_datos_ui <- function(id) {
             actionButton(inputId = ns("file_load"), label = "Aplicar",
                          width = "100%"),
             tags$br(),
-            tags$br(),
-            selectizeInput(
-              inputId = ns("file_columna_valor"),
-              label = "Columna de valor:",
-              width = "100%",
-              choices = "valor",
-              selected = "valor")
+            tags$br()
           )
         )
       ),
@@ -156,13 +143,6 @@ cargar_datos_server <- function(id, opciones, conn) {
               prepara_opciones$colnames <- dbListFields(
                 conn,
                 tabla)
-              updateSelectizeInput(
-                session = session,
-                inputId = "columna_valor",
-                # se selecciona valor por defecto
-                selected = opciones$valor_costo,
-                choices = prepara_opciones$colnames
-              )
             },
             error = function(e) {
               print(e)
@@ -174,24 +154,6 @@ cargar_datos_server <- function(id, opciones, conn) {
               )
             }
           )
-        }
-      })
-
-      # Si se esta trabajando con datos locales se utilizan diferentes
-      # inputs del valor
-      observe({
-        if (input$tabla != "Ninguno" &&
-            input$tabla != "") {
-          opciones$valor_costo <- ifelse(
-            test = input$columna_valor != "",
-            yes = input$columna_valor,
-            no = opciones$valor_costo)
-        }
-        if (opciones$datos_cargados) {
-          opciones$valor_costo <- ifelse(
-            test = input$file_columna_valor != "",
-            yes = input$file_columna_valor,
-            no = opciones$valor_costo)
         }
       })
 
@@ -259,34 +221,14 @@ cargar_datos_server <- function(id, opciones, conn) {
       }) %>%
       bindEvent(input$tabla, opciones$fecha_rango)
 
-      # Se actualiza la seleccion de columnas de valor
-      observe({
-        # Si los datos se seleccionan de la nube
-        if (input$tabla != "Ninguno" &&
-            input$tabla != "") {
-          updateSelectizeInput(
-            session = session,
-            inputId = "columna_valor",
-            choices = opciones$colnames_num,
-            selected = "valor"
-          )
-        }
-        # Si los datos son locales
-        if (opciones$datos_cargados) {
-          updateSelectizeInput(
-            session = session,
-            inputId = "file_columna_valor",
-            choices = opciones$colnames_num,
-            selected = "valor"
-          )
-        }
-      })
-
       # Resumen de valores en el tiempo seleccionado
       output$valor_con_tiempo <- renderPlotly({
         if (opciones$datos_cargados) {
           cache_id <- digest(
-            object = list("hist_val", opciones$tabla_query),
+            object = list(
+              "hist_val",
+              opciones$tabla_query,
+              opciones$valor_costo),
             algo = "xxhash32",
             seed = 1)
           check_cache <- cache_id %in% names(opciones$cache)

@@ -2,6 +2,11 @@ opciones_adicionales_ui <- function(id) {
   ns <- NS(id)
   tagList(
     selectizeInput(
+      inputId = ns("columna_valor"),
+      width = "100%",
+      label = "Columna de valor",
+      choices = "valor"),
+    selectizeInput(
       inputId = ns("perfil"),
       width = "100%",
       "Perfil:",
@@ -74,6 +79,22 @@ opciones_adicionales_server <- function(id, opciones) {
         opciones$cantidad <- input$cantidad
       })
 
+      # Selección de columna de valor
+
+      observe({
+        updateSelectizeInput(
+          session = session,
+          inputId = "columna_valor",
+          choices = opciones$colnames_num,
+          selected = opciones$valor_costo
+        )
+      }) %>%
+      bindEvent(opciones$colnames_num)
+
+      observe({
+        columna_valor <- input$columna_valor
+        if (columna_valor != "") opciones$valor_costo <- columna_valor
+      })
 
     }
   )
