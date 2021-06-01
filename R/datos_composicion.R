@@ -17,10 +17,10 @@ datos_composicion <- function(data, columna_episodios, columna_valor,
   episodios <- data %>%
     select(!!!rlang::syms(unique(c(columna_suma, columna_episodios)))) %>%
     filter(!!as.name(columna_episodios) %in% prioridad) %>%
+    group_by(!!as.name(columna_suma)) %>%
     distinct() %>%
     right_join(index_episodios, copy = TRUE) %>%
-    arrange(index) %>%
-    group_by(!!as.name(columna_suma)) %>%
+    window_order(index) %>%
     mutate(!!columna_episodios := first(!!as.name(columna_episodios))) %>%
     ungroup() %>%
     distinct(!!!rlang::syms(unique(c(columna_suma, columna_episodios)))) %>%
