@@ -61,6 +61,8 @@ composicion_server <- function(id, opciones, conn) {
       composicion <- reactiveValues(agrupadores = c(), tabla = data.frame())
       episodios <- reactiveValues()
 
+      # Se actualizan los selectize inputs al observar cambios en las columnas
+      # de la tabla seleccionada
       observeEvent(opciones$colnames, {
         updateSelectizeInput(
           session = session,
@@ -77,10 +79,13 @@ composicion_server <- function(id, opciones, conn) {
           choices = opciones$colnames)
       })
 
+      # Comodin de compatibilidad con funciones de otros módulos
       cambio_columnas <- reactive({
         list(input$agrupador, TRUE)
       })
 
+      # Cuando haya un cambio a la columna de agrupador se ejecutará
+      # una busqueda en el cache.
       observeEvent(cambio_columnas(), {
         cache_id <- digest(
           object = list("agrup_comp", cambio_columnas(), opciones$tabla_query),
@@ -115,11 +120,14 @@ composicion_server <- function(id, opciones, conn) {
         }
       })
 
+      # Se actualizan los agrupadores para los episodios
       observe({
         cambio_columnas()
         if (length(episodios$agrupadores_items) > 0) {
           # Se decide si utilizar jerarquia con perfil
           perfil_seleccionado <- NULL
+          # Si el usuario tiene algun perfil seleccionado este se utilizará
+          # cómo pre-selección de los episodios
           if (opciones$perfil_enable) {
             perfil_seleccionado <-
               opciones$perfil_lista[[opciones$perfil_selected]][["jerarquia"]]
@@ -141,11 +149,14 @@ composicion_server <- function(id, opciones, conn) {
       observeEvent(input$composicion_exe, {
         tryCatch(
           expr = {
+            # Validaciones para evitar errores
             if (input$agrupador != "" &&
                 opciones$datos_cargados &&
                 input$episodios_col_rel %in% opciones$colnames &&
                 !is.null(input$episodios_jerarquia_nivel_1) &&
                 input$composicion_explorar != "") {
+              # Se busca si la misma tabla ya ha sido generada en el pasado
+              # con el cache.
               cache_id <- digest(
                 object = list(
                   "comp", opciones$tabla_query,
@@ -159,6 +170,7 @@ composicion_server <- function(id, opciones, conn) {
               check_cache <- cache_id %in% names(opciones$cache)
               if (check_cache) composicion$tabla <- opciones$cache[[cache_id]]
               if (!check_cache) {
+                # Creación de la tabla de composicion
                 composicion$tabla <- datos_composicion(
                   data = opciones$tabla,
                   columna_episodios = input$agrupador,
@@ -187,6 +199,7 @@ composicion_server <- function(id, opciones, conn) {
           })
       })
 
+      # Código en javascript para uso de funciones de DT
       callback_js <- JS(
         "table.on('click', 'tr.dtrg-group', function () {",
         "  var rowsCollapse = $(this).nextUntil('.dtrg-group');",
@@ -194,17 +207,15 @@ composicion_server <- function(id, opciones, conn) {
         "});"
       )
 
+      # Render de la tabla de composicion
       output$tabla_composicion <- DT::renderDT({
-
         if (nrow(composicion$tabla) > 0) {
           style_color_valor <- styleColorBar(
             data = composicion$tabla$participacion_valor,
             color = "#87CEEB")
-
           style_color_participacion <- styleColorBar(
             data = composicion$tabla$participacion_en_episodios,
             color = "#87CEEB")
-
           datatable(
             composicion$tabla,
             rownames = FALSE,
