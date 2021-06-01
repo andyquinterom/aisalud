@@ -28,7 +28,17 @@ seguimiento_ui <- function(id) {
         tags$br()
       ),
       box(
-        width = 8
+        width = 8,
+        tabsetPanel(
+          tabPanel(
+            title = "Resultados frecuencias",
+            uiOutput(outputId = ns("resultados_frec"))
+          ),
+          tabPanel(
+            title = "Resultados de valor facturado",
+            uiOutput(outputId = ns("resultados_valor"))
+          )
+        )
       )
     )
   )
@@ -42,6 +52,19 @@ seguimiento_server <- function(id, opciones, conn) {
       ns <- NS(id)
       episodios <- reactiveValues()
 
+      observe({
+        updateSelectizeInput(
+          inputId = "nota_tecnica",
+          choices = opciones$notas_tecnicas$nt,
+          selected = episodios$nt_selected
+          )
+      }) %>%
+      bindEvent(opciones$notas_tecnicas)
+
+      observe({
+        episodios$nt_selected <- input$nota_tecnica
+      })
+
       # Se observa que el usuario haga click en los titulos de las unidades
       # de conteo en el widget de jerarquia.
       # De esta manera se pueden mover los diferentes agrupadores de manera
@@ -52,6 +75,265 @@ seguimiento_server <- function(id, opciones, conn) {
         episodios = episodios,
         opciones = opciones)
 
-    }
+      # Generar descriptiva
+      observeEvent(input$exe, {
+        withProgress(message = "Calculando descriptiva", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno") &&
+            "valor" %in% input$tablas) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- NULL
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
+              # Si se va a generar por episodios
+              if (input$episodios) {
+                # Se genera un ID para el cache y se busca si ya ha sido
+                # generado en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc_ep", opciones$tabla_query,
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (!check_cache) {
+                  episodios$tabla <- episodios_jerarquia(
+                    data = opciones$tabla,
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad)
+                  opciones$cache[[cache_id]] <- episodios$tabla
+                }
+              }
+              if (!input$episodios) {
+                # Si se va a generar de manera tradicional
+                # Se checkea un ID para el cache y se busca si ha sido
+                # generada en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc", opciones$tabla_query,
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (!check_cache) {
+                  episodios$tabla <- descriptiva(
+                    data = opciones$tabla,
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad)
+                  episodios$tabla[["data"]] <-
+                    list("temporal" = episodios$tabla[["data"]])
+                  names(episodios$tabla[["data"]]) <- input$unidades
+                  opciones$cache[[cache_id]] <- episodios$tabla
+                }
+              }
+              # lista de los agrupadores únicos
+              episodios$lista_agrupadores <-
+                episodios$tabla[["descriptiva"]] %>%
+                  select(!!!rlang::syms(unique(c(agrupador, separadores))))
+              episodios$tabla_titulo <- paste(
+                "Descriptiva de", agrupador,
+                ifelse(
+                  test = is.null(separadores),
+                  yes = "", no = "separada por"),
+                separar_spanish(separadores),
+                collapse = " ")
+          }
+        })
+      })
+
+      # Generar frecuencias
+      observeEvent(input$exe, {
+        withProgress(message = "Calculando frecuencias", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno") &&
+            "frecuencias" %in% input$tablas) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- NULL
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
+            # Validacion por episodio o tradicional
+            if (input$episodios) {
+              cache_id <- digest(
+                object = list(
+                  "frec_ep", opciones$tabla_query,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = "mes"),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias_jerarquia(
+                  data = opciones$tabla,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = "mes")[["descriptiva"]]
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
+            }
+            if (!input$episodios) {
+              cache_id <- digest(
+                object = list(
+                  "frec", opciones$tabla_query,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = "mes"),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias(
+                  data = opciones$tabla,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = "mes"
+                )
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
+            }
+          }
+        })
+      })
+
+      observe({
+        if (nrow(episodios$frecuencias) > 0) {
+          nt <- opciones$notas_tecnicas %>%
+            filter(nt == input$nota_tecnica) %>%
+            rename(cod_nt = nt)
+          episodios$comparar_frecs <- comparacion_frecuencias(
+                frecuencias_tabla = episodios$frecuencias,
+                nota_tecnica = nt,
+                agrupador = episodios$agrupador
+              )
+        }
+      }) %>%
+      bindEvent(episodios$frecuencias)
+
+      observe({
+        episodios$frecuencias_tab <- tagList(
+          fluidRow(
+            column(width = 4, uiOutput(ns("frecuencias_resumen"))),
+            column(
+              width = 8,
+              plotlyOutput(ns("frecuencias_plot"), height = "450px") %>%
+                withSpinner())
+          ),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Ejecución de frecuencias:"),
+          DT::dataTableOutput(ns("frec_ejecucion_base")) %>% withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Ejecución por costo medio:"),
+          DT::dataTableOutput(ns("frec_ejecucion_por_cm")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Diferencias de frecuencia con costos medios:"),
+          DT::dataTableOutput(ns("frec_diferencias_por_cm")) %>%
+            withSpinner(),
+          tags$hr()
+        )
+        valor_tab <- tagList(
+          fluidRow(
+            column(width = 4, uiOutput(ns("valor_fac_resumen"))),
+            column(
+              width = 8,
+              plotlyOutput(ns("valor_fac_plot"), height = "450px") %>%
+                withSpinner())
+          ),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Ejecución:"),
+          DT::dataTableOutput(ns("valor_fac_total")) %>% withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Diferencias de valor:"),
+          DT::dataTableOutput(ns("diferencias_valor_fac")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Diferencias de valor en porcentaje:"),
+          DT::dataTableOutput(ns("diferencias_valor_fac_porcentaje")) %>%
+            withSpinner(),
+          tags$hr()
+        )
+        if ("frecuencias" %notin% input$tablas) {
+          episodios$frecuencias_tab <- NULL
+        }
+      })
+
+      output$resultados_frec <- renderUI({
+        episodios$frecuencias_tab
+      }) %>%
+      bindEvent(input$exe)
+
+      output$frecuencias_resumen <- renderUI({episodios$comparar_frecs$totales})
+
+      output$frecuencias_plot <- renderPlotly({
+        episodios$comparar_frecs$plot_valor_acumulado
+      })
+
+      output$frec_ejecucion_base <-
+        DT::renderDataTable({episodios$comparar_frecs$ejecucion_base_dt})
+
+      output$frec_ejecucion_por_cm <- DT::renderDataTable({
+        episodios$comparar_frecs$ejecucion_base_por_cm_dt
+      })
+
+      output$frec_diferencias_por_cm <-
+        DT::renderDataTable({episodios$comparar_frecs$diferencias_por_cm_dt})
+
+     }
   )
 }
