@@ -50,7 +50,9 @@ seguimiento_server <- function(id, opciones, conn) {
     module = function(input, output, session) {
 
       ns <- NS(id)
-      episodios <- reactiveValues()
+      episodios <- reactiveValues(
+        frecuencias = data.frame(),
+        descriptiva = data.frame())
 
       observe({
         updateSelectizeInput(
@@ -83,7 +85,7 @@ seguimiento_server <- function(id, opciones, conn) {
             "valor" %in% input$tablas) {
             agrupador <- input$agrupador
             if (input$episodios) episodios_col_rel <- input$episodios_col_rel
-            separadores <- NULL
+            separadores <- c("ais_mes", "ais_anio")
             episodios$agrupador <- agrupador
             episodios$separadores <- separadores
               # Si se va a generar por episodios
@@ -92,7 +94,7 @@ seguimiento_server <- function(id, opciones, conn) {
                 # generado en el pasado
                 cache_id <- digest(
                   object = list(
-                    "desc_ep", opciones$tabla_query,
+                    "desc_ep_seg", opciones$tabla_query,
                     columnas =      agrupador,
                     columna_valor = opciones$valor_costo,
                     columna_sep =   separadores,
@@ -105,10 +107,16 @@ seguimiento_server <- function(id, opciones, conn) {
                   algo = "xxhash32",
                   seed = 1)
                 check_cache <- cache_id %in% names(opciones$cache)
-                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (check_cache) {
+                  episodios$descriptiva <- opciones$cache[[cache_id]]
+                }
                 if (!check_cache) {
-                  episodios$tabla <- episodios_jerarquia(
-                    data = opciones$tabla,
+                  episodios$descriptiva <- episodios_jerarquia(
+                    data = mutate(
+                      opciones$tabla,
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes),
                     columnas =      agrupador,
                     columna_valor = opciones$valor_costo,
                     columna_sep =   separadores,
@@ -117,8 +125,8 @@ seguimiento_server <- function(id, opciones, conn) {
                     nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
                     nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
                     nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                    frec_cantidad = opciones$cantidad)
-                  opciones$cache[[cache_id]] <- episodios$tabla
+                    frec_cantidad = opciones$cantidad)[["descriptiva"]]
+                  opciones$cache[[cache_id]] <- episodios$descriptiva
                 }
               }
               if (!input$episodios) {
@@ -127,7 +135,7 @@ seguimiento_server <- function(id, opciones, conn) {
                 # generada en el pasado
                 cache_id <- digest(
                   object = list(
-                    "desc", opciones$tabla_query,
+                    "desc_seg", opciones$tabla_query,
                     columnas = c(agrupador, separadores),
                     columna_valor = opciones$valor_costo,
                     columna_suma = input$unidades,
@@ -136,32 +144,23 @@ seguimiento_server <- function(id, opciones, conn) {
                   algo = "xxhash32",
                   seed = 1)
                 check_cache <- cache_id %in% names(opciones$cache)
-                if (check_cache) episodios$tabla <- opciones$cache[[cache_id]]
+                if (check_cache) episodios$descriptiva <-
+                  opciones$cache[[cache_id]]
                 if (!check_cache) {
-                  episodios$tabla <- descriptiva(
-                    data = opciones$tabla,
+                  episodios$descriptiva <- descriptiva(
+                    data = mutate(
+                      opciones$tabla,
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes),
                     columnas = c(agrupador, separadores),
                     columna_valor = opciones$valor_costo,
                     columna_suma = input$unidades,
                     prestaciones = (input$unidades == "prestacion"),
-                    frec_cantidad = opciones$cantidad)
-                  episodios$tabla[["data"]] <-
-                    list("temporal" = episodios$tabla[["data"]])
-                  names(episodios$tabla[["data"]]) <- input$unidades
-                  opciones$cache[[cache_id]] <- episodios$tabla
-                }
+                    frec_cantidad = opciones$cantidad)[["descriptiva"]]
+                  opciones$cache[[cache_id]] <- episodios$descriptiva
               }
-              # lista de los agrupadores únicos
-              episodios$lista_agrupadores <-
-                episodios$tabla[["descriptiva"]] %>%
-                  select(!!!rlang::syms(unique(c(agrupador, separadores))))
-              episodios$tabla_titulo <- paste(
-                "Descriptiva de", agrupador,
-                ifelse(
-                  test = is.null(separadores),
-                  yes = "", no = "separada por"),
-                separar_spanish(separadores),
-                collapse = " ")
+            }
           }
         })
       })
@@ -209,7 +208,7 @@ seguimiento_server <- function(id, opciones, conn) {
                   nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
                   nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
                   nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                  intervalo = "mes")[["descriptiva"]]
+                  intervalo = "mes")
                 opciones$cache[[cache_id]] <- episodios$frecuencias
               }
             }
@@ -246,18 +245,25 @@ seguimiento_server <- function(id, opciones, conn) {
       })
 
       observe({
+        nt <- opciones$notas_tecnicas %>%
+          filter(nt == input$nota_tecnica) %>%
+          rename(cod_nt = nt)
         if (nrow(episodios$frecuencias) > 0) {
-          nt <- opciones$notas_tecnicas %>%
-            filter(nt == input$nota_tecnica) %>%
-            rename(cod_nt = nt)
           episodios$comparar_frecs <- comparacion_frecuencias(
-                frecuencias_tabla = episodios$frecuencias,
-                nota_tecnica = nt,
-                agrupador = episodios$agrupador
-              )
+            frecuencias_tabla = episodios$frecuencias,
+            nota_tecnica = nt,
+            agrupador = episodios$agrupador
+          )
+        }
+        if (nrow(episodios$descriptiva) > 0) {
+          episodios$comparar_valor <- comparacion_valor_facturado(
+            descriptiva_tabla = episodios$descriptiva,
+            nota_tecnica = nt,
+            agrupador = episodios$agrupador
+          )
         }
       }) %>%
-      bindEvent(episodios$frecuencias)
+      bindEvent(episodios$frecuencias, episodios$descriptiva)
 
       observe({
         episodios$frecuencias_tab <- tagList(
@@ -284,7 +290,7 @@ seguimiento_server <- function(id, opciones, conn) {
             withSpinner(),
           tags$hr()
         )
-        valor_tab <- tagList(
+        episodios$valor_tab <- tagList(
           fluidRow(
             column(width = 4, uiOutput(ns("valor_fac_resumen"))),
             column(
@@ -304,17 +310,25 @@ seguimiento_server <- function(id, opciones, conn) {
           tags$hr(),
           tags$br(),
           tags$h4("Diferencias de valor en porcentaje:"),
-          DT::dataTableOutput(ns("diferencias_valor_fac_porcentaje")) %>%
+          DT::dataTableOutput(ns("diferencias_valor_fac_perc")) %>%
             withSpinner(),
           tags$hr()
         )
         if ("frecuencias" %notin% input$tablas) {
           episodios$frecuencias_tab <- NULL
         }
+        if ("valor" %notin% input$tablas) {
+          episodios$valor_tab <- NULL
+        }
       })
 
       output$resultados_frec <- renderUI({
         episodios$frecuencias_tab
+      }) %>%
+      bindEvent(input$exe)
+
+      output$resultados_valor <- renderUI({
+        episodios$valor_tab
       }) %>%
       bindEvent(input$exe)
 
@@ -333,6 +347,26 @@ seguimiento_server <- function(id, opciones, conn) {
 
       output$frec_diferencias_por_cm <-
         DT::renderDataTable({episodios$comparar_frecs$diferencias_por_cm_dt})
+
+      output$valor_fac_resumen <- renderUI({
+        episodios$comparar_valor$totales
+      })
+
+      output$valor_fac_plot <- renderPlotly({
+        episodios$comparar_valor$plot_valor_acumulado
+      })
+
+      output$valor_fac_total <- DT::renderDataTable({
+        episodios$comparar_valor$comparacion_suma_dt
+      })
+
+      output$diferencias_valor_fac <- DT::renderDataTable({
+        episodios$comparar_valor$comparacion_diff_dt
+      })
+
+      output$diferencias_valor_fac_perc <- DT::renderDataTable({
+        episodios$comparar_valor$comparacion_porcentaje_dt
+      })
 
      }
   )

@@ -57,8 +57,8 @@ shinyUI(
             icon = icon("dollar-sign", lib = "font-awesome"),
             tabName = "nt_dashboard"),
           menuItem(
-            text = "Evaluación Contratos",
-            icon = icon("dollar-sign", lib = "font-awesome"),
+            text = "Seguimiento Contratos",
+            icon = icon("chart-line", lib = "font-awesome"),
             tabName = "seguimiento")
           )
     ),
