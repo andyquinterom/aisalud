@@ -283,7 +283,8 @@ nt_dashboard_server <- function(id, opciones) {
                 perfil_nota_tecnica <-
                   opciones$perfil_lista[[otra_informacion_datos$perfil]]
 
-                width_row <- 12/length(names(perfil_nota_tecnica[["jerarquia"]]))
+                width_row <- 12 /
+                  length(names(perfil_nota_tecnica[["jerarquia"]]))
 
                   column(
                     width = 12,
@@ -294,7 +295,6 @@ nt_dashboard_server <- function(id, opciones) {
                         .x = perfil_nota_tecnica[["jerarquia"]],
                         .y = names(perfil_nota_tecnica[["jerarquia"]]),
                         .f = function(x, y) {
-                          print(y)
                           if (!is.null(x)) {
                             column(
                               width = width_row,

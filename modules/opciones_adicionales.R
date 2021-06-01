@@ -77,6 +77,11 @@ opciones_adicionales_server <- function(id, opciones) {
       observe({
         # Se observan cambios al checkboxInput
         opciones$cantidad <- input$cantidad
+        if (opciones$cantidad) notificacion <-
+          "Conteo de frecuencias por cantidad"
+        if (!opciones$cantidad) notificacion <-
+          "Conteo de frecuencias por registro"
+        showNotification(notificacion)
       })
 
       # Selección de columna de valor
@@ -94,6 +99,9 @@ opciones_adicionales_server <- function(id, opciones) {
       observe({
         columna_valor <- input$columna_valor
         if (columna_valor != "") opciones$valor_costo <- columna_valor
+        shiny::showNotification(
+          paste("Columna de valor cambiada a", opciones$valor_costo)
+        )
       })
 
     }
