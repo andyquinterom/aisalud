@@ -259,6 +259,8 @@ seguimiento_server <- function(id, opciones, conn) {
         })
       })
 
+      # Se espera a que se generen las descripciones por frecuencia o valor
+      # para empezar a hacer la comparación con la nota técnica
       observe({
         nt <- opciones$notas_tecnicas %>%
           filter(nt == input$nota_tecnica) %>%
@@ -281,6 +283,7 @@ seguimiento_server <- function(id, opciones, conn) {
       }) %>%
       bindEvent(episodios$frecuencias, episodios$descriptiva)
 
+      # Se generan los UI elements y outputs de la sección de frecuencias
       observe({
         episodios$frecuencias_tab <- tagList(
           fluidRow(
@@ -338,6 +341,9 @@ seguimiento_server <- function(id, opciones, conn) {
         }
       })
 
+      # En la siguiente sección simplemente se encuentras los outputs
+      # de las diferentes tablas y UI elements necesarios
+
       output$resultados_frec <- renderUI({
         episodios$frecuencias_tab
       }) %>%
@@ -385,14 +391,19 @@ seguimiento_server <- function(id, opciones, conn) {
         episodios$comparar_valor$ui$comparacion_porcentaje
       })
 
+      # Output para descargar el informe
+      # En este output se ve si existe un informe por valor facturado
+      # y por frecuencias e incluye las respectivas tablas en la descarga
       output$descargar_informe <- downloadHandler(
         filename = paste0("Seguimiento de: ", episodios$nt_selected, ".xlsx"),
         content = function(file) {
           writexl::write_xlsx(
             x = list("Nota técnica" = episodios$nt_current) %>%
+              # Se checkea si existen registros de frecuecnias
               {if (nrow(episodios$frecuencias) > 0) {
                 append(., episodios$comparar_frecs$data)
               } else {.}} %>%
+              # Se checkea si hay registros de valor facturado
               {if (nrow(episodios$descriptiva) > 0) {
                 append(., episodios$comparar_valor$data)
               } else {.}},
