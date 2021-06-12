@@ -187,16 +187,23 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
     ) %>%
     config(locale = "es")
 
+  data_list <- list(
+    "Ejecución de frecuencias" = ejecucion_base,
+    "Dif de frecuencias por CM" = diferencias_por_cm,
+    "Ejecución de frecuencias por CM" = ejecucion_base_por_cm)
 
-  return(list(ejecucion_base = ejecucion_base,
-              ejecucion_base_dt = ejecucion_base_dt,
-              ejecucion_base_por_cm = ejecucion_base_por_cm,
-              ejecucion_base_por_cm_dt = ejecucion_base_por_cm_dt,
-              diferencias_por_cm = diferencias_por_cm,
-              diferencias_por_cm_dt = diferencias_por_cm_dt,
-              totales = totales_ui,
-              valor_acumulado = valor_acumulado,
-              plot_valor_acumulado = plot_valor_acumulado
-  ))
+  ui_list <- list(
+    ejecucion_base = ejecucion_base_dt,
+    ejecucion_base_por_cm = ejecucion_base_por_cm_dt,
+    diferencias_por_cm = diferencias_por_cm_dt,
+    totales = totales_ui,
+    plot_valor_acumulado = plot_valor_acumulado)
+
+  return(
+    list(
+      ui = ui_list,
+      data = data_list
+    )
+  )
 
 }

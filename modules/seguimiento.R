@@ -6,26 +6,41 @@ seguimiento_ui <- function(id) {
     fluidRow(
       box(
         width = 4,
-        selectizeInput(
-          inputId =  ns("nota_tecnica"),
-          label = "Comparar con nota técnica:",
-          choices = NULL,
-          multiple = FALSE),
-        agrupadores_widget(
-          id = id,
-          separadores = FALSE,
-          checkboxGroupInput(
-            inputId = ns("tablas"),
-            label = "Seguimiento:",
-            choices = c(
-              "Frecuencias" = "frecuencias",
-              "Valor facturado" = "valor"),
-            selected = "descriptiva",
-            inline = TRUE,
-            width = "100%")),
-        tags$br(),
-        actionButton(ns("exe"), "Generar"),
-        tags$br()
+        tabsetPanel(
+          tabPanel(
+            title = "Generales",
+            tags$br(),
+            selectizeInput(
+              inputId =  ns("nota_tecnica"),
+              label = "Comparar con nota técnica:",
+              choices = NULL,
+              multiple = FALSE),
+            agrupadores_widget(
+              id = id,
+              separadores = FALSE,
+              checkboxGroupInput(
+                inputId = ns("tablas"),
+                label = "Seguimiento:",
+                choices = c(
+                  "Frecuencias" = "frecuencias",
+                  "Valor facturado" = "valor"),
+                selected = "descriptiva",
+                inline = TRUE,
+                width = "100%")),
+            tags$br(),
+            actionButton(ns("exe"), "Generar"),
+            tags$br()
+          ),
+          tabPanel(
+            title = "Descargas",
+            tags$br(),
+            downloadButton(
+              outputId = ns("descargar_informe"),
+              label = "Informe completo",
+              width = "100%"
+            )
+          )
+        )
       ),
       box(
         width = 8,
@@ -208,7 +223,7 @@ seguimiento_server <- function(id, opciones, conn) {
                   nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
                   nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
                   nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                  intervalo = "mes")
+                  intervalo = "mes")[["descriptiva"]]
                 opciones$cache[[cache_id]] <- episodios$frecuencias
               }
             }
@@ -248,6 +263,7 @@ seguimiento_server <- function(id, opciones, conn) {
         nt <- opciones$notas_tecnicas %>%
           filter(nt == input$nota_tecnica) %>%
           rename(cod_nt = nt)
+        episodios$nt_current <- nt
         if (nrow(episodios$frecuencias) > 0) {
           episodios$comparar_frecs <- comparacion_frecuencias(
             frecuencias_tabla = episodios$frecuencias,
@@ -332,41 +348,59 @@ seguimiento_server <- function(id, opciones, conn) {
       }) %>%
       bindEvent(input$exe)
 
-      output$frecuencias_resumen <- renderUI({episodios$comparar_frecs$totales})
+      output$frecuencias_resumen <- renderUI({
+        episodios$comparar_frecs$ui$totales})
 
       output$frecuencias_plot <- renderPlotly({
-        episodios$comparar_frecs$plot_valor_acumulado
+        episodios$comparar_frecs$ui$plot_valor_acumulado
       })
 
       output$frec_ejecucion_base <-
-        DT::renderDataTable({episodios$comparar_frecs$ejecucion_base_dt})
+        DT::renderDataTable({episodios$comparar_frecs$ui$ejecucion_base})
 
       output$frec_ejecucion_por_cm <- DT::renderDataTable({
-        episodios$comparar_frecs$ejecucion_base_por_cm_dt
+        episodios$comparar_frecs$ui$ejecucion_base_por_cm
       })
 
       output$frec_diferencias_por_cm <-
-        DT::renderDataTable({episodios$comparar_frecs$diferencias_por_cm_dt})
+        DT::renderDataTable({episodios$comparar_frecs$ui$diferencias_por_cm})
 
       output$valor_fac_resumen <- renderUI({
-        episodios$comparar_valor$totales
+        episodios$comparar_valor$ui$totales
       })
 
       output$valor_fac_plot <- renderPlotly({
-        episodios$comparar_valor$plot_valor_acumulado
+        episodios$comparar_valor$ui$plot_valor_acumulado
       })
 
       output$valor_fac_total <- DT::renderDataTable({
-        episodios$comparar_valor$comparacion_suma_dt
+        episodios$comparar_valor$ui$comparacion_suma
       })
 
       output$diferencias_valor_fac <- DT::renderDataTable({
-        episodios$comparar_valor$comparacion_diff_dt
+        episodios$comparar_valor$ui$comparacion_diff
       })
 
       output$diferencias_valor_fac_perc <- DT::renderDataTable({
-        episodios$comparar_valor$comparacion_porcentaje_dt
+        episodios$comparar_valor$ui$comparacion_porcentaje
       })
+
+      output$descargar_informe <- downloadHandler(
+        filename = paste0("Seguimiento de: ", episodios$nt_selected, ".xlsx"),
+        content = function(file) {
+          writexl::write_xlsx(
+            x = list("Nota técnica" = episodios$nt_current) %>%
+              {if (nrow(episodios$frecuencias) > 0) {
+                append(., episodios$comparar_frecs$data)
+              } else {.}} %>%
+              {if (nrow(episodios$descriptiva) > 0) {
+                append(., episodios$comparar_valor$data)
+              } else {.}},
+            path = file
+          )
+        },
+        contentType = "xlsx"
+      )
 
      }
   )

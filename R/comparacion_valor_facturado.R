@@ -28,10 +28,14 @@ comparacion_valor_facturado <- function(
       "Agrupador" = "agrupador"),
     rownames = FALSE,
     selection = "none",
+    extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       pageLength = nrow(comparaciones[["suma"]]),
+      fixedColumns = list(leftColumns = 2),
       scrollX = TRUE,
+      scrollY = "300px",
+      scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatCurrency(
@@ -46,10 +50,14 @@ comparacion_valor_facturado <- function(
       "Agrupador" = "agrupador"),
     rownames = FALSE,
     selection = "none",
+    extensions = c("FixedColumns"),
     options = list(
       dom = "t",
-      pageLength = nrow(comparaciones[["diff"]]),
+      pageLength = nrow(comparaciones[["suma"]]),
+      fixedColumns = list(leftColumns = 2),
       scrollX = TRUE,
+      scrollY = "300px",
+      scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatCurrency(
@@ -72,10 +80,14 @@ comparacion_valor_facturado <- function(
       "Agrupador" = "agrupador"),
     rownames = FALSE,
     selection = "none",
+    extensions = c("FixedColumns"),
     options = list(
       dom = "t",
-      pageLength = nrow(comparaciones[["perc"]]),
+      pageLength = nrow(comparaciones[["suma"]]),
+      fixedColumns = list(leftColumns = 1, rightColumns = 1),
       scrollX = TRUE,
+      scrollY = "300px",
+      scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatPercentage(
@@ -167,16 +179,25 @@ comparacion_valor_facturado <- function(
     }) %>%
     tagList()
 
-  return(list(comparacion_suma = comparaciones[["suma"]],
-              comparacion_suma_dt = comparacion_suma_dt,
-              comparacion_diff = comparaciones[["diff"]],
-              comparacion_diff_dt = comparacion_diff_dt,
-              comparacion_porcentaje = comparaciones[["perc"]],
-              comparacion_porcentaje_dt = comparacion_perc_dt,
-              valor_acumulado = valor_acumulado,
-              plot_valor_acumulado = plot_valor_acumulado,
-              totales = totales_ui
-  ))
+  ui_list <- list(
+    "comparacion_suma" = comparacion_suma_dt,
+    "comparacion_diff" = comparacion_diff_dt,
+    "comparacion_porcentaje" = comparacion_perc_dt,
+    "plot_valor_acumulado" = plot_valor_acumulado,
+    "totales" = totales_ui
+  )
 
+  data_list <- list(
+    "Totales de valor facturado" = comparaciones[["suma"]],
+    "Diferencia con valor facturado" = comparaciones[["diff"]],
+    "Ejecución de valor en %" = comparaciones[["perc"]]
+  )
+
+  return(
+    list(
+      ui = ui_list,
+      data = data_list
+    )
+  )
 
 }
