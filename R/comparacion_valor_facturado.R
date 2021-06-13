@@ -25,21 +25,22 @@ comparacion_valor_facturado <- function(
     colnames = c(
       "Valor a mes" = "valor_mes",
       "Suma valor total" = "total",
-      "Agrupador" = "agrupador"),
+      "Agrupador" = "agrupador",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       pageLength = nrow(comparaciones[["suma"]]),
-      fixedColumns = list(leftColumns = 2),
+      fixedColumns = list(leftColumns = 3),
       scrollX = TRUE,
       scrollY = "300px",
       scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatCurrency(
-      columns = 2:ncol(comparaciones[["suma"]]),
+      columns = 3:ncol(comparaciones[["suma"]]),
       dec.mark = ",", mark = ".", digits = 0)
 
   comparacion_diff_dt <- datatable(
@@ -47,24 +48,25 @@ comparacion_valor_facturado <- function(
     colnames = c(
       "Valor a mes" = "valor_mes",
       "Diferencia de valor total" = "total",
-      "Agrupador" = "agrupador"),
+      "Agrupador" = "agrupador",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       pageLength = nrow(comparaciones[["suma"]]),
-      fixedColumns = list(leftColumns = 2),
+      fixedColumns = list(leftColumns = 3),
       scrollX = TRUE,
       scrollY = "300px",
       scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatCurrency(
-      columns = 2:ncol(comparaciones[["diff"]]),
+      columns = 3:ncol(comparaciones[["diff"]]),
       dec.mark = ",", mark = ".", digits = 0) %>%
     formatStyle(
-      columns = c(3:ncol(comparaciones[["diff"]]),
+      columns = c(4:ncol(comparaciones[["diff"]]),
                   ncol(comparaciones[["diff"]])),
       backgroundColor = styleInterval(
         cuts = 0,
@@ -77,30 +79,31 @@ comparacion_valor_facturado <- function(
       "Valor a mes" = "valor_mes",
       "Porcentaje de ejecución medio" = "media",
       "Ejecución media a mes" = "media_valor",
-      "Agrupador" = "agrupador"),
+      "Agrupador" = "agrupador",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       pageLength = nrow(comparaciones[["suma"]]),
-      fixedColumns = list(leftColumns = 1, rightColumns = 1),
+      fixedColumns = list(leftColumns = 2, rightColumns = 1),
       scrollX = TRUE,
       scrollY = "300px",
       scrollCollapse = TRUE,
       language = list(
         url = dt_spanish))) %>%
     formatPercentage(
-      columns = 3:(ncol(comparaciones[["perc"]]) - 1),
+      columns = 4:(ncol(comparaciones[["perc"]]) - 1),
       dec.mark = ",", mark = ".", digits = 0) %>%
     formatStyle(
-      columns = 3:(ncol(comparaciones[["perc"]]) - 1),
+      columns = 4:(ncol(comparaciones[["perc"]]) - 1),
       backgroundColor = styleInterval(
         cuts = 1,
         values = style_interval
       )) %>%
     formatCurrency(
-      columns = c(2, ncol(comparaciones[["perc"]])),
+      columns = c(3, ncol(comparaciones[["perc"]])),
       dec.mark = ",", mark = ".", digits = 0)
 
   minimo_mes <- min(pull(descriptiva_tabla, ais_mes_anio))
@@ -147,7 +150,7 @@ comparacion_valor_facturado <- function(
       name = "Valor a ejecutar",
       mode = "lines",
       line = list(color = "rgb(205, 12, 24)", dash = "dash"),
-      fill = "tonexty", fillcolor="rgba(0,100,80,0.2)"
+      fill = "tonexty", fillcolor = "rgba(0,100,80,0.2)"
     ) %>%
     config(locale = "es") %>%
     layout(

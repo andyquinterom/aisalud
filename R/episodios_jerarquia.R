@@ -53,7 +53,8 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       columna_suma = columna_suma,
       prestaciones = FALSE
     )
-    episodios_nivel_1 <- data_temp[["descriptiva"]]
+    episodios_nivel_1 <- data_temp[["descriptiva"]] %>%
+      mutate(unidad_conteo = "Episodio")
     episodios <- episodios %>%
       select(!!as.name(columna_suma))
     data <- data %>%

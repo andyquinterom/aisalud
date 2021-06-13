@@ -4,6 +4,11 @@ frecuencias <- function(
 
   agrupador <- unique(agrupador)
 
+  unidad <- "Episodio"
+  if (prestaciones) unidad <- "Prestación"
+  if (columna_suma == "nro_factura") unidad <- "Factura"
+  if (columna_suma == "nro_identificacion") unidad <- "Paciente"
+
   data <- data %>%
     mutate_at(vars(agrupador), as.character)
 
@@ -85,7 +90,8 @@ frecuencias <- function(
       frec_suma  = round(
         rowSums(across(-frec_media), na.rm = TRUE),
         digits = 3)) %>%
-  relocate(!!!rlang::syms(agrupador), frec_suma, frec_media)
+    mutate("unidad_conteo" = unidad) %>%
+    relocate(unidad_conteo, !!!rlang::syms(agrupador), frec_suma, frec_media)
 
   return(data)
 }

@@ -22,14 +22,15 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
       "Frecuencia a mes" = "frec_mes",
       "Ejecución media" = "frec_media",
       "Ejecución total" = "frec_suma",
-      "Agrupador" = "agrupador"),
+      "Agrupador" = "agrupador",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       scrollCollapse = TRUE,
-      fixedColumns = list(leftColumns = 1),
+      fixedColumns = list(leftColumns = 2),
       scrollY = "300px",
       pageLength = nrow(ejecucion_base),
       scrollX = TRUE,
@@ -42,33 +43,34 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
       columns = c("Valor a mes", "Ejecución total x CM", "Costo medio",
         "Ejecución media x CM"),
       dec.mark = ",", mark = ".", digits = 0) %>%
-    formatRound(2, dec.mark = ",", mark = ".", digits = 3)
+    formatRound(3, dec.mark = ",", mark = ".", digits = 3)
 
   valor_acumulado <- ejecucion_base %>%
-  mutate(across(.fns = ~.x * cm))
+    mutate(across(.fns = ~.x * cm))
 
   diferencias_por_cm <- valor_acumulado %>%
     mutate(across(.fns = ~.x - valor_mes)) %>%
     ungroup() %>%
     select(-c(cm, frec_mes, frec_suma, frec_media, frec_media_por_cm,
       frec_suma_por_cm)) %>%
-    group_by(agrupador, valor_mes) %>%
+    group_by(unidad_conteo, agrupador, valor_mes) %>%
     mutate(diferencia_total_por_cm = rowSums(across(), na.rm = TRUE)) %>%
-    relocate(agrupador, valor_mes, diferencia_total_por_cm)
+    relocate(unidad_conteo, agrupador, valor_mes, diferencia_total_por_cm)
 
   diferencias_por_cm_dt <- datatable(
     data = diferencias_por_cm,
     colnames = c(
       "Valor a mes" = "valor_mes",
       "Agrupador" = "agrupador",
-      "Diferencia total" = "diferencia_total_por_cm"),
+      "Diferencia total" = "diferencia_total_por_cm",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       scrollCollapse = TRUE,
-      fixedColumns = list(leftColumns = 2),
+      fixedColumns = list(leftColumns = 3),
       scrollY = "300px",
       pageLength = nrow(diferencias_por_cm),
       scrollX = TRUE,
@@ -78,10 +80,10 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
       backgroundColor = "white") %>%
     formatCurrency(
       table = .,
-      columns = 2:ncol(diferencias_por_cm),
+      columns = 3:ncol(diferencias_por_cm),
       dec.mark = ",", mark = ".", digits = 0) %>%
     formatStyle(
-      columns = 3:ncol(diferencias_por_cm),
+      columns = 4:ncol(diferencias_por_cm),
       backgroundColor = styleInterval(
         cuts = 0,
         values = style_interval
@@ -96,14 +98,15 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
     data = ejecucion_base_por_cm,
     colnames = c(
       "Valor a mes" = "valor_mes",
-      "Agrupador" = "agrupador"),
+      "Agrupador" = "agrupador",
+      "Unidad de conteo" = "unidad_conteo"),
     rownames = FALSE,
     selection = "none",
     extensions = c("FixedColumns"),
     options = list(
       dom = "t",
       scrollCollapse = TRUE,
-      fixedColumns = list(leftColumns = 2),
+      fixedColumns = list(leftColumns = 3),
       scrollY = "300px",
       pageLength = nrow(ejecucion_base_por_cm),
       scrollX = TRUE,
@@ -121,7 +124,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
     select(-c(cm, frec_mes, valor_mes, frec_suma, frec_media,
         frec_media_por_cm, frec_suma_por_cm)) %>%
     pivot_longer(
-      cols = -c(agrupador),
+      cols = -c(unidad_conteo, agrupador),
       names_to = "mes_anio",
       values_to = "valor") %>%
     group_by(mes_anio) %>%

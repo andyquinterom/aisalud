@@ -2,20 +2,21 @@ comparar_nt_valor_factura <- function(
   indicador, descriptiva_tabla, nota_tecnica, agrupador, col_anio, col_mes) {
 
   descriptiva_tabla %>%
-    select(!!!rlang::syms(c(agrupador, col_anio, col_mes)), Suma) %>%
+    select(unidad_conteo, !!!rlang::syms(c(agrupador, col_anio, col_mes)),
+      Suma) %>%
     rename(agrupador = !!as.name(agrupador)) %>%
     arrange(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
     mutate(ais_mes_nombre = mes_spanish(!!!rlang::syms(col_mes))) %>%
     pivot_wider(
-      id_cols = c(agrupador),
+      id_cols = c(unidad_conteo, agrupador),
       names_from = c(ais_anio, ais_mes_nombre),
       values_from = Suma,
       names_sep = " - ") %>%
     inner_join(nota_tecnica %>%
                  select(agrupador, valor_mes)) %>%
     mutate(across(.fns = replace_na, replace = 0)) %>%
-    group_by(agrupador, valor_mes) %>%
-    relocate(agrupador, valor_mes) %>%
+    group_by(unidad_conteo, agrupador, valor_mes) %>%
+    relocate(unidad_conteo, agrupador, valor_mes) %>%
     {if (indicador == "diff") {
       mutate(., across(.fns = ~ .x - valor_mes))
     } else if (indicador == "perc") {

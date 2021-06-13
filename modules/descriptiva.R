@@ -486,8 +486,11 @@ descriptiva_server <- function(id, opciones, conn) {
           DT::datatable(
             episodios$tabla[["descriptiva"]],
             extensions = "FixedColumns",
+            colnames = c(
+              "Unidad de conteo" = "unidad_conteo"
+            ),
             options = list(
-              fixedColumns = list(leftColumns = distinct_agrupadores),
+              fixedColumns = list(leftColumns = distinct_agrupadores + 1),
               language = list(
                 url = dt_spanish),
               pageLength = 20,
@@ -520,9 +523,10 @@ descriptiva_server <- function(id, opciones, conn) {
             extensions = "FixedColumns",
             colnames = c(
               "Frecuencia media" = "frec_media",
-              "Frecuencia total" = "frec_suma"),
+              "Frecuencia total" = "frec_suma",
+              "Unidad de conteo" = "unidad_conteo"),
             options = list(
-              fixedColumns = list(leftColumns = distinct_agrupadores),
+              fixedColumns = list(leftColumns = distinct_agrupadores + 1),
               language = list(
                 url = dt_spanish),
               pageLength = 20,

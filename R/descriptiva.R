@@ -1,6 +1,11 @@
 descriptiva <- function(data, columnas, columna_valor, columna_suma,
                         prestaciones = FALSE, frec_cantidad = FALSE) {
 
+  unidad <- "Episodio"
+  if (prestaciones) unidad <- "Prestación"
+  if (columna_suma == "nro_factura") unidad <- "Factura"
+  if (columna_suma == "nro_identificacion") unidad <- "Paciente"
+
   columnas <- unique(columnas)
   data <- data %>%
     mutate(valor_calculos = as.numeric(!!as.name(columna_valor)))
@@ -58,8 +63,7 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
   }
 
   data_descriptiva <- data_descriptiva %>%
-    mutate(Media = round(Suma / na_if(Frecuencia, 0), 2)) %>%
-    arrange(Suma)
+    mutate(Media = round(Suma / na_if(Frecuencia, 0), 2))
   fields <- data_descriptiva %>%
     colnames()
 
@@ -68,12 +72,15 @@ descriptiva <- function(data, columnas, columna_valor, columna_suma,
       select(-`.add`)
   }
   data_descriptiva <- data_descriptiva %>%
+    mutate("unidad_conteo" = unidad) %>%
+    relocate(unidad_conteo) %>%
     collect()
   setDT(data_descriptiva)
 
   setnames(
     data_descriptiva,
-    c(columnas,
+    c("unidad_conteo",
+      columnas,
       "Frecuencia",
       "Suma", "Media",
       "P25",
