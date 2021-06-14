@@ -22,7 +22,7 @@ nota_tecnica_ui <- function(id) {
           )
         ),
         actionButton(
-          inputId = ns("nota_tecnica_exe"),
+          inputId = ns("exe"),
           label = "Generar escenarios",
           width = "100%"
         ),
@@ -40,50 +40,61 @@ nota_tecnica_ui <- function(id) {
           style = "width:100%;")
       ),
       box(
-        width = 9,
-        valueBoxOutput(
-          outputId = ns("nota_tecnica_suma"),
-          width = 6),
-        valueBoxOutput(
-          outputId = ns("nota_tecnica_porcentaje"),
-          width = 6),
-        valueBoxOutput(
-          outputId = ns("nota_tecnica_warnings"),
-          width = 12),
-        DT::dataTableOutput(ns("nota_tecnica_junta"))
-      )
-    ),
-    fluidRow(
-      box(
-        width = 12,
-        actionButton(
-          inputId = ns("nota_tecnica_juntar"),
-          label = "Juntar",
-          class = "nota_tecnica_juntar_btn")
+        width = 4,
+        tags$div(
+          style = "height: 600px;",
+          valueBoxOutput(
+            outputId = ns("nota_tecnica_suma"),
+            width = 6),
+          valueBoxOutput(
+            outputId = ns("nota_tecnica_porcentaje"),
+            width = 6),
+          DT::dataTableOutput(ns("nota_tecnica_junta"))
+        )
       ),
       box(
-        width = 12,
-        div(
-          style = "text-align: center;",
-          column(
-            width = 4,
-            tags$h4("Escenarios a mes")
-            ),
-          column(
-            width = 4,
-            tags$h4("Media")
-          ),
-          column(
-            width = 4,
-            tags$h4("P75")
+        width = 4,
+        tags$div(
+          style = "height: 600px;",
+          plotlyOutput(
+            outputId = ns("seguimiento_plot"),
+            width = "100%",
+            height = "550px"
           )
-        ),
-        div(
-          class = "escenarios_inline_div",
-          column(
-            width = 4,
-            uiOutput(outputId = ns("nota_tecnica_escenarios_nombres"))),
-          uiOutput(outputId = ns("nota_tecnica_escenarios"))
+        )
+      ),
+      box(
+        width = 3,
+        selectizeInput(
+          inputId = ns("conf_agrupador"),
+          label = "Agrupador",
+          choices = NULL
+        )
+      ),
+      box(
+        width = 9,
+        tabsetPanel(
+          tabPanel(
+            title = "Costos medios",
+            sliderInput(
+              inputId = ns("costo_medio_ajuste"),
+              label = "Percentil del costo medio:",
+              min = 0,
+              max = 100,
+              value = 50
+            ),
+            plotlyOutput(
+              outputId = ns("costo_medio_plot"),
+              height = "550px",
+              width = "100%"
+            )
+          ),
+          tabPanel(
+            title = "Frecuencias"
+          )
+        ) %>%
+        tags$div(
+          style = "min-height: 600px;"
         )
       )
     )
@@ -98,6 +109,7 @@ nota_tecnica_server <- function(id, opciones) {
       ns <- NS(id)
 
       episodios <- reactiveValues(
+        descriptiva = data.table(),
         tabla = list(descriptiva = data.table(), data = data.table()),
         agrupadores_items = NULL)
 
@@ -110,6 +122,8 @@ nota_tecnica_server <- function(id, opciones) {
       nota_tecnica <- reactiveValues(
         tabla = data.table(),
         tabla_junta = data.table(),
+        nota_tecnica = data.table(),
+        timeseries = data.table(),
         escenarios = list(
           "episodio" = list(),
           "factura" = list(),
@@ -131,135 +145,292 @@ nota_tecnica_server <- function(id, opciones) {
         }
       })
 
-      observeEvent(input$nota_tecnica_juntar, {
-
-        nota_tecnica$cols_sep <- input$nota_tecnica_cols_sep
-        nota_tecnica$cols <- input$nota_tecnica_cols
-
-        tryCatch(
-          expr = {
-            rows_selected <- NULL
-
-            rows_selected <- list(
-              "episodio" = list(),
-              "factura" = list(),
-              "paciente" = list(),
-              "prestacion" = list())
-
-            lapply(
-              X = 1:4,
-              FUN = function(i) {
-
-
-                rows_episodio <-
-                  input[[paste0("escenario_episodio_", i, "_rows_selected")]]
-                rows_factura <-
-                  input[[paste0("escenario_factura_", i, "_rows_selected")]]
-                rows_paciente <-
-                  input[[paste0("escenario_paciente_", i, "_rows_selected")]]
-                rows_prestacion <-
-                  input[[paste0("escenario_prestacion_", i, "_rows_selected")]]
-
-                rows_selected[["episodio"]][[i]] <<-
-                  if (!is.null(rows_episodio)) {
-                    nota_tecnica$escenarios[["episodio"]][[i]][
-                      rows_episodio]
-                  }
-                rows_selected[["factura"]][[i]] <<-
-                  if (!is.null(rows_factura)) {
-                    nota_tecnica$escenarios[["factura"]][[i]][
-                      rows_factura]
-                  }
-                rows_selected[["paciente"]][[i]] <<-
-                  if (!is.null(rows_paciente)) {
-                    nota_tecnica$escenarios[["paciente"]][[i]][
-                      rows_paciente]
-                  }
-                rows_selected[["prestacion"]][[i]] <<-
-                  if (!is.null(rows_prestacion)) {
-                    nota_tecnica$escenarios[["prestacion"]][[i]][
-                      rows_prestacion]
-                  }
+      # Generar descriptiva
+      observeEvent(input$exe, {
+        withProgress(message = "Calculando descriptiva", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno")) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- c("ais_mes", "ais_anio")
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
+              # Si se va a generar por episodios
+              if (input$episodios) {
+                # Se genera un ID para el cache y se busca si ya ha sido
+                # generado en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc_ep_seg", opciones$tabla_query,
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) {
+                  episodios$descriptiva <- opciones$cache[[cache_id]]
+                }
+                if (!check_cache) {
+                  episodios$descriptiva <- episodios_jerarquia(
+                    data = mutate(
+                      opciones$tabla,
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes),
+                    columnas =      agrupador,
+                    columna_valor = opciones$valor_costo,
+                    columna_sep =   separadores,
+                    columna_suma =  episodios_col_rel,
+                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                    frec_cantidad = opciones$cantidad)[["descriptiva"]]
+                  opciones$cache[[cache_id]] <- episodios$descriptiva
+                }
               }
-            )
-
-            nota_tecnica$tabla_junta <-
-              rbindlist(
-                fill = TRUE,
-                lapply(
-                  X = c("episodio", "factura", "paciente", "prestacion"),
-                  FUN = function(i) {
-                    if (!is.null(rows_selected[[i]])) {
-                      seleccionados_juntos <- rbindlist(rows_selected[[i]])
-                      if (nrow(seleccionados_juntos) > 0) {
-                        return(
-                          cbind(
-                            "Tipo" = toupper(i),
-                            seleccionados_juntos
-                          )
-                        )
-                      } else {
-                        return(data.table())
-                      }
-                    } else {
-                      return(data.table())
-                    }
-                  }
-                  )[nota_tecnica$escenarios_activos]
-              )
-
-            suma_valor_mes <- sum(
-              numerize(nota_tecnica$tabla_junta[["Valor a mes"]]), na.rm = TRUE)
-
-            nota_tecnica$tabla_junta[
-              , "Participacion" := `Valor a mes`/suma_valor_mes,
-              by = c("Valor a mes")]
-
-          },
-          error = function(e) {
-            print(e)
-            sendSweetAlert(
-              session = session,
-              title = "Error",
-              type = "error",
-              text = "Por favor revisar los parametros de carga de datos,
-                      columnas, formato de fecha y los datos. Si este problema persiste
-                      ponerse en contacto con un administrador.")
+              if (!input$episodios) {
+                # Si se va a generar de manera tradicional
+                # Se checkea un ID para el cache y se busca si ha sido
+                # generada en el pasado
+                cache_id <- digest(
+                  object = list(
+                    "desc_seg", opciones$tabla_query,
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad),
+                  algo = "xxhash32",
+                  seed = 1)
+                check_cache <- cache_id %in% names(opciones$cache)
+                if (check_cache) episodios$descriptiva <-
+                  opciones$cache[[cache_id]]
+                if (!check_cache) {
+                  episodios$descriptiva <- descriptiva(
+                    data = mutate(
+                      opciones$tabla,
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes),
+                    columnas = c(agrupador, separadores),
+                    columna_valor = opciones$valor_costo,
+                    columna_suma = input$unidades,
+                    prestaciones = (input$unidades == "prestacion"),
+                    frec_cantidad = opciones$cantidad)[["descriptiva"]]
+                  opciones$cache[[cache_id]] <- episodios$descriptiva
+              }
             }
+          }
+        })
+      })
+
+      # Generar frecuencias
+      observeEvent(input$exe, {
+        withProgress(message = "Calculando frecuencias", {
+          if (opciones$datos_cargados &&
+            input$agrupador %notin% c("", "Ninguno")) {
+            agrupador <- input$agrupador
+            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
+            separadores <- NULL
+            episodios$agrupador <- agrupador
+            episodios$separadores <- separadores
+            # Validacion por episodio o tradicional
+            if (input$episodios) {
+              cache_id <- digest(
+                object = list(
+                  "frec_ep", opciones$tabla_query,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = "mes"),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias_jerarquia(
+                  data = opciones$tabla,
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = "mes")[["descriptiva"]]
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
+            }
+            if (!input$episodios) {
+              cache_id <- digest(
+                object = list(
+                  "frec", opciones$tabla_query,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = "mes"),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) episodios$frecuencias <-
+                opciones$cache[[cache_id]]
+              if (!check_cache) {
+                episodios$frecuencias <- frecuencias(
+                  data = opciones$tabla,
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = "mes"
+                )
+                opciones$cache[[cache_id]] <- episodios$frecuencias
+              }
+            }
+          }
+        })
+      })
+
+      observe({
+        if (nrow(episodios$descriptiva) > 0) {
+          nota_tecnica$timeseries <- episodios$descriptiva %>%
+            descriptiva_timeseries(agrupador = episodios$agrupador) %>%
+            mutate(
+              mes_anio = mes_spanish_juntos(mes_anio_num),
+              mes_anio_date = do.call(purrr::map(
+                .x = as.Date(paste(ais_anio, ais_mes, "01", sep = "-")),
+                .f = function(x) last(seq(x, length = 2, by = "months") - 1)),
+                what = "c")) %>%
+            arrange(mes_anio_date)
+            nota_tecnica$agrupadores <- nota_tecnica$timeseries %>%
+              pull(!!rlang::sym(episodios$agrupador)) %>%
+              unique()
+            updateSelectizeInput(
+            inputId = "conf_agrupador",
+            choices = nota_tecnica$agrupadores
+          )
+          nota_tecnica$nota_tecnica <- esquema_nota_tecnica(
+            timeseries = nota_tecnica$timeseries,
+            agrupador = episodios$agrupador,
+            perfil = opciones$perfil_selected
+          )
+        }
+      }) %>%
+        bindEvent(episodios$descriptiva)
+
+      observe({
+        if (nrow(episodios$descriptiva) > 0) {
+          nota_tecnica$comparar_valor <- comparacion_valor_facturado(
+            descriptiva_tabla = episodios$descriptiva,
+            nota_tecnica = nota_tecnica$nota_tecnica %>%
+              parse_nt(),
+            agrupador = episodios$agrupador
+          )
+        }
+      }) %>%
+      bindEvent(nota_tecnica$nota_tecnica)
+
+      observe({
+        conf_agrupador <- input$conf_agrupador
+        if (nrow(nota_tecnica$timeseries) > 0 && !is.null(conf_agrupador)) {
+          nota_tecnica$timeseries_selected <- nota_tecnica$timeseries %>%
+            filter(!!rlang::sym(episodios$agrupador) == conf_agrupador)
+        }
+      }) %>%
+      bindEvent(input$conf_agrupador, nota_tecnica$timeseries)
+
+      output$seguimiento_plot <- renderPlotly({
+        nota_tecnica$comparar_valor$ui$plot_valor_acumulado
+      })
+
+      output$costo_medio_plot <- renderPlotly({
+        nota_tecnica$timeseries_selected %>%
+          ungroup() %>%
+          plot_ly(
+            x = ~mes_anio_date,
+            y = ~Media,
+            name = "Costos medios",
+            type = "scatter",
+            mode = "lines+markers") %>%
+          add_trace(
+            y = quantile(nota_tecnica$timeseries_selected$Media, 0.5),
+            name = "Mediana",
+            mode = "lines"
+          ) %>%
+          add_trace(
+            y = mean(nota_tecnica$timeseries_selected$Media),
+            name = "Media",
+            mode = "lines"
+          ) %>%
+          add_trace(
+            y = quantile(nota_tecnica$timeseries_selected$Media, 0.75),
+            name = "Percentil 75",
+            mode = "lines"
           )
       })
 
+      observe({
+        quantile_value <- quantile(nota_tecnica$timeseries_selected$Media,
+              input$costo_medio_ajuste / 100) %>%
+          as.numeric() %>%
+          rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
+        plotlyProxy("costo_medio_plot", session) %>%
+          plotlyProxyInvoke("deleteTraces", list(as.integer(4))) %>%
+          plotlyProxyInvoke("addTraces", list(list(
+            y = quantile_value,
+            x = nota_tecnica$timeseries_selected$mes_anio_date,
+            mode = "lines",
+            type = "scatter",
+            line = list(color = "rgb(205, 12, 24)", dash = "dash"),
+            name = "Ajuste usuario")))
+      }) %>%
+      bindEvent(input$costo_medio_ajuste)
+
       output$nota_tecnica_junta <- DT::renderDataTable({
-          if (nrow(nota_tecnica$tabla_junta) == 0 ||
-              "CM" %notin% names(nota_tecnica$tabla_junta)) {
-            datatable(data = data.table())
-          } else {
-            datatable(
-              data = nota_tecnica$tabla_junta[, -c("Coe")],
-              rownames = FALSE,
-              options = list(
-                ordering = T,
-                scrollY = "50vh",
-                scrollX = TRUE,
-                pageLength = 1000,
-                dom = "ft"
-              )
-            ) %>%
-              formatCurrency(
-                c("CM", "Valor a mes"),
-                dec.mark = ",",
-                mark = ".",
-                currency = "$",
-                digits = 0
-              ) %>%
-              formatPercentage(
-                c("Participacion"),
-                dec.mark = ",",
-                mark = "."
-              )
-          }
-        }
-      )
+        datatable(
+          data = nota_tecnica$nota_tecnica %>%
+            parse_nt() %>%
+            select(-nt),
+          rownames = FALSE,
+          extensions = c("FixedColumns"),
+          options = list(
+            ordering = T,
+            scrollY = "300px",
+            fixedColumns = list(leftColumnas = 1),
+            scrollX = TRUE,
+            scrollCollapse = TRUE,
+            pageLength = 1000,
+            dom = "ft"
+          )
+        ) %>%
+          formatCurrency(
+            c("cm", "valor_mes"),
+            dec.mark = ",",
+            mark = ".",
+            currency = "$",
+            digits = 0
+          )
+      }) %>%
+      bindEvent(nota_tecnica$nota_tecnica)
 
       output$nota_tecnica_suma <- renderValueBox({
         if (opciones$datos_cargados) {
@@ -318,42 +489,6 @@ nota_tecnica_server <- function(id, opciones) {
             value = 0,
             color = "yellow",
             icon = icon("percent", "font-awesome")
-          )
-        }
-      })
-
-      output$nota_tecnica_warnings <- renderValueBox({
-        if (nrow(nota_tecnica$tabla_junta >= 1) &&
-            all(c(nota_tecnica$cols, nota_tecnica$cols_sep) %in%
-                names(nota_tecnica$tabla_junta))) {
-
-          repetidos <-sum(duplicated(nota_tecnica$tabla_junta[
-            , c(nota_tecnica$cols, nota_tecnica$cols_sep),
-            with = FALSE]))
-
-          if (repetidos == 0) {
-            valueBox(
-              subtitle = "Correcto",
-              value = "Estado.",
-              color = "green",
-              icon = icon("thumbs-up", "font-awesome")
-            )
-          } else {
-            valueBox(
-              value = "¡Advertencia!",
-              subtitle = paste0(
-                "Tienes ", repetidos, " agrupadores duplicados."
-              ),
-              color = "red",
-              icon = icon("exclamation-circle", "font-awesome")
-            )
-          }
-        } else {
-          valueBox(
-            subtitle = "Correcto",
-            value = "Estado.",
-            color = "green",
-            icon = icon("thumbs-up", "font-awesome")
           )
         }
       })
@@ -445,70 +580,5 @@ formato_escenarios <- function(x) {
                      'rgb(255, 218, 84)')
         )
       )
-  )
-}
-
-nota_tecnica_cajas_jerarquia <- function(
-  ns,
-  items_nivel_1 = NULL,
-  items_nivel_2 = NULL,
-  items_nivel_3 = NULL,
-  items_nivel_4 = NULL) {
-  return(
-    tags$div(
-      class = "nota_tecnica_jerarquia_row",
-      box(
-        width = 3,
-        orderInput(
-          inputId = ns("nota_tecnica_jerarquia_nivel_1"),
-          label = actionLink(ns("seleccionar_episodio"), label = "Episodio"),
-          items = items_nivel_1,
-          width = "100%",
-          height = "100%",
-          connect = c(
-            ns("nota_tecnica_jerarquia_nivel_2"),
-            ns("nota_tecnica_jerarquia_nivel_3"),
-            ns("nota_tecnica_jerarquia_nivel_4")))
-      ),
-      box(
-        width = 3,
-        orderInput(
-          inputId = ns("nota_tecnica_jerarquia_nivel_2"),
-          label = actionLink(ns("seleccionar_factura"), label = "Factura"),
-          items = items_nivel_2,
-          width = "100%",
-          height = "100%",
-          connect = c(
-            ns("nota_tecnica_jerarquia_nivel_1"),
-            ns("nota_tecnica_jerarquia_nivel_3"),
-            ns("nota_tecnica_jerarquia_nivel_4")))
-      ),
-      box(
-        width = 3,
-        orderInput(
-          inputId = ns("nota_tecnica_jerarquia_nivel_3"),
-          label = actionLink(ns("seleccionar_paciente"), label = "Paciente"),
-          items = items_nivel_3,
-          width = "100%",
-          height = "100%",
-          connect = c(
-            ns("nota_tecnica_jerarquia_nivel_1"),
-            ns("nota_tecnica_jerarquia_nivel_2"),
-            ns("nota_tecnica_jerarquia_nivel_4")))
-      ),
-      box(
-        width = 3,
-        orderInput(
-          inputId = ns("nota_tecnica_jerarquia_nivel_4"),
-          label = actionLink(ns("seleccionar_prestacion"), label = "Prestación"),
-          items = items_nivel_4,
-          width = "100%",
-          height = "100%",
-          connect = c(
-            ns("nota_tecnica_jerarquia_nivel_1"),
-            ns("nota_tecnica_jerarquia_nivel_2"),
-            ns("nota_tecnica_jerarquia_nivel_3")))
-      )
-    )
   )
 }

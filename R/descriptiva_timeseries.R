@@ -9,7 +9,7 @@ descriptiva_timeseries <- function(
   unidades_conteo <- data %>%
     group_by(!!!rlang::syms(agrupador)) %>%
     summarise(unidad_conteo = first(unidad_conteo))
-  
+
   data <- data %>%
     mutate(mes_anio_num = ais_anio * 100 + ais_mes) %>%
     select(-unidad_conteo)
@@ -25,7 +25,7 @@ descriptiva_timeseries <- function(
       mes_min = min(ais_mes),
       mes_max = max(ais_mes)
     )
-  
+
   meses_completos <- tibble(
     anio = sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12)),
     meses = rep(1:12, meses_limites$anio_max - meses_limites$anio_min + 1)) %>%
@@ -34,18 +34,16 @@ descriptiva_timeseries <- function(
       mes_anio_num <= meses_limites$max) %>%
     select(mes_anio_num) %>%
     mutate(placeholder_key = "key")
-  
+
   data_to_join <- data %>%
     group_by(!!!rlang::syms(agrupador)) %>%
     summarise(placeholder_key = "key") %>%
     ungroup()
-  
+
   meses_completos <- data_to_join %>%
     full_join(meses_completos, copy = TRUE) %>%
     select(-placeholder_key)
-  
-  print(meses_completos)
-  
+
   data <- data %>%
     group_by(!!!rlang::syms(agrupador), mes_anio_num) %>%
     full_join(meses_completos, copy = TRUE) %>%
@@ -62,7 +60,7 @@ descriptiva_timeseries <- function(
     left_join(unidades_conteo) %>%
     relocate(unidad_conteo) %>%
     collect()
-  
+
   return(data)
-      
+
 }
