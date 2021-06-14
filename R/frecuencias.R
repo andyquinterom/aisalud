@@ -47,11 +47,21 @@ frecuencias <- function(
   meses_completos <- tibble(
     anio = sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12)),
     meses = rep(1:12, meses_limites$anio_max - meses_limites$anio_min + 1)) %>%
-  mutate(mes_anio_num = anio * 100 + meses) %>%
-  filter(mes_anio_num >= meses_limites$min &
-    mes_anio_num <= meses_limites$max) %>%
-  select(mes_anio_num)
-
+    mutate(mes_anio_num = anio * 100 + meses) %>%
+    filter(mes_anio_num >= meses_limites$min &
+      mes_anio_num <= meses_limites$max) %>%
+    select(mes_anio_num) %>%
+    mutate(placeholder_key = "key")
+  
+  data_to_join <- data %>%
+    group_by(!!!rlang::syms(agrupador)) %>%
+    summarise(placeholder_key = "key") %>%
+    ungroup()
+  
+  meses_completos <- data_to_join %>%
+    full_join(meses_completos, copy = TRUE) %>%
+    select(-placeholder_key)
+  
   data <- data %>%
     group_by(!!!rlang::syms(agrupador), mes_anio_num) %>%
     summarise(Frecuencia = ifelse(
@@ -69,10 +79,7 @@ frecuencias <- function(
   data <- data %>%
     pivot_wider(
       names_from = mes_anio_num,
-      values_from = Frecuencia) %>%
-    mutate(across(
-        .cols = -seq_len(length(agrupador)),
-        .fns = function(x) case_when(is.na(x) ~ 0, TRUE ~ x)))
+      values_from = Frecuencia)
 
   if (intervalo == "mes") {
     data <- data %>%

@@ -277,6 +277,7 @@ filtro_discreto_ui_fila <- function(ns, position = 1) {
         inputId = ns(paste("filtro_char_incluir", position, sep = "_")),
         onLabel = "Incluir",
         offLabel = "Excluir",
+        width = "100%",
         value = TRUE
       )
     ),

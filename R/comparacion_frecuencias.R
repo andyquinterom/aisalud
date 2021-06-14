@@ -116,7 +116,7 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
       backgroundColor = "white") %>%
     formatCurrency(
       table = .,
-      columns = 2:ncol(ejecucion_base_por_cm),
+      columns = 3:ncol(ejecucion_base_por_cm),
       dec.mark = ",", mark = ".", digits = 0)
 
   valor_acumulado <- valor_acumulado %>%

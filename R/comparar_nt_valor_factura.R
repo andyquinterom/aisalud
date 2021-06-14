@@ -4,9 +4,10 @@ comparar_nt_valor_factura <- function(
   descriptiva_tabla %>%
     select(unidad_conteo, !!!rlang::syms(c(agrupador, col_anio, col_mes)),
       Suma) %>%
+    descriptiva_timeseries(agrupador = agrupador, col_anio, col_mes) %>%
     rename(agrupador = !!as.name(agrupador)) %>%
-    arrange(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
-    mutate(ais_mes_nombre = mes_spanish(!!!rlang::syms(col_mes))) %>%
+    arrange(ais_anio, ais_mes) %>%
+    mutate(ais_mes_nombre = mes_spanish(ais_mes)) %>%
     pivot_wider(
       id_cols = c(unidad_conteo, agrupador),
       names_from = c(ais_anio, ais_mes_nombre),
