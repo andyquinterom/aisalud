@@ -57,11 +57,16 @@ nota_tecnica_ui <- function(id) {
       box(
         width = 4,
         tags$div(
-          style = "height: 600px;",
+          style = "height: 590px;",
+          checkboxInput(
+            inputId = ns("seguimiento_plot_frec"),
+            label = "Gráfico de frecuencias",
+            value = FALSE
+          ),
           plotlyOutput(
             outputId = ns("seguimiento_plot"),
             width = "100%",
-            height = "600px"
+            height = "540px"
           )
         )
       ),
@@ -309,6 +314,8 @@ nota_tecnica_server <- function(id, opciones) {
         })
       })
 
+      # Si la descriptiva fue generada de manera satisfactoria, se genera
+      # una nota técnica con el estadandar básico de AIS
       observe({
         if (nrow(episodios$descriptiva) > 0) {
           nota_tecnica$timeseries <- episodios$descriptiva %>%
@@ -336,11 +343,15 @@ nota_tecnica_server <- function(id, opciones) {
       }) %>%
         bindEvent(episodios$descriptiva)
 
+      # Cada vez que se haga un cambio a la nota técnica esta sera parsed a un
+      # data.frame
       observe({
         nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
           parse_nt()
       })
 
+      # Se hace la misma comparación de seguimiento entre los datos
+      # y la nota técnica en desarrollo
       observe({
         if (nrow(episodios$descriptiva) > 0) {
           nota_tecnica$comparar_valor <- comparacion_valor_facturado(
@@ -350,8 +361,10 @@ nota_tecnica_server <- function(id, opciones) {
           )
         }
       }) %>%
-      bindEvent(nota_tecnica$nota_tecnica)
+        bindEvent(nota_tecnica$nota_tecnica)
 
+      # Se crea un subset de la serie de tiempo generada por los datos
+      # para el agrupador seleccionado
       observe({
         conf_agrupador <- input$conf_agrupador
         if (nrow(nota_tecnica$timeseries) > 0 && !is.null(conf_agrupador)) {
@@ -361,18 +374,22 @@ nota_tecnica_server <- function(id, opciones) {
             nota_tecnica$nota_tecnica$nota_tecnica$agrupadores
         }
       }) %>%
-      bindEvent(input$conf_agrupador, nota_tecnica$timeseries)
+        bindEvent(input$conf_agrupador, nota_tecnica$timeseries)
 
+      # Cuando se hagan cambios a los costos medios o frecuencias de los
+      # agrupadores se actualiza la nota técnica
       observe({
         nota_tecnica$nota_tecnica$nota_tecnica$agrupadores <-
           nota_tecnica$agrupadores_temp
       }) %>%
-      bindEvent(nota_tecnica$agrupadores_temp)
+        bindEvent(nota_tecnica$agrupadores_temp)
 
+      # Se renderiza plot de la comparación con valor facturado
       output$seguimiento_plot <- renderPlotly({
         nota_tecnica$comparar_valor$ui$plot_valor_acumulado
       })
 
+      # Plot de los costos medios es generado
       output$costo_medio_plot <- renderPlotly({
         percentil_selected <- nota_tecnica$agrupadores_temp[[
           input$conf_agrupador]][["percentil"]]
@@ -412,8 +429,11 @@ nota_tecnica_server <- function(id, opciones) {
             line = list(color = "rgb(205, 12, 24)", dash = "dash")
           )
       }) %>%
-      bindEvent(nota_tecnica$timeseries_selected)
+        bindEvent(nota_tecnica$timeseries_selected)
 
+      # Se observa que el usuario o la maquina cambie el sliderInput
+      # y reacciona cambiando las variables en la nota técnica y utilizando
+      # el proxy de plotly para actualizar el gráfico.
       observe({
         nota_tecnica$agrupadores_temp[[
             input$conf_agrupador]][["percentil"]] <-
@@ -425,6 +445,7 @@ nota_tecnica_server <- function(id, opciones) {
         nota_tecnica$agrupadores_temp[[
             input$conf_agrupador]][["cm"]] <- quantile_value[1]
         plotlyProxy("costo_medio_plot", session) %>%
+          # Quite el trace numero 4
           plotlyProxyInvoke("deleteTraces", list(as.integer(4))) %>%
           plotlyProxyInvoke("addTraces", list(list(
             y = quantile_value,
@@ -434,8 +455,9 @@ nota_tecnica_server <- function(id, opciones) {
             line = list(color = "rgb(205, 12, 24)", dash = "dash"),
             name = "Ajuste usuario")))
       }) %>%
-      bindEvent(input$costo_medio_ajuste)
+        bindEvent(input$costo_medio_ajuste)
 
+      # Se muestra la nota técnica
       output$nota_tecnica_junta <- DT::renderDataTable({
         datatable(
           data = nota_tecnica$parsed %>%
@@ -460,8 +482,9 @@ nota_tecnica_server <- function(id, opciones) {
             digits = 0
           )
       }) %>%
-      bindEvent(nota_tecnica$nota_tecnica)
+        bindEvent(nota_tecnica$nota_tecnica)
 
+      # Se suman los valores a mes de la nota técnica
       output$nota_tecnica_suma <- renderValueBox({
         if (opciones$datos_cargados) {
           valueBox(
@@ -514,92 +537,6 @@ nota_tecnica_server <- function(id, opciones) {
         }
       })
 
-      output$nota_tecnica_descargar_xlsx <- downloadHandler(
-        filename = function() {
-          paste("Nota técnica",
-                ".xlsx", sep="")
-        },
-        content = function(file) {
-          write_xlsx(
-            x = append(
-              list("Nota tecnica" = nota_tecnica$tabla_junta[, -c("Coe")]),
-              nota_tecnica$descriptiva_escenarios
-            ),
-            path = file)
-        },
-        contentType = "xlsx"
-      )
-
-      output$nota_tecnica_descargar_csv <- downloadHandler(
-        filename = function() {
-          paste("Nota técnica",
-                ".csv", sep="")
-        },
-        content = function(file) {
-          write_csv(
-            x = rbindlist(nota_tecnica$descriptiva_escenarios, idcol = TRUE),
-            file = file)
-        },
-        contentType = "text/csv"
-      )
-
     }
-  )
-}
-
-clean_datatable <- function(data, length = 1000, columnDefs = NULL) {
-  return(
-    datatable(
-      data = data,
-      colnames = c(
-        "Valor" = 'Valor a mes'
-      ),
-      class = "display nowrap",
-      rownames = FALSE,
-      options = list(
-        ordering = F,
-        scrollX = TRUE,
-        pageLength = length,
-        dom = "t",
-        columnDefs = columnDefs
-      )
-    )
-  )
-}
-
-formato_escenarios <- function(x) {
-  brks <- c(1:3)
-  clrs <- round(seq(255, 90, length.out = 4), 0) %>%
-    {paste0("rgb(255,", ., ",", ., ")")}
-  return(
-    x %>%
-      formatCurrency(
-        c("CM", "Valor"),
-        dec.mark = ",",
-        mark = ".",
-        currency = "$",
-        digits = 0
-      ) %>%
-      formatStyle(
-        columns = 1:ncol(x[["x"]][["data"]]),
-        fontSize = '95%',
-        "white-space"="nowrap"
-      ) %>%
-      formatStyle(
-        "Coe",
-        target = "row",
-        backgroundColor = styleInterval(
-          cuts = brks, values = clrs
-        )
-      ) %>%
-      formatStyle(
-        "Frecuencia a mes",
-        target = "row",
-        backgroundColor = styleEqual(
-          levels = c(0, 1),
-          values = c('rgb(255, 218, 84)',
-                     'rgb(255, 218, 84)')
-        )
-      )
   )
 }
