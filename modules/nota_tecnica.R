@@ -40,7 +40,7 @@ nota_tecnica_ui <- function(id) {
           style = "width:100%;")
       ),
       box(
-        width = 4,
+        width = 8,
         tags$div(
           style = "height: 600px;",
           valueBoxOutput(
@@ -51,7 +51,9 @@ nota_tecnica_ui <- function(id) {
             width = 6),
           DT::dataTableOutput(ns("nota_tecnica_junta"))
         )
-      ),
+      )
+    ),
+    fluidRow(
       box(
         width = 4,
         tags$div(
@@ -59,42 +61,39 @@ nota_tecnica_ui <- function(id) {
           plotlyOutput(
             outputId = ns("seguimiento_plot"),
             width = "100%",
-            height = "550px"
+            height = "600px"
           )
         )
       ),
       box(
-        width = 3,
-        selectizeInput(
-          inputId = ns("conf_agrupador"),
-          label = "Agrupador",
-          choices = NULL
-        )
-      ),
-      box(
-        width = 9,
-        tabsetPanel(
-          tabPanel(
-            title = "Costos medios",
-            sliderInput(
-              inputId = ns("costo_medio_ajuste"),
-              label = "Percentil del costo medio:",
-              min = 0,
-              max = 100,
-              value = 50
-            ),
-            plotlyOutput(
-              outputId = ns("costo_medio_plot"),
-              height = "550px",
-              width = "100%"
-            )
-          ),
-          tabPanel(
-            title = "Frecuencias"
-          )
-        ) %>%
+        width = 8,
         tags$div(
-          style = "min-height: 600px;"
+          style = "height: 600px",
+          selectizeInput(
+            inputId = ns("conf_agrupador"),
+            label = "Agrupador",
+            choices = NULL
+          ),
+          tabsetPanel(
+            tabPanel(
+              title = "Costos medios",
+              sliderInput(
+                inputId = ns("costo_medio_ajuste"),
+                label = "Percentil del costo medio:",
+                min = 0,
+                max = 100,
+                value = 50
+              ),
+              plotlyOutput(
+                outputId = ns("costo_medio_plot"),
+                height = "370px",
+                width = "100%"
+              )
+            ),
+            tabPanel(
+              title = "Frecuencias"
+            )
+          )
         )
       )
     )
@@ -338,11 +337,15 @@ nota_tecnica_server <- function(id, opciones) {
         bindEvent(episodios$descriptiva)
 
       observe({
+        nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
+          parse_nt()
+      })
+
+      observe({
         if (nrow(episodios$descriptiva) > 0) {
           nota_tecnica$comparar_valor <- comparacion_valor_facturado(
             descriptiva_tabla = episodios$descriptiva,
-            nota_tecnica = nota_tecnica$nota_tecnica %>%
-              parse_nt(),
+            nota_tecnica = nota_tecnica$parsed,
             agrupador = episodios$agrupador
           )
         }
@@ -354,15 +357,30 @@ nota_tecnica_server <- function(id, opciones) {
         if (nrow(nota_tecnica$timeseries) > 0 && !is.null(conf_agrupador)) {
           nota_tecnica$timeseries_selected <- nota_tecnica$timeseries %>%
             filter(!!rlang::sym(episodios$agrupador) == conf_agrupador)
+          nota_tecnica$agrupadores_temp <-
+            nota_tecnica$nota_tecnica$nota_tecnica$agrupadores
         }
       }) %>%
       bindEvent(input$conf_agrupador, nota_tecnica$timeseries)
+
+      observe({
+        nota_tecnica$nota_tecnica$nota_tecnica$agrupadores <-
+          nota_tecnica$agrupadores_temp
+      }) %>%
+      bindEvent(nota_tecnica$agrupadores_temp)
 
       output$seguimiento_plot <- renderPlotly({
         nota_tecnica$comparar_valor$ui$plot_valor_acumulado
       })
 
       output$costo_medio_plot <- renderPlotly({
+        percentil_selected <- nota_tecnica$agrupadores_temp[[
+          input$conf_agrupador]][["percentil"]]
+        if (is.null(percentil_selected)) percentil_selected <- 0.5
+        updateSliderInput(
+          inputId = "costo_medio_ajuste",
+          value = percentil_selected * 100
+        )
         nota_tecnica$timeseries_selected %>%
           ungroup() %>%
           plot_ly(
@@ -385,14 +403,27 @@ nota_tecnica_server <- function(id, opciones) {
             y = quantile(nota_tecnica$timeseries_selected$Media, 0.75),
             name = "Percentil 75",
             mode = "lines"
+          ) %>%
+          add_trace(
+            y = quantile(nota_tecnica$timeseries_selected$Media,
+              percentil_selected),
+            name = "Ajuste usuario",
+            mode = "lines",
+            line = list(color = "rgb(205, 12, 24)", dash = "dash")
           )
-      })
+      }) %>%
+      bindEvent(nota_tecnica$timeseries_selected)
 
       observe({
+        nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["percentil"]] <-
+              input$costo_medio_ajuste / 100
         quantile_value <- quantile(nota_tecnica$timeseries_selected$Media,
-              input$costo_medio_ajuste / 100) %>%
+          input$costo_medio_ajuste / 100) %>%
           as.numeric() %>%
           rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
+        nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["cm"]] <- quantile_value[1]
         plotlyProxy("costo_medio_plot", session) %>%
           plotlyProxyInvoke("deleteTraces", list(as.integer(4))) %>%
           plotlyProxyInvoke("addTraces", list(list(
@@ -407,14 +438,13 @@ nota_tecnica_server <- function(id, opciones) {
 
       output$nota_tecnica_junta <- DT::renderDataTable({
         datatable(
-          data = nota_tecnica$nota_tecnica %>%
-            parse_nt() %>%
+          data = nota_tecnica$parsed %>%
             select(-nt),
           rownames = FALSE,
           extensions = c("FixedColumns"),
           options = list(
             ordering = T,
-            scrollY = "300px",
+            scrollY = "370px",
             fixedColumns = list(leftColumnas = 1),
             scrollX = TRUE,
             scrollCollapse = TRUE,
@@ -437,9 +467,9 @@ nota_tecnica_server <- function(id, opciones) {
           valueBox(
             subtitle = "Valor total a mes.",
             value = {
-              if (nrow(nota_tecnica$tabla_junta) >= 1) {
+              if (nrow(nota_tecnica$parsed) >= 1) {
                 formatAsCurrency(
-                  sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE)
+                  sum(nota_tecnica$parsed$valor_mes, na.rm = TRUE)
                 )
               } else {
                 0
@@ -460,21 +490,12 @@ nota_tecnica_server <- function(id, opciones) {
 
       output$nota_tecnica_porcentaje <- renderValueBox({
         if (opciones$datos_cargados) {
-          nota_tecnica$valor_total <- opciones$tabla %>%
-            transmute(suma_valores = sum(!!as.name(opciones$valor_costo),
-                                         na.rm = TRUE)) %>%
-            distinct() %>%
-            collect() %>%
-            unlist() %>%
-            as.numeric()
           valueBox(
             subtitle = "Porcentaje del valor de los datos.",
             value = {
               if (nrow(nota_tecnica$tabla_junta) >= 1) {
                 formatAsPerc(
-                  100 * sum(nota_tecnica$tabla_junta[["Valor a mes"]], na.rm = TRUE) /
-                    (nota_tecnica$valor_total /
-                       input$nota_tecnica_meses)
+                  0
                 )
               } else {
                 0

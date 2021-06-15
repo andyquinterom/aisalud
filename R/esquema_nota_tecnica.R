@@ -15,7 +15,7 @@ esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL) {
       pull(cm)
     frec_m <- filtrado %>%
       pull(frec_m)
-    return(list(cm = cm, n = frec_m))
+    return(list(cm = cm, n = frec_m, percentil = 0.5))
   })
 
   return(
