@@ -114,6 +114,7 @@ nota_tecnica_server <- function(id, opciones) {
 
       episodios <- reactiveValues(
         descriptiva = data.table(),
+        frecuencias = data.table(),
         tabla = list(descriptiva = data.table(), data = data.table()),
         agrupadores_items = NULL)
 
@@ -350,19 +351,6 @@ nota_tecnica_server <- function(id, opciones) {
           parse_nt()
       })
 
-      # Se hace la misma comparación de seguimiento entre los datos
-      # y la nota técnica en desarrollo
-      observe({
-        if (nrow(episodios$descriptiva) > 0) {
-          nota_tecnica$comparar_valor <- comparacion_valor_facturado(
-            descriptiva_tabla = episodios$descriptiva,
-            nota_tecnica = nota_tecnica$parsed,
-            agrupador = episodios$agrupador
-          )
-        }
-      }) %>%
-        bindEvent(nota_tecnica$nota_tecnica)
-
       # Se crea un subset de la serie de tiempo generada por los datos
       # para el agrupador seleccionado
       observe({
@@ -386,8 +374,27 @@ nota_tecnica_server <- function(id, opciones) {
 
       # Se renderiza plot de la comparación con valor facturado
       output$seguimiento_plot <- renderPlotly({
-        nota_tecnica$comparar_valor$ui$plot_valor_acumulado
-      })
+        # Se hacen las mismas comparaciones de seguimiento entre los datos
+        # del usuario y la nota técnica que se esta desarrollando.
+        if (!input$seguimiento_plot_frec) {
+          if (nrow(episodios$descriptiva) > 0) {
+            comparacion_valor_facturado(
+              descriptiva_tabla = episodios$descriptiva,
+              nota_tecnica = nota_tecnica$parsed,
+              agrupador = episodios$agrupador
+            )[["ui"]][["plot_valor_acumulado"]]
+          }
+        } else {
+          if (nrow(episodios$frecuencias) > 0) {
+            comparacion_frecuencias(
+              frecuencias_tabla = episodios$frecuencias,
+              nota_tecnica = nota_tecnica$parsed,
+              agrupador = episodios$agrupador
+            )[["ui"]][["plot_valor_acumulado"]]
+          }
+        }
+      }) %>%
+        bindEvent(nota_tecnica$nota_tecnica, input$seguimiento_plot_frec)
 
       # Plot de los costos medios es generado
       output$costo_medio_plot <- renderPlotly({
