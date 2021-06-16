@@ -3,7 +3,9 @@ esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL) {
     group_by(!!!rlang::syms(agrupador)) %>%
     summarise(
       cm = quantile(Media, 0.5, na.rm = TRUE),
-      frec_m = mean(Frecuencia, 0.5, na.rm = TRUE)
+      frec_m = mean(Frecuencia, na.rm = TRUE),
+      n_minimo = min(Frecuencia, na.rm = TRUE),
+      n_maximo = max(Frecuencia, na.rm = TRUE)
     )
 
   agrupadores <- resumen_inicial[[agrupador]]
@@ -15,7 +17,19 @@ esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL) {
       pull(cm)
     frec_m <- filtrado %>%
       pull(frec_m)
-    return(list(cm = cm, n = frec_m, percentil = 0.5))
+    frec_m_min <- filtrado %>%
+      pull(n_minimo)
+    frec_m_max <- filtrado %>%
+      pull(n_maximo)
+    return(
+      list(
+        cm = cm,
+        n = frec_m,
+        percentil = 0.5,
+        n_max = frec_m_max,
+        n_min = frec_m_min
+      )
+    )
   })
 
   return(

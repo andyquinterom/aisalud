@@ -63,10 +63,18 @@ nota_tecnica_ui <- function(id) {
             label = "Gráfico de frecuencias",
             value = FALSE
           ),
+          sliderInput(
+            inputId = ns("seguimiento_fechas"),
+            label = NULL,
+            min = ymd("2020-01-01"),
+            max = ymd("2020-01-01"),
+            value = ymd(rep("2020-01-01", 2)),
+            timeFormat = "%Y-%m"
+          ),
           plotlyOutput(
             outputId = ns("seguimiento_plot"),
             width = "100%",
-            height = "540px"
+            height = "440px"
           )
         )
       ),
@@ -96,7 +104,19 @@ nota_tecnica_ui <- function(id) {
               )
             ),
             tabPanel(
-              title = "Frecuencias"
+              title = "Frecuencias",
+              sliderInput(
+                inputId = ns("frecuencias_ajuste"),
+                label = "Frecuencia",
+                min = 1,
+                max = 1,
+                value = 1
+              ),
+              plotlyOutput(
+                outputId = ns("frecuencias_plot"),
+                height = "370px",
+                width = "100%"
+              )
             )
           )
         )
@@ -233,6 +253,8 @@ nota_tecnica_server <- function(id, opciones) {
                   opciones$cache[[cache_id]] <- episodios$descriptiva
               }
             }
+            episodios$descriptiva <- episodios$descriptiva %>%
+              mutate(mes_anio_num = ais_anio * 100 + ais_mes)
           }
         })
       })
@@ -323,15 +345,28 @@ nota_tecnica_server <- function(id, opciones) {
             descriptiva_timeseries(agrupador = episodios$agrupador) %>%
             mutate(
               mes_anio = mes_spanish_juntos(mes_anio_num),
+              # Un truquito para sacar el dia final de los meses
               mes_anio_date = do.call(purrr::map(
                 .x = as.Date(paste(ais_anio, ais_mes, "01", sep = "-")),
                 .f = function(x) last(seq(x, length = 2, by = "months") - 1)),
                 what = "c")) %>%
             arrange(mes_anio_date)
-            nota_tecnica$agrupadores <- nota_tecnica$timeseries %>%
-              pull(!!rlang::sym(episodios$agrupador)) %>%
-              unique()
-            updateSelectizeInput(
+          nota_tecnica$agrupadores <- nota_tecnica$timeseries %>%
+            pull(!!rlang::sym(episodios$agrupador)) %>%
+            unique()
+          mes_anio_date_list <- c(
+            min(nota_tecnica$timeseries$mes_anio_date),
+            max(nota_tecnica$timeseries$mes_anio_date)
+          )
+          updateSliderInput(
+            inputId = "seguimiento_fechas",
+            session = session,
+            min = mes_anio_date_list[1],
+            max = mes_anio_date_list[2],
+            value = mes_anio_date_list,
+            timeFormat = "%Y-%m"
+          )
+          updateSelectizeInput(
             inputId = "conf_agrupador",
             choices = nota_tecnica$agrupadores
           )
@@ -362,7 +397,10 @@ nota_tecnica_server <- function(id, opciones) {
             nota_tecnica$nota_tecnica$nota_tecnica$agrupadores
         }
       }) %>%
-        bindEvent(input$conf_agrupador, nota_tecnica$timeseries)
+        bindEvent(
+          input$frecuencias_ajuste_int,
+          input$conf_agrupador,
+          nota_tecnica$timeseries)
 
       # Cuando se hagan cambios a los costos medios o frecuencias de los
       # agrupadores se actualiza la nota técnica
@@ -372,29 +410,51 @@ nota_tecnica_server <- function(id, opciones) {
       }) %>%
         bindEvent(nota_tecnica$agrupadores_temp)
 
+
+      observe({
+        nota_tecnica$seguimiento_fechas <- year(input$seguimiento_fechas) *
+          100 + month(input$seguimiento_fechas)
+      })
+
       # Se renderiza plot de la comparación con valor facturado
       output$seguimiento_plot <- renderPlotly({
-        # Se hacen las mismas comparaciones de seguimiento entre los datos
-        # del usuario y la nota técnica que se esta desarrollando.
-        if (!input$seguimiento_plot_frec) {
-          if (nrow(episodios$descriptiva) > 0) {
-            comparacion_valor_facturado(
-              descriptiva_tabla = episodios$descriptiva,
-              nota_tecnica = nota_tecnica$parsed,
-              agrupador = episodios$agrupador
-            )[["ui"]][["plot_valor_acumulado"]]
-          }
-        } else {
-          if (nrow(episodios$frecuencias) > 0) {
-            comparacion_frecuencias(
-              frecuencias_tabla = episodios$frecuencias,
-              nota_tecnica = nota_tecnica$parsed,
-              agrupador = episodios$agrupador
-            )[["ui"]][["plot_valor_acumulado"]]
-          }
-        }
+        tryCatch(
+          expr = {
+            # Se hacen las mismas comparaciones de seguimiento entre los datos
+            # del usuario y la nota técnica que se esta desarrollando.
+            if (!input$seguimiento_plot_frec) {
+              if (nrow(episodios$descriptiva) > 0) {
+                comparacion_valor_facturado(
+                  descriptiva_tabla = episodios$descriptiva %>%
+                    filter(mes_anio_num >= nota_tecnica$seguimiento_fechas[1] &
+                      mes_anio_num <= nota_tecnica$seguimiento_fechas[2]),
+                  nota_tecnica = nota_tecnica$parsed,
+                  agrupador = episodios$agrupador
+                )[["ui"]][["plot_valor_acumulado"]]
+              }
+            } else {
+              if (nrow(nota_tecnica$timeseries) > 0) {
+                comparacion_valor_facturado(
+                  descriptiva_tabla = nota_tecnica$timeseries %>%
+                    filter(mes_anio_num >= nota_tecnica$seguimiento_fechas[1] &
+                      mes_anio_num <= nota_tecnica$seguimiento_fechas[2]) %>%
+                    frec_x_cm(
+                      nota_tecnica = nota_tecnica$parsed,
+                      agrupador = episodios$agrupador),
+                  nota_tecnica = nota_tecnica$parsed,
+                  agrupador = episodios$agrupador
+                )[["ui"]][["plot_valor_acumulado"]]
+              }
+            }
+          },
+          error = function(e) {}
+        )
       }) %>%
-        bindEvent(nota_tecnica$nota_tecnica, input$seguimiento_plot_frec)
+        bindEvent(
+          nota_tecnica$nota_tecnica,
+          input$seguimiento_plot_frec,
+          nota_tecnica$seguimiento_fechas
+        )
 
       # Plot de los costos medios es generado
       output$costo_medio_plot <- renderPlotly({
@@ -437,6 +497,67 @@ nota_tecnica_server <- function(id, opciones) {
           )
       }) %>%
         bindEvent(nota_tecnica$timeseries_selected)
+
+      # Plot que muestra las fechas a través del tiempo
+      output$frecuencias_plot <- renderPlotly({
+        if (!is.null(nota_tecnica$agrupadores_temp)) {
+          n_min <- nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["n_min"]]
+          n_max <- nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["n_max"]]
+          n_selected <- nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["n"]]
+          updateSliderInput(
+            inputId = "frecuencias_ajuste",
+            value = n_selected,
+            step = 0.1,
+            min = n_min * 0.8,
+            max = n_max * 1.2
+          )
+          nota_tecnica$timeseries_selected %>%
+            ungroup() %>%
+            plot_ly(
+              x = ~mes_anio_date,
+              y = ~Frecuencia,
+              name = "Costos medios",
+              type = "scatter",
+              mode = "lines+markers") %>%
+            add_trace(
+              y = mean(nota_tecnica$timeseries_selected$Frecuencia),
+              name = "Frecuencia media",
+              mode = "lines") %>%
+            add_trace(
+              y = n_selected,
+              name = "Ajuste usuario",
+              mode = "lines",
+              line = list(color = "rgb(205, 12, 24)", dash = "dash")
+            )
+        }
+      }) %>%
+        bindEvent(
+          nota_tecnica$timeseries_selected
+        )
+
+      # Se observa que el usuario o la maquina cambie el sliderInput
+      # y reacciona cambiando las variables en la nota técnica y utilizando
+      # el proxy de plotly para actualizar el gráfico.
+      observe({
+        nota_tecnica$agrupadores_temp[[
+            input$conf_agrupador]][["n"]] <- input$frecuencias_ajuste
+        n_value <- input$frecuencias_ajuste %>%
+          rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
+        plotlyProxy("frecuencias_plot", session) %>%
+          # Quite el trace numero 4
+          plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>%
+          plotlyProxyInvoke("addTraces", list(list(
+            y = n_value,
+            x = nota_tecnica$timeseries_selected$mes_anio_date,
+            mode = "lines",
+            type = "scatter",
+            line = list(color = "rgb(205, 12, 24)", dash = "dash"),
+            name = "Ajuste usuario")))
+      }) %>%
+        bindEvent(input$frecuencias_ajuste)
 
       # Se observa que el usuario o la maquina cambie el sliderInput
       # y reacciona cambiando las variables en la nota técnica y utilizando
