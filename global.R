@@ -91,10 +91,9 @@ if ("perfiles_usuario" %notin% tabla_perfiles) {
 }
 
 # Si la tabla de notas tecncias no existe se genera.
-
 check_nt_v2 <- "perfiles_notas_tecnicas_v2" %notin% tabla_perfiles
-
-if (check_nt_v2 && "perfiles_notas_tecnicas" %in% tabla_perfiles) {
+notas_tecnicas_v2 <- NULL
+if (check_nt_v2 & ("perfiles_notas_tecnicas" %in% tabla_perfiles)) {
   tryCatch(
     expr = {
       notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%

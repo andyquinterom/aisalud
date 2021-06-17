@@ -606,6 +606,8 @@ cargar_datos_server <- function(id, opciones, conn) {
           tryCatch(
             expr = {
               # Se valida contra un json_schema
+              test_prettify <- input$notas_tecnicas_editor_raw %>%
+                toJSON()
               validado <- json_validate(
                 json = input$notas_tecnicas_editor_edit$raw,
                 schema = "json_schemas/nota_tecnica.json")
@@ -613,7 +615,7 @@ cargar_datos_server <- function(id, opciones, conn) {
               if (validado) {
                 dbWriteTable(
                   conn = conn,
-                  name = "perfiles_notas_tecnicas",
+                  name = "perfiles_notas_tecnicas_v2",
                   notas_tecnicas_nuevo,
                   overwrite = TRUE
                 )
