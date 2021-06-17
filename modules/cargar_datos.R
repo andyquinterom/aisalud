@@ -611,7 +611,7 @@ cargar_datos_server <- function(id, opciones, conn) {
               validado <- json_validate(
                 json = input$notas_tecnicas_editor_edit$raw,
                 schema = "json_schemas/nota_tecnica.json")
-              if (!validado) stop ("El formato es invalido")
+              if (!validado) stop("El formato es invalido")
               if (validado) {
                 dbWriteTable(
                   conn = conn,

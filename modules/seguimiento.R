@@ -66,13 +66,15 @@ seguimiento_server <- function(id, opciones, conn) {
 
       ns <- NS(id)
       episodios <- reactiveValues(
+        nt_current = data.frame(),
         frecuencias = data.frame(),
+        nt_selected = "Ninguno",
         descriptiva = data.frame())
 
       observe({
         updateSelectizeInput(
           inputId = "nota_tecnica",
-          choices = opciones$notas_tecnicas$nt,
+          choices = c("Ninguno", opciones$notas_tecnicas$nt),
           selected = episodios$nt_selected
           )
       }) %>%
@@ -259,29 +261,96 @@ seguimiento_server <- function(id, opciones, conn) {
         })
       })
 
+      observe({
+        if (input$nota_tecnica %notin% c("", "Ninguno")) {
+          nt <- opciones$notas_tecnicas %>%
+            filter(nt == input$nota_tecnica) %>%
+            rename(cod_nt = nt)
+          episodios$nt_current <- nt
+        } else {
+          episodios$nt_current <- data.frame()
+        }
+      }) %>%
+        bindEvent(input$exe)
+
       # Se espera a que se generen las descripciones por frecuencia o valor
       # para empezar a hacer la comparación con la nota técnica
       observe({
-        nt <- opciones$notas_tecnicas %>%
-          filter(nt == input$nota_tecnica) %>%
-          rename(cod_nt = nt)
-        episodios$nt_current <- nt
-        if (nrow(episodios$frecuencias) > 0) {
-          episodios$comparar_frecs <- comparacion_frecuencias(
-            frecuencias_tabla = episodios$frecuencias,
-            nota_tecnica = nt,
-            agrupador = episodios$agrupador
-          )
-        }
-        if (nrow(episodios$descriptiva) > 0) {
-          episodios$comparar_valor <- comparacion_valor_facturado(
-            descriptiva_tabla = episodios$descriptiva,
-            nota_tecnica = nt,
-            agrupador = episodios$agrupador
-          )
+        tryCatch(
+          expr = {
+            if (nrow(episodios$nt_current) > 0) {
+              if (nrow(episodios$frecuencias) > 0) {
+                episodios$comparar_frecs <- comparacion_frecuencias(
+                  frecuencias_tabla = episodios$frecuencias,
+                  nota_tecnica = episodios$nt_current,
+                  agrupador = episodios$agrupador
+                )
+              }
+              if (nrow(episodios$descriptiva) > 0) {
+                episodios$comparar_valor <- comparacion_valor_facturado(
+                  descriptiva_tabla = episodios$descriptiva,
+                  nota_tecnica = episodios$nt_current,
+                  agrupador = episodios$agrupador
+                )
+              }
+            } else {
+              showNotification("Seleccionar una nota técnica")
+            }
+          },
+          error = function(e) {
+            purrr::map(e, message)
+            showNotification(
+              "Error: validar que la nota técnica corresponda a los datos"
+            )
+          }
+        )
+      }) %>%
+      bindEvent(
+        episodios$frecuencias,
+        episodios$descriptiva,
+        episodios$nt_current)
+
+      observe({
+        if (input$nota_tecnica %notin% c("", "Ninguno")) {
+          perfil_nt <-
+            opciones$notas_tecnicas_lista[[input$nota_tecnica]][["perfil"]]
+          if (is.null(perfil_nt)) perfil_nt <- "Ninguno"
+          if (input$episodios &&
+              perfil_nt %in% names(opciones$perfil_lista)) {
+            if (!opciones$perfil_enable) {
+              confirmSweetAlert(
+                session = session,
+                inputId = ns("cambiar_perfil"),
+                title = "Utilizar perfil",
+                text = "Esta nota técnica tiene un perfil asignado.
+                        ¿Desea utilizarlo?",
+                btn_labels = c("Cancelar", "Utilizar")
+              )
+            } else if (opciones$perfil_enable &&
+                       opciones$perfil_selected != perfil_nt) {
+              confirmSweetAlert(
+                session = session,
+                inputId = ns("cambiar_perfil"),
+                title = "Utilizar perfil",
+                text = "Esta nota técnica tiene un perfil asignado diferente al
+                        seleccionado.
+                        ¿Desea cambiarlo?",
+                btn_labels = c("Cancelar", "Carmbiar")
+              )
+            }
+          }
         }
       }) %>%
-      bindEvent(episodios$frecuencias, episodios$descriptiva)
+      bindEvent(input$episodios, input$nota_tecnica)
+
+      observe({
+        if (input$cambiar_perfil) {
+          opciones$perfil_selected <- NULL
+          opciones$perfil_selected <-
+            opciones$notas_tecnicas_lista[[input$nota_tecnica]][["perfil"]]
+        }
+      }) %>%
+      bindEvent(input$cambiar_perfil)
 
       # Se generan los UI elements y outputs de la sección de frecuencias
       observe({

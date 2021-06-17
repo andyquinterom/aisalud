@@ -12,6 +12,8 @@ comparacion_frecuencias <- function(frecuencias_tabla, nota_tecnica,
     agrupador = agrupador
   )
 
+  if (nrow(ejecucion_base) == 0) stop("No se cruzaron datos")
+
   ejecucion_base_dt <- datatable(
     data = ejecucion_base,
     colnames = c(
