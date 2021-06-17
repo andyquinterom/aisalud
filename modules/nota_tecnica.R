@@ -7,19 +7,7 @@ nota_tecnica_ui <- function(id) {
         width = 4,
         agrupadores_widget(
           id = id,
-          separadores = FALSE,
-          numericInput(
-            inputId = ns("nota_tecnica_meses"),
-            label = "Número de meses:",
-            min = 1,
-            value = 12
-          ),
-          numericInput(
-            inputId = ns("nota_tecnica_poblacion"),
-            label = "Población:",
-            min = 1,
-            value = 40000
-          )
+          separadores = FALSE
         ),
         actionButton(
           inputId = ns("exe"),
@@ -28,11 +16,17 @@ nota_tecnica_ui <- function(id) {
         ),
         tags$br(),
         tags$br(),
+        numericInput(
+          inputId = ns("poblacion"),
+          label = "Población:",
+          min = 1,
+          value = 40000
+        ),
+        tags$br(),
         downloadButton(
           outputId = ns("nota_tecnica_descargar_xlsx"),
           label = "Excel",
           style = "width:100%;"),
-        tags$br(),
         tags$br(),
         downloadButton(
           outputId = ns("nota_tecnica_descargar_csv"),
@@ -47,7 +41,7 @@ nota_tecnica_ui <- function(id) {
             outputId = ns("nota_tecnica_suma"),
             width = 6),
           valueBoxOutput(
-            outputId = ns("nota_tecnica_porcentaje"),
+            outputId = ns("nota_tecnica_suma_pc"),
             width = 6),
           DT::dataTableOutput(ns("nota_tecnica_junta"))
         )
@@ -373,7 +367,8 @@ nota_tecnica_server <- function(id, opciones) {
           nota_tecnica$nota_tecnica <- esquema_nota_tecnica(
             timeseries = nota_tecnica$timeseries,
             agrupador = episodios$agrupador,
-            perfil = opciones$perfil_selected
+            perfil = opciones$perfil_selected,
+            poblacion = input$poblacion
           )
         }
       }) %>%
@@ -384,6 +379,13 @@ nota_tecnica_server <- function(id, opciones) {
       observe({
         nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
           parse_nt()
+      })
+
+      observe({
+        if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
+          nota_tecnica$nota_tecnica$nota_tecnica$poblacion <-
+            input$poblacion
+        }
       })
 
       # Se crea un subset de la serie de tiempo generada por los datos
@@ -494,7 +496,14 @@ nota_tecnica_server <- function(id, opciones) {
             name = "Ajuste usuario",
             mode = "lines",
             line = list(color = "rgb(205, 12, 24)", dash = "dash")
-          )
+          ) %>%
+          layout(
+            xaxis = list(title = "Fecha"),
+            yaxis = list(title = "Costo medio",
+                         tickformat = ",.2f")
+          ) %>%
+          config(locale = "es")
+
       }) %>%
         bindEvent(nota_tecnica$timeseries_selected)
 
@@ -531,7 +540,13 @@ nota_tecnica_server <- function(id, opciones) {
               name = "Ajuste usuario",
               mode = "lines",
               line = list(color = "rgb(205, 12, 24)", dash = "dash")
-            )
+            ) %>%
+            layout(
+              xaxis = list(title = "Fecha"),
+              yaxis = list(title = "Frecuencia",
+                           tickformat = ",.2f")
+            ) %>%
+            config(locale = "es")
         }
       }) %>%
         bindEvent(
@@ -542,9 +557,10 @@ nota_tecnica_server <- function(id, opciones) {
       # y reacciona cambiando las variables en la nota técnica y utilizando
       # el proxy de plotly para actualizar el gráfico.
       observe({
+        frecuencias_ajuste <- round(input$frecuencias_ajuste, digits = 3)
         nota_tecnica$agrupadores_temp[[
-            input$conf_agrupador]][["n"]] <- input$frecuencias_ajuste
-        n_value <- input$frecuencias_ajuste %>%
+            input$conf_agrupador]][["n"]] <- frecuencias_ajuste
+        n_value <- frecuencias_ajuste %>%
           rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
         plotlyProxy("frecuencias_plot", session) %>%
           # Quite el trace numero 4
@@ -569,6 +585,7 @@ nota_tecnica_server <- function(id, opciones) {
         quantile_value <- quantile(nota_tecnica$timeseries_selected$Media,
           input$costo_medio_ajuste / 100) %>%
           as.numeric() %>%
+          round(digits = 0) %>%
           rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
         nota_tecnica$agrupadores_temp[[
             input$conf_agrupador]][["cm"]] <- quantile_value[1]
@@ -639,28 +656,29 @@ nota_tecnica_server <- function(id, opciones) {
         }
       })
 
-      output$nota_tecnica_porcentaje <- renderValueBox({
+      output$nota_tecnica_suma_pc <- renderValueBox({
         if (opciones$datos_cargados) {
           valueBox(
-            subtitle = "Porcentaje del valor de los datos.",
+            subtitle = "Valor a mes per capita.",
             value = {
-              if (nrow(nota_tecnica$tabla_junta) >= 1) {
-                formatAsPerc(
-                  0
+              if (nrow(nota_tecnica$parsed) >= 1) {
+                formatAsCurrency(
+                  sum(nota_tecnica$parsed$valor_mes / input$poblacion,
+                  na.rm = TRUE)
                 )
               } else {
                 0
               }
             },
-            color = "yellow",
-            icon = icon("percent", "font-awesome")
+            color = "orange",
+            icon = icon("dollar-sign", "font-awesome")
           )
         } else {
           valueBox(
-            subtitle = "Porcentaje del valor de los datos.",
+            subtitle = "Valor total a mes.",
             value = 0,
-            color = "yellow",
-            icon = icon("percent", "font-awesome")
+            color = "orange",
+            icon = icon("dollar-sign", "font-awesome")
           )
         }
       })

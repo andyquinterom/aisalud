@@ -1,9 +1,11 @@
-esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL) {
+esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL,
+  poblacion = 1) {
+  if (is.null(poblacion) | is.na(poblacion)) poblacion <- 1
   resumen_inicial <- timeseries %>%
     group_by(!!!rlang::syms(agrupador)) %>%
     summarise(
-      cm = quantile(Media, 0.5, na.rm = TRUE),
-      frec_m = mean(Frecuencia, na.rm = TRUE),
+      cm = round(quantile(Media, 0.5, na.rm = TRUE), digits = 0),
+      frec_m = round(mean(Frecuencia, na.rm = TRUE), digits = 3),
       n_minimo = min(Frecuencia, na.rm = TRUE),
       n_maximo = max(Frecuencia, na.rm = TRUE)
     )
@@ -35,7 +37,7 @@ esquema_nota_tecnica <- function(timeseries, agrupador, perfil = NULL) {
   return(
     list(
       nota_tecnica = list(
-        poblacion = 1,
+        poblacion = poblacion,
         agrupadores = agrupadores,
         perfil = perfil
       )
