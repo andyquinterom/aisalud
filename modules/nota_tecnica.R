@@ -26,11 +26,6 @@ nota_tecnica_ui <- function(id) {
         downloadButton(
           outputId = ns("nota_tecnica_descargar_xlsx"),
           label = "Excel",
-          style = "width:100%;"),
-        tags$br(),
-        downloadButton(
-          outputId = ns("nota_tecnica_descargar_csv"),
-          label = "CSV",
           style = "width:100%;")
       ),
       box(
@@ -43,7 +38,18 @@ nota_tecnica_ui <- function(id) {
           valueBoxOutput(
             outputId = ns("nota_tecnica_suma_pc"),
             width = 6),
-          DT::dataTableOutput(ns("nota_tecnica_junta"))
+          tabsetPanel(
+            tabPanel(
+              title = "Tabla",
+              DT::dataTableOutput(ns("nota_tecnica_junta"))
+            ),
+            tabPanel(
+              title = "JSON",
+              shinyAce::aceEditor(
+                ns("nota_tecnica_json")
+              )
+            )
+          )
         )
       )
     ),
@@ -388,6 +394,20 @@ nota_tecnica_server <- function(id, opciones) {
         }
       })
 
+      observe({
+        if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
+          updateAceEditor(
+            session = session,
+            "nota_tecnica_json",
+            value = toJSON(
+              x = purrr::map(nota_tecnica$nota_tecnica, debloat_nt),
+              pretty = TRUE,
+              auto_unbox=TRUE),
+            mode = "json"
+          )
+        }
+      })
+
       # Se crea un subset de la serie de tiempo generada por los datos
       # para el agrupador seleccionado
       observe({
@@ -608,6 +628,13 @@ nota_tecnica_server <- function(id, opciones) {
           data = nota_tecnica$parsed %>%
             select(-nt),
           rownames = FALSE,
+          colnames = c(
+            "Valor a mes" = "valor_mes",
+            "Costo medio" = "cm",
+            "Frecuencia per capita" = "frecuencia_pc",
+            "Agrupador" = "agrupador",
+            "Frecuencia a mes" = "frec_mes"
+          ),
           extensions = c("FixedColumns"),
           options = list(
             ordering = T,
@@ -620,11 +647,17 @@ nota_tecnica_server <- function(id, opciones) {
           )
         ) %>%
           formatCurrency(
-            c("cm", "valor_mes"),
+            c("Costo medio", "Valor a mes"),
             dec.mark = ",",
             mark = ".",
             currency = "$",
             digits = 0
+          ) %>%
+          DT::formatRound(
+            c("Frecuencia per capita", "Frecuencia a mes"),
+            dec.mark = ",",
+            mark = ".",
+            digits = 6
           )
       }) %>%
         bindEvent(nota_tecnica$nota_tecnica)
@@ -682,6 +715,14 @@ nota_tecnica_server <- function(id, opciones) {
           )
         }
       })
+
+      output$nota_tecnica_descargar_xlsx <- downloadHandler(
+        filename = "nota_tecnica.xlsx",
+        content = function(file) {
+          write_xlsx(nota_tecnica$parsed, file)
+        },
+        contentType = "xlsx"
+      )
 
     }
   )
