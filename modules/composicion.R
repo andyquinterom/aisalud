@@ -164,7 +164,8 @@ composicion_server <- function(id, opciones, conn) {
                   columna_valor = opciones$valor_costo,
                   columna_suma = input$episodios_col_rel,
                   columna_explorar = input$composicion_explorar,
-                  prioridad = input$episodios_jerarquia_nivel_1),
+                  prioridad = input$episodios_jerarquia_nivel_1,
+                  frec_cantidad = opciones$cantidad),
                 algo = "xxhash32",
                 seed = 1)
               check_cache <- cache_id %in% names(opciones$cache)
@@ -177,7 +178,8 @@ composicion_server <- function(id, opciones, conn) {
                   columna_valor = opciones$valor_costo,
                   columna_suma = input$episodios_col_rel,
                   columna_explorar = input$composicion_explorar,
-                  prioridad = input$episodios_jerarquia_nivel_1
+                  prioridad = input$episodios_jerarquia_nivel_1,
+                  frec_cantidad = opciones$cantidad
                 ) %>%
                   collect() %>%
                   mutate(participacion_en_episodios =

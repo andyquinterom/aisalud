@@ -1,5 +1,6 @@
 datos_composicion <- function(data, columna_episodios, columna_valor,
-                              columna_suma, columna_explorar, prioridad) {
+                              columna_suma, columna_explorar, prioridad,
+                              frec_cantidad = FALSE) {
 
   index_episodios <- data.frame(
     index = seq_len(length(prioridad)),
@@ -37,8 +38,12 @@ datos_composicion <- function(data, columna_episodios, columna_valor,
 
   datos_explorar <- data %>%
     group_by(!!!rlang::syms(unique(c(columna_suma, columna_explorar)))) %>%
-    summarise(valor_explorar = sum(!!as.name(columna_valor), na.rm = TRUE),
-              registros_explorar = n()) %>%
+    summarise(
+      valor_explorar = sum(!!as.name(columna_valor), na.rm = TRUE),
+      registros_explorar = ifelse(
+        test = frec_cantidad,
+        yes = sum(cantidad, na.rm = TRUE),
+        no = n())) %>%
     right_join(episodios) %>%
     group_by(!!!rlang::syms(unique(c(columna_episodios, columna_explorar)))) %>%
     summarise(incluida_n_episodios = n(),
