@@ -22,7 +22,7 @@ shinyUI(
             status = "info"
           )
         ),
-        controlbarIcon = icon("filter")),
+        controlbarIcon = icon("cogs")),
       sidebar = shinydashboardPlus::dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
