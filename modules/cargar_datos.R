@@ -19,12 +19,6 @@ cargar_datos_ui <- function(id) {
             title = "Nube",
             tags$br(),
             tags$br(),
-            selectizeInput(
-              width = "100%",
-              inputId = ns("tabla"),
-              label = "Seleccionar datos",
-              choices = "Ninguno"
-            ),
             dateRangeInput(
               inputId = ns("fecha_rango"),
               label = "Fechas:",
@@ -32,7 +26,13 @@ cargar_datos_ui <- function(id) {
               max = NULL,
               format = "dd/mm/yyyy",
               language = "es"),
-            tags$style(HTML(".datepicker {z-index:99999 !important;}"))
+            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
+            selectizeInput(
+              width = "100%",
+              inputId = ns("tabla"),
+              label = "Seleccionar datos",
+              choices = "Ninguno"
+            )
           ),
           tabPanel(
             title = "Subir datos",
@@ -41,6 +41,14 @@ cargar_datos_ui <- function(id) {
               label = "",
               buttonLabel = "Subir archivo",
               placeholder = "Ningún archivo"),
+            dateRangeInput(
+              inputId = ns("file_fecha_rango"),
+              label = "Fechas:",
+              min = NULL,
+              max = NULL,
+              format = "dd/mm/yyyy",
+              language = "es"),
+            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
             radioButtons(
               inputId = ns("file_type"),
               label = "Tipo de archivo",
@@ -52,14 +60,6 @@ cargar_datos_ui <- function(id) {
               width = "100%"),
             tags$br(),
             tags$br(),
-            dateRangeInput(
-              inputId = ns("file_fecha_rango"),
-              label = "Fechas:",
-              min = NULL,
-              max = NULL,
-              format = "dd/mm/yyyy",
-              language = "es"),
-            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
             textInput(
               inputId = ns("file_formato_fecha"),
               label = "Formato de Fecha",
