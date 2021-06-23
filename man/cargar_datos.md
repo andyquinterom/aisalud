@@ -122,6 +122,12 @@ ingresará la clave determinada por el administrador de la aplicación.
             "items": {
               "type": "string"
             }
+          },
+          "prestacion": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
