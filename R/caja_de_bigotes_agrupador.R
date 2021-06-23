@@ -1,13 +1,10 @@
 caja_de_bigotes_agrupador <- function(
   data, columnas_sep) {
-  
+  data <- copy(data)
   options(warn = -1)
-  
   box_plot <- plot_ly(type = "box")
-  
-  data[, "upper_fence" := P50 + 1.5*(P75-P25)]
-  data[, "lower_fence" := P50 - 1.5*(P75-P25)]
-  
+  data[, "upper_fence" := P50 + 1.5 * (P75-P25)]
+  data[, "lower_fence" := P50 - 1.5 * (P75-P25)]
   lapply(
     X = 1:nrow(columnas_sep),
     FUN = function(i) {
@@ -26,10 +23,9 @@ caja_de_bigotes_agrupador <- function(
           sd = data_temp[["Desv.tipica"]],
           name = paste(unlist(columnas_sep[i]), collapse = "\n")
           )
-        
+
     }
   )
-  
   return(box_plot %>%
            config(locale = "es") %>%
            layout(yaxis = list(title = "Agrupador"),
@@ -37,8 +33,5 @@ caja_de_bigotes_agrupador <- function(
                                tickformat = ",.2f",
                                type = "linear"),
                   showlegend = FALSE))
-  
   options(warn = 0)
-  
 }
-

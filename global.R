@@ -27,7 +27,6 @@ library(dplyr)
 library(shinycssloaders)
 library(promises)
 library(future)
-library(leaflet)
 library(maps)
 library(htmltools)
 library(sparklyr)
@@ -36,6 +35,8 @@ library(jsonlite)
 library(shinyAce)
 library(listviewer)
 library(jsonvalidate)
+library(mapview)
+library(digest)
 
 # Si el administrador define el maxRequestSize en las variables de ambiente
 # entonces esta se utilizará. De esta manera se puede limitar cuantos
@@ -43,8 +44,8 @@ library(jsonvalidate)
 
 maxRequestSize <- 300 * 1024 ^ 2
 if (Sys.getenv("maxRequestSize") != "") {
-  maxRequestSize <- 
-    as.numeric(as.character(Sys.getenv("maxRequestSize")))*1024^2
+  maxRequestSize <-
+    as.numeric(as.character(Sys.getenv("maxRequestSize"))) * 1024^2
 }
 
 options(shiny.maxRequestSize = maxRequestSize)
@@ -81,23 +82,50 @@ tabla_perfiles <- dbListTables(conn = conn)
 
 if ("perfiles_usuario" %notin% tabla_perfiles) {
   dbWriteTable(
-    conn = conn, 
+    conn = conn,
     name = "perfiles_usuario",
     data.frame(
-      "perfiles" = read_file("json_schemas/perfiles_default.json") 
+      "perfiles" = read_file("json_schemas/perfiles_default.json")
     )
   )
 }
 
 # Si la tabla de notas tecncias no existe se genera.
+check_nt_v2 <- "perfiles_notas_tecnicas_v2" %notin% tabla_perfiles
+notas_tecnicas_v2 <- NULL
+if (check_nt_v2 & ("perfiles_notas_tecnicas" %in% tabla_perfiles)) {
+  tryCatch(
+    expr = {
+      notas_tecnicas_raw <- tbl(conn, "perfiles_notas_tecnicas") %>%
+        pull(notas_tecnicas)
+      notas_tecnicas_lista <- notas_tecnicas_raw %>%
+        parse_json(simplifyVector = TRUE)
+      notas_tecnicas_v2 <- notas_tecnicas_lista %>%
+        parse_nt_v1_v2()
+    },
+    error = function(e) {
+      print(e)
+      notas_tecnicas_v2 <- NULL
+    }
+  )
+}
 
-if ("perfiles_notas_tecnicas" %notin% tabla_perfiles) {
+if (check_nt_v2) {
+  if (is.null(notas_tecnicas_v2)) {
+    notas_tecnicas_v2 <-  read_file(
+      file = "json_schemas/nota_tecnica_default.json")
+  }
   dbWriteTable(
     conn = conn,
-    name = "perfiles_notas_tecnicas",
+    name = "perfiles_notas_tecnicas_v2",
     data.frame(
-      "notas_tecnicas" = read_file("json_schemas/nota_tecnica_defualt.json")
+      "notas_tecnicas" = notas_tecnicas_v2
     )
   )
 }
 
+# Se lee RData de departamentos de colombia
+departamentos <- readRDS("rds/departamentos_simplificado.rds")
+
+# DT Spanish json
+dt_spanish <- "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"

@@ -1,26 +1,25 @@
-
 episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
-                                columna_sep, nivel_1, nivel_2, nivel_3, 
-                                nivel_4, return_list = FALSE, 
+                                columna_sep, nivel_1, nivel_2, nivel_3,
+                                nivel_4, return_list = FALSE,
                                 columna_fecha = NULL, frec_cantidad = FALSE) {
-  
-  # data[, "ASIGNACION_NIVEL" := ""]
-  data <- data %>% mutate(ASIGNACION_NIVEL = "")
-  
+
+  data <- data %>%
+    mutate(ASIGNACION_NIVEL = "")
+
   episodios_nivel_1 <- data.table()
   episodios_nivel_2 <- data.table()
   episodios_nivel_3 <- data.table()
   episodios_nivel_4 <- data.table()
-  
+
   data_episodios <- NULL
   if (!(is.null(nivel_1) || is.na(nivel_1))) {
-    
+
     index_episodios <- data.frame(
       index = 1:length(nivel_1),
       agrupador = nivel_1
     )
     colnames(index_episodios) <- c("index", columnas)
-    
+
     episodios <- data %>%
       select(!!as.name(columna_suma), !!as.name(columnas)) %>%
       filter(!!as.name(columnas) %in% nivel_1) %>%
@@ -31,7 +30,7 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       mutate(!!columnas := first(!!as.name(columnas))) %>%
       ungroup() %>%
       distinct(!!as.name(columna_suma), !!as.name(columnas))
-    
+
     data_episodios <- data %>%
       {if (!is.null(columna_fecha)) {
         group_by(., !!as.name(columna_suma)) %>%
@@ -42,9 +41,10 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       } else {
         group_by(., !!as.name(columna_suma))
       }}
-      
+
     data_episodios <- data_episodios %>%
-      summarise(valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE)) %>%
+      summarise(
+        valor_calculos = sum(!!as.name(columna_valor), na.rm = TRUE)) %>%
       right_join(episodios)
     data_temp <- descriptiva(
       data = data_episodios,
@@ -53,15 +53,15 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       columna_suma = columna_suma,
       prestaciones = FALSE
     )
-    episodios_nivel_1 <- data_temp[["descriptiva"]]
+    episodios_nivel_1 <- data_temp[["descriptiva"]] %>%
+      mutate(unidad_conteo = "Episodio")
     episodios <- episodios %>%
       select(!!as.name(columna_suma))
     data <- data %>%
       anti_join(episodios)
     data_temp <- NULL
-    print("Nivel 1: Completo.")
   }
-  
+
   episodios_nivel_2_data <- NULL
   if (!(is.null(nivel_2) || is.na(nivel_2))) {
     data_temp <- descriptiva(
@@ -76,8 +76,6 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_2_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_2)
     data_temp <- NULL
-    print("Nivel 2: Completo.")
-    
   }
 
   episodios_nivel_3_data <- NULL
@@ -94,13 +92,10 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
     episodios_nivel_3_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_3)
     data_temp <- NULL
-    print("Nivel 3: Completo.")
-    
   }
 
   episodios_nivel_4_data <- NULL
   if (!(is.null(nivel_4) || is.na(nivel_4))) {
-    print("Nivel 4: Generando descriptiva.")
     data_temp <- descriptiva(
       data = data,
       columnas = c(columnas, columna_sep),
@@ -109,24 +104,21 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       prestaciones = TRUE,
       frec_cantidad = frec_cantidad
     )
-    print("Nivel 4: Descriptiva generada.")
     episodios_nivel_4 <- data_temp[["descriptiva"]] %>%
       filter(!!as.name(columnas) %in% nivel_4)
     episodios_nivel_4_data <- data_temp[["data"]] %>%
       filter(!!as.name(columnas) %in% nivel_4)
     data_temp <- NULL
-    print("Nivel 4: Completo.")
-    
   }
-  
+
   return(
     if (return_list) {
       list(
         "descriptiva" = list(
-          "episodio" = episodios_nivel_1,
-          "factura"   = episodios_nivel_2,
-          "paciente"  = episodios_nivel_3,
-          "prestacion"= episodios_nivel_4
+          "episodio"   = episodios_nivel_1,
+          "factura"    = episodios_nivel_2,
+          "paciente"   = episodios_nivel_3,
+          "prestacion" = episodios_nivel_4
         )
       )
     } else {
@@ -146,5 +138,4 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
       )
     }
   )
-  
 }

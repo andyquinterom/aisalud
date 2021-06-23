@@ -1,4 +1,47 @@
+body::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;  
+  border-radius: 10px;
+  background-color: rgba(192,192,192,0.1);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(192,192,192, 1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(192,192,192,0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(0, 148, 217); 
+  border-radius: 10px;
+}
+
+.main-header {
+  position: fixed;
+}
+
+.main-sidebar {
+  position: fixed;
+}
+
+.control-sidebar {
+  position: fixed;
+  padding-top: 0;
+  margin-top: 50px;
+}
+
 .content {
+  padding-top: 60px;
   overflow: hidden !important;
 }
 
@@ -34,13 +77,14 @@ div[class^="tooltip_svg_"] {
 
 html {
   overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 .wrapper {
     background-color: #ecf0f5 !important;
     overflow-y: hidden;
     overflow: hidden;
+    height: 100%;
+    min-height: 100vh;
 }
 
 .btn {

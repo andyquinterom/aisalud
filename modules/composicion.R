@@ -1,35 +1,34 @@
 composicion_ui <- function(id) {
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
         width = 3,
         selectizeInput(
-          inputId = ns("composicion_suma_valor"),
-          label = "Sumar valor por:",
+          inputId = ns("episodios_col_rel"),
+          label = "Relacionar episodios por:",
           choices = NULL,
-          multiple = FALSE, 
+          multiple = FALSE,
           width = "100%"),
         selectizeInput(
-          inputId = ns("composicion_episodios"),
+          inputId = ns("agrupador"),
+          label = "Agrupador:",
+          choices = NULL,
+          multiple = FALSE,
+          width = "100%"),
+        selectizeInput(
+          inputId = ns("episodios_jerarquia_nivel_1"),
           label = "Episodios:",
           choices = NULL,
-          multiple = FALSE, 
-          width = "100%"),
+          multiple = TRUE),
         selectizeInput(
-          inputId = ns("composicion_episodios_agrupadores"),
-          label = "Agrupadores:",
-          choices = NULL,
-          multiple = TRUE, 
-          width = "100%"),
-        selectizeInput(
-          inputId = ns("composicion_grupos"),
+          inputId = ns("composicion_explorar"),
           label = "Columna a explorar:",
           choices = NULL,
           width = "100%"),
         actionButton(
-          inputId = ns("composicion_ejecutar"),
+          inputId = ns("composicion_exe"),
           label = "Ejecutar",
           width = "100%"
         ),
@@ -58,106 +57,167 @@ composicion_server <- function(id, opciones, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       composicion <- reactiveValues(agrupadores = c(), tabla = data.frame())
-      
+      episodios <- reactiveValues()
+
+      # Se actualizan los selectize inputs al observar cambios en las columnas
+      # de la tabla seleccionada
       observeEvent(opciones$colnames, {
         updateSelectizeInput(
           session = session,
-          inputId = "composicion_suma_valor",
-          choices = opciones$colnames,
-          selected = "nro_identificacion")
-        updateSelectizeInput(
-          session = session,
-          inputId = "composicion_episodios",
+          inputId = "agrupador",
           choices = opciones$colnames)
         updateSelectizeInput(
           session = session,
-          inputId = "composicion_grupos",
+          inputId = "episodios_col_rel",
+          selected = "nro_factura",
+          choices = opciones$colnames)
+        updateSelectizeInput(
+          session = session,
+          inputId = "composicion_explorar",
           choices = opciones$colnames)
       })
-      
-      observe({
-        if (input$composicion_episodios != "" &&
-            opciones$datos_cargados &&
-            input$composicion_episodios %in% opciones$colnames &&
-            input$composicion_grupos != "") {
-          if (!identical(composicion$agrupadores,
-                         input$composicion_episodios_agrupadores) ||
-              is.null(composicion$agrupadores)) {
-            updateSelectizeInput(
-              session = session,
-              inputId = "composicion_episodios_agrupadores",
-              server = TRUE,
-              selected = composicion$agrupadores,
-              choices = {
-                opciones$tabla %>%
-                  select(!!as.name(input$composicion_episodios)) %>%
-                  distinct() %>%
-                  pull(!!as.name(input$composicion_episodios))
-              }
-            )
-          }
+
+      # Comodin de compatibilidad con funciones de otros módulos
+      cambio_columnas <- reactive({
+        list(input$agrupador, TRUE)
+      })
+
+      # Cuando haya un cambio a la columna de agrupador se ejecutará
+      # una busqueda en el cache.
+      observeEvent(cambio_columnas(), {
+        cache_id <- digest(
+          object = list("agrup_comp", cambio_columnas(), opciones$tabla_query),
+          algo = "xxhash32",
+          seed = 1)
+        check_cache <- cache_id %in% names(opciones$cache)
+        # Si hay cambios al agrupador o a episodios se ejecutará
+        if (!is.null(opciones$colnames) &&
+            input$agrupador %notin% c("", "Ninguno") &&
+            !check_cache) {
+          tryCatch(
+            expr = {
+              episodios$agrupadores_items <- opciones$tabla %>%
+                select(!!as.name(input$agrupador)) %>%
+                distinct() %>%
+                pull(!!as.name(input$agrupador))
+              opciones$cache[[cache_id]] <- episodios$agrupadores_items
+            },
+            error = function(e) {
+              print(e)
+              sendSweetAlert(
+                session = session,
+                title = "Error",
+                type = "error",
+                text = "Por favor revisar los parametros de carga de datos, columnas, formato de fecha y los datos. Si este problema persiste ponerse en contacto con un administrador."
+              )
+            }
+          )
+        }
+        if (check_cache) {
+          episodios$agrupadores_items <- opciones$cache[[cache_id]]
         }
       })
-      
+
+      # Se actualizan los agrupadores para los episodios
       observe({
-        composicion$agrupadores <- input$composicion_episodios_agrupadores
+        cambio_columnas()
+        if (length(episodios$agrupadores_items) > 0) {
+          # Se decide si utilizar jerarquia con perfil
+          perfil_seleccionado <- NULL
+          # Si el usuario tiene algun perfil seleccionado este se utilizará
+          # cómo pre-selección de los episodios
+          if (opciones$perfil_enable) {
+            perfil_seleccionado <-
+              opciones$perfil_lista[[opciones$perfil_selected]][["jerarquia"]]
+
+          }
+          updateSelectizeInput(
+            inputId = "episodios_jerarquia_nivel_1",
+            choices = episodios$agrupadores_items,
+            selected = perfil_seleccionado[["episodio"]],
+            server = TRUE
+          )
+        }
       })
-      
-      observeEvent(input$composicion_ejecutar, {
+
+      observe({
+        composicion$agrupadores <- input$episodios_jerarquia_nivel_1
+      })
+
+      observeEvent(input$composicion_exe, {
         tryCatch(
           expr = {
-            if (input$composicion_episodios != "" &&
+            # Validaciones para evitar errores
+            if (input$agrupador != "" &&
                 opciones$datos_cargados &&
-                input$composicion_episodios %in% opciones$colnames &&
-                !is.null(input$composicion_episodios_agrupadores) &&
-                input$composicion_grupos != "") {
-              composicion$tabla <- datos_composicion(
-                data = opciones$tabla,
-                columna_episodios = input$composicion_episodios,
-                columna_valor = opciones$valor_costo,
-                columna_suma = input$composicion_suma_valor,
-                columna_explorar = input$composicion_grupos,
-                prioridad = input$composicion_episodios_agrupadores
-              ) %>%
-                collect() %>%
-                mutate(participacion_en_episodios = 
-                         participacion_en_episodios/100,
-                       participacion_valor = participacion_valor/100)
+                input$episodios_col_rel %in% opciones$colnames &&
+                !is.null(input$episodios_jerarquia_nivel_1) &&
+                input$composicion_explorar != "") {
+              # Se busca si la misma tabla ya ha sido generada en el pasado
+              # con el cache.
+              cache_id <- digest(
+                object = list(
+                  "comp", opciones$tabla_query,
+                  columna_episodios = input$agrupador,
+                  columna_valor = opciones$valor_costo,
+                  columna_suma = input$episodios_col_rel,
+                  columna_explorar = input$composicion_explorar,
+                  prioridad = input$episodios_jerarquia_nivel_1,
+                  frec_cantidad = opciones$cantidad),
+                algo = "xxhash32",
+                seed = 1)
+              check_cache <- cache_id %in% names(opciones$cache)
+              if (check_cache) composicion$tabla <- opciones$cache[[cache_id]]
+              if (!check_cache) {
+                # Creación de la tabla de composicion
+                composicion$tabla <- datos_composicion(
+                  data = opciones$tabla,
+                  columna_episodios = input$agrupador,
+                  columna_valor = opciones$valor_costo,
+                  columna_suma = input$episodios_col_rel,
+                  columna_explorar = input$composicion_explorar,
+                  prioridad = input$episodios_jerarquia_nivel_1,
+                  frec_cantidad = opciones$cantidad
+                ) %>%
+                  collect() %>%
+                  mutate(participacion_en_episodios =
+                           participacion_en_episodios / 100,
+                         participacion_valor = participacion_valor / 100)
+              }
             }
           },
           error = function(e) {
             print(e)
             sendSweetAlert(
               session = session,
-              title = "Error", 
+              title = "Error",
               type = "error",
               text = "Por favor revisar los parametros de carga de datos,
-                columnas, formato de fecha y los datos. Si este problema persiste
-                ponerse en contacto con un administrador."
+                columnas, formato de fecha y los datos. Si este problema
+                persiste ponerse en contacto con un administrador."
             )
           })
       })
-      
+
+      # Código en javascript para uso de funciones de DT
       callback_js <- JS(
         "table.on('click', 'tr.dtrg-group', function () {",
         "  var rowsCollapse = $(this).nextUntil('.dtrg-group');",
         "  $(rowsCollapse).toggleClass('hidden');",
         "});"
       )
-      
+
+      # Render de la tabla de composicion
       output$tabla_composicion <- DT::renderDT({
-        
         if (nrow(composicion$tabla) > 0) {
-          style_color_participacion_valor <- styleColorBar(
+          style_color_valor <- styleColorBar(
             data = composicion$tabla$participacion_valor,
             color = "#87CEEB")
-          
           style_color_participacion <- styleColorBar(
             data = composicion$tabla$participacion_en_episodios,
             color = "#87CEEB")
-          
           datatable(
             composicion$tabla,
             rownames = FALSE,
@@ -173,7 +233,7 @@ composicion_server <- function(id, opciones, conn) {
               "Valor medio a explorar de registro" = "media_explorar_registro",
               "Valor medio a explorar por episodio" = "media_explorar_episodio",
               "Valor medio de episodio" = "media_episodio"),
-            extensions = c('FixedColumns'),
+            extensions = c("FixedColumns"),
             options = list(
               pageLength = nrow(composicion$tabla),
               orderFixed = c(0, "desc"),
@@ -181,8 +241,8 @@ composicion_server <- function(id, opciones, conn) {
               scrollX = TRUE,
               fixedColumns = list(leftColumns = 5),
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')),
-            selection = 'none'
+                url = dt_spanish)),
+            selection = "none"
           ) %>%
             formatPercentage(c("% de participación",
                                "% del valor total"),
@@ -193,7 +253,7 @@ composicion_server <- function(id, opciones, conn) {
                              "Valor medio de episodio",
                              "Valor medio a explorar por episodio"),
                            dec.mark = ",", mark = ".", digits = 0) %>%
-            formatRound(c("Número de episodios", "Número de registros", 
+            formatRound(c("Número de episodios", "Número de registros",
                           "Incluida en episodios"),
                         dec.mark = ",", mark = ".", digits = 0) %>%
             formatRound("Registros por episodio",
@@ -201,25 +261,24 @@ composicion_server <- function(id, opciones, conn) {
             formatStyle(
               c("% de participación"),
               background = style_color_participacion,
-              backgroundSize = '100% 90%',
-              backgroundRepeat = 'no-repeat',
-              backgroundPosition = 'center') %>%
+              backgroundSize = "100% 90%",
+              backgroundRepeat = "no-repeat",
+              backgroundPosition = "center") %>%
             formatStyle(
               c("% del valor total"),
-              background = style_color_participacion_valor,
-              backgroundSize = '100% 90%',
-              backgroundRepeat = 'no-repeat',
-              backgroundPosition = 'center')
+              background = style_color_valor,
+              backgroundSize = "100% 90%",
+              backgroundRepeat = "no-repeat",
+              backgroundPosition = "center")
         } else {
           data.frame()
         }
-        
       })
-      
+
       output$composicion_descargar_csv <- downloadHandler(
         filename = function() {
           paste("Composicion",
-                ".csv", sep="")
+                ".csv", sep = "")
         },
         content = function(file) {
           write.csv(
@@ -233,21 +292,23 @@ composicion_server <- function(id, opciones, conn) {
                 "% del valor total" = "participacion_valor",
                 "Número de registros" = "n_registros",
                 "Registros por episodio" = "registros_por_episodios",
-                "Valor medio a explorar de registro" = "media_explorar_registro",
-                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio a explorar de registro" =
+                  "media_explorar_registro",
+                "Valor medio a explorar por episodio" =
+                  "media_explorar_episodio",
                 "Valor medio de episodio" = "media_episodio"
               ),
-            file = file, 
+            file = file,
             row.names = FALSE,
-            na="")
-        }, 
+            na = "")
+        },
         contentType = "text/csv"
       )
-      
+
       output$composicion_descargar_xlsx <- downloadHandler(
         filename = function() {
           paste("Composicion",
-                ".xlsx", sep="")
+                ".xlsx", sep = "")
         },
         content = function(file) {
           write_xlsx(
@@ -261,15 +322,17 @@ composicion_server <- function(id, opciones, conn) {
                 "% del valor total" = "participacion_valor",
                 "Número de registros" = "n_registros",
                 "Registros por episodio" = "registros_por_episodios",
-                "Valor medio a explorar de registro" = "media_explorar_registro",
-                "Valor medio a explorar por episodio" = "media_explorar_episodio",
+                "Valor medio a explorar de registro" =
+                  "media_explorar_registro",
+                "Valor medio a explorar por episodio" =
+                  "media_explorar_episodio",
                 "Valor medio de episodio" = "media_episodio"
               ),
             path = file)
-        }, 
+        },
         contentType = "xlsx"
       )
-        
+
     }
   )
 }

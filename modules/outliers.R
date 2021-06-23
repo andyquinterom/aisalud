@@ -179,7 +179,7 @@ outliers_server <- function(id, opciones) {
                          "Contribución" = "porcentaje"),
             options = list(
               language = list(
-                url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
+                url = dt_spanish),
               pageLength = 50,
               autoWidth = FALSE,
               ordering = T,

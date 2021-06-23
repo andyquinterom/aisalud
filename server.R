@@ -21,73 +21,88 @@
 # de otros módulos. Solamente el módulo de filtros podrá cambiar datos.
 
 shinyServer(function(input, output, session) {
-  
+
   opciones <- reactiveValues(
     "valor_costo" = "valor",
     "tabla_nombre" = "Ninguno",
     "datos_cargados" = FALSE,
     "perfil_enable" = FALSE,
     "fecha_rango" = rep(Sys.Date(), 2),
-    "cantidad" = FALSE
+    "cantidad" = FALSE,
+    "cache" = list()
   )
-  
-  
- # Modulo prepara ---------------------------------------------
-  
+
+  # Modulo prepara ------------------------------------------------------------
+
   cargar_datos_server(
     id = "cargar_datos",
     opciones = opciones,
     conn = conn
   )
-  
-  # Modulo filtros --------------------------------------------
-  
+
+  # Modulo de opciones adicionales --------------------------------------------
+
+  opciones_adicionales_server(
+    id = "opciones_adicionales",
+    opciones = opciones
+  )
+
+  # Modulo filtros ------------------------------------------------------------
+
   filtros_server(
     id = "filtros_sideBar",
     opciones = opciones
   )
-  
+
   # Modulo descriptiva y episodios --------------------------------------------
-  
-  episodios_server(
+
+  descriptiva_server(
     id = "episodios_modulo",
     opciones = opciones,
     conn = conn
   )
-  
-  # # Modulo outliers -----------------------------------------------------------
-  # 
+
+  # Modulo outliers -----------------------------------------------------------
+
   outliers_server(
     id = "outliers_modulo",
     opciones = opciones
   )
-  # 
-  # 
-  # # Modulo generar nota técnica -----------------------------------------------
-  # 
-  
+
+  # Modulo generar nota técnica -----------------------------------------------
+
   nota_tecnica_server(
     id = "nota_tecnica_modulo",
     opciones = opciones
   )
-  
-  # # Modulo otros gráficos -----------------------------------------------------
+
+  # # Modulo otros gráficos ---------------------------------------------------
 
   otros_graficos_server(
     id = "otros_graficos_modulo",
     opciones = opciones
   )
-  
+
   # Modulo de composicion
-  
+
   composicion_server(
     id = "composicion_modulo",
     opciones = opciones,
     conn = conn
   )
 
-  seguimiento_notas_dashboard_server(
-    id = "seguimiento_notas_dash",
-    opciones = opciones)
-  
+  # Modulo de dashboard de notas técnicas
+
+  nt_dashboard_server(
+    id = "nt_dashboard",
+    opciones = opciones
+  )
+
+  # Modulo de seguimiento
+
+  seguimiento_server(
+    id = "seguimiento",
+    opciones = opciones
+  )
+
 })

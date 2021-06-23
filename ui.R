@@ -8,6 +8,7 @@ shinyUI(
       options = list(sidebarExpandOnHover = TRUE),
       skin = "blue-light",
       shinydashboardPlus::dashboardHeader(
+        fixed = TRUE,
         title = tagList(
           span(class = "logo-lg", "Analítica Integrada Salud"),
           img(src = "logo.svg")),
@@ -16,12 +17,12 @@ shinyUI(
           type = "notifications",
           badgeStatus = "info",
           notificationItem(
-            text = "Version: 2.4.1",
+            text = "Version: 21.06D",
             icon = icon("code-branch"),
             status = "info"
           )
         ),
-        controlbarIcon = icon("filter")),
+        controlbarIcon = icon("cogs")),
       sidebar = shinydashboardPlus::dashboardSidebar(
         collapsed = TRUE,
         sidebarMenu(
@@ -52,11 +53,15 @@ shinyUI(
             tabName = "composicion_modulo"
           ),
           menuItem(
-            text = "Seguimiento",
+            text = "Dashboard Contratos",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "seguimiento_modulo_dash")
-        )
-      ),
+            tabName = "nt_dashboard"),
+          menuItem(
+            text = "Seguimiento Contratos",
+            icon = icon("chart-line", lib = "font-awesome"),
+            tabName = "seguimiento")
+          )
+    ),
       controlbar = dashboardControlbar(
         width = 700,
         controlbarMenu(
@@ -64,7 +69,11 @@ shinyUI(
             id = "filtros_sideBar",
             title = "Filtros",
             filtros_ui("filtros_sideBar")
-          )
+          ),
+          controlbarItem(
+            id = "opciones_sideBar",
+            title = "Opciones adicionales",
+            opciones_adicionales_ui("opciones_adicionales"))
         )
       ),
       dashboardBody(
@@ -80,7 +89,7 @@ shinyUI(
           ),
           tabItem(
             tabName = "episodios_modulo",
-            episodios_ui("episodios_modulo")
+            descriptiva_ui("episodios_modulo")
           ),
           tabItem(
             tabName = "nota_tecnica_modulo",
@@ -95,8 +104,12 @@ shinyUI(
             composicion_ui("composicion_modulo")
           ),
           tabItem(
-            tabName = "seguimiento_modulo_dash",
-            seguimiento_notas_dashboard_ui("seguimiento_notas_dash")
+            tabName = "nt_dashboard",
+            nt_dashboard_ui("nt_dashboard")
+          ),
+          tabItem(
+            tabName = "seguimiento",
+            seguimiento_ui("seguimiento")
           )
         )
       )
