@@ -138,3 +138,104 @@ ingresará la clave determinada por el administrador de la aplicación.
   }
 }
 ```
+
+## Notas técnicas
+
+Las notas técnicas se pueden modificar desde la sección de notas técnicas en
+el area derecha de la pantalla. Las notas técnicas se archivan en texto plano
+por lo cual se pueden modificar tanto en la interfaz de AIS o en cualquier
+editor de texto.
+
+Las notas técnicas llevan la siguiente estructura, sin embargo, datos
+adicionales se pueden incluir solo si estos no interrumpen el esquema
+obligatorio.
+
+1. Nombre de la nota técnica (Obligatorio)
+    1. poblacion (Obligatorio).
+    2. departamento (Obligatorio)
+    3. cod_departamento (Obligatorio)
+    4. ciudades (Obligatorio)
+    5. vigente (Obligatorio)
+    6. agrupadores (Obligatorio)
+        1. costo medio (Obligatorio)
+        2. frecuencia (Obligatorio)
+    7. prestador 
+    8. asegurador
+    9. notas
+    10. inclusiones
+    11. exclusiones
+    12. perfil (debe ser un perfil valido)
+
+Al modificar las notas técnicas, se pueden guardar con el botón guardar en la
+parte superior de la sección. Se abrirá un dialogo de contraseña en el cual se
+ingresará la clave determinada por el administrador de la aplicación.
+
+### Esquema JSON de las notas técnicas
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "poblacion": {
+        "type": "number"
+      },
+      "prestador": {
+        "type": "string"
+      },
+      "asegurador": {
+        "type": "string"
+      },
+      "departamento": {
+        "type": "string"
+      },
+      "cod_departamento": {
+        "type": "integer"
+      },
+      "ciudades": {
+        "type": "string"
+      },
+      "vigente": {
+        "type": "boolean"
+      },
+      "perfil": {
+        "type": "string"
+      },
+      "notas": {
+        "type": "string"
+      },
+      "exclusiones": {
+        "type": "array"
+      },
+      "inclusiones": {
+        "type": "array"
+      },
+      "agrupadores": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "cm": {
+              "type": "number"
+            },
+            "n": {
+              "type": "number"
+            }
+          },
+          "required": ["cm", "n"]
+        }
+      }
+    },
+    "required": [
+      "poblacion",
+      "departamento",
+      "cod_departamento",
+      "ciudades",
+      "vigente",
+      "agrupadores"
+    ]
+  }
+}
+```
