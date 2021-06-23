@@ -42,4 +42,29 @@ Una vez seleccionadas estas opciones se hace click en el botón guardar. El
 dialogo debe cerrarse.
 
 Existen muchas maneras de codificar una fecha, por esta razón, se debe hacer
-especificar el formato de fechas a utilizar.
+especificar el formato de fechas a utilizar. Las fechas se deben codificar
+de la siguiente manera.
+
+| Código | Descripción                            | Ejemplo            |
+|--------|----------------------------------------|--------------------|
+| %d     | Día del mes                            | 01, 02, 03, 14, 31 |
+| %j     | Día del año                            | 148, 188, 354      |
+| %m     | Número del mes                         | 05, 07, 12         |
+| %Y     | Año completo                           | 2002, 2020         |
+| %y     | Año (Sin siglo)                        | 02, 20             |
+| %U     | Semana 0-6 (Empieza domingo)           | 22, 27             |
+| %W     | Semana (Empieza lunes)                 | 21, 27             |
+| %u     | Día de la semana 1-7 (Empieza domingo) | 1, 4, 7            |
+| %w     | Día de la semana (domingo es 0)        | 0, 3, 6            |
+
+**Ejemplos**:
+
+| Ejemplo de fecha | Formato en palabras | Formato en código |
+|------------------|---------------------|-------------------|
+| 2020-02-28       | AÑO-MES-DÍA         | %Y-%m-%d          |
+| 28-02-20         | DÍA-MES-AÑO         | %d-%m-%y          |
+| 2020/148         | AÑO/DÍA             | %Y/%j             |
+
+Finalmente, se hace click en aplicar y se espera a que los datos se carguen.
+Al finalizar un gráfico de barras debe aparecer en el lado de derecho de la
+pantalla.
