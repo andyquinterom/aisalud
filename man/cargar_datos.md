@@ -21,7 +21,10 @@ derecho de la pantalla.
 
 ## Subir datos
 
-> **Advertencia**: Esta funcionalidad esta hecha para manejar paqueños volumenes de datos, entre 0 - 100.000 registros. Los limites de tamaño pueden ser cambiados por un administrador. Se recomienda siempre trabajar con conjuntos de datos cargados en la nube.
+> **Advertencia**: Esta funcionalidad esta hecha para manejar paqueños
+> volumenes de datos, entre 0 - 100.000 registros. Los limites de tamaño
+> pueden ser cambiados por un administrador. Se recomienda siempre trabajar
+> con conjuntos de datos cargados en la nube.
 
 Para subir un conjunto de datos desde un archivo de texto delimitado, se debe
 hacer click en la sección **Subir datos** en el panel izquierdo.
@@ -68,3 +71,64 @@ de la siguiente manera.
 Finalmente, se hace click en aplicar y se espera a que los datos se carguen.
 Al finalizar un gráfico de barras debe aparecer en el lado de derecho de la
 pantalla.
+
+## Perfiles
+
+Los perfiles se pueden modificar desde la sección perfiles en al area derecha
+de la pantalla. Los perfiles se almacenan en texto plano en formato JSON.
+Aunque este disponible la interfaz para modificarlos dentro de AIS, no es
+obligatorio y se pueden editar desde cualquier editor de texto.
+
+Los perfiles en la versión actual de AIS siguen la siguiente estructura.
+
+1. Nombre del perfil
+    1. Jerarquia
+        1. Unidad de conteo (episodio, paciente, factura, prestacion)
+            1. Agrupadores
+
+Al modificar los perfiles, se pueden guardar con el botón guardar en la parte
+superior de la sección. Se abrirá un dialogo de contraseña en el cual se
+ingresará la clave determinada por el administrador de la aplicación.
+
+### Esquema JSON de los perfiles
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "cantidad": {
+        "type": "boolean"
+      },
+      "jerarquia": {
+        "type": "object",
+        "properties": {
+          "episodio": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "paciente": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "factura": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "jerarquia"
+    ]
+  }
+}
+```
