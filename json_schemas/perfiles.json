@@ -27,6 +27,12 @@
             "items": {
               "type": "string"
             }
+          },
+          "prestacion": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
