@@ -105,4 +105,9 @@ shinyServer(function(input, output, session) {
     opciones = opciones
   )
 
+  # Modulo de manuales
+
+  manuales_server("manuales")
+
+
 })
