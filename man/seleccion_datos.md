@@ -27,7 +27,7 @@ unidades de conteo.
 ## Unidad de descriptiva o jerarquía de episodios
 
 > Para una explicación a profundidad de las unidades de conteo, revisar el
-> manual acerca de unidades de conteo.
+> manual acerca de agrupadores.
 
 
 ### Unidad básica
