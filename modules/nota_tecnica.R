@@ -148,6 +148,7 @@ nota_tecnica_server <- function(id, opciones) {
         tabla = data.table(),
         tabla_junta = data.table(),
         nota_tecnica = data.table(),
+        parsed = data.table(),
         timeseries = data.table(),
         escenarios = list(
           "episodio" = list(),
@@ -624,41 +625,43 @@ nota_tecnica_server <- function(id, opciones) {
 
       # Se muestra la nota técnica
       output$nota_tecnica_junta <- DT::renderDataTable({
-        datatable(
-          data = nota_tecnica$parsed %>%
-            select(-nt),
-          rownames = FALSE,
-          colnames = c(
-            "Valor a mes" = "valor_mes",
-            "Costo medio" = "cm",
-            "Frecuencia per capita" = "frecuencia_pc",
-            "Agrupador" = "agrupador",
-            "Frecuencia a mes" = "frec_mes"
-          ),
-          extensions = c("FixedColumns"),
-          options = list(
-            ordering = T,
-            scrollY = "370px",
-            fixedColumns = list(leftColumnas = 1),
-            scrollX = TRUE,
-            scrollCollapse = TRUE,
-            pageLength = 1000,
-            dom = "ft"
-          )
-        ) %>%
-          formatCurrency(
-            c("Costo medio", "Valor a mes"),
-            dec.mark = ",",
-            mark = ".",
-            currency = "$",
-            digits = 0
+        if (nrow(nota_tecnica$parsed) > 0) {
+          datatable(
+            data = nota_tecnica$parsed %>%
+              select(-nt),
+            rownames = FALSE,
+            colnames = c(
+              "Valor a mes" = "valor_mes",
+              "Costo medio" = "cm",
+              "Frecuencia per capita" = "frecuencia_pc",
+              "Agrupador" = "agrupador",
+              "Frecuencia a mes" = "frec_mes"
+            ),
+            extensions = c("FixedColumns"),
+            options = list(
+              ordering = T,
+              scrollY = "370px",
+              fixedColumns = list(leftColumnas = 1),
+              scrollX = TRUE,
+              scrollCollapse = TRUE,
+              pageLength = 1000,
+              dom = "ft"
+            )
           ) %>%
-          DT::formatRound(
-            c("Frecuencia per capita", "Frecuencia a mes"),
-            dec.mark = ",",
-            mark = ".",
-            digits = 6
-          )
+            formatCurrency(
+              c("Costo medio", "Valor a mes"),
+              dec.mark = ",",
+              mark = ".",
+              currency = "$",
+              digits = 0
+            ) %>%
+            DT::formatRound(
+              c("Frecuencia per capita", "Frecuencia a mes"),
+              dec.mark = ",",
+              mark = ".",
+              digits = 6
+            )
+        }
       }) %>%
         bindEvent(nota_tecnica$nota_tecnica)
 

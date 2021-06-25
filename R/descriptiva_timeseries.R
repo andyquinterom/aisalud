@@ -1,6 +1,8 @@
 descriptiva_timeseries <- function(
   data, agrupador, col_anio = "ais_anio", col_mes = "ais_mes") {
 
+  if (nrow(data) == 0) stop("Data.frame vacio")
+
   if (!identical(c("ais_mes", "ais_anio"), c(col_mes, col_anio))) {
     data <- data %>%
       rename(ais_mes = !!rlang::sym(col_mes), ais_anio = !!rlang::sym(ais_anio))
