@@ -3,7 +3,12 @@ shinyUI(
   tagList(
     tags$head(
       tags$script(type = "text/javascript", src = "code.js"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "style.css")),
+      tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+      tags$link(
+        rel = "stylesheet",
+        type = "text/css",
+        href = "github-markdown.css")
+      ),
     shinydashboardPlus::dashboardPage(
       options = list(sidebarExpandOnHover = TRUE),
       skin = "blue-light",
@@ -55,12 +60,17 @@ shinyUI(
           menuItem(
             text = "Dashboard Contratos",
             icon = icon("dollar-sign", lib = "font-awesome"),
-            tabName = "nt_dashboard"),
+            tabName = "nt_dashboard"
+          ),
           menuItem(
             text = "Seguimiento Contratos",
             icon = icon("chart-line", lib = "font-awesome"),
-            tabName = "seguimiento")
-          )
+            tabName = "seguimiento"),
+          menuItem(
+            text = "Manuales",
+            icon = icon("book-open", lib = "font-awesome"),
+            tabName = "manuales")
+        )
     ),
       controlbar = dashboardControlbar(
         width = 700,
@@ -110,6 +120,10 @@ shinyUI(
           tabItem(
             tabName = "seguimiento",
             seguimiento_ui("seguimiento")
+          ),
+          tabItem(
+            tabName = "manuales",
+            manuales_ui("manuales")
           )
         )
       )
