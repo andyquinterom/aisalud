@@ -656,10 +656,16 @@ nota_tecnica_server <- function(id, opciones) {
               digits = 0
             ) %>%
             DT::formatRound(
-              c("Frecuencia per capita", "Frecuencia a mes"),
+              c("Frecuencia per capita"),
               dec.mark = ",",
               mark = ".",
               digits = 6
+            ) %>%
+            DT::formatRound(
+              c("Frecuencia a mes"),
+              dec.mark = ",",
+              mark = ".",
+              digits = 2
             )
         }
       }) %>%
