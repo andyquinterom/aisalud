@@ -21,16 +21,20 @@ de la derecha.
 
 ## Ajuste usuario
 
-En **Agrupador** se escoje la variable categorica que se va a ajustar. Se
-pueden ajustar los **costos medios** y la **Frecuencia**. Los Costos Medios se
-pueden ajustar haciendo usos de los valores de los percentiles, estos se
-encuentran en una barra deslizable en donde se puede escoger desde el percentil
-0 o valor mínimo hasta el percentil 100 o valor máximo. Las lineas horizontales
-ayudan a ubicar los valores de la media, la mediana y el percentil 75. En la
-pestaña frecuencias con la misma barra deslizante se puede escoger desde el 
-valor mínimo de frecuencias mensuales hasta el valor máximo de estas.
+En **Agrupador** se escoje la variable categorica que se va a ajustar. A la 
+variable categorica seleccionada se le pueden ajustar los **costos medios** y
+la **Frecuencia**. Los Costos Medios se pueden ajustar haciendo usos de los
+valores de los percentiles, estos se encuentran en una barra deslizable en 
+donde se puede escoger desde el percentil 0 o valor mínimo hasta el percentil
+100 o valor máximo. Las lineas horizontales ayudan a ubicar los valores de la
+media, la mediana y el percentil 75. En la pestaña frecuencias con la misma 
+barra deslizante se puede escoger desde el valor mínimo de frecuencias
+mensuales hasta el valor máximo de estas.
 
 En la esquina inferior de la izquierda se encuentra in gráfico de linea de 
 serie de tiempo, la fecha de inicio y la fecha final se pueden modificar con la
 barra deslizable. Tambien se encuentra un checkbox sencillo que la ser escogido
-cambia al gráfico de frecuencias.
+cambia al gráfico de frecuencias. En el primero se encuentra la comparación 
+entre el valor a ejectuar y el valor efectivamente ejecutado, en el segundo
+se muestra esta misma comparación pero multiplicando el número de frecuencias
+por el costo medio de la Nota Tecnica.
