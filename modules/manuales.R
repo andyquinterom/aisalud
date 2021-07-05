@@ -8,6 +8,7 @@ manuales_ui <- function(id) {
     "Selección de datos" = "seleccion_datos.md",
     "Descriptiva" = "descriptiva.md",
     "Outliers" = "outliers.md",
+    "Nota técnica" = "nota_tecnica.md",
     "Otros gráficos" = "otros_graficos.md",
     "Composición" = "composicion.md",
     "Seguimiento contratos" = "seguimiento_contratos.md"
@@ -17,13 +18,16 @@ manuales_ui <- function(id) {
     fluidRow(
       box(
         width = 12,
-        selectizeInput(
-          inputId = ns("manual"),
-          label = "Manual",
-          width = "100%",
-          choices = archivos
-        ),
-        uiOutput(ns("markdown"))
+        tags$div(
+          style = "min-height: 600px",
+          selectizeInput(
+            inputId = ns("manual"),
+            label = "Manual",
+            width = "100%",
+            choices = archivos
+          ),
+          uiOutput(ns("markdown"))
+        )
       )
     )
   )
@@ -37,10 +41,12 @@ manuales_server <- function(id) {
     module = function(input, output, session) {
 
       output$markdown <- renderUI({
-        tags$article(
-          class="markdown-body",
-          includeMarkdown(file.path("man", input$manual))
-        )
+        if (input$manual != "") {
+          tags$article(
+            class = "markdown-body",
+            includeMarkdown(file.path("man", input$manual))
+          )
+        }
       })
 
     }
