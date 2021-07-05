@@ -514,7 +514,7 @@ nota_tecnica_server <- function(id, opciones) {
           add_trace(
             y = quantile(nota_tecnica$timeseries_selected$Media,
               percentil_selected),
-            name = "Ajuste usuario",
+            name = "Ajuste analista",
             mode = "lines",
             line = list(color = "rgb(205, 12, 24)", dash = "dash")
           ) %>%
@@ -558,7 +558,7 @@ nota_tecnica_server <- function(id, opciones) {
               mode = "lines") %>%
             add_trace(
               y = n_selected,
-              name = "Ajuste usuario",
+              name = "Ajuste analista",
               mode = "lines",
               line = list(color = "rgb(205, 12, 24)", dash = "dash")
             ) %>%
@@ -592,7 +592,7 @@ nota_tecnica_server <- function(id, opciones) {
             mode = "lines",
             type = "scatter",
             line = list(color = "rgb(205, 12, 24)", dash = "dash"),
-            name = "Ajuste usuario")))
+            name = "Ajuste analista")))
       }) %>%
         bindEvent(input$frecuencias_ajuste)
 
@@ -619,7 +619,7 @@ nota_tecnica_server <- function(id, opciones) {
             mode = "lines",
             type = "scatter",
             line = list(color = "rgb(205, 12, 24)", dash = "dash"),
-            name = "Ajuste usuario")))
+            name = "Ajuste analista")))
       }) %>%
         bindEvent(input$costo_medio_ajuste)
 
