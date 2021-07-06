@@ -83,7 +83,14 @@ shinyUI(
           controlbarItem(
             id = "opciones_sideBar",
             title = "Opciones adicionales",
-            opciones_adicionales_ui("opciones_adicionales"))
+            opciones_adicionales_ui("opciones_adicionales")
+          ),
+          controlbarItem(
+            id = "manuales_sideBar",
+            title = "Manuales",
+            manuales_ui("manuales_sideBar"),
+            tags$div(style =  "height: 50px")
+          )
         )
       ),
       dashboardBody(

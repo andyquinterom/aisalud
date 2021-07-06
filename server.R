@@ -109,5 +109,6 @@ shinyServer(function(input, output, session) {
 
   manuales_server("manuales")
 
+  manuales_server("manuales_sideBar")
 
 })
