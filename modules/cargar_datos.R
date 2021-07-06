@@ -14,61 +14,19 @@ cargar_datos_ui <- function(id) {
       box(
         style = "min-height: 692px;",
         width = 4,
-        tabsetPanel(
-          tabPanel(
-            title = "Nube",
-            tags$br(),
-            tags$br(),
-            dateRangeInput(
-              inputId = ns("fecha_rango"),
-              label = "Fechas:",
-              min = "1970-01-01",
-              max = NULL,
-              format = "dd/mm/yyyy",
-              language = "es"),
-            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
-            selectizeInput(
-              width = "100%",
-              inputId = ns("tabla"),
-              label = "Seleccionar datos",
-              choices = "Ninguno"
-            )
-          ),
-          tabPanel(
-            title = "Subir datos",
-            fileInput(
-              inputId = ns("file"),
-              label = "",
-              buttonLabel = "Subir archivo",
-              placeholder = "Ningún archivo"),
-            dateRangeInput(
-              inputId = ns("file_fecha_rango"),
-              label = "Fechas:",
-              min = NULL,
-              max = NULL,
-              format = "dd/mm/yyyy",
-              language = "es"),
-            tags$style(HTML(".datepicker {z-index:99999 !important;}")),
-            radioButtons(
-              inputId = ns("file_type"),
-              label = "Tipo de archivo",
-              inline = TRUE,
-              choices = c("csv", "feather")),
-            actionButton(
-              inputId = ns("file_options_open"),
-              label = "Opciones",
-              width = "100%"),
-            tags$br(),
-            tags$br(),
-            textInput(
-              inputId = ns("file_formato_fecha"),
-              label = "Formato de Fecha",
-              value = "%d/%m/%Y"),
-            actionButton(inputId = ns("file_load"), label = "Aplicar",
-                         width = "100%"),
-            tags$br(),
-            tags$br()
-          )
+        dateRangeInput(
+          inputId = ns("fecha_rango"),
+          label = "Fechas:",
+          min = "1970-01-01",
+          max = NULL,
+          format = "dd/mm/yyyy",
+          language = "es"),
+        tags$style(HTML(".datepicker {z-index:99999 !important;}")),
+        selectizeInput(
+          width = "100%",
+          inputId = ns("tabla"),
+          label = "Seleccionar datos",
+          choices = "Ninguno"
         )
       ),
       box(
@@ -149,7 +107,8 @@ cargar_datos_server <- function(id, opciones, conn) {
               sendSweetAlert(
                 session = session,
                 title = "Error",
-                text = "No se pudo leer la tabla seleccionada. Valide que aun exista esta tabla o contacte a un administrador.",
+                text = "No se pudo leer la tabla seleccionada. Valide que aun
+                exista esta tabla o contacte a un administrador.",
                 type = "error"
               )
             }
@@ -207,12 +166,14 @@ cargar_datos_server <- function(id, opciones, conn) {
               updateSelectizeInput(
                 session = session,
                 inputId = "tabla",
-                choices = unique(c("Ninguno", tables_ais)) )
+                choices = unique(c("Ninguno", tables_ais))
+              )
               print(e)
               sendSweetAlert(
                 session = session,
                 title = "Error",
-                text = "No se pudo leer la tabla seleccionada. Valide que aun exista esta tabla o contacte a un administrador.",
+                text = "No se pudo leer la tabla seleccionada. Valide que
+                aun exista esta tabla o contacte a un administrador.",
                 type = "error"
               )
             }
@@ -238,7 +199,7 @@ cargar_datos_server <- function(id, opciones, conn) {
             opciones$cache[[cache_id]] <- opciones$tabla %>%
               mutate(
                 # genera id de mes y año
-                mes_temporal = year(fecha_prestacion)*100 +
+                mes_temporal = year(fecha_prestacion) * 100 +
                     month(fecha_prestacion)) %>%
               group_by(mes_temporal) %>%
               summarise(suma = sum(
@@ -275,105 +236,6 @@ cargar_datos_server <- function(id, opciones, conn) {
       }) %>%
       bindEvent(opciones$tabla)
 
-      # Cargar datos locales -----------------
-
-      # Variables necesarias para lectura de datos tabulados en csv
-      file_opciones <- reactiveValues(
-        "value_decimal" = ".",
-        "value_delimitador" = ",",
-        "value_sheet" = NULL,
-        "value_range" = NULL,
-        "enabled" = FALSE
-      )
-
-      # se abre modal con las opciones para la subida de los datos
-      observeEvent(input$file_options_open, {
-        showModal(
-          session = session,
-          ui = modalDialog(
-            title = "Opciones archivo",
-            easyClose = TRUE,
-            fade = TRUE,
-            # UI con las opciones de los datos
-            datos_opciones_ui(
-              id = id,
-              file_type = input$file_type,
-              value_decimal = file_opciones$value_decimal,
-              value_delimitador = file_opciones$value_delimitador,
-              value_range = file_opciones$value_range,
-              value_sheet = file_opciones$value_sheet,
-              value_file = file_opciones$value_file),
-            footer = actionButton(
-              inputId = ns("file_opciones_guardar"),
-              label = "Guardar")
-          )
-        )
-      })
-
-      # Guardar opciones de los datos locales en la variable file_opciones
-      observeEvent(input$file_opciones_guardar, {
-        file_opciones$value_decimal <- input$value_decimal
-        file_opciones$value_delimitador <- input$value_delimitador
-        file_opciones$value_sheet <- input$value_sheet
-        file_opciones$value_range <- input$value_range
-        file_opciones$value_file <- input$value_file
-        removeModal(session = session)
-      })
-
-      # Lectura de los datos
-      observeEvent(input$file_load, {
-        tryCatch(expr = {
-          # Solo se lee si existe un archivo subido
-          if (!is.null(input$file)) {
-            # Rango de fechas seleccionada por el usuario
-            opciones$fecha_rango <- input$file_fecha_rango
-            value_delimitador <- ifelse(
-              test = file_opciones$value_delimitador == "Espacios",
-              yes = "\t",
-              no = file_opciones$value_delimitador)
-            # Lectura de archivo en csv
-            datos_read <- NULL
-            if (input$file_type == "csv") {
-              datos_read <- readr::read_delim(
-                file = input$file$datapath,
-                delim = value_delimitador,
-                locale = locale(
-                  decimal_mark = file_opciones$value_decimal))
-            }
-            # Lectura de archivo en feather
-            if (input$file_type == "feather") {
-              datos_read <- read_feather(path = input$file$datapath)
-            }
-            # Si el input de tipo de archivo es invalido stop.
-            if (is.null(datos_read)) stop("No se pudo leer el archivo")
-            opciones$tabla_original <- datos_read %>%
-              rename_with(tolower) %>%
-              mutate(fecha_prestacion = as.Date(
-                fecha_prestacion, format = input$file_formato_fecha)) %>%
-              filter(fecha_prestacion >= as.Date(input$file_fecha_rango[1]) &
-                       fecha_prestacion <= as.Date(input$file_fecha_rango[2]))
-            opciones$tabla <- opciones$tabla_original
-            opciones$colnames <- opciones$tabla %>%
-              colnames()
-            # Se guardan las variables numéricas
-            testfor_numeric <- opciones$tabla %>%
-              summarise_all(class) == "numeric"
-            opciones$colnames_num <- opciones$colnames[testfor_numeric]
-            file_opciones$enabled <- TRUE
-            opciones$aplicar_filtros <- aplicar_filtros()
-          }
-        },
-        error = function(e) {
-          print(e[1])
-          sendSweetAlert(
-            session = session,
-            title = "Error",
-            text = e[1],
-            type = "error"
-          )
-        })
-      })
-
       # Validación de que los datos esten subido o seleccionados
       observe({
         opciones$datos_cargados <- FALSE
@@ -381,11 +243,6 @@ cargar_datos_server <- function(id, opciones, conn) {
             input$tabla != "") {
           # Si se seleccionan datos de la nube se
           # desactivarán los datos locales
-          file_opciones$enabled <- FALSE
-          opciones$datos_cargados <- TRUE
-        }
-        if (input$tabla == "Ninguno" &&
-            file_opciones$enabled) {
           opciones$datos_cargados <- TRUE
         }
       })
