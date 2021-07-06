@@ -27,8 +27,8 @@ descriptiva_ui <- function(id) {
                 width = "100%"),
               radioButtons(
                 inputId = ns("intervalo"),
-                choiceNames = c("Mes", "Semana", "Día"),
-                choiceValues = c("mes", "semana", "dia"),
+                choiceNames = c("Mes", "Día"),
+                choiceValues = c("mes", "dia"),
                 label = "Intervalo para frecuencias")
             ),
             tags$br(),
