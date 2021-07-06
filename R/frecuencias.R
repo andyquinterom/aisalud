@@ -17,14 +17,42 @@ frecuencias <- function(
       mutate(mes_num = month(!!as.name(columna_fecha)),
              anio_num = year(!!as.name(columna_fecha))) %>%
       mutate(mes_anio_num = anio_num * 100 + mes_num)
-  } else if (intervalo == "dia") {
+    meses_limites <- data %>%
+      select(mes_anio_num) %>%
+      ungroup() %>%
+      summarise(
+        min = min(mes_anio_num, na.rm = TRUE),
+        max = max(mes_anio_num, na.rm = TRUE)) %>%
+      collect() %>%
+      mutate(
+        anio_min = min %/% 100,
+        anio_max = max %/% 100,
+        mes_min = min %% 100,
+        mes_max = max %% 100)
+
+    meses_completos <- tibble(
+      anio = sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12)),
+      meses = rep(1:12, meses_limites$anio_max -
+        meses_limites$anio_min + 1)) %>%
+      mutate(mes_anio_num = anio * 100 + meses) %>%
+      filter(mes_anio_num >= meses_limites$min &
+        mes_anio_num <= meses_limites$max) %>%
+      select(mes_anio_num) %>%
+      mutate(placeholder_key = "key")
+
+    data_to_join <- data %>%
+      group_by(!!!rlang::syms(agrupador)) %>%
+      summarise(placeholder_key = "key") %>%
+      ungroup()
+
+    meses_completos <- data_to_join %>%
+      full_join(meses_completos, copy = TRUE) %>%
+      select(-placeholder_key)
+  }
+
+  if (intervalo == "dia") {
     data <- data %>%
       mutate(mes_anio_num = !!as.name(columna_fecha))
-  } else if (intervalo == "semana") {
-    data <- data %>%
-      mutate(mes_num = round((yday(!!as.name(columna_fecha))  - 1) %/% 7 + 1),
-             anio_num = year(!!as.name(columna_fecha))) %>%
-      mutate(mes_anio_num = anio_num * 100 + mes_num)
   }
 
   if (!prestaciones) {
@@ -33,42 +61,15 @@ frecuencias <- function(
       summarise(mes_anio_num = max(mes_anio_num), cantidad = 1)
   }
 
-  meses_limites <- data %>%
-    select(mes_anio_num) %>%
-    ungroup() %>%
-    summarise(min = min(mes_anio_num), max = max(mes_anio_num)) %>%
-    collect() %>%
-    mutate(
-      anio_min = min %/% 100,
-      anio_max = max %/% 100,
-      mes_min = min %% 100,
-      mes_max = max %% 100)
 
-  meses_completos <- tibble(
-    anio = sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12)),
-    meses = rep(1:12, meses_limites$anio_max - meses_limites$anio_min + 1)) %>%
-    mutate(mes_anio_num = anio * 100 + meses) %>%
-    filter(mes_anio_num >= meses_limites$min &
-      mes_anio_num <= meses_limites$max) %>%
-    select(mes_anio_num) %>%
-    mutate(placeholder_key = "key")
-  
-  data_to_join <- data %>%
-    group_by(!!!rlang::syms(agrupador)) %>%
-    summarise(placeholder_key = "key") %>%
-    ungroup()
-  
-  meses_completos <- data_to_join %>%
-    full_join(meses_completos, copy = TRUE) %>%
-    select(-placeholder_key)
-  
   data <- data %>%
     group_by(!!!rlang::syms(agrupador), mes_anio_num) %>%
     summarise(Frecuencia = ifelse(
       test = prestaciones && frec_cantidad,
       yes = sum(cantidad, na.rm = TRUE),
       no = n())) %>%
-    full_join(meses_completos, copy = TRUE) %>%
+    {if (intervalo == "mes") full_join(., meses_completos, copy = TRUE)
+     else .} %>%
     mutate(Frecuencia = case_when(
         is.na(Frecuencia) ~ 0,
         TRUE ~ Frecuencia)) %>%
@@ -84,12 +85,16 @@ frecuencias <- function(
   if (intervalo == "mes") {
     data <- data %>%
       rename_with(mes_spanish_juntos, .cols = -seq_len(length(agrupador)))
-  } else if (intervalo == "semana") {
-    data <- data %>%
-      rename_with(function(x) {
-        paste(substr(x, 1, 4), substr(x, 5, 6), sep = " - ")
-      }, .cols = -seq_len(length(agrupador)))
   }
+
+# Queda comentada esta sección hastas que quede actualizado dbplyr
+# https://github.com/tidyverse/dbplyr/pull/676
+#  if (intervalo == "semana") {
+#    data <- data %>%
+#      rename_with(function(x) {
+#        paste(substr(x, 1, 4), substr(x, 5, 6), sep = " - ")
+#      }, .cols = -seq_len(length(agrupador)))
+#  }
 
   data <- data %>%
     mutate(
