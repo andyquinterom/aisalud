@@ -535,7 +535,11 @@ descriptiva_server <- function(id, opciones, conn) {
               scrollX = TRUE,
               scrollY = "500px"),
             rownames = FALSE) %>%
-          formatStyle(TRUE, backgroundColor = "white")
+          formatStyle(TRUE, backgroundColor = "white") %>%
+          formatRound(
+            columns = (2 + distinct_agrupadores):ncol(episodios$frecuencias),
+            dec.mark = ",", mark = ".", digits = 2
+          )
         }
       })
 
