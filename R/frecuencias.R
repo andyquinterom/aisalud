@@ -77,6 +77,12 @@ frecuencias <- function(
     arrange(mes_anio_num) %>%
     collect()
 
+  means_sums <- data %>%
+    summarise(
+      frec_media = round(mean(Frecuencia, na.rm = TRUE), digits = 3),
+      frec_suma = round(sum(Frecuencia, na.rm = TRUE), digits = 3)
+    )
+
   data <- data %>%
     pivot_wider(
       names_from = mes_anio_num,
@@ -97,11 +103,7 @@ frecuencias <- function(
 #  }
 
   data <- data %>%
-    mutate(
-      frec_media = round(rowMeans(across(), na.rm = TRUE), digits = 3),
-      frec_suma  = round(
-        rowSums(across(-frec_media), na.rm = TRUE),
-        digits = 3)) %>%
+    left_join(means_sums) %>%
     mutate("unidad_conteo" = unidad) %>%
     relocate(unidad_conteo, !!!rlang::syms(agrupador), frec_suma, frec_media)
 
