@@ -46,7 +46,7 @@ el paquete [renv](https://github.com/rstudio/renv). Después se ejecuta
 # de bibliotecas externas. En sistemas operativos basados en Debian Linux
 # estos se pueden instalar con el siguiente commando:
 
- RUN apt-get update && apt-get install -y \
+apt-get update && apt-get install -y \
     pandoc \
     pandoc-citeproc \
     libcurl4-gnutls-dev \
