@@ -68,6 +68,11 @@ apt-get update && apt-get install -y \
 
 Finalmente se ejecuta el comando `shiny::runApp()` para correr la aplicación.
 
+## Docker
+
+Para correr la aplicación en Docker visita el repositorio
+[aisalud_docker](https://github.com/FundacionAIS/aisalud_docker).
+
 # Contribuir 
 
 Para contribuir al proyecto lee el lineamiento de contribuidores
