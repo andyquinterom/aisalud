@@ -67,7 +67,17 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
     list(input$agrupador, input$episodios)
   })
 
-  observeEvent(cambio_columnas(), {
+  observe({
+    updateCheckboxInput(
+        inputId = "episodios",
+        value = FALSE
+      )
+  }) %>%
+  bindEvent(opciones$tabla_query)
+
+
+
+  observe({
     cache_id <- digest(
       object = list("agrup", cambio_columnas(), opciones$tabla_query),
       algo = "xxhash32",
@@ -112,7 +122,8 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
     if (check_cache) {
       episodios$agrupadores_items <- opciones$cache[[cache_id]]
     }
-  })
+  }) %>%
+  bindEvent(cambio_columnas())
 
   observe({
     cambio_columnas()
