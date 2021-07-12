@@ -48,6 +48,7 @@ filtros_server <- function(id, opciones) {
     id = id,
     module = function(input, output, session) {
 
+      aplicar_count <- counter()
       # cantidad de filtros numericos
       n_num <- 3
       # cantidad de filtros de variables caracteres
@@ -184,6 +185,8 @@ filtros_server <- function(id, opciones) {
 
       observeEvent(aplicar_filtros(), {
         opciones$tabla <- opciones$tabla_original
+        # Variable global que cambia cada vez que se aplican los filtros
+        opciones$filtros_apply <- aplicar_count()
         inputs_filtros_char <- c()
         inputs_filtros_char <- unlist(
           lapply(
