@@ -16,7 +16,7 @@
 frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
                                 columna_sep, nivel_1, nivel_2, nivel_3,
                                 nivel_4, intervalo = "mes",
-                                frec_cantidad = FALSE, return_list = FALSE) {
+                                frec_cantidad = FALSE) {
 
   data <- data %>%
     mutate(ASIGNACION_NIVEL = "")
@@ -132,28 +132,17 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   }
 
   return(
-    if (return_list) {
-      list(
-        "descriptiva" = list(
-          "episodio"   = episodios_nivel_1,
-          "factura"    = episodios_nivel_2,
-          "paciente"   = episodios_nivel_3,
-          "prestacion" = episodios_nivel_4
-        )
+    list(
+      "descriptiva" = rbindlist(
+        list(
+          episodios_nivel_1,
+          episodios_nivel_2,
+          episodios_nivel_3,
+          episodios_nivel_4
+        ),
+        fill = TRUE
       )
-    } else {
-      list(
-        "descriptiva" = rbindlist(
-          list(
-            episodios_nivel_1,
-            episodios_nivel_2,
-            episodios_nivel_3,
-            episodios_nivel_4
-          ),
-          fill = TRUE
-        )
-      )
-    }
+    )
   )
 
 }
