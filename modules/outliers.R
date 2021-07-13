@@ -15,7 +15,7 @@
 
 outliers_ui <- function(id) {
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
@@ -31,7 +31,7 @@ outliers_ui <- function(id) {
           inputId = ns("outliers_frecuencia"),
           label = "Frecuencia mínima:",
           min = 0,
-          step = 1, 
+          step = 1,
           value = 0),
         actionButton(
           inputId = ns("outliers_exe"),
@@ -47,7 +47,7 @@ outliers_ui <- function(id) {
         tags$br(),
         downloadButton(
           outputId = ns("outliers_descargar_csv"),
-          label = "CSV", 
+          label = "CSV",
           style = "width:100%;"),
         tags$br(),
         tags$br(),
@@ -73,11 +73,11 @@ outliers_server <- function(id, opciones) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-      
+
       ns <- NS(id)
-      
+
       outliers <- reactiveValues(tabla = data.table())
-      
+
       observe({
         output$outliers_modo_opciones <- renderUI({
           if (input$outliers_modo == "percentil") {
@@ -97,9 +97,10 @@ outliers_server <- function(id, opciones) {
           }
         })
       })
-      
+
+      outliers_excluir_count <- counter()
       observeEvent(input$outliers_excluir, {
-        if(opciones$datos_cargados) {
+        if (opciones$datos_cargados) {
           if (length(input$outliers_tabla_rows_selected) > 0) {
             opciones$pacientes_excluir <- unname(c(
               opciones$pacientes_excluir,
@@ -107,8 +108,7 @@ outliers_server <- function(id, opciones) {
                 outliers$tabla[
                   input$outliers_tabla_rows_selected, "nro_identificacion"])
           ))
-            opciones$pacientes_excluir_exe <- TRUE
-            opciones$pacientes_excluir_exe <- FALSE
+            opciones$pacientes_excluir_exe <- outliers_excluir_count()
 
           showNotification(
             ui = "Pacientes añadidos a la lista. Por favor aplicar filtros.",
@@ -119,18 +119,18 @@ outliers_server <- function(id, opciones) {
             sendSweetAlert(
               session = session,
               title = "Error",
-              text = "Por favor seleccionar al menos un pacient a excluir.",
+              text = "Por favor seleccionar al menos un paciente a excluir.",
               type = "error"
             )
           }
         }
       })
 
-      
+
       output$outliers_titulo <- renderText({
         outliers$titulo
       })
-      
+
       observeEvent(input$outliers_exe, {
         outliers_cols <- "nro_identificacion"
         valor_costo <- opciones$valor_costo
@@ -168,7 +168,7 @@ outliers_server <- function(id, opciones) {
                   input$outliers_cols
                 )
               }
-              
+
             },
             error = function(e) {
               print(e)
@@ -184,7 +184,7 @@ outliers_server <- function(id, opciones) {
           )
         }
       })
-      
+
       output$outliers_tabla <- DT::renderDataTable({
         if (nrow(outliers$tabla) > 0) {
           DT::datatable(
@@ -210,7 +210,7 @@ outliers_server <- function(id, opciones) {
           data.table()
         }
       })
-      
+
 
       output$outliers_descargar_csv <- downloadHandler(
         filename = function() {
@@ -241,7 +241,7 @@ outliers_server <- function(id, opciones) {
         },
         contentType = "xlsx"
       )
-      
+
     }
   )
 }

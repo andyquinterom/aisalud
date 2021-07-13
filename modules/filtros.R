@@ -77,7 +77,7 @@ filtros_server <- function(id, opciones) {
         )
       })
 
-      observeEvent(opciones$pacientes_excluir_exe, {
+      observe({
         pacientes_excluir <- unique(opciones$pacientes_excluir)
         updateSelectizeInput(
           session = session,
@@ -86,7 +86,8 @@ filtros_server <- function(id, opciones) {
           selected = pacientes_excluir,
           server = TRUE
         )
-      })
+      }) %>%
+      bindEvent(opciones$pacientes_excluir_exe)
 
       observeEvent(input$filtros_paciente_valor,{
         if (!all(opciones$pacientes_excluir %in%
