@@ -32,10 +32,10 @@
         "type": "string"
       },
       "exclusiones": {
-        "type": "array"
+        "type": ["array", "string"]
       },
       "inclusiones": {
-        "type": "array"
+        "type": ["array", "string"]
       },
       "agrupadores": {
         "type": "object",
