@@ -207,10 +207,10 @@ ingresará la clave determinada por el administrador de la aplicación.
         "type": "string"
       },
       "exclusiones": {
-        "type": "array"
+        "type": ["array", "string"]
       },
       "inclusiones": {
-        "type": "array"
+        "type": ["array", "string"]
       },
       "agrupadores": {
         "type": "object",
