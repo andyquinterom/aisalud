@@ -29,23 +29,12 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   data_episodios <- NULL
   if (!(is.null(nivel_1) || is.na(nivel_1))) {
 
-    index_episodios <- data.frame(
-      index = 1:length(nivel_1),
-      agrupador = nivel_1
-    )
-    colnames(index_episodios) <- c("index", columnas)
-
-    episodios <- data %>%
-      select(!!!rlang::syms(unique(c(columna_suma, columnas)))) %>%
-      filter(!!as.name(columnas) %in% nivel_1) %>%
-      distinct() %>%
-      right_join(index_episodios, copy = TRUE) %>%
-      window_order(index) %>%
-      group_by(!!as.name(columna_suma)) %>%
-      mutate(!!columnas := first(!!as.name(columnas))) %>%
-      ungroup() %>%
-      distinct(!!!rlang::syms(unique(c(columna_suma, columnas))))
-
+    episodios <- identificar_episodios(
+      data = data, 
+      agrupador = columnas, 
+      columna_suma = columna_suma, 
+      jerarquia = nivel_1)
+    
     if (!is.null(columna_sep)) {
       data_episodios <- data %>%
         group_by(!!!rlang::syms(unique(c(
@@ -66,8 +55,10 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       columna_suma = columna_suma,
       prestaciones = FALSE,
       columna_fecha = columna_fecha,
-      intervalo = intervalo
-    )
+      intervalo = intervalo) %>% 
+      mutate(unidad_conteo = "Episodio")
+    
+    
     episodios_nivel_1 <- data_temp
     episodios <- episodios %>%
       select(!!as.name(columna_suma))

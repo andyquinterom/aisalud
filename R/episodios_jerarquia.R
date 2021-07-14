@@ -29,23 +29,12 @@ episodios_jerarquia <- function(data, columnas, columna_valor, columna_suma,
   data_episodios <- NULL
   if (!(is.null(nivel_1) || is.na(nivel_1))) {
 
-    index_episodios <- data.frame(
-      index = 1:length(nivel_1),
-      agrupador = nivel_1
-    )
-    colnames(index_episodios) <- c("index", columnas)
-
-    episodios <- data %>%
-      select(!!as.name(columna_suma), !!as.name(columnas)) %>%
-      filter(!!as.name(columnas) %in% nivel_1) %>%
-      group_by(!!as.name(columna_suma)) %>%
-      distinct() %>%
-      right_join(index_episodios, copy = TRUE) %>%
-      window_order(index) %>%
-      mutate(!!columnas := first(!!as.name(columnas))) %>%
-      ungroup() %>%
-      distinct(!!as.name(columna_suma), !!as.name(columnas))
-
+    episodios <- identificar_episodios(
+      data = data, 
+      agrupador = columnas, 
+      columna_suma = columna_suma, 
+      jerarquia = nivel_1)
+    
     data_episodios <- data %>%
       {if (!is.null(columna_fecha)) {
         group_by(., !!as.name(columna_suma)) %>%
