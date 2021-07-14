@@ -52,7 +52,7 @@ completar_meses <- function(
   # se cambian a estos nombres
   if (!identical(c("ais_mes", "ais_anio"), c(col_mes, col_anio))) {
     data <- data %>%
-      rename(ais_mes = !!rlang::sym(col_mes), ais_anio = !!rlang::sym(ais_anio))
+      rename(ais_mes = !!rlang::sym(col_mes), ais_anio = !!rlang::sym(col_anio))
   }
 
   # Se crea columna mes_anio_num cómo identificador único de la combinación
