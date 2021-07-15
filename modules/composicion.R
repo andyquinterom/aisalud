@@ -108,7 +108,7 @@ composicion_server <- function(id, opciones, cache, conn) {
                 cache_params = list(col = input$agrupador),
                 non_cache_params = list(data = opciones$tabla),
                 cache_depends = opciones$tabla_query,
-                prefix = "agrupadores_items"
+                prefix = "agrupadores-items"
               )
             },
             error = function(e) {

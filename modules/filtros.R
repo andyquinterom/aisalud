@@ -43,7 +43,7 @@ filtros_ui <- function(id) {
   )
 }
 
-filtros_server <- function(id, opciones) {
+filtros_server <- function(id, opciones, cache) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -121,10 +121,14 @@ filtros_server <- function(id, opciones) {
                   columna_seleccionada <-
                     input[[paste0("filtro_char_columna_", i)]]
                   if (columna_seleccionada %notin% c("Ninguno", "")) {
-                    opciones$tabla_original %>%
-                      select(!!as.name(columna_seleccionada)) %>%
-                      distinct() %>%
-                      pull()
+                    cache_call(
+                      fn = pull_distinct,
+                      cache = cache,
+                      cache_params = list(col = columna_seleccionada),
+                      non_cache_params = list(data = opciones$tabla_original),
+                      cache_depends = opciones$tabla_nombre,
+                      prefix = "items-filtros"
+                    )
                   } else {
                     "Ninguno"
                   }

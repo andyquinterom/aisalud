@@ -249,6 +249,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
       episodios_jerarquia_server(
         episodios = episodios,
         opciones = opciones,
+        cache = cache,
         id = id,
         separadores = TRUE)
 

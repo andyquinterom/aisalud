@@ -68,7 +68,8 @@ shinyServer(function(input, output, session) {
 
   filtros_server(
     id = "filtros_sideBar",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo descriptiva y episodios --------------------------------------------
