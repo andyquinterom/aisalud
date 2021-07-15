@@ -157,6 +157,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
         episodios = episodios,
         opciones = opciones,
         id = id,
+        cache = cache,
         separadores = FALSE)
 
       nota_tecnica <- reactiveValues(
@@ -196,64 +197,56 @@ nota_tecnica_server <- function(id, opciones, cache) {
             separadores <- c("ais_mes", "ais_anio")
             episodios$agrupador <- agrupador
             episodios$separadores <- separadores
-              # Si se va a generar por episodios
-              if (input$episodios) {
-                # Se genera un ID para el cache y se busca si ya ha sido
-                # generado en el pasado
-                episodios$descriptiva <- 
-                  cache_call(
-                    fn = function(data){
-                      episodios_jerarquia(
-                        data = mutate(
-                          opciones$tabla,
-                          ais_mes = month(fecha_prestacion),
-                          ais_anio = year(fecha_prestacion),
-                          ais_mes_anio = ais_anio * 100 + ais_mes)
-                      )
-                    },
-                    cache = cache,
-                    cache_params = list(
-                      columnas =      agrupador,
-                      columna_valor = opciones$valor_costo,
-                      columna_sep =   separadores,
-                      columna_suma =  episodios_col_rel,
-                      nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                      nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                      nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                      nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                      frec_cantidad = opciones$cantidad),
-                    non_cache_params = list(data=opciones$tabla),
-                    prefix = "desc_ep_seg",
-                    cache_depends = opciones$tabla_query
-                  )[["descriptiva"]]
-              }
-              if (!input$episodios) {
-                # Si se va a generar de manera tradicional
-                # Se checkea un ID para el cache y se busca si ha sido
-                # generada en el pasado
-                episodios$descriptiva <- 
-                  cache_call(
-                    fn = function(data){
-                      descriptiva(
-                        data = mutate(
-                          opciones$tabla,
-                          ais_mes = month(fecha_prestacion),
-                          ais_anio = year(fecha_prestacion),
-                          ais_mes_anio = ais_anio * 100 + ais_mes)
-                      )
-                  },
-                    cache = cache,
-                    cache_params = list(
-                      columnas = c(agrupador, separadores),
-                      columna_valor = opciones$valor_costo,
-                      columna_suma = input$unidades,
-                      prestaciones = (input$unidades == "prestacion"),
-                      frec_cantidad = opciones$cantidad),
-                    non_cache_params = list(opciones$tabla),
-                    prefix = "desc_seg",
-                    cache_depends = opciones$tabla_query
-                  )[["descriptiva"]]
-              }
+            # Si se va a generar por episodios
+            if (input$episodios) {
+              # Se genera un ID para el cache y se busca si ya ha sido
+              # generado en el pasado
+              episodios$descriptiva <- cache_call(
+                fn = episodios_jerarquia,
+                cache = cache,
+                cache_params = list(
+                  columnas =      agrupador,
+                  columna_valor = opciones$valor_costo,
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  frec_cantidad = opciones$cantidad),
+                non_cache_params = list(
+                  data = opciones$tabla %>% 
+                    mutate(
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes)),
+                prefix = "desc_ep_seg",
+                cache_depends = opciones$tabla_query
+              )[["descriptiva"]]
+            }
+            if (!input$episodios) {
+              # Si se va a generar de manera tradicional
+              # Se checkea un ID para el cache y se busca si ha sido
+              # generada en el pasado
+              episodios$descriptiva <- cache_call(
+                fn = descriptiva,
+                cache = cache,
+                cache_params = list(
+                  columnas = c(agrupador, separadores),
+                  columna_valor = opciones$valor_costo,
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad),
+                non_cache_params = list(
+                  data = opciones$tabla %>% 
+                    mutate(
+                      ais_mes = month(fecha_prestacion),
+                      ais_anio = year(fecha_prestacion),
+                      ais_mes_anio = ais_anio * 100 + ais_mes)),
+                prefix = "desc_seg",
+                cache_depends = opciones$tabla_query
+              )[["descriptiva"]]
+            }
             episodios$descriptiva <- episodios$descriptiva %>%
               mutate(mes_anio_num = ais_anio * 100 + ais_mes)
           }
@@ -272,41 +265,40 @@ nota_tecnica_server <- function(id, opciones, cache) {
             episodios$separadores <- separadores
             # Validacion por episodio o tradicional
             if (input$episodios) {
-              episodios$frecuencias <- 
-                cache_call(
-                  fn = frecuencias_jerarquia,
-                  cache = cache,
-                  cache_params = list(
-                    columnas =      agrupador,
-                    columna_fecha = "fecha_prestacion",
-                    columna_sep =   separadores,
-                    columna_suma =  episodios_col_rel,
-                    frec_cantidad = opciones$cantidad,
-                    nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                    nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                    nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                    nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                    intervalo = "mes"),
-                  non_cache_params = opciones$tabla,
-                  prefix = "frec_ep",
-                  cache_depends = opciones$tabla_query
-                )[["descriptiva"]]
+              episodios$frecuencias <- cache_call(
+                fn = frecuencias_jerarquia,
+                cache = cache,
+                cache_params = list(
+                  columnas =      agrupador,
+                  columna_fecha = "fecha_prestacion",
+                  columna_sep =   separadores,
+                  columna_suma =  episodios_col_rel,
+                  frec_cantidad = opciones$cantidad,
+                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
+                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
+                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
+                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
+                  intervalo = "mes"),
+                non_cache_params = list(data = opciones$tabla),
+                prefix = "frec_ep",
+                cache_depends = opciones$tabla_query
+              )[["descriptiva"]]
             }
             if (!input$episodios) {
-              episodios$frecuencias <- 
-                cache_call(
-                  fn = frecuencias,cache = cache,
-                  cache_params = list(
-                    agrupador = c(agrupador, separadores),
-                    columna_fecha = "fecha_prestacion",
-                    columna_suma = input$unidades,
-                    prestaciones = (input$unidades == "prestacion"),
-                    frec_cantidad = opciones$cantidad,
-                    intervalo = "mes"),
-                  non_cache_params = opciones$tabla,
-                  prefix = "frec",
-                  cache_depends = opciones$tabla_query
-                )
+              episodios$frecuencias <- cache_call(
+                fn = frecuencias,
+                cache = cache,
+                cache_params = list(
+                  agrupador = c(agrupador, separadores),
+                  columna_fecha = "fecha_prestacion",
+                  columna_suma = input$unidades,
+                  prestaciones = (input$unidades == "prestacion"),
+                  frec_cantidad = opciones$cantidad,
+                  intervalo = "mes"),
+                non_cache_params = list(data = opciones$tabla),
+                prefix = "frec",
+                cache_depends = opciones$tabla_query
+              )
             }
           }
         })
