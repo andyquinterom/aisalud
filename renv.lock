@@ -831,6 +831,18 @@
       "Repository": "CRAN",
       "Hash": "402073a8a045c9f5ea096ed94e01d9ce"
     },
+    "shinyCache": {
+      "Package": "shinyCache",
+      "Version": "0.1.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "FundacionAIS",
+      "RemoteRepo": "shinyCache",
+      "RemoteRef": "v0.1.0",
+      "RemoteSha": "f4432236a7bcf9a6506b76bd60f7d8719a3aae4a",
+      "Hash": "d368e620eef4203a505ce83526d80256"
+    },
     "shinyWidgets": {
       "Package": "shinyWidgets",
       "Version": "0.6.0",
