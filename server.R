@@ -46,11 +46,14 @@ shinyServer(function(input, output, session) {
     "cache" = list()
   )
 
+  cache <- reactiveValues()
+  
   # Modulo prepara ------------------------------------------------------------
 
   cargar_datos_server(
     id = "cargar_datos",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 
@@ -73,6 +76,7 @@ shinyServer(function(input, output, session) {
   descriptiva_server(
     id = "episodios_modulo",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 

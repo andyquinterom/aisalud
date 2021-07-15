@@ -76,7 +76,7 @@ cargar_datos_ui <- function(id) {
   )
 }
 
-cargar_datos_server <- function(id, opciones, conn) {
+cargar_datos_server <- function(id, opciones, cache, conn) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
