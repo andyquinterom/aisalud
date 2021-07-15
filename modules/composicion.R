@@ -67,7 +67,7 @@ composicion_ui <- function(id) {
   )
 }
 
-composicion_server <- function(id, opciones, conn) {
+composicion_server <- function(id, opciones, cache, conn) {
   ns <- NS(id)
   moduleServer(
     id = id,
@@ -82,7 +82,7 @@ composicion_server <- function(id, opciones, conn) {
         updateSelectizeInput(
           session = session,
           inputId = "agrupador",
-          choices = opciones$colnames)
+          choices = c("Ninguno", opciones$colnames))
         updateSelectizeInput(
           session = session,
           inputId = "episodios_col_rel",
@@ -94,30 +94,22 @@ composicion_server <- function(id, opciones, conn) {
           choices = opciones$colnames)
       })
 
-      # Comodin de compatibilidad con funciones de otros módulos
-      cambio_columnas <- reactive({
-        list(input$agrupador, TRUE)
-      })
-
       # Cuando haya un cambio a la columna de agrupador se ejecutará
       # una busqueda en el cache.
-      observeEvent(cambio_columnas(), {
-        cache_id <- digest(
-          object = list("agrup_comp", cambio_columnas(), opciones$tabla_query),
-          algo = "xxhash32",
-          seed = 1)
-        check_cache <- cache_id %in% names(opciones$cache)
+      observe({
         # Si hay cambios al agrupador o a episodios se ejecutará
         if (!is.null(opciones$colnames) &&
-            input$agrupador %notin% c("", "Ninguno") &&
-            !check_cache) {
+            input$agrupador %notin% c("", "Ninguno")) {
           tryCatch(
             expr = {
-              episodios$agrupadores_items <- opciones$tabla %>%
-                select(!!as.name(input$agrupador)) %>%
-                distinct() %>%
-                pull(!!as.name(input$agrupador))
-              opciones$cache[[cache_id]] <- episodios$agrupadores_items
+              episodios$agrupadores_items <- cache_call(
+                fn = pull_distinct,
+                cache = cache,
+                cache_params = list(col = input$agrupador),
+                non_cache_params = list(data = opciones$tabla),
+                cache_depends = opciones$tabla_query,
+                prefix = "agrupadores_items"
+              )
             },
             error = function(e) {
               print(e)
@@ -130,14 +122,11 @@ composicion_server <- function(id, opciones, conn) {
             }
           )
         }
-        if (check_cache) {
-          episodios$agrupadores_items <- opciones$cache[[cache_id]]
-        }
-      })
+      }) %>%
+      bindEvent(input$agrupador)
 
       # Se actualizan los agrupadores para los episodios
       observe({
-        cambio_columnas()
         if (length(episodios$agrupadores_items) > 0) {
           # Se decide si utilizar jerarquia con perfil
           perfil_seleccionado <- NULL
@@ -155,7 +144,8 @@ composicion_server <- function(id, opciones, conn) {
             server = TRUE
           )
         }
-      })
+      }) %>%
+      bindEvent(episodios$agrupadores_items, opciones$perfil_enable)
 
       observe({
         composicion$agrupadores <- input$episodios_jerarquia_nivel_1
@@ -172,35 +162,26 @@ composicion_server <- function(id, opciones, conn) {
                 input$composicion_explorar != "") {
               # Se busca si la misma tabla ya ha sido generada en el pasado
               # con el cache.
-              cache_id <- digest(
-                object = list(
-                  "comp", opciones$tabla_query,
+              composicion$tabla <- cache_call(
+                fn = function(...) {
+                  datos_composicion(...) %>%
+                    collect()
+                },
+                cache = cache,
+                cache_params = list(
                   columna_episodios = input$agrupador,
                   columna_valor = opciones$valor_costo,
                   columna_suma = input$episodios_col_rel,
                   columna_explorar = input$composicion_explorar,
                   prioridad = input$episodios_jerarquia_nivel_1,
                   frec_cantidad = opciones$cantidad),
-                algo = "xxhash32",
-                seed = 1)
-              check_cache <- cache_id %in% names(opciones$cache)
-              if (check_cache) composicion$tabla <- opciones$cache[[cache_id]]
-              if (!check_cache) {
-                # Creación de la tabla de composicion
-                composicion$tabla <- datos_composicion(
-                  data = opciones$tabla,
-                  columna_episodios = input$agrupador,
-                  columna_valor = opciones$valor_costo,
-                  columna_suma = input$episodios_col_rel,
-                  columna_explorar = input$composicion_explorar,
-                  prioridad = input$episodios_jerarquia_nivel_1,
-                  frec_cantidad = opciones$cantidad
-                ) %>%
-                  collect() %>%
-                  mutate(participacion_en_episodios =
-                           participacion_en_episodios / 100,
-                         participacion_valor = participacion_valor / 100)
-              }
+                non_cache_params = list(data = opciones$tabla),
+                cache_depends = opciones$tabla_query,
+                prefix = "composicion"
+              ) %>%
+                mutate(participacion_en_episodios =
+                         participacion_en_episodios / 100,
+                       participacion_valor = participacion_valor / 100)
             }
           },
           error = function(e) {

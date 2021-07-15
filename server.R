@@ -106,6 +106,7 @@ shinyServer(function(input, output, session) {
   composicion_server(
     id = "composicion_modulo",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 
