@@ -84,14 +84,16 @@ shinyServer(function(input, output, session) {
 
   outliers_server(
     id = "outliers_modulo",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo generar nota técnica -----------------------------------------------
 
   nota_tecnica_server(
     id = "nota_tecnica_modulo",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # # Modulo otros gráficos ---------------------------------------------------
@@ -120,7 +122,8 @@ shinyServer(function(input, output, session) {
 
   seguimiento_server(
     id = "seguimiento",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo de manuales

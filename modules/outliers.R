@@ -69,7 +69,7 @@ outliers_ui <- function(id) {
   )
 }
 
-outliers_server <- function(id, opciones) {
+outliers_server <- function(id, opciones, cache) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
@@ -140,13 +140,19 @@ outliers_server <- function(id, opciones) {
           tryCatch(
             expr = {
               if (input$outliers_modo == "percentil") {
-                outliers$tabla <- outliers_percentil(
-                  data =          opciones$tabla,
-                  columna =       outliers_cols,
-                  columna_valor = valor_costo,
-                  frec_cantidad = opciones$cantidad,
-                  percentil =     input$outliers_percentil/100,
-                  frecuencia =    frecuencia)
+                outliers$tabla <- 
+                  cache_call(
+                    fn = outliers_percentil,cache = cache,
+                    cache_params = list(
+                      columna =       outliers_cols,
+                      columna_valor = valor_costo,
+                      frec_cantidad = opciones$cantidad,
+                      percentil =     input$outliers_percentil/100,
+                      frecuencia =    frecuencia),
+                    non_cache_params = opciones$tabla,
+                    prefix = "outliers_per",
+                    cache_depends = opciones$tabla_sql
+                    )
                 outliers$titulo <- paste(
                   "Pacientes con un valor mayor que el",
                   formatAsPerc(input$outliers_percentil),
@@ -154,13 +160,20 @@ outliers_server <- function(id, opciones) {
                   input$outliers_cols
                 )
               } else {
-                outliers$tabla <- outliers_iqr(
-                  data =           opciones$tabla,
-                  columna =        outliers_cols,
-                  columna_valor =  valor_costo,
-                  frec_cantidad = opciones$cantidad,
-                  multiplicativo = input$outliers_iqr,
-                  frecuencia =     frecuencia)
+                outliers$tabla <- 
+                  cache_call(
+                    fn = outliers_iqr,
+                    cache = cache,
+                    cache_params = list(
+                      columna =        outliers_cols,
+                      columna_valor =  valor_costo,
+                      frec_cantidad = opciones$cantidad,
+                      multiplicativo = input$outliers_iqr,
+                      frecuencia =     frecuencia),
+                    non_cache_params = opciones$tabla,
+                    prefix = "outliers_iqr",
+                    cache_depends = opciones$tabla_sql
+                  )
                 outliers$titulo <- paste(
                   "Pacientes por fuera de",
                   input$outliers_iqr,
