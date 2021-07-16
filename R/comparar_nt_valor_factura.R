@@ -34,14 +34,14 @@ comparar_nt_valor_factura <- function(
     group_by(unidad_conteo, agrupador, valor_mes) %>%
     relocate(unidad_conteo, agrupador, valor_mes) %>%
     {if (indicador == "diff") {
-      mutate(., across(.fns = ~ .x - valor_mes))
+      dplyr::mutate(., dplyr::across(.fns = ~ .x - valor_mes))
     } else if (indicador == "perc") {
-      mutate(., across(.fns = ~ .x / na_if(valor_mes, 0)))
+      dplyr::mutate(., dplyr::across(.fns = ~ .x / na_if(valor_mes, 0)))
     } else {.}} %>%
     {if (indicador %in% c("diff", "suma")) {
-      mutate(., total = rowSums(across(), na.rm = TRUE))
+      dplyr::mutate(., total = rowSums(dplyr::across(), na.rm = TRUE))
     } else if (indicador == "perc") {
-      mutate(., media = rowMeans(across(), na.rm = TRUE),
+      dplyr::mutate(., media = rowMeans(dplyr::across(), na.rm = TRUE),
              media_valor = media * valor_mes)
     } else {.}}
 
