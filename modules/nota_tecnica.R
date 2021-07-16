@@ -215,7 +215,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
                   nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
                   frec_cantidad = opciones$cantidad),
                 non_cache_params = list(
-                  data = opciones$tabla %>% 
+                  data = opciones$tabla %>%
                     mutate(
                       ais_mes = month(fecha_prestacion),
                       ais_anio = year(fecha_prestacion),
@@ -238,7 +238,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
                   prestaciones = (input$unidades == "prestacion"),
                   frec_cantidad = opciones$cantidad),
                 non_cache_params = list(
-                  data = opciones$tabla %>% 
+                  data = opciones$tabla %>%
                     mutate(
                       ais_mes = month(fecha_prestacion),
                       ais_anio = year(fecha_prestacion),

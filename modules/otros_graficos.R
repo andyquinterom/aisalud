@@ -15,7 +15,7 @@
 
 otros_graficos_ui <- function(id) {
   ns <- NS(id)
-  
+
   tagList(
     fluidRow(
       box(
@@ -44,7 +44,7 @@ otros_graficos_ui <- function(id) {
                   inputId = ns("edades_numero_columnas"),
                   label = "Número de columnas",
                   choices = c("Auto", 5, 10, 20, 25),
-                  width = "100%", 
+                  width = "100%",
                   selected = "Auto"
                 ),
                 actionButton(
@@ -74,11 +74,11 @@ otros_graficos_server <- function(id, opciones) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-  
+
       ns <- NS(id)
-      
+
       graficos <- reactiveValues()
-      
+
       observeEvent(opciones$colnames, {
         updateSelectizeInput(
           session = session,
@@ -93,7 +93,7 @@ otros_graficos_server <- function(id, opciones) {
           selected = "Ninguno"
         )
       })
-      
+
       observeEvent(input$edades_segmentacion_select_columna, {
         segmentacion_columna <- input$edades_segmentacion_select_columna
         if (segmentacion_columna != "Ninguno" && segmentacion_columna != "") {
@@ -116,11 +116,11 @@ otros_graficos_server <- function(id, opciones) {
           output$edades_segmentacion_select_agrupadores_ui <- renderUI({})
         }
       })
-      
+
       observeEvent(input$edades_ejecutar, {
         tryCatch(
           expr = {
-            if (input$edades_select_columna != "" && 
+            if (input$edades_select_columna != "" &&
                 input$edades_select_columna != "Ninguno") {
               if (input$edades_numero_columnas == "Auto") {
                 numero_bins <- NULL
@@ -142,7 +142,7 @@ otros_graficos_server <- function(id, opciones) {
                   numero_bins = numero_bins)
               } else {
                 segmentacion <- input$edades_segmentacion_select_columna
-                segmentacion_seleccionado <- 
+                segmentacion_seleccionado <-
                   input$edades_segmentacion_select_agrupadores
                 columna_edades <- input$edades_select_columna
                 edades_pacientes <- opciones$tabla %>%
@@ -162,7 +162,7 @@ otros_graficos_server <- function(id, opciones) {
             print(e)
             sendSweetAlert(
               session = session,
-              title = "Error", 
+              title = "Error",
               type = "error",
               text = "Por favor revisar los parametros de carga de datos,
                     columnas, formato de fecha y los datos. Si este problema persiste
@@ -171,13 +171,13 @@ otros_graficos_server <- function(id, opciones) {
           }
         )
       })
-      
+
       output$edades_render <- renderPlotly({
         if (!is.null(graficos$edades)) {
           graficos$edades
         }
       })
-      
+
       output$edades_titulo <- renderText({
         paste0(
           "Distribución de edades",
@@ -189,9 +189,9 @@ otros_graficos_server <- function(id, opciones) {
           )
         )
       })
-      
-      
-      
+
+
+
     }
   )
 }

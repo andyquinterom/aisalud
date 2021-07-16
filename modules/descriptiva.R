@@ -267,7 +267,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                       "Número de pacientes:",
                       formatC(
                         x = {
-                          data %>% 
+                          data %>%
                             distinct(nro_identificacion) %>%
                             count() %>%
                             pull()
@@ -285,7 +285,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                   prefix = "desc_inf_pacientes",
                   cache_depends = opciones$tabla_query
                 )
-                
+
                 episodios$n_facturas <- cache_call(
                   fn = function(data) {
                     if ("nro_factura" %in% opciones$colnames) {
@@ -293,7 +293,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                         "Número de facturas:",
                         formatC(
                           x = {
-                            data %>% 
+                            data %>%
                               distinct(nro_factura) %>%
                               count() %>%
                               pull()
@@ -354,7 +354,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                     nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
                     nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
                     nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                    frec_cantidad = opciones$cantidad  
+                    frec_cantidad = opciones$cantidad
                   ),
                   non_cache_params = list(data = opciones$tabla),
                   prefix = "desc_ep",
@@ -379,12 +379,12 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                   prefix = "desc",
                   cache_depends = opciones$tabla_query
                 )
-                
+
                 episodios$tabla[["data"]] <-
                   list("temporal" = episodios$tabla[["data"]])
                 names(episodios$tabla[["data"]]) <- input$unidades
-                  
-                
+
+
               }
               # lista de los agrupadores únicos
               episodios$lista_agrupadores <-
@@ -433,7 +433,7 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                 prefix = "frec_ep",
                 cache_depends = opciones$tabla_query
               )[["descriptiva"]]
-              
+
             }
             if (!input$episodios) {
               episodios$frecuencias <- cache_call(

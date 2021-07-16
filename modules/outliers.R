@@ -153,7 +153,7 @@ outliers_server <- function(id, opciones, cache) {
                   prefix = "outliers_per",
                   cache_depends = opciones$tabla_query
                 )
-                
+
                 outliers$titulo <- paste(
                   "Pacientes con un valor mayor que el",
                   formatAsPerc(input$outliers_percentil),

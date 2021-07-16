@@ -206,7 +206,7 @@ cargar_datos_server <- function(id, opciones, cache, conn) {
               data %>%
                 mutate(
                   # genera id de mes y año
-                  mes_temporal = year(fecha_prestacion) * 100 + 
+                  mes_temporal = year(fecha_prestacion) * 100 +
                     month(fecha_prestacion)) %>%
                 group_by(mes_temporal) %>%
                 summarise(suma = sum(
