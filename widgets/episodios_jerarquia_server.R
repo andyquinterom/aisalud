@@ -145,51 +145,38 @@ episodios_jerarquia_server <- function(episodios, opciones, cache, id = NULL,
       }
     }
   }) %>%
-  bindEvent(cambio_columnas())
+  bindEvent(episodios$agrupadores_items, cambio_columnas())
 
   output$episodios_jerarquia <- renderUI({
     episodios$widget_jerarquia
   })
 
+  observe({
+    episodios$widget_jerarquia <- jerarquia(
+      ns = ns,
+      items_nivel_1 = episodios$agrupadores_items)
+  }) %>%
+  bindEvent(input$seleccionar_episodio)
 
-  observeEvent(input$seleccionar_episodio, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        jerarquia(
-          ns = ns,
-          items_nivel_1 = episodios$agrupadores_items)
-      )
-    })
-  })
+  observe({
+    episodios$widget_jerarquia <- jerarquia(
+      ns = ns,
+      items_nivel_2 = episodios$agrupadores_items)
+  }) %>%
+  bindEvent(input$seleccionar_factura)
 
-  observeEvent(input$seleccionar_factura, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        jerarquia(
-          ns = ns,
-          items_nivel_2 = episodios$agrupadores_items)
-      )
-    })
-  })
+  observe({
+    episodios$widget_jerarquia <- jerarquia(
+      ns = ns,
+      items_nivel_3 = episodios$agrupadores_items)
+  }) %>%
+  bindEvent(input$seleccionar_paciente)
 
-  observeEvent(input$seleccionar_paciente, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        jerarquia(
-          ns = ns,
-          items_nivel_3 = episodios$agrupadores_items)
-      )
-    })
-  })
-
-  observeEvent(input$seleccionar_prestacion, {
-    output$episodios_jerarquia <- renderUI({
-      tagList(
-        jerarquia(
-          ns = ns,
-          items_nivel_4 = episodios$agrupadores_items)
-      )
-    })
-  })
+  observe({
+    episodios$widget_jerarquia <- jerarquia(
+      ns = ns,
+      items_nivel_4 = episodios$agrupadores_items)
+  }) %>%
+  bindEvent(input$seleccionar_prestacion)
 
 }

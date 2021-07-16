@@ -13,13 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-caja_de_bigotes_agrupador <- function(
-  data, columnas_sep) {
+caja_de_bigotes_agrupador <- function(data, columnas_sep) {
   data <- copy(data)
   options(warn = -1)
   box_plot <- plot_ly(type = "box")
-  data[, "upper_fence" := P50 + 1.5 * (P75-P25)]
-  data[, "lower_fence" := P50 - 1.5 * (P75-P25)]
+  data <- data %>%
+    mutate(
+      upper_fence = P50 + 1.5 * (P75 - P25),
+      lower_fence = P50 - 1.5 * (P75 - P25)
+    )
   lapply(
     X = 1:nrow(columnas_sep),
     FUN = function(i) {
