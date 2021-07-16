@@ -42,12 +42,11 @@ shinyServer(function(input, output, session) {
     "datos_cargados" = FALSE,
     "perfil_enable" = FALSE,
     "fecha_rango" = rep(Sys.Date(), 2),
-    "cantidad" = FALSE,
-    "cache" = list()
+    "cantidad" = FALSE
   )
 
   cache <- reactiveValues()
-  
+
   # Modulo prepara ------------------------------------------------------------
 
   cargar_datos_server(
