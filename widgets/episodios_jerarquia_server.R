@@ -13,7 +13,7 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
+episodios_jerarquia_server <- function(episodios, opciones, cache, id = NULL,
   session = getDefaultReactiveDomain(), separadores = FALSE) {
 
   input <- session$input
@@ -76,35 +76,22 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
   bindEvent(opciones$tabla_query)
 
   observe({
-    cache_id <- digest(
-      object = list("agrup", cambio_columnas(), opciones$tabla_query),
-      algo = "xxhash32",
-      seed = 1)
-    check_cache <- cache_id %in% names(opciones$cache)
     # Si hay cambios al agrupador o a episodios se ejecutará
     if (!is.null(opciones$colnames) &&
-        input$agrupador %notin% c("", "Ninguno") &&
-        !check_cache) {
+        input$agrupador %notin% c("", "Ninguno")) {
       tryCatch(
         expr = {
-          episodios$agrupadores_items <- list()
-          # Si la opción de episodios es verdadera y la columna contiene
-          # menos de 60 agrupadores únicos entonces se genera widget de
-          # jerarquia de episodios
+          if  (!input$episodios) episodios$agrupadores_items <- NULL
           if (input$episodios) {
-            episodios$agrupadores_items <- opciones$tabla %>%
-              select(!!as.name(input$agrupador)) %>%
-              distinct() %>%
-              pull(!!as.name(input$agrupador))
-            if (length(episodios$agrupadores_items) > 60) {
-              # Si hay mas de 60 agrupadores únicos se agapará la opción
-              # de episodios y se volvera a correr el código del observer
-              # (tipo recursivo)
-              episodios$agrupadores_items <- list()
-            }
+            episodios$agrupadores_items <- cache_call(
+              fn = pull_distinct,
+              cache = cache,
+              cache_params = list(col = input$agrupador),
+              non_cache_params = list(data = opciones$tabla),
+              cache_depends = opciones$tabla_query,
+              prefix = "agrupadores-items"
+            )
           }
-          opciones$cache[[cache_id]] <- episodios$agrupadores_items
-          episodios$unidad_descriptiva <- input$descriptiva_unidades
         },
         error = function(e) {
           print(e)
@@ -116,9 +103,6 @@ episodios_jerarquia_server <- function(episodios, opciones, id = NULL,
           )
         }
       )
-    }
-    if (check_cache) {
-      episodios$agrupadores_items <- opciones$cache[[cache_id]]
     }
   }) %>%
   bindEvent(cambio_columnas())

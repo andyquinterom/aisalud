@@ -42,15 +42,17 @@ shinyServer(function(input, output, session) {
     "datos_cargados" = FALSE,
     "perfil_enable" = FALSE,
     "fecha_rango" = rep(Sys.Date(), 2),
-    "cantidad" = FALSE,
-    "cache" = list()
+    "cantidad" = FALSE
   )
+
+  cache <- reactiveValues()
 
   # Modulo prepara ------------------------------------------------------------
 
   cargar_datos_server(
     id = "cargar_datos",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 
@@ -65,7 +67,8 @@ shinyServer(function(input, output, session) {
 
   filtros_server(
     id = "filtros_sideBar",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo descriptiva y episodios --------------------------------------------
@@ -73,6 +76,7 @@ shinyServer(function(input, output, session) {
   descriptiva_server(
     id = "episodios_modulo",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 
@@ -80,14 +84,16 @@ shinyServer(function(input, output, session) {
 
   outliers_server(
     id = "outliers_modulo",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo generar nota técnica -----------------------------------------------
 
   nota_tecnica_server(
     id = "nota_tecnica_modulo",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # # Modulo otros gráficos ---------------------------------------------------
@@ -102,6 +108,7 @@ shinyServer(function(input, output, session) {
   composicion_server(
     id = "composicion_modulo",
     opciones = opciones,
+    cache = cache,
     conn = conn
   )
 
@@ -116,7 +123,8 @@ shinyServer(function(input, output, session) {
 
   seguimiento_server(
     id = "seguimiento",
-    opciones = opciones
+    opciones = opciones,
+    cache = cache
   )
 
   # Modulo de manuales
