@@ -121,41 +121,31 @@ comparacion_valor_facturado <- function(
       columns = c(3, ncol(comparaciones[["perc"]])),
       dec.mark = ",", mark = ".", digits = 0)
 
-  minimo_mes <- min(pull(descriptiva_tabla, ais_mes_anio))
-  maximo_mes <- max(pull(descriptiva_tabla, ais_mes_anio))
   valor_mes <- sum(nota_tecnica$valor_mes)
 
-  meses_completos <- tibble("ais_mes_anio" = seq(minimo_mes, maximo_mes)) %>%
-    mutate(ais_anio = substr(ais_mes_anio, 1, 4) %>% as.numeric(),
-           ais_mes  = substr(ais_mes_anio, 5, 6) %>% as.numeric()) %>%
-    filter(ais_mes >= 1 & ais_mes <= 12) %>%
-    select(-ais_mes_anio)
-
-  valor_acumulado <- meses_completos %>%
-    left_join(
-      descriptiva_tabla %>%
-        rename(agrupador = !!as.name(agrupador)) %>%
-        left_join(nota_tecnica %>%
-                    select(agrupador)) %>%
-        arrange(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
-        group_by(!!rlang::sym(col_anio), !!rlang::sym(col_mes)) %>%
-        summarise(Suma = sum(Suma, na.rm = TRUE)) %>%
-        select(!!!rlang::syms(c(col_anio, col_mes)), Suma),
-      by = c("ais_mes" = col_mes, "ais_anio" = col_anio)) %>%
-    mutate(numero_meses = 1:nrow(.),
-           mes_anio_num = ais_anio * 100 + ais_mes,
-           mes_anio = mes_spanish_juntos(mes_anio_num),
-           mes_anio_num = do.call(purrr::map(
-             .x = as.Date(paste(ais_anio, ais_mes, "01", sep = "-")),
-             .f = function(x) last(seq(x, length = 2, by = "months") - 1)),
-             what = "c")) %>%
+  valor_acumulado <- descriptiva_tabla %>%
+    completar_meses(
+      agrupador = agrupador,
+      col_anio = col_anio,
+      col_mes = col_mes) %>%
+    rename(agrupador = !!rlang::sym(agrupador)) %>%
+    right_join(nota_tecnica) %>%
+    arrange(mes_anio_num) %>%
+    group_by(ais_anio, ais_mes, mes_anio_num) %>%
+    summarise(Suma = sum(Suma, na.rm = TRUE)) %>%
+    filter(!is.na(ais_mes) || !is.na(ais_anio)) %>%
+    ungroup() %>%
+    mutate(
+      numero_meses = 1:n(),
+      mes_anio = mes_spanish_juntos(mes_anio_num),
+      fecha_ejec = ym(mes_anio_num) + months(1) - days(1)) %>%
     mutate(Suma = replace_na(Suma, 0),
            valor_acumulado = cumsum(Suma), valor_mes_esperado = valor_mes,
            valor_a_ejecutar = valor_mes * as.double(numero_meses))
 
   plot_valor_acumulado <- valor_acumulado %>%
     plot_ly(
-      x = ~mes_anio_num,
+      x = ~fecha_ejec,
       y = ~valor_acumulado,
       name = "Valor ejecutado",
       type = "scatter", mode = "lines+markers"

@@ -102,7 +102,8 @@ completar_meses <- function(
   # Se expande la tabla, los meses que previamente no estaban presentes quedan
   # como NA o "" dependiendo si es numérico o character
   data_completa <- data_original %>%
-    full_join(meses_completos)
+    full_join(meses_completos) %>%
+    filter(!is.na(ais_mes) || !is.na(ais_aio))
 
   return(data_completa)
 }
