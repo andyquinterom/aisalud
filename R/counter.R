@@ -13,9 +13,17 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-# La función counter permite crear un counter independiente y sandboxed.
-# La funcion devuelve una función la cual al correrse incrementa el valor
-# por 1.
+#' @title Contador independiente.
+#' @description Crea un contador independiente debido a que incrementa su propio
+#' valor en 1.
+#' @return Función que al ejecutarse aumenta su estado interno por 1.
+#' @examples
+#' Variable <- counter()
+#' print(Variable())
+#' 1
+#' print(Variable())
+#' 2
+
 counter <- function() {
   starting_val <- 0
   counter_fn <- function() {

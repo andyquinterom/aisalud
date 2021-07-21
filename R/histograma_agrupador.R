@@ -13,6 +13,22 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Histograma de valores por segmentación
+#' @description Gráfico con histograma de valores distribuido por segmentación
+#' @param data Tabla descriptiva con valores por unidad de conteo por agrupador
+#' @param titulo Nombre de la gráfica
+#' @param numero_bins Número de barras a agrupar el valor
+#' @param columna_sep variable de segmentación 
+#' @return gráfica con histograma
+#' @examples
+#' histograma_agrupador(
+#'  titulo = "Histograma",
+#'  data = episodios$tabla[["data"]],
+#'  columnas_sep = episodios$lista_agrupadores[
+#'     input$histograma_agrupador_rows_selected],
+#'  numero_bins = numero_bins)
+
+
 histograma_agrupador <- function(data, titulo = "Valor", numero_bins = NULL,
                                  columnas_sep) {
 

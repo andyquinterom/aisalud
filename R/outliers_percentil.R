@@ -13,6 +13,27 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Calculo de outliers con percentiles
+#' @description Calcula los outliers de una columna usando los percentiles de 
+#' la columna_valor
+#' @param data tabla con información a analizar
+#' @param columna carácter con la columna a realizar analisis de percentil
+#' @param columna_valor carácter especificando la columna númerica
+#' @param percentil valor de 1 a 100 que especifica el límite percentual
+#' @param frecuencia número de veces que se repite el valor columna
+#' @param frec_cantidad boolean para escoger si realizar analisis por frecuencia
+#' o cantidad
+#' @return tabla con outliers
+#' @examples
+#' outliers_percentil(
+  #' data = iris,
+  #' columna = "Species",
+  #' columna_valor = "Sepal.Length",
+  #' percentil = .5,
+  #' frecuencia = 1)
+
+
+
 outliers_percentil <- function(data, columna, columna_valor, percentil,
                              frecuencia = 1, frec_cantidad = FALSE) {
 

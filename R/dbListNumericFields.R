@@ -13,9 +13,14 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-# Funcion para encontrar las columnas numericas dentro de una tabla
-# en PostgreSQL.
-# conn es la conexion a la base de datos y table_name es el nombre de la tabla
+#' @title Columnas númericas en PostgreSQL
+#' @description Funcion para encontrar las columnas numericas dentro de una 
+#' tabla en PostgreSQL.
+#' @param conn Conexión a base de datos
+#' @param table_name Nombre de la tabla en base de datos
+#' @return Vector con nombres de columnas de tipo numerico
+
+
 dbListNumericFields <- function(conn, table_name) {
   # El query en SQL que se utiliza para obtener los datos
   sql <- "select

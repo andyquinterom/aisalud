@@ -13,6 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Mes en español 
+#' @description Devuelve el mes en español digitando el número de la posición 
+#' del mes en el año
+#' @param x posición del mes del año
+#' @return carácter con el nombre del mes
+#' @examples
+#' mes_spanish(3)
+#' [1] "Marzo"
+
 mes_spanish <- function(x) {
   meses <- c(
     "Enero",

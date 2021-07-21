@@ -13,6 +13,13 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Formato porcentaje
+#' @description Convierte número en porcentaje
+#' @param x número
+#' @return número con formato porcentaje
+#' @example formatAsPerc(2)
+#' "2%"
+
 formatAsPerc <- function(x) {
   x <- as.numeric(as.character(x))
   return(

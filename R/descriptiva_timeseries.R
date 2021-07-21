@@ -13,6 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Descriptiva time series
+#' @description Transforma una descriptiva en una serie de tiempo completa.
+#' @param data tabla descriptiva
+#' @param agrupador agrupador o agrupadores para calcular descriptiva
+#' @param col_anio Nombre columna año
+#' @param col_mes Nombre columna mes
+#' @return tabla descriptiva agrupada por agrupador en una serie de tiempo 
+#' completa
+
 descriptiva_timeseries <- function(
   data, agrupador, col_anio = "ais_anio", col_mes = "ais_mes") {
 

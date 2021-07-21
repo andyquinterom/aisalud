@@ -13,6 +13,13 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Convierte listas de notas técnicas a tabla.
+#' @description Esta función recorre las listas de las notas técnicas en 
+#' estructura JSON  y la almacena en una tabla.
+#' @param x Lista de notas técnicas.
+#' @return tabla con notas técnicas.
+
+
 parse_nt <- function(x) {
 
   purrr::map(x, function(y) {

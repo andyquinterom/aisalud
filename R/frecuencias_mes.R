@@ -13,26 +13,24 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-# Función frecuencias mes
-#
-# Parametros:
-#
-# data - una tabla tal cual cargada a Analítica Integrada Salud
-#
-# agrupador - el agrupador o agrupadores para cálcular las frecuencias
-#
-# columna_fecha - el nombre de una columna de tipo fecha
-#
-# columna_suma - la columna sobre la cual se hará el conteo
-#
-# prestaciones - Bool que define si el conteo se hará por la columna_suma
-# o por prestaciones
-#
-# frec_cantidad - Bool indicando si el conteo de prestaciones se hará contando
-# registros o sumando la columna cantidad
-#
-# Esta función genera una tabla agrupada con el conteo de frecuencias por mes
-# y año
+#' @title Tabla de frecuencias por mes por agrupador
+#' @description Calcula tabla agrupada con el conteo de frecuencias por mes
+#' y año
+#' @param data tabla cargada a Análitica integrada
+#' @param agrupador Agrupador o agrupadores para calcular la frecuencia
+#' @param columna_fecha Nombre columna de tipo fecha
+#' @param columna_suma Columna sobre la cual se realiza el conteo 
+#' @param prestaciones boolean que define la frecuencia por prestación
+#' @param frec_cantidad boolean que define si es conteo de prestaciones se hará
+#' contando registros o sumando la columna *cantidad*
+#' @return Tabla con frecuencias
+#' @example frecuencias_mes(
+#'  data = data_episodios,
+#'  agrupador = c(columnas, columna_sep),
+#'  columna_fecha = columna_fecha,
+#'  columna_suma = columna_suma)
+
+
 
 frecuencias_mes <- function(data, agrupador, columna_fecha, columna_suma,
   prestaciones = FALSE, frec_cantidad = FALSE) {

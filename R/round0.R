@@ -13,6 +13,16 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Redondear número decimal
+#' @description Función que convierte un número decimal en el entero más cercano
+#' @param x Número decimal
+#' @return número entero
+#' @examples
+#' round0(3.2)
+#' 3
+
+
+
 round0 <- function(x) {
   return(round(x, 0))
 }

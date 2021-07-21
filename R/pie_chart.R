@@ -12,6 +12,20 @@
 # APTITUD PARA UN PROPÓSITO PARTICULAR. Referir a la
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
+ 
+#' @title Gráfico pie chart
+#'
+#' @description Esta función crea un pie chart teniendo en cuenta la columna 
+#' agrupador y el valor_costo suministrado
+#' @param paquetes tabla con datos del contrato
+#' @param columna agrupador
+#' @param valor_costo valor mensual
+#' @return plotly pie chart
+#' @examples
+#' pie_chart(paquetes = nt_opciones$datos,
+#'           columna = "agrupador",
+#'           valor_costo = "valor_mes")
+
 
 pie_chart <- function(paquetes, columna, valor_costo, nombre_legend = "") {
   data <- copy(paquetes)[, list(

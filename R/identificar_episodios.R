@@ -13,27 +13,16 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-# Función identificar episodios
-#
-# Parametros:
-#
-# data - una tabla cargada a analítica integrada
-#
-# agrupador - el agrupador de la jerarquía
-#
-# columna_suma  -  la columna que relaciona las prestaciones dentro de los 
-# episodios
-#
-# jerarquia - es un vector ordenado con la jerarquia deseada para los 
-# agrupadores
-# 
-# Resultado:
-#
-# Devulve una tabla con los agrupadores  con cada uno de los valores únicos de 
-# columna_suma junto a su agrupador según la jerarquía indicada.
-
-
-
+#' @title Identificar episodios
+#' @description Tabla con cada uno de los valores únicos de columna_suma junto a 
+#' su agrupador respetando la jerarquía indicada.
+#' @param data tabla cargada a analítica integrada
+#' @param agrupador el agrupador de la jerarquía
+#' @param columna_suma la columna que relaciona las prestaciones dentro de los 
+#' episodios
+#' @param jerarquia es un vector ordenado con la jerarquia deseada para los 
+#' agrupadores
+#' @return tabla
 
 identificar_episodios <- function(data, agrupador, columna_suma, jerarquia) {
   
