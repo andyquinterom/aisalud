@@ -103,7 +103,7 @@ completar_meses <- function(
   # como NA o "" dependiendo si es numérico o character
   data_completa <- data_original %>%
     full_join(meses_completos) %>%
-    filter(!is.na(ais_mes) || !is.na(ais_aio))
+    filter(!is.na(ais_mes) || !is.na(ais_anio))
 
   return(data_completa)
 }
