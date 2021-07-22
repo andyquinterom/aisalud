@@ -20,13 +20,23 @@ parse_nt <- function(x) {
     agrupadores_names <- names(y[["agrupadores"]])
 
     purrr::map2(y[["agrupadores"]], agrupadores_names, function(i, w) {
-      if (is.null(names(i))) i <- list("n" = i[1], "cm" = i[2])
+      campos <- names(i)
+      # Sección de frecuencias minimas y maximas
+      n_min <- NA
+      n_max <- NA
+      detec_n_min <- "n_min" %in% campos
+      detec_n_max <- "n_max" %in% campos
+      if (detec_n_min) n_min <- i[["n_min"]]
+      if (detec_n_max) n_max <- i[["n_max"]]
+      # ----------------------------------------
       i[["cm"]] <- as.double(i[["cm"]])
       i[["n"]]  <- as.double(i[["n"]])
       temp <- data.frame("agrupador" = w, "frec_mes" = as.double(i[["n"]]),
                          "cm" = as.double(i[["cm"]]),
                          "frecuencia_pc" = as.double(i[["n"]] / poblacion),
-                         "valor_mes" = as.double(i[["n"]] * i[["cm"]]))
+                         "valor_mes" = as.double(i[["n"]] * i[["cm"]]),
+                         "frec_mes_min" = as.double(n_min),
+                         "frec_mes_max" = as.double(n_max))
       return(temp)
     }) %>% rbindlist()
 
