@@ -57,8 +57,8 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
       columna_fecha = columna_fecha,
       intervalo = intervalo) %>% 
       mutate(unidad_conteo = "Episodio")
-    
-    
+
+
     episodios_nivel_1 <- data_temp
     episodios <- episodios %>%
       select(!!as.name(columna_suma))
@@ -123,15 +123,12 @@ frecuencias_jerarquia <- function(data, columnas, columna_suma, columna_fecha,
   }
 
   return(
-    list(
-      "descriptiva" = rbindlist(
-        list(
-          episodios_nivel_1,
-          episodios_nivel_2,
-          episodios_nivel_3,
-          episodios_nivel_4
-        ),
-        fill = TRUE
+    rbindlist(
+      list(
+        episodios_nivel_1,
+        episodios_nivel_2,
+        episodios_nivel_3,
+        episodios_nivel_4
       )
     )
   )

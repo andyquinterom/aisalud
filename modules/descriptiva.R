@@ -432,7 +432,10 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                 non_cache_params = list(data = opciones$tabla),
                 prefix = "frec_ep",
                 cache_depends = opciones$tabla_query
-              )[["descriptiva"]]
+              ) %>%
+                pivot_frecuencias(
+                  intervalo = input$intervalo,
+                  agrupador = c(agrupador, separadores))
 
             }
             if (!input$episodios) {
@@ -450,7 +453,10 @@ descriptiva_server <- function(id, opciones, cache, conn) {
                 non_cache_params = list(data = opciones$tabla),
                 prefix = "frec",
                 cache_depends = opciones$tabla_query
-              )
+              ) %>%
+                pivot_frecuencias(
+                  intervalo = input$intervalo,
+                  agrupador = c(agrupador, separadores))
             }
           }
         })
