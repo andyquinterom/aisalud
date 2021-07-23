@@ -63,12 +63,12 @@ completar_meses <- function(
     select(ais_mes, ais_anio, mes_anio_num) %>%
     ungroup() %>%
     summarise(
-      min = min(mes_anio_num),
-      max = max(mes_anio_num),
-      anio_min = min(ais_anio),
-      anio_max = max(ais_anio),
-      mes_min = min(ais_mes),
-      mes_max = max(ais_mes)
+      min = min(mes_anio_num, na.rm = TRUE),
+      max = max(mes_anio_num, na.rm = TRUE),
+      anio_min = min(ais_anio, na.rm = TRUE),
+      anio_max = max(ais_anio, na.rm = TRUE),
+      mes_min = min(ais_mes, na.rm = TRUE),
+      mes_max = max(ais_mes, na.rm = TRUE)
     ) %>%
     collect()
 

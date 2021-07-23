@@ -41,9 +41,9 @@ frecuencias <- function(
   agrupador <- unique(agrupador)
 
   unidad <- "Episodio"
-  if (prestaciones) unidad <- "Prestación"
   if (columna_suma == "nro_factura") unidad <- "Factura"
   if (columna_suma == "nro_identificacion") unidad <- "Paciente"
+  if (prestaciones) unidad <- "Prestación"
 
   data <- data %>%
     mutate_at(vars(agrupador), as.character)
@@ -68,37 +68,10 @@ frecuencias <- function(
       frec_cantidad = frec_cantidad)
   }
 
-  data <- collect(data)
-
-  means_sums <- data %>%
-    summarise(
-      frec_media = round(mean(Frecuencia, na.rm = TRUE), digits = 3),
-      frec_suma = round(sum(Frecuencia, na.rm = TRUE), digits = 3)
-    )
-
   data <- data %>%
-    pivot_wider(
-      names_from = mes_anio_num,
-      values_from = Frecuencia)
-
-  if (intervalo == "mes") {
-    data <- data %>%
-      rename_with(mes_spanish_juntos, .cols = -seq_len(length(agrupador)))
-  }
-
-# Queda comentada esta sección hastas que quede actualizado dbplyr
-# https://github.com/tidyverse/dbplyr/pull/676
-#  if (intervalo == "semana") {
-#    data <- data %>%
-#      rename_with(function(x) {
-#        paste(substr(x, 1, 4), substr(x, 5, 6), sep = " - ")
-#      }, .cols = -seq_len(length(agrupador)))
-#  }
-
-  data <- data %>%
-    left_join(means_sums) %>%
     mutate("unidad_conteo" = unidad) %>%
-    relocate(unidad_conteo, !!!rlang::syms(agrupador), frec_suma, frec_media)
+    relocate(unidad_conteo, !!!rlang::syms(agrupador)) %>%
+    dplyr::collect()
 
   return(data)
 }

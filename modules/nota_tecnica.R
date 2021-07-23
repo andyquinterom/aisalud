@@ -248,58 +248,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
               )[["descriptiva"]]
             }
             episodios$descriptiva <- episodios$descriptiva %>%
-              mutate(mes_anio_num = ais_anio * 100 + ais_mes)
-          }
-        })
-      })
-
-      # Generar frecuencias
-      observeEvent(input$exe, {
-        withProgress(message = "Calculando frecuencias", {
-          if (opciones$datos_cargados &&
-            input$agrupador %notin% c("", "Ninguno")) {
-            agrupador <- input$agrupador
-            if (input$episodios) episodios_col_rel <- input$episodios_col_rel
-            separadores <- NULL
-            episodios$agrupador <- agrupador
-            episodios$separadores <- separadores
-            # Validacion por episodio o tradicional
-            if (input$episodios) {
-              episodios$frecuencias <- cache_call(
-                fn = frecuencias_jerarquia,
-                cache = cache,
-                cache_params = list(
-                  columnas =      agrupador,
-                  columna_fecha = "fecha_prestacion",
-                  columna_sep =   separadores,
-                  columna_suma =  episodios_col_rel,
-                  frec_cantidad = opciones$cantidad,
-                  nivel_1 = input$episodios_jerarquia_nivel_1_order$text,
-                  nivel_2 = input$episodios_jerarquia_nivel_2_order$text,
-                  nivel_3 = input$episodios_jerarquia_nivel_3_order$text,
-                  nivel_4 = input$episodios_jerarquia_nivel_4_order$text,
-                  intervalo = "mes"),
-                non_cache_params = list(data = opciones$tabla),
-                prefix = "frec_ep",
-                cache_depends = opciones$tabla_query
-              )[["descriptiva"]]
-            }
-            if (!input$episodios) {
-              episodios$frecuencias <- cache_call(
-                fn = frecuencias,
-                cache = cache,
-                cache_params = list(
-                  agrupador = c(agrupador, separadores),
-                  columna_fecha = "fecha_prestacion",
-                  columna_suma = input$unidades,
-                  prestaciones = (input$unidades == "prestacion"),
-                  frec_cantidad = opciones$cantidad,
-                  intervalo = "mes"),
-                non_cache_params = list(data = opciones$tabla),
-                prefix = "frec",
-                cache_depends = opciones$tabla_query
-              )
-            }
+              descriptiva_timeseries(agrupador = agrupador)
           }
         })
       })
@@ -309,7 +258,6 @@ nota_tecnica_server <- function(id, opciones, cache) {
       observe({
         if (nrow(episodios$descriptiva) > 0) {
           nota_tecnica$timeseries <- episodios$descriptiva %>%
-            descriptiva_timeseries(agrupador = episodios$agrupador) %>%
             mutate(
               mes_anio = mes_spanish_juntos(mes_anio_num),
               # Un truquito para sacar el dia final de los meses
@@ -411,29 +359,56 @@ nota_tecnica_server <- function(id, opciones, cache) {
           expr = {
             # Se hacen las mismas comparaciones de seguimiento entre los datos
             # del usuario y la nota técnica que se esta desarrollando.
-            if (!input$seguimiento_plot_frec) {
-              if (nrow(episodios$descriptiva) > 0) {
-                comparacion_valor_facturado(
-                  descriptiva_tabla = episodios$descriptiva %>%
-                    filter(mes_anio_num >= nota_tecnica$seguimiento_fechas[1] &
-                      mes_anio_num <= nota_tecnica$seguimiento_fechas[2]),
-                  nota_tecnica = nota_tecnica$parsed,
-                  agrupador = episodios$agrupador
-                )[["ui"]][["plot_valor_acumulado"]]
-              }
-            } else {
-              if (nrow(nota_tecnica$timeseries) > 0) {
-                comparacion_valor_facturado(
-                  descriptiva_tabla = nota_tecnica$timeseries %>%
-                    filter(mes_anio_num >= nota_tecnica$seguimiento_fechas[1] &
-                      mes_anio_num <= nota_tecnica$seguimiento_fechas[2]) %>%
-                    frec_x_cm(
-                      nota_tecnica = nota_tecnica$parsed,
-                      agrupador = episodios$agrupador),
-                  nota_tecnica = nota_tecnica$parsed,
-                  agrupador = episodios$agrupador
-                )[["ui"]][["plot_valor_acumulado"]]
-              }
+            if (nrow(episodios$descriptiva) > 0) {
+              comparar_nt(
+                timeseries = episodios$descriptiva %>%
+                  filter(mes_anio_num >= nota_tecnica$seguimiento_fechas[1] &
+                    mes_anio_num <= nota_tecnica$seguimiento_fechas[2]),
+                nota_tecnica = nota_tecnica$parsed,
+                agrupador = episodios$agrupador
+              ) %>%
+                group_by(mes_anio_num) %>%
+                summarise(
+                  valor_contratado = sum(valor_contratado, na.rm = TRUE),
+                  valor_ejecutado_cm = sum(valor_ejecutado_cm, na.rm = TRUE),
+                  valor_ejecutado_fac = sum(Suma, na.rm = TRUE)
+                ) %>%
+                ungroup() %>%
+                arrange(mes_anio_num) %>%
+                mutate(
+                  valor_acumulado_cm = cumsum(valor_ejecutado_cm),
+                  valor_acumulado_fac = cumsum(valor_ejecutado_fac),
+                  valor_contratado = cumsum(valor_contratado),
+                  mes_anio_num = ym(mes_anio_num)
+                ) %>%
+                plot_ly(
+                  x = ~mes_anio_num,
+                  y = ~valor_acumulado_cm,
+                  name = "Valor ejecutado con frecuencias",
+                  type = "scatter",
+                  mode = "lines+markers"
+                ) %>%
+                add_trace(
+                  y = ~valor_acumulado_fac,
+                  name = "Valor ejecutado con facturación",
+                  type = "scatter",
+                  mode = "lines+markers",
+                  line = list(color = "green"),
+                  marker = list(color = "green")
+                ) %>%
+                add_trace(
+                  y = ~valor_contratado,
+                  mode = "lines",
+                  name = "Valor contratado",
+                  line = list(color = "rgb(205, 12, 24)", dash = "dash")
+                ) %>%
+                layout(
+                  legend = list(x = 0.1, y = 0.9),
+                  xaxis = list(title = "Mes"),
+                  yaxis = list(title = "Suma",
+                               tickformat = ",.2f")
+                ) %>%
+                config(locale = "es")
             }
           },
           error = function(e) {}
