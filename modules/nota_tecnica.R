@@ -73,11 +73,6 @@ nota_tecnica_ui <- function(id) {
         width = 4,
         tags$div(
           style = "height: 590px;",
-          checkboxInput(
-            inputId = ns("seguimiento_plot_frec"),
-            label = "Gráfico de frecuencias",
-            value = FALSE
-          ),
           sliderInput(
             inputId = ns("seguimiento_fechas"),
             label = NULL,
