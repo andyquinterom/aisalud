@@ -363,7 +363,7 @@ cargar_datos_server <- function(id, opciones, cache, conn) {
                 opciones$perfil_updated <- FALSE
                 opciones$perfil_updated <- TRUE
                 showNotification(
-                  ui = "El perfil se a guardado.",
+                  ui = "El perfil se ha guardado.",
                   type = "message"
                 )
               }
@@ -493,7 +493,7 @@ cargar_datos_server <- function(id, opciones, cache, conn) {
                 opciones$notas_tecnicas_updated <- FALSE
                 opciones$notas_tecnicas_updated <- TRUE
                 showNotification(
-                  ui = "La nota técnica se a guardado.",
+                  ui = "La nota técnica se ha guardado.",
                   type = "message"
                 )
               }

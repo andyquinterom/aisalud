@@ -13,4 +13,12 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Negación inclusión
+#' @description Esta función revisa si un conjunto de datos no está contenido en otro 
+#' conjunto de datos
+#' @examples
+#' "jan" %notin% month.abb
+#' "Jan" %notin% month.abb
+
+
 `%notin%` <- Negate(`%in%`)

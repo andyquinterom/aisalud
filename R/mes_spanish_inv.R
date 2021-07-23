@@ -13,6 +13,16 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Año_Mes en números
+#' @description Función que recibe caracteres con formato AAAA - nombre mes en
+#' español y devuelve AAAAMM en números. Función inversa a *mes_spanish_juntos*
+#' @param x vector de fechas en formato AAAA - nombre mes español
+#' @return número
+#' @examples
+#' mes_spanish_inv("2020 - Octubre")
+#' 202010
+
+
 mes_spanish_inv <- function(x) {
   meses <- c(
     "Enero",

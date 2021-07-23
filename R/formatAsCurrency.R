@@ -13,6 +13,14 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Formato moneda pesos colombianos
+#' @description Convierte número en monto con formato de pesos colombianos.
+#' @param x número
+#' @return número con formato pesos colombianos
+#' @example formatAsCurrency(100000)
+#' $100.000
+
+
 formatAsCurrency <- function(x) {
   x <- as.numeric(as.character(x))
   return(

@@ -13,6 +13,22 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Histograma de edades
+#' @description Gráfico con histograma edad distribuido por segmentación
+#'
+#' @param data tabla con información que contenga edades
+#' @param columna_numero caracter nombre de la columna con las edades
+#' @param columna_sep variable de segmentación 
+#' @param numero_bins Número de intervalos de edades
+#' @return Gráfica con histograma
+#' @examples
+#' histograma_edades(
+#'  data = edades_pacientes,
+#'  columna_numero = "edad",
+#'  columna_sep = segmentacion,
+#'  numero_bins = numero_bins)
+
+
 histograma_edades <- function(data, columna_numero, columna_sep = NULL,
                               numero_bins = NULL) {
 

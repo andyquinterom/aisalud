@@ -13,6 +13,12 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Esquema final nota técnica.
+#' @description Se define el esquema final que el usuario final tendrá como nota
+#' técnica.
+#' @param nota_tecnica Lista con esquema de nota técnica
+#' @return Lista con nota técnica final
+
 debloat_nt <- function(nota_tecnica) {
 
   nt2 <- list()

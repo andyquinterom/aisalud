@@ -13,6 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Separador de palabras en español
+#' @description Separa vector de palabras usando conectores (",", "y") 
+#' @param word_array Vector de palabras
+#' @return Variable con texto
+#' @examples separar_spanish(c("Tom","Jerry","Andrés"))
+#' "Andrés, Jerry y Tom"
+
+
+
 separar_spanish <- function(word_array) {
   if (!is.null(word_array)) {
     paste(

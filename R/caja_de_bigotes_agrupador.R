@@ -13,6 +13,13 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Caja de bigotes agrupado
+#' @description Gráfico con caja de bigotes por agrupador
+#' @param data Tabla descriptiva resultante de la función descriptiva
+#' @param columna_sep Variable de segmentación 
+#' @return Gráfica plotly de caja de bigotes.
+
+
 caja_de_bigotes_agrupador <- function(data, columnas_sep) {
   data <- copy(data)
   options(warn = -1)

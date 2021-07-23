@@ -13,6 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Año - Mes en español
+#' @description Devuelve carácter con Año - Mes en español
+#' @param x vector de fechas numerica en formato AAAAMM
+#' @return caracter
+#' @examples
+#' mes_spanish_juntos(202003)
+#' "2020 - Marzo"
+
+
 mes_spanish_juntos <- function(x) {
   meses <- c(
     "Enero",

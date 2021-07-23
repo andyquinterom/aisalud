@@ -13,10 +13,27 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Datos composición
+#' @description Resume la participación de la *columna_explorar* dentro del
+#' episodio agrupador
+#' @param data Tabla ingresada a Análitica integral
+#' @param columna_episodios Agrupador a realizar análisis
+#' @param columna_valor Columna numerica que contiene los valores de calculo
+#' @param columna_suma Columna referente a la unidad de conteo de los 
+#' agrupadores
+#' @param columna_explorar Nombre de columna a realizar composición dentro 
+#' del episodio
+#' @param prioridad Nombre del episodio que tiene prioridad sobre los otros
+#' servicios dentro del agrupador
+#' @param frec_cantidad Boolean que define si la frecuencia se realiza haciendo 
+#' el conteo de registros o  sumando la columna cantidad.
+#' @return Tabla resumen con composición
+
+
 datos_composicion <- function(data, columna_episodios, columna_valor,
                               columna_suma, columna_explorar, prioridad,
                               frec_cantidad = FALSE) {
-
+print(prioridad)
   index_episodios <- data.frame(
     index = seq_len(length(prioridad)),
     agrupador = prioridad

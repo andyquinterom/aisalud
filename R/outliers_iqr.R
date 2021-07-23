@@ -13,6 +13,28 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Calculo de outliers con n vecces el iqr
+#' @description Calcula los outliers de una columna usando el iqr de 
+#' la columna_valor. El outlier se calcula dependiendo del parámetro 
+#' multiplicativo
+#' @param data tabla con información a analizar
+#' @param columna carácter con la columna a realizar analisis de percentil
+#' @param columna_valor carácter especificando la columna númerica
+#' @param multiplicativo Número de veces por valor IQR que está alejado de los 
+#' cuartiles 1 y 3 (Q1 o Q3).
+#' @param frecuencia número de veces que se repite el valor columna
+#' @param frec_cantidad boolean para escoger si realizar analisis por frecuencia
+#' o cantidad
+#' @return tabla resumen con outliers
+#' @examples
+#' outliers_iqr(
+#'  data = iris,
+#'  columna = "Species",
+#'  columna_valor = "Sepal.Length",
+#'  percentil = .5,
+#'  frecuencia = 1)
+
+
 outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
                         frecuencia = 1, frec_cantidad = FALSE) {
 

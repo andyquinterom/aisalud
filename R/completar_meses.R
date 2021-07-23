@@ -13,26 +13,18 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
-# Función completar meses
-#
-# Parametros:
-#
-# data - una tabla de descriptiva tal cual generada por la function descriptiva
-# o una versión reducida o expandida de esta
-#
-# agrupador - el agrupador o agrupadores en forma de vector de la descriptiva
-#
-# col_anio - la columna que indica el año de los registros
-#
-# col_mes - la columna del número del més de los registros
-#
-# columna_fecha - el nombre de una columna de tipo fecha
-# Resultado:
-#
-# Esta función expande una descriptiva por uno o varios agrupadores y separada
-# por el número del mes y el año para llenar vacios. Por ejemplo, si hubo
-# registros en Enero, Febrero y Abril pero no Marzo, esta función creará
-# una fila para Marzo y la completará con ceros.
+#' @title completar meses
+#' @description expande una descriptiva por uno o varios agrupadores y separada
+#' por el número del mes y el año para llenar vacios. Por ejemplo, si hubo
+#' registros en Enero, Febrero y Abril pero no Marzo, esta función creará
+#' una fila para Marzo y la completará con ceros.
+#' @param data tabla descriptiva por la function descriptiva o una versión 
+#' reducida o expandida 
+#' @param agrupador agrupador o agrupadores en forma de vector de la descriptiva
+#' @param col_anio columna que indica el año de los registros
+#' @param col_mes columna del número del més de los registros
+#' @param columna_fecha nombre de una columna de tipo fecha
+#' @return tabla
 
 completar_meses <- function(
   data, agrupador, col_anio = "ais_anio", col_mes = "ais_mes",
@@ -110,7 +102,8 @@ completar_meses <- function(
   # Se expande la tabla, los meses que previamente no estaban presentes quedan
   # como NA o "" dependiendo si es numérico o character
   data_completa <- data_original %>%
-    full_join(meses_completos)
+    full_join(meses_completos) %>%
+    filter(!is.na(ais_mes) || !is.na(ais_anio))
 
   return(data_completa)
 }

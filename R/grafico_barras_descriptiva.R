@@ -13,6 +13,20 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Gráfico de barras
+#' @description Gráfico de barras para realizar comparaciones entre agrupadores
+#' @param data tabla descriptiva
+#' @param columna_numeros variable a comparar en el gráfico
+#' @param columna_sep variable de segmentación 
+#' @return Gráfico de barras
+#' @examples
+#' grafico_barras_descriptiva(
+#'  data = episodios$tabla[["descriptiva"]],
+#'  columna_numeros = input$grafico_barras_indicador,
+#'  columnas_sep = episodios$lista_agrupadores[
+#'  input$barras_agrupador_rows_selected])
+
+
 grafico_barras_descriptiva <- function(data, columna_numeros, columnas_sep) {
 
   bar_plot <- NULL

@@ -13,6 +13,12 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Convierte notas técnicas de V1 a V2
+#' @description Recorre las listas de notas técnicas en estructura JSON V1 y las
+#' convierte en notas técnicas en estrcutura JSON v2
+#' @param x Lista con notas técnicas
+#' @return lista de caracteres con notas técnicas
+
 parse_nt_v1_v2 <- function(x) {
   notas_tecnicas_v2 <- purrr::map(x, function(y) {
     if (!is.null(y[["vigente"]]))  y[["vigente"]] <- as.logical(y[["vigente"]])

@@ -13,6 +13,15 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Convierte carácter a número
+#' @description Convierte una variable tipo carácter que contenga números en 
+#' tipo númerico
+#' @param x variable carácter
+#' @return variable numerica
+#' @examples
+#' numerize("10")
+
+
 numerize <- function(x) {
   return(as.numeric(as.character(x)))
 }

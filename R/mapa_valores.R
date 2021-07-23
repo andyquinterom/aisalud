@@ -13,6 +13,14 @@
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
 
+#' @title Mapa de Colombia con información de contratos
+#' @description Consolida la información de contratos y los proyecta en el mapa
+#' de Colombia
+#' @param indice Tabla con información de los contratos
+#' @param departamentos tabla con información georeferencial de Colombia
+#' @return objeto con mapa de Colombia 
+
+
 mapa_valores <- function(indice, departamentos, ...) {
 
   # Se resume en indice por departamento
