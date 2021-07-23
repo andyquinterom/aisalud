@@ -12,6 +12,12 @@
 # APTITUD PARA UN PROPÓSITO PARTICULAR. Referir a la
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
+#' @description Compara una serie de tiempo con los valores de una nota
+#' técnica
+#' @param timeseries Una descriptiva en serie de tiempo
+#' @param nota_tencnica Una nota técnica con la cual comparar la serie de
+#' tiempo
+#' @param agrupador Nombre de la columna con agrupador común
 
 comparar_nt <- function(timeseries, nota_tecnica, agrupador) {
 
