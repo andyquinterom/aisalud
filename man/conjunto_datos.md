@@ -1,7 +1,7 @@
 # Conjunto mínimo de datos AISalud
 
 Para poder correr la versión oficial de Analítica Integrada Salud se requiere
-tener un conjunto de datos mínimo. Este conjunto de datos sería una tabla donde
+tener un conjunto de datos mínimos. Este conjunto de datos sería una tabla donde
 cada fila representa un registro de prestación.
 
 ## Variables mínimas
@@ -28,5 +28,5 @@ Las variables mínimas son necesarias para poder correr la aplicación.
 ### Recomendaciones
 
 Se recomienda que las otras variables del conjunto de datos no contengan valores
-NA (vacios). Para óptimo uso se recomienda que estos valores sean reemplazados
-con algún identificador.
+NA (vacios). Para mitigar errores en el análisis, se recomienda que estos
+valores sean reemplazados con algún identificador.
