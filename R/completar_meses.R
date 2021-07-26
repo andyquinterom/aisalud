@@ -79,13 +79,23 @@ completar_meses <- function(
   # Se quedan solo los meses mayores a la fecha mínima y menores a la fecha
   # máxima
   # Esta columna nos permitirá facilmente juntar y rellenar
+  if (is.na(meses_limites$anio_min)) return(data_original)
+
   meses_completos <- tibble(
-    anio = sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12)),
-    meses = rep(1:12, meses_limites$anio_max - meses_limites$anio_min + 1)) %>%
-    mutate(mes_anio_num = anio * 100 + meses) %>%
+    ais_anio = as.double(
+      sort(rep(meses_limites$anio_min:meses_limites$anio_max, 12))
+    ),
+    ais_mes = as.double(
+      rep(
+        1:12,
+        meses_limites$anio_max - meses_limites$anio_min + 1
+      )
+    )
+  ) %>%
+    mutate(mes_anio_num = ais_anio * 100 + ais_mes) %>%
     filter(mes_anio_num >= meses_limites$min &
       mes_anio_num <= meses_limites$max) %>%
-    select(mes_anio_num) %>%
+    select(mes_anio_num, ais_anio, ais_mes) %>%
     mutate(placeholder_key = "key")
 
   # Tabla dummy para juntar cada agrupador a cada mes y año
@@ -102,8 +112,10 @@ completar_meses <- function(
   # Se expande la tabla, los meses que previamente no estaban presentes quedan
   # como NA o "" dependiendo si es numérico o character
   data_completa <- data_original %>%
+    select(-c(ais_anio, ais_mes)) %>%
     full_join(meses_completos) %>%
-    filter(!is.na(ais_mes) || !is.na(ais_anio))
+    filter(!is.na(mes_anio_num))
 
   return(data_completa)
+
 }
