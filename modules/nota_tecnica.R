@@ -59,9 +59,15 @@ nota_tecnica_ui <- function(id) {
               DT::dataTableOutput(ns("nota_tecnica_junta"))
             ),
             tabPanel(
-              title = "JSON",
+              title = "JSON Nota ténica",
               shinyAce::aceEditor(
                 ns("nota_tecnica_json")
+              )
+            ),
+            tabPanel(
+              title = "JSON Perfil",
+              shinyAce::aceEditor(
+                ns("nota_tecnica_perfil_json")
               )
             )
           )
@@ -293,8 +299,18 @@ nota_tecnica_server <- function(id, opciones, cache) {
       # Cada vez que se haga un cambio a la nota técnica esta sera parsed a un
       # data.frame
       observe({
-        nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
-          parse_nt()
+        if (nrow(nota_tecnica$timeseries) > 0) {
+          nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
+            parse_nt() %>% 
+            left_join(
+              x = nota_tecnica$timeseries %>% 
+                ungroup() %>% 
+                select(!!!rlang::syms(episodios$agrupador), unidad_conteo) %>%
+                distinct() %>% 
+                rename(agrupador = episodios$agrupador),
+              by = "agrupador") %>% 
+            relocate(unidad_conteo, agrupador)
+        }
       })
 
       observe({
@@ -312,12 +328,36 @@ nota_tecnica_server <- function(id, opciones, cache) {
             value = toJSON(
               x = purrr::map(nota_tecnica$nota_tecnica, debloat_nt),
               pretty = TRUE,
-              auto_unbox=TRUE),
+              auto_unbox=TRUE
+            ),
             mode = "json"
           )
         }
       })
-
+      
+      observe({
+        updateAceEditor(
+          session = session,
+          "nota_tecnica_perfil_json",
+          value = toJSON(
+            x = list(
+              "Perfil" = list(
+                "jerarquia"  = list(
+                  "episodio" = input$episodios_jerarquia_nivel_1_order$text,
+                  "factura" = input$episodios_jerarquia_nivel_2_order$text,
+                  "paciente" = input$episodios_jerarquia_nivel_3_order$text,
+                  "prestacion" = input$episodios_jerarquia_nivel_4_order$text
+                  ) %>% 
+                  purrr::map(purrr::discard,function (x) all(is.na(x)))
+                )
+              ),
+            pretty = TRUE,
+            auto_unbox=TRUE
+            ),
+          mode = "json"
+        )
+      }) %>% bindEvent(input$exe)
+ 
       # Se crea un subset de la serie de tiempo generada por los datos
       # para el agrupador seleccionado
       observe({
@@ -564,14 +604,15 @@ nota_tecnica_server <- function(id, opciones, cache) {
         if (nrow(nota_tecnica$parsed) > 0) {
           datatable(
             data = nota_tecnica$parsed %>%
-              select(-nt),
+              select(-c(nt, frec_mes_min, frec_mes_max)),
             rownames = FALSE,
             colnames = c(
               "Valor a mes" = "valor_mes",
               "Costo medio" = "cm",
               "Frecuencia per capita" = "frecuencia_pc",
               "Agrupador" = "agrupador",
-              "Frecuencia a mes" = "frec_mes"
+              "Frecuencia a mes" = "frec_mes",
+              "Unidad de conteo" = "unidad_conteo"
             ),
             extensions = c("FixedColumns"),
             options = list(
