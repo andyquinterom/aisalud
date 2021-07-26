@@ -49,7 +49,7 @@ de módulos se escribirán en **camelCase**.
 
 Las funciones y variables de R (no Shiny) se escribirán **snake_case**. Esto
 también aplica para los nombres de las columnas en una tabla y los elementos
-de una lista o arból.
+de una lista o árbol.
 
 Como referencia utilizar http://adv-r.had.co.nz/Style.html.
 
@@ -70,7 +70,7 @@ El nombre de class, id, y otros atributos de HTML se escribirán en **snake_case
 #### Database Queries
 
 Una gran porción de las funciones de AIS están dedicadas a hacer un query a
-PostgreSQL. Estás funciones se construrán mayormente con extensiones del
+PostgreSQL. Estás funciones se construirán mayormente con extensiones del
 tidyverse (dbplyr). Dado esto, es necesario tomar en cuenta las siguientes
 decisiones al momento de escribir un query en forma de pipeline.
 
@@ -105,11 +105,12 @@ datos <- mtcars %>%
 #### Evitar loops sobre datos
 
 El rendimiento de loops y funciones recursivas en R no es el mejor. Se debe
-intentar delegar este trabajo a C++ con alguna librería o evitar lo por
+intentar delegar este trabajo a C++ con alguna librería o evitar loops por
 completo.
 
 Buscar algoritmos que utilicen tablas y funciones que se puedan delegar a
-PostgreSQL o a las una librería cómo `dplyr` o `data.table` son óptimos.
+PostgreSQL o utilizar librerías óptimas para este procesamiento como `dplyr` o
+`data.table`.
 
 #### Evitar errorer y catching
 
@@ -157,9 +158,9 @@ observe({
 
 #### Evitar else
 
-Al momento de escribir if statmente, evitar else en arboles de decisión
-extensos. Es mejor intentar generalizar funciones para que no requieran
-ifelse statements.
+Al momento de escribir if statement, evitar else en árboles de decisión
+extensos. Es mejor intentar generalizar funciones para que no requieran ifelse
+statements.
 
 ```r
 # Ejemplo de código confuso con if-else
