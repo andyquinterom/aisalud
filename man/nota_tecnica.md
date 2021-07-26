@@ -58,8 +58,8 @@ identificación de tendencias.
 
 En la esquina inferior de la izquierda se encuentra un gráfico de linea de serie
 de tiempo, la fecha de inicio y la fecha final se pueden modificar con la barra
-deslizable. también se encuentra un checkbox sencillo que la ser escogido cambia
-el método de seguimiento a uno de frecuencias. En el primero se encuentra la
-comparación entre el valor a ejecutar y el valor efectivamente ejecutado, en el
-segundo se muestra esta misma comparación pero multiplicando el número de
-frecuencias por el costo medio de la Nota técnica.
+deslizable. El gráfico consiste de tres lineas, una lineal roja (el valor
+contratado), una azul (comparación con frecuencias), una verde (comparación con
+valor facturado). La linea azul representa la suma acumulada de la
+multiplicación del costo medio con la frecuencia efectiva de cada mes para cada
+agruapador. La linea verde representa la suma acumulada del valor facturado.

@@ -159,6 +159,8 @@ obligatorio.
     6. agrupadores (Obligatorio)
         1. costo medio (Obligatorio)
         2. frecuencia (Obligatorio)
+        3. frecuencia mínima
+        4. frecuencia máxima
     7. prestador 
     8. asegurador
     9. notas
@@ -221,6 +223,12 @@ ingresará la clave determinada por el administrador de la aplicación.
               "type": "number"
             },
             "n": {
+              "type": "number"
+            },
+            "n_max": {
+              "type": "number"
+            },
+            "n_min": {
               "type": "number"
             }
           },
