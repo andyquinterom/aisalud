@@ -292,26 +292,19 @@ nota_tecnica_server <- function(id, opciones, cache) {
             perfil = opciones$perfil_selected,
             poblacion = input$poblacion
           )
+          nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
+            parse_nt() %>%
+            left_join(
+              x = nota_tecnica$timeseries %>%
+                ungroup() %>%
+                select(!!!rlang::syms(episodios$agrupador), unidad_conteo) %>%
+                distinct() %>%
+                rename(agrupador = episodios$agrupador),
+              by = "agrupador") %>%
+            relocate(unidad_conteo, agrupador)
         }
       }) %>%
         bindEvent(episodios$descriptiva)
-
-      # Cada vez que se haga un cambio a la nota técnica esta sera parsed a un
-      # data.frame
-      observe({
-        if (nrow(nota_tecnica$timeseries) > 0) {
-          nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
-            parse_nt() %>% 
-            left_join(
-              x = nota_tecnica$timeseries %>% 
-                ungroup() %>% 
-                select(!!!rlang::syms(episodios$agrupador), unidad_conteo) %>%
-                distinct() %>% 
-                rename(agrupador = episodios$agrupador),
-              by = "agrupador") %>% 
-            relocate(unidad_conteo, agrupador)
-        }
-      })
 
       observe({
         if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
@@ -334,7 +327,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
           )
         }
       })
-      
+
       observe({
         updateAceEditor(
           session = session,
@@ -347,7 +340,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
                   "factura" = input$episodios_jerarquia_nivel_2_order$text,
                   "paciente" = input$episodios_jerarquia_nivel_3_order$text,
                   "prestacion" = input$episodios_jerarquia_nivel_4_order$text
-                  ) %>% 
+                  ) %>%
                   purrr::map(purrr::discard,function (x) all(is.na(x)))
                 )
               ),
@@ -357,7 +350,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
           mode = "json"
         )
       }) %>% bindEvent(input$exe)
- 
+
       # Se crea un subset de la serie de tiempo generada por los datos
       # para el agrupador seleccionado
       observe({
