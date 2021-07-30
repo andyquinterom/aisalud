@@ -1,0 +1,66 @@
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["paquetes", "prestaciones"],
+    "properties": {
+        "paquetes": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "codigo",
+                    "cups_paquete",
+                    "descripcion",
+                    "valor_paquete",
+                    "costo_paquete",
+                    "prestaciones"
+                ],
+                "properties":{
+                    "especialidad": {"type":"string"},
+                    "codigo": {"type":"string"},
+                    "servicio": {"type":"string"},
+                    "cups_paquete": {"type":"string"},
+                    "descripcion": {"type":"string"},
+                    "inclusiones": {"type":["string", "array"]},
+                    "exclusiones": {"type":["string", "array"]},
+                    "valor_paquete": {"type":"number"},
+                    "costo_paquete": {"type":"number"},
+                    "prestaciones": {
+                        "type":"object",
+                        "additionalProperties": {
+                            "type":"object",
+                            "properties": {
+                                "descripcion":{"type":"string"},
+                                "componente":{"type":"string"},
+                                "tipo_costo": {"type":"string"},
+                                "valor": {"type":"number"},
+                                "costo": {"type":"number"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "prestaciones": {
+            "type": "object",
+            "additionalProperties":{
+                "type": "object",
+                "properties": {
+                    "descripcion":{"type":"string"},
+                    "componente":{"type":"string"},
+                    "tipo_costo":{"type":"string"},
+                    "valor": {"type":"number"},
+                    "costo": {"type":"number"}
+                },
+                "required": [
+                    "descripcion", 
+                    "componente", 
+                    "tipo_costo", 
+                    "valor",
+                    "costo"
+                ]
+            }
+        }
+    }
+}
