@@ -18,5 +18,5 @@ agrupadores o en otros casos el nombre de un paquete. En la sección agrupadores
 se deben seleccionar los agrupadores que van a ser contados como episodio en
 orden de mayor prioridad a menor prioridad. Finalmente, en el menú **Columna a
 explorar**, se debe seleccionar la columna que incluye los registros a explorar
-dentro de los episodios. Une vez seleccionados los parámetros, se debe hacer
+dentro de los episodios. Una vez seleccionados los parámetros, se debe hacer
 clic en **Ejecutar**. La tabla debe cargar y podrá ser descargada.

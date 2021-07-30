@@ -1,9 +1,9 @@
-# Selección de parametros
+# Selección de parámetros
 
-El proceso de seleccionar parametros es muy similar entre los diferentes
-módulos de AIS. Este manual explica el proceso estandar de selección de
-parametros. Cualquier diferencia especifica se mencionará en el manual
-especifico de cada módulo.
+El proceso de seleccionar parámetros es muy similar entre los diferentes
+módulos de AIS. Este manual explica el proceso estándar de selección de
+parámetros. Cualquier diferencia específica se mencionará en el manual
+específico de cada módulo.
 
 ## Agrupador principal
 
@@ -39,18 +39,18 @@ la unidad de conteo prestación, paciente o factura.
 
 Si la opción agrupar por episodios esta habilitada se generarán un menú con el
 título **Relacionar episodios por**. En este se selecciona la variable que
-relaciona los episodios de los pacientes. Dependiendo del sistema del
-sistema de información o el fin del análisis, esta variable puede cambiar.
-Usualmente es el número de factura, el número de identificación del paciente o
-algún otro identificador.
+relaciona los episodios de los pacientes. Dependiendo del sistema de
+información o el fin del análisis, esta variable puede cambiar. Usualmente es
+el número de factura, el número de identificación del paciente o algún otro
+identificador.
 
 La jerarquía muestra cuatro secciones, una por unidad de conteo. Para mover un
-agrupador de una unidad de conteo a otra se debe hacer click en el botón del
+agrupador de una unidad de conteo a otra se debe hacer clic en el botón del
 agrupador y arrastrar hasta la unidad de conteo deseada. En la sección de
 episodios las prioridades se definen de izquierda a derecha - arriba a abajo.
 
 ## Generar
 
-Para ejecutar la función principal del módulo se debe hacer click el botón
+Para ejecutar la función principal del módulo se debe hacer clic el botón
 generar en la parte inferior de la sección.
 

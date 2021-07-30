@@ -5,7 +5,7 @@ contrato durante un lapso determinado de tiempo. Se permite la comparación entr
 el valor ejecutado con el valor contratado y frecuencia ejecutada con
 frecuencia contratada.
 
-## Parametros especiales
+## Parámetros especiales
 
 Para poder hacerle seguimiento a una nota técnica se debe seleccionar esta en
 la casilla **Comparar con nota técnica**. Después, se debe seleccionar la
@@ -47,14 +47,14 @@ multiplicadas por los costos medios de cada agrupador de la nota técnica.
 
 4. **Ejecución de frecuencias por mes**: La frecuencia de cada agrupación por
    mes.
-5. **Ejecución de frecuencias por costo medio**: Mulitplica la frecuencia por
+5. **Ejecución de frecuencias por costo medio**: Multiplica la frecuencia por
    mes de agrupación con el costo medio contratado.
 6. **Diferencia ejecución**: La diferencia entre la ejecución de frecuencias
    por costo medio y el total pagador.
 
 ### Valor facturado
 
-7. **Valor facturado por mes**: El valor facturado para cada agruapación por
+7. **Valor facturado por mes**: El valor facturado para cada agrupación por
    mes.
 8. **Diferencia ejecución**: La diferencia entre el valor facturado y el total
    pagador.

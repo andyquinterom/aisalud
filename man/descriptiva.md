@@ -10,13 +10,13 @@ presentes en las tablas.
 > Para generar una tabla esta debe estar seleccionada en la casilla **Tabla a
 > generar**.
 >
-> Para **descargar** alguna de las tablas de pueden seleccionar desde la
+> Para **descargar** alguna de las tablas se pueden seleccionar desde la
 > pestaña **Descargas**.
 
 ### Tabla descriptiva
 
 La tabla descriptiva genera varios indicadores para un grupo de agrupadores.
-Esta tabla depende completamente de la unidad de conteo y la jeraraquía. La
+Esta tabla depende completamente de la unidad de conteo y la jerarquía. La
 tabla de la descriptiva incluye:
 
 1. La frecuencia
@@ -48,7 +48,7 @@ Para quitar la selección de un agrupador, solo se debe hacer clic encima del
 agrupador ya seleccionado. Para seleccionar varios en un solo momento, se puede
 mantener presionada la tecla *Shift* mientras se hace clic encima de los
 agrupadores. Después, se debe seleccionar el número de columnas que se desean
-graficar. Finalmente, se hace click en el botón **Genenerar histograma**.
+graficar. Finalmente, se hace clic en el botón **Generar histograma**.
 
 ### Caja de bigotes
 
@@ -60,7 +60,7 @@ hacer clic encima de uno o varios agrupadores, se generará una caja de bigotes
 Para quitar la selección de un agrupador, solo se debe hacer clic encima del
 agrupador ya seleccionado. Para seleccionar varios en un solo momento, se puede
 mantener presionada la tecla *Shift* mientras se hace clic encima de los
-agrupadores. Finalmente, se hace click en el botón **Genenerar histograma**.
+agrupadores. Finalmente, se hace clic en el botón **Generar histograma**.
 
 ### Gráfico de barras
 
@@ -72,6 +72,6 @@ corresponde a la **Unidad de conteo**.
 
 Una vez se ingresa a la pestaña **Gráfico de barras** al lado derecho se puede
 visualizar una caja de selección llamada **"Indicador"** en donde se puede
-escoger entre los cinco indicadores cual se quiere graficar. Se escogen los
+escoger entre los cinco indicadores cuál se quiere graficar. Se escogen los
 agrupadores que se desean obtener en el eje X de nuestro gráfico y se hace
-clic en el boton **Generar gráfico**. 
+clic en el botón **Generar gráfico**. 

@@ -28,5 +28,5 @@ Las variables mínimas son necesarias para poder correr la aplicación.
 ### Recomendaciones
 
 Se recomienda que las otras variables del conjunto de datos no contengan valores
-NA (vacios). Para mitigar errores en el análisis, se recomienda que estos
+NA (vacíos). Para mitigar errores en el análisis, se recomienda que estos
 valores sean reemplazados con algún identificador.

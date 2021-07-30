@@ -11,14 +11,14 @@ obtener el histograma de la edad de los pacientes con tan solo dar clic en el
 botón **Ejecutar**
 
 El número de columnas se puede ajustar desde la barra deslizante y tiene las
-opciones de: 5, 10, 15, 20 y 25. Se recomienda dejarlo en **Auto** pero hay
+opciones de: 5, 10, 15, 20 y 25. Se recomienda dejarlo en **Auto**, pero hay
 ocasiones en las que es útil ajustar manualmente el número de columnas a
 graficar.
 
 El gráfico tiene la opción de una **variable de segmentación**, esta permite
-agrupar la población por diferentes caracteristicas, las más usuales son el
-genero, el grupo de riesgo o el municipio de origen. Una vez se ha escogido la
+agrupar la población por diferentes características, las más usuales son el
+género, el grupo de riesgo o el municipio de origen. Una vez se ha escogido la
 **variable de segmentación** a incluir en el gráfico, aparece la caja
-**Incluir**. En ella se van a escoger las categorias a graficar dando clic en
+**Incluir**. En ella se van a escoger las categorías a graficar dando clic en
 sus nombres, una vez se han escogido se debe dar clic en el botón
 **Ejecutar**.

@@ -1,6 +1,6 @@
 # Nota Técnica
 
-En este modulo se puede generar una nota técnica a partir de la combinación de
+En este módulo se puede generar una nota técnica a partir de la combinación de
 diferentes escenarios. Para la generación de la Nota técnica se utilizan los
 estadísticos descriptivos y el usuario puede interactuar con la aplicación para
 lograr el ajuste deseado.
@@ -9,7 +9,7 @@ lograr el ajuste deseado.
 
 Para la generación de escenarios es requerido seleccionar el **Agrupador
 principal** a utilizar (para mayor información acerca de los agrupadores se
-puede revisar el manual). también se debe seleccionar la unidad de conteo a
+puede revisar el manual). También se debe seleccionar la unidad de conteo a
 utilizar entre prestaciones, pacientes y facturas, como también se encuentra la
 opción de hacer una agrupación por episodios (para ampliación de
 esta información revisar el manual de **agrupadores**). Por último se debe hacer
@@ -29,7 +29,7 @@ inferior derecha.
 Para ajustar los costos medios y frecuencias de los diferentes agrupadores
 se deben utilizar las casillas y parámetros presentes en la sección
 inferior derecha. En **Agrupador** se escoge la categoría dentro del agrupador
-que se desea ajustar. A esta se le puede ajustar el **costos medio** y la
+que se desea ajustar. A esta se le puede ajustar el **costo medio** y la
 **Frecuencia**.
 
 ### Costos medios
@@ -39,10 +39,10 @@ estos se encuentran en la barra deslizable donde se puede escoger desde el
 percentil 0 (el valor mínimo) hasta el percentil 100 (valor máximo).
 
 El gráfico de esta sección muestra en los costos medios a través del periodo de
-tiempo de los datos con el fin de poder ubicar tendencias. Las lineas
+tiempo de los datos con el fin de poder ubicar tendencias. Las líneas
 horizontales permiten ubicar la media, la mediana, el percentil 75 y el
 percentil seleccionado por el usuario para esa categoría. Al mover el
-deslizador, la linea **Ajuste analista** debe moverse al valor seleccionado.
+deslizador, la línea **Ajuste analista** debe moverse al valor seleccionado.
 
 ### Frecuencias
 
@@ -56,10 +56,10 @@ identificación de tendencias.
 > El valor a ejecutar se refiere a la proyección del valor de la nota técnica
 > multiplicando el valor a mes por el número de meses a comparar.
 
-En la esquina inferior de la izquierda se encuentra un gráfico de linea de serie
+En la esquina inferior de la izquierda se encuentra un gráfico de línea de serie
 de tiempo, la fecha de inicio y la fecha final se pueden modificar con la barra
-deslizable. El gráfico consiste de tres lineas, una lineal roja (el valor
+deslizable. El gráfico consiste de tres líneas, una lineal roja (el valor
 contratado), una azul (comparación con frecuencias), una verde (comparación con
-valor facturado). La linea azul representa la suma acumulada de la
+valor facturado). La línea azul representa la suma acumulada de la
 multiplicación del costo medio con la frecuencia efectiva de cada mes para cada
-agruapador. La linea verde representa la suma acumulada del valor facturado.
+agrupador. La línea verde representa la suma acumulada del valor facturado.

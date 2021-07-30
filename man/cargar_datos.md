@@ -9,11 +9,11 @@ La sección de cargar datos se divide en dos zonas:
 
 Para seleccionar el conjunto de datos a trabajar, primero se debe seleccionar
 el rango de fechas a trabajar. Aunque no es obligatorio, se recomienda
-pre-seleccionar el rango de fechas para altos volumenes de datos, dado que
+preseleccionar el rango de fechas para altos volúmenes de datos, dado que
 cambios a esta selección pueden causar aumentos en tiempos de carga inicial.
 
 Después de haber seleccionado un rango de fechas se debe seleccionar el
-conjunto de datos a trabajar. En el menú **Seleccionar datos** se encontraran
+conjunto de datos a trabajar. En el menú **Seleccionar datos** se encontrarán
 todos los conjuntos de datos cargados.
 
 Si los datos fueron cargados, un gráfico de barras debe aparecer en el lado
@@ -21,13 +21,13 @@ derecho de la pantalla.
 
 ## Subir datos
 
-> **Advertencia**: Esta funcionalidad esta hecha para manejar paqueños
-> volumenes de datos, entre 0 - 100.000 registros. Los limites de tamaño
+> **Advertencia**: Esta funcionalidad está hecha para manejar pequeños
+> volúmenes de datos, entre 0 - 100.000 registros. Los límites de tamaño
 > pueden ser cambiados por un administrador. Se recomienda siempre trabajar
 > con conjuntos de datos cargados en la nube.
 
 Para subir un conjunto de datos desde un archivo de texto delimitado, se debe
-hacer click en la sección **Subir datos** en el panel izquierdo.
+hacer clic en la sección **Subir datos** en el panel izquierdo.
 
 Primero, se debe subir el archivo delimitado codificado en **UTF-8**. La
 aplicación mostrará el mensaje **Upload completed** una vez el archivo se haya
@@ -39,10 +39,10 @@ subido.
 Si el archivo es un archivo de tipo .feather, se debe seleccionar esta opción
 en **Tipo de archivo**, de lo contrario se mantiene la opción csv.
 
-El botón opciones, abrirá un dialogo con la selección del delimitador y el
+El botón opciones, abrirá un diálogo con la selección del delimitador y el
 separador decimal. La opción espacios se refiere al carácter tabulador **\t**.
-Una vez seleccionadas estas opciones se hace click en el botón guardar. El
-dialogo debe cerrarse.
+Una vez seleccionadas estas opciones se hace clic en el botón guardar. El
+diálogo debe cerrarse.
 
 Existen muchas maneras de codificar una fecha, por esta razón, se debe hacer
 especificar el formato de fechas a utilizar. Las fechas se deben codificar
@@ -68,13 +68,13 @@ de la siguiente manera.
 | 28-02-20         | DÍA-MES-AÑO         | %d-%m-%y          |
 | 2020/148         | AÑO/DÍA             | %Y/%j             |
 
-Finalmente, se hace click en aplicar y se espera a que los datos se carguen.
+Finalmente, se hace clic en aplicar y se espera a que los datos se carguen.
 Al finalizar un gráfico de barras debe aparecer en el lado de derecho de la
 pantalla.
 
 ## Perfiles
 
-Los perfiles se pueden modificar desde la sección perfiles en al area derecha
+Los perfiles se pueden modificar desde la sección perfiles en al área derecha
 de la pantalla. Los perfiles se almacenan en texto plano en formato JSON.
 Aunque este disponible la interfaz para modificarlos dentro de AIS, no es
 obligatorio y se pueden editar desde cualquier editor de texto.
@@ -82,12 +82,12 @@ obligatorio y se pueden editar desde cualquier editor de texto.
 Los perfiles en la versión actual de AIS siguen la siguiente estructura.
 
 1. Nombre del perfil
-    1. Jerarquia
-        1. Unidad de conteo (episodio, paciente, factura, prestacion)
+    1. Jerarquía
+        1. Unidad de conteo (episodio, paciente, factura, prestación)
             1. Agrupadores
 
 Al modificar los perfiles, se pueden guardar con el botón guardar en la parte
-superior de la sección. Se abrirá un dialogo de contraseña en el cual se
+superior de la sección. Se abrirá un diálogo de contraseña en el cual se
 ingresará la clave determinada por el administrador de la aplicación.
 
 ### Esquema JSON de los perfiles
@@ -142,7 +142,7 @@ ingresará la clave determinada por el administrador de la aplicación.
 ## Notas técnicas
 
 Las notas técnicas se pueden modificar desde la sección de notas técnicas en
-el area derecha de la pantalla. Las notas técnicas se archivan en texto plano
+el área derecha de la pantalla. Las notas técnicas se archivan en texto plano
 por lo cual se pueden modificar tanto en la interfaz de AIS o en cualquier
 editor de texto.
 
@@ -166,10 +166,10 @@ obligatorio.
     9. notas
     10. inclusiones
     11. exclusiones
-    12. perfil (debe ser un perfil valido)
+    12. perfil (debe ser un perfil válido)
 
 Al modificar las notas técnicas, se pueden guardar con el botón guardar en la
-parte superior de la sección. Se abrirá un dialogo de contraseña en el cual se
+parte superior de la sección. Se abrirá un diálogo de contraseña en el cual se
 ingresará la clave determinada por el administrador de la aplicación.
 
 ### Esquema JSON de las notas técnicas
