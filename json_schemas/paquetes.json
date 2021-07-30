@@ -1,4 +1,3 @@
-
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -9,33 +8,36 @@
             "additionalProperties": {
                 "type": "object",
                 "required": [
+                    "especialidad",
                     "codigo",
                     "cups_paquete",
                     "descripcion",
+                    "servicio",
                     "valor_paquete",
                     "costo_paquete",
                     "prestaciones"
                 ],
                 "properties":{
-                    "especialidad": {"type":"string"},
-                    "codigo": {"type":"string"},
-                    "servicio": {"type":"string"},
-                    "cups_paquete": {"type":"string"},
-                    "descripcion": {"type":"string"},
-                    "inclusiones": {"type":["string", "array"]},
-                    "exclusiones": {"type":["string", "array"]},
-                    "valor_paquete": {"type":"number"},
-                    "costo_paquete": {"type":"number"},
-                    "prestaciones": {
-                        "type":"object",
+                    "especialidad": {"type" :"string"},
+                    "codigo": {"type" :"string"},
+                    "servicio": {"type" :"string"},
+                    "cups_paquete": {"type" :"string"},
+                    "descripcion": {"type" :"string"},
+                    "inclusiones": {"type" :["string", "array"]},
+                    "exclusiones": {"type" :["string", "array"]},
+                    "valor_paquete": {"type" :"number"},
+                    "costo_paquete": {"type" :"number"},
+                    "componentes": {
+                        "type": "object",
                         "additionalProperties": {
-                            "type":"object",
+                            "type": "object",
+                            "required": ["cantidad"],
                             "properties": {
-                                "descripcion":{"type":"string"},
-                                "componente":{"type":"string"},
-                                "tipo_costo": {"type":"string"},
-                                "valor": {"type":"number"},
-                                "costo": {"type":"number"}
+                                "descripcion": {"type": "string"},
+                                "tipo_costo": {"type": "string"},
+                                "cantidad": {"type": "number"},
+                                "valor_unitario": {"type": "number"},
+                                "costo_unitario": {"type": "number"}
                             }
                         }
                     }
@@ -44,18 +46,16 @@
         },
         "prestaciones": {
             "type": "object",
-            "additionalProperties":{
+            "additionalProperties": {
                 "type": "object",
                 "properties": {
-                    "descripcion":{"type":"string"},
-                    "componente":{"type":"string"},
-                    "tipo_costo":{"type":"string"},
-                    "valor": {"type":"number"},
-                    "costo": {"type":"number"}
+                    "descripcion": {"type": "string"},
+                    "tipo_costo": {"type": "string"},
+                    "valor_unitario": {"type": "number"},
+                    "costo_unitario": {"type": "number"}
                 },
                 "required": [
                     "descripcion", 
-                    "componente", 
                     "tipo_costo", 
                     "valor",
                     "costo"
