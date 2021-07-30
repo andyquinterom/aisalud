@@ -76,9 +76,11 @@ episodios_jerarquia_server <- function(episodios, opciones, cache, id = NULL,
   bindEvent(opciones$tabla_query)
 
   observe({
+    agrupador_valido <- !is.null(opciones$colnames) &&
+      input$agrupador %notin% c("", "Ninguno")
     # Si hay cambios al agrupador o a episodios se ejecutará
-    if (!is.null(opciones$colnames) &&
-        input$agrupador %notin% c("", "Ninguno")) {
+    if (!agrupador_valido) episodios$agrupadores_items <- NULL
+    if (agrupador_valido) {
       tryCatch(
         expr = {
           if  (!input$episodios) episodios$agrupadores_items <- NULL
