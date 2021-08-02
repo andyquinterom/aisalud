@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v21.08.2 (2021-08-02)
+
+### Correcciones
+
+- fix: Corrige error en nota técnica (2021-08-02)
+
 ## v21.08.1 (2021-07-30)
 
 ### Mejoras
