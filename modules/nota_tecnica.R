@@ -292,6 +292,12 @@ nota_tecnica_server <- function(id, opciones, cache) {
             perfil = opciones$perfil_selected,
             poblacion = input$poblacion
           )
+        }
+      }) %>%
+        bindEvent(episodios$descriptiva)
+
+      observe({
+        if (nrow(nota_tecnica$timeseries) > 0) {
           nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
             parse_nt() %>%
             left_join(
@@ -304,7 +310,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
             relocate(unidad_conteo, agrupador)
         }
       }) %>%
-        bindEvent(episodios$descriptiva)
+        bindEvent(nota_tecnica$nota_tecnica)
 
       observe({
         if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
