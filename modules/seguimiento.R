@@ -60,26 +60,29 @@ seguimiento_ui <- function(id) {
         ),
         tags$hr(),
         tags$br(),
-        tags$h4("Frecuencia a mes contratada ajustada"),
-        DT::dataTableOutput(ns("frecs_efectiva")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
-        tags$h4("Total pagador"),
-        DT::dataTableOutput(ns("frecs_pagador")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
-        tags$h4("Ajuste al valor del contrato"),
-        DT::dataTableOutput(ns("frecs_ajuste")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
-        tags$h4("Contrato por defecto"),
-        DT::dataTableOutput(ns("contrato_defecto")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
+        tags$h4("Nota técnica"),
+        DT::dataTableOutput(ns("nota_tecnica")),
+        conditionalPanel(
+          condition = '$("#limites_exist").attr("class") == "limites_exist"',
+          tags$hr(),
+          tags$br(),
+          tags$h4("Frecuencia a mes contratada ajustada"),
+          DT::dataTableOutput(ns("frecs_efectiva")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Total pagador"),
+          DT::dataTableOutput(ns("frecs_pagador")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Ajuste al valor del contrato"),
+          DT::dataTableOutput(ns("frecs_ajuste")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br()
+        ),
+        uiOutput(ns("limit_check")),
         tabsetPanel(
           tabPanel(
             title = "Resultados frecuencias",
@@ -140,7 +143,8 @@ seguimiento_server <- function(id, opciones, cache) {
       frecs_ajuste = data.frame(),
       valor_base = data.frame(),
       valor_diff = data.frame(),
-      sum_limites = 0)
+      limites = FALSE)
+
 
     observe({
       updateSelectizeInput(
@@ -262,6 +266,13 @@ seguimiento_server <- function(id, opciones, cache) {
         expr = {
           if (nrow(episodios$nt_current) > 0) {
             if (nrow(episodios$descriptiva) > 0) {
+              episodios$limites <- episodios$nt_current %>%
+                ungroup() %>%
+                summarise(
+                  limit_check = !(all(is.na(frec_mes_min)) &&
+                    all(is.na(frec_mes_max)))
+                ) %>%
+                pull(limit_check)
               episodios$comparar_nt <- comparar_nt(
                 timeseries = episodios$descriptiva,
                 nota_tecnica = episodios$nt_current,
@@ -324,6 +335,51 @@ seguimiento_server <- function(id, opciones, cache) {
       }
     }) %>%
     bindEvent(input$cambiar_perfil)
+
+    output$limit_check <- renderUI({
+      tags$div(
+        id = "limites_exist",
+        class = ifelse(
+          test = episodios$limites,
+          yes = "limites_exist",
+          no = "limites_non"
+        )
+      )
+    })
+
+    output$nota_tecnica <- DT::renderDataTable({
+      if (nrow(episodios$nt_current) > 0) {
+        datatable(
+          episodios$nt_current,
+          colnames = c(
+            "Nota técnica" = "cod_nt",
+            "Agrupador" = "agrupador",
+            "Frecuencia a mes" = "frec_mes",
+            "cm" = "cm",
+            "Frecuencia per capita" = "frecuencia_pc",
+            "Valor mes" = "valor_mes",
+            "Límite inferior" = "frec_mes_min",
+            "Límite superior" = "frec_mes_max"),
+        rownames = FALSE,
+        selection = "none",
+        extensions = c("FixedColumns"),
+        options = list(
+          dom = "t",
+          scrollCollapse = TRUE,
+          fixedColumns = list(leftColumns = 2),
+          scrollY = "300px",
+          pageLength = 99999,
+          scrollX = TRUE,
+          language = list(
+            url = dt_spanish))
+        ) %>%
+        formatStyle(columns = TRUE, backgroundColor = "white") %>%
+        formatRound(
+          columns = -c(1, 2),
+          dec.mark = ",", mark = ".", digits = 3
+          )
+      }
+    })
 
     output$frecs_resumen <- renderUI({
       if (nrow(episodios$comparar_nt) > 0) {
@@ -505,19 +561,6 @@ seguimiento_server <- function(id, opciones, cache) {
 
     observe({
       if (nrow(episodios$comparar_nt) > 0) {
-        episodios$sum_limites <- tbl(conn, "perfiles_notas_tecnicas_v2") %>%
-          pull(notas_tecnicas) %>% 
-          parse_json(simplifyVector = TRUE) %>% 
-          parse_nt() %>% 
-          select(contains("frec_mes_")) %>% 
-          rowwise() %>% 
-          summarise(suma=rowSums(across(where(is.numeric)),na.rm = TRUE)) %>% 
-          `[[`("suma")
-      }
-    }) 
-    
-    observe({
-      if (nrow(episodios$comparar_nt) > 0) {
         episodios$frecs_efectiva <- episodios$comparar_nt %>%
           group_by(agrupador) %>%
           arrange(mes_anio_num) %>%
@@ -530,18 +573,8 @@ seguimiento_server <- function(id, opciones, cache) {
       }
     })
 
-    output$contrato_defecto <- DT::renderDataTable({
-      if (nrow(episodios$frecs_efectiva) > 0 & episodios$sum_limites == 0){
-        print(episodios$frecs_pagador)
-        print(episodios$frecs_efectiva)
-        print(episodios$frecs_ajuste)
-      }
-    })
-    
     output$frecs_efectiva <- DT::renderDataTable({
-      if (nrow(episodios$frecs_efectiva) > 0 & episodios$sum_limites > 0) {
-        print(class(episodios$sum_limites))
-        print(episodios$sum_limites)
+      if (nrow(episodios$frecs_efectiva) > 0) {
         episodios$frecs_efectiva %>%
           datatable(
             colnames = c(
@@ -584,7 +617,7 @@ seguimiento_server <- function(id, opciones, cache) {
     })
 
     output$frecs_pagador <- DT::renderDataTable({
-      if (nrow(episodios$frecs_pagador) > 0 & episodios$sum_limites > 0) {
+      if (nrow(episodios$frecs_pagador) > 0) {
         episodios$frecs_pagador %>%
           datatable(
             colnames = c(
@@ -625,7 +658,7 @@ seguimiento_server <- function(id, opciones, cache) {
     })
 
     output$frecs_ajuste <- DT::renderDataTable({
-      if (nrow(episodios$frecs_ajuste) > 0 & episodios$sum_limites > 0) {
+      if (nrow(episodios$frecs_ajuste) > 0) {
         episodios$frecs_ajuste %>%
           datatable(
             colnames = c(
