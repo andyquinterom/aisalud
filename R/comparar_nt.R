@@ -58,6 +58,7 @@ comparar_nt <- function(timeseries, nota_tecnica, agrupador) {
       diff_efectiva_x_cm = diff_efectiva * cm,
       diff_lim_x_cm = diff_lim * cm,
       valor_contratado = cm * frec_efectiva,
+      valor_contratado_base = cm * frec_mes,
       valor_ejecutado_cm = cm * Frecuencia,
       diff_facturado = Suma - valor_contratado,
       mes_anio = mes_spanish_juntos(mes_anio_num)

@@ -60,21 +60,29 @@ seguimiento_ui <- function(id) {
         ),
         tags$hr(),
         tags$br(),
-        tags$h4("Frecuencia a mes contratada ajustada"),
-        DT::dataTableOutput(ns("frecs_efectiva")) %>%
-          withSpinner(),
+        tags$h4("Nota técnica"),
+        DT::dataTableOutput(ns("nota_tecnica")),
         tags$hr(),
         tags$br(),
-        tags$h4("Total pagador"),
-        DT::dataTableOutput(ns("frecs_pagador")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
-        tags$h4("Ajuste al valor del contrato"),
-        DT::dataTableOutput(ns("frecs_ajuste")) %>%
-          withSpinner(),
-        tags$hr(),
-        tags$br(),
+        conditionalPanel(
+          condition = '$("#limites_exist").attr("class") == "limites_exist"',
+          tags$h4("Frecuencia a mes contratada ajustada"),
+          DT::dataTableOutput(ns("frecs_efectiva")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Total pagador"),
+          DT::dataTableOutput(ns("frecs_pagador")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br(),
+          tags$h4("Ajuste al valor del contrato"),
+          DT::dataTableOutput(ns("frecs_ajuste")) %>%
+            withSpinner(),
+          tags$hr(),
+          tags$br()
+        ),
+        uiOutput(ns("limit_check")),
         tabsetPanel(
           tabPanel(
             title = "Resultados frecuencias",
@@ -134,7 +142,9 @@ seguimiento_server <- function(id, opciones, cache) {
       frecs_diff = data.frame(),
       frecs_ajuste = data.frame(),
       valor_base = data.frame(),
-      valor_diff = data.frame())
+      valor_diff = data.frame(),
+      limites = FALSE)
+
 
     observe({
       updateSelectizeInput(
@@ -256,6 +266,13 @@ seguimiento_server <- function(id, opciones, cache) {
         expr = {
           if (nrow(episodios$nt_current) > 0) {
             if (nrow(episodios$descriptiva) > 0) {
+              episodios$limites <- episodios$nt_current %>%
+                ungroup() %>%
+                summarise(
+                  limit_check = !(all(is.na(frec_mes_min)) &&
+                    all(is.na(frec_mes_max)))
+                ) %>%
+                pull(limit_check)
               episodios$comparar_nt <- comparar_nt(
                 timeseries = episodios$descriptiva,
                 nota_tecnica = episodios$nt_current,
@@ -319,16 +336,66 @@ seguimiento_server <- function(id, opciones, cache) {
     }) %>%
     bindEvent(input$cambiar_perfil)
 
+    output$limit_check <- renderUI({
+      tags$div(
+        id = "limites_exist",
+        class = ifelse(
+          test = episodios$limites,
+          yes = "limites_exist",
+          no = "limites_non"
+        )
+      )
+    })
+
+    output$nota_tecnica <- DT::renderDataTable({
+      if (nrow(episodios$nt_current) > 0) {
+        datatable(
+          episodios$nt_current,
+          colnames = c(
+            "Nota técnica" = "cod_nt",
+            "Agrupador" = "agrupador",
+            "Frecuencia a mes" = "frec_mes",
+            "Costo Medio" = "cm",
+            "Frecuencia per capita" = "frecuencia_pc",
+            "Valor mes" = "valor_mes",
+            "Límite inferior" = "frec_mes_min",
+            "Límite superior" = "frec_mes_max"),
+        rownames = FALSE,
+        selection = "none",
+        extensions = c("FixedColumns"),
+        options = list(
+          dom = "t",
+          scrollCollapse = TRUE,
+          fixedColumns = list(leftColumns = 2),
+          scrollY = "300px",
+          pageLength = 99999,
+          scrollX = TRUE,
+          language = list(
+            url = dt_spanish))
+        ) %>%
+        formatStyle(columns = TRUE, backgroundColor = "white") %>%
+        formatRound(
+          columns = -c(1, 2),
+          dec.mark = ",", mark = ".", digits = 3
+        )
+      }
+    })
+
     output$frecs_resumen <- renderUI({
       if (nrow(episodios$comparar_nt) > 0) {
         valor_contratado <- sum(episodios$comparar_nt$valor_contratado)
+        valor_contratado_base <-
+          sum(episodios$comparar_nt$valor_contratado_base)
         valor_ejecutado_cm <-
           sum(episodios$comparar_nt$valor_ejecutado_cm)
         valor_ejecutado_fac <-
           sum(episodios$comparar_nt$Suma, na.rm = TRUE)
 
         totales <- list(
-          "Valor a ejecutar:" = formatAsCurrency(valor_contratado),
+          "Valor base de nota técnica" =
+            formatAsCurrency(valor_contratado_base),
+          "Valor de nota técnica ajustado:" =
+            formatAsCurrency(valor_contratado),
           "Valor ejecutado con frecuencia:" =
             formatAsCurrency(valor_ejecutado_cm),
           "Diferencia de valor con frecuencia:" =
