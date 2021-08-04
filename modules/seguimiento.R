@@ -62,10 +62,10 @@ seguimiento_ui <- function(id) {
         tags$br(),
         tags$h4("Nota técnica"),
         DT::dataTableOutput(ns("nota_tecnica")),
+        tags$hr(),
+        tags$br(),
         conditionalPanel(
           condition = '$("#limites_exist").attr("class") == "limites_exist"',
-          tags$hr(),
-          tags$br(),
           tags$h4("Frecuencia a mes contratada ajustada"),
           DT::dataTableOutput(ns("frecs_efectiva")) %>%
             withSpinner(),
@@ -355,7 +355,7 @@ seguimiento_server <- function(id, opciones, cache) {
             "Nota técnica" = "cod_nt",
             "Agrupador" = "agrupador",
             "Frecuencia a mes" = "frec_mes",
-            "cm" = "cm",
+            "Costo Medio" = "cm",
             "Frecuencia per capita" = "frecuencia_pc",
             "Valor mes" = "valor_mes",
             "Límite inferior" = "frec_mes_min",
@@ -377,20 +377,25 @@ seguimiento_server <- function(id, opciones, cache) {
         formatRound(
           columns = -c(1, 2),
           dec.mark = ",", mark = ".", digits = 3
-          )
+        )
       }
     })
 
     output$frecs_resumen <- renderUI({
       if (nrow(episodios$comparar_nt) > 0) {
         valor_contratado <- sum(episodios$comparar_nt$valor_contratado)
+        valor_contratado_base <-
+          sum(episodios$comparar_nt$valor_contratado_base)
         valor_ejecutado_cm <-
           sum(episodios$comparar_nt$valor_ejecutado_cm)
         valor_ejecutado_fac <-
           sum(episodios$comparar_nt$Suma, na.rm = TRUE)
 
         totales <- list(
-          "Valor a ejecutar:" = formatAsCurrency(valor_contratado),
+          "Valor base de nota técnica" =
+            formatAsCurrency(valor_contratado_base),
+          "Valor de nota técnica ajustado:" =
+            formatAsCurrency(valor_contratado),
           "Valor ejecutado con frecuencia:" =
             formatAsCurrency(valor_ejecutado_cm),
           "Diferencia de valor con frecuencia:" =
