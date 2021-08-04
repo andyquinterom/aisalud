@@ -351,7 +351,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
                 )
               ),
             pretty = TRUE,
-            auto_unbox=TRUE
+            auto_unbox = FALSE
             ),
           mode = "json"
         )
