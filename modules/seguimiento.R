@@ -12,7 +12,7 @@
 # APTITUD PARA UN PROPÓSITO PARTICULAR. Referir a la
 # AGPL (http://www.gnu.org/licenses/agpl-3.0.txt) para más detalles.
 #
-
+  
 seguimiento_ui <- function(id) {
 
   ns <- NS(id)
@@ -112,6 +112,21 @@ seguimiento_ui <- function(id) {
             tags$h4("Diferencia ejecución"),
             DT::dataTableOutput(ns("valor_diff")) %>%
               withSpinner()
+          ),
+          tabPanel(
+            title = "Costo medio efectivo",
+            tags$hr(),
+            tags$br(),
+            selectizeInput(
+              inputId = ns("conf_agrupador"),
+              label = "Agrupador",
+              choices = NULL
+            ),
+            plotlyOutput(
+              outputId = ns("costos_medios"),
+              height = "370px",
+              width = "100%"
+            )
           )
         )
       )
@@ -152,6 +167,13 @@ seguimiento_server <- function(id, opciones, cache) {
         choices = c("Ninguno", opciones$notas_tecnicas$nt),
         selected = episodios$nt_selected
         )
+            
+      updateSelectizeInput(
+        inputId = "conf_agrupador",
+        choices = opciones$notas_tecnicas[which(
+          !is.na(frec_mes_max) | !is.na(frec_mes_min))]$agrupador
+      )
+      
     }) %>%
     bindEvent(opciones$notas_tecnicas)
 
@@ -423,6 +445,48 @@ seguimiento_server <- function(id, opciones, cache) {
       }
     })
 
+    observe({
+      if(nrow(episodios$comparar_nt)>0){
+      a <- unique(max(c(0,episodios$comparar_nt$frec_mes_min),na.rm = TRUE))
+      b <- unique(episodios$comparar_nt$frec_mes)
+      c <- unique(max(c(0,episodios$comparar_nt$frec_mes_max),na.rm = TRUE))
+      cm <- unique(episodios$comparar_nt$cm)
+      
+      costo_medio_datos <- 
+        data.frame("x" = 1:(c+100),
+                   "a" = a, 
+                   "b" = b,
+                   "c" = c,
+                   "cm" = cm) %>% 
+        mutate("y" = case_when(
+          x >= 1 & x <= a ~ (((b*cm)-(cm*(a-x)))/x),
+          x >= a & x <= c ~ ((b*cm)/x),
+          x >= c          ~ (((b*cm)+(cm*(x-c)))/x)
+          )
+        ) %>% select(x,y)
+      }
+    })
+    
+    output$costos_medios <- renderPlotly({
+      if (nrow(episodios$comparar_nt) > 0) {
+        costo_medio_datos %>% 
+          plot_ly(
+          x = ~x,
+          y = ~y,
+          name = "Costo medio",
+          type = "scatter",
+          mode = "lines"
+        )  %>% 
+          layout(
+            legend = list(x = 0.1, y = 0.9),
+            xaxis = list(title = "Frecuencia"),
+            yaxis = list(title = "Costo",
+                         tickformat = ",.2f")
+          ) %>%
+          config(locale = "es")
+      }
+    })
+    
     output$frecs_plot <- renderPlotly({
       if (nrow(episodios$comparar_nt) > 0) {
         episodios$comparar_nt %>%
