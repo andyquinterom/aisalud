@@ -117,15 +117,19 @@ seguimiento_ui <- function(id) {
             title = "Costo medio efectivo",
             tags$hr(),
             tags$br(),
-            selectizeInput(
-              inputId = ns("conf_agrupador"),
-              label = "Agrupador",
-              choices = NULL
-            ),
-            plotlyOutput(
-              outputId = ns("costos_medios"),
-              height = "370px",
-              width = "100%"
+            conditionalPanel(
+              condition = 
+                '$("#limites_exist").attr("class") == "limites_exist"',
+              selectizeInput(
+                inputId = ns("nt_costo_medio"),
+                label = "Agrupador",
+                choices = NULL
+              ),
+              plotlyOutput(
+                outputId = ns("costos_medios"),
+                height = "370px",
+                width = "100%"
+              )
             )
           )
         )
@@ -167,15 +171,20 @@ seguimiento_server <- function(id, opciones, cache) {
         choices = c("Ninguno", opciones$notas_tecnicas$nt),
         selected = episodios$nt_selected
         )
-            
+    }) %>%
+      bindEvent(opciones$notas_tecnicas)
+    
+    observe({
       updateSelectizeInput(
-        inputId = "conf_agrupador",
-        choices = opciones$notas_tecnicas[which(
-          !is.na(frec_mes_max) | !is.na(frec_mes_min))]$agrupador
+        inputId = "nt_costo_medio",
+        choices = opciones$notas_tecnicas[
+          which(nt == episodios$nt_selected & 
+                  (!is.na(frec_mes_max) | !is.na(frec_mes_min)))
+          ]$agrupador
       )
       
     }) %>%
-    bindEvent(opciones$notas_tecnicas)
+    bindEvent(episodios$nt_selected)
 
     observe({
       episodios$nt_selected <- input$nota_tecnica
@@ -447,12 +456,12 @@ seguimiento_server <- function(id, opciones, cache) {
 
     observe({
       if(nrow(episodios$comparar_nt)>0){
-      a <- unique(max(c(0,episodios$comparar_nt$frec_mes_min),na.rm = TRUE))
+      a <- max(c(0,episodios$comparar_nt$frec_mes_min),na.rm = TRUE)
       b <- unique(episodios$comparar_nt$frec_mes)
-      c <- unique(max(c(0,episodios$comparar_nt$frec_mes_max),na.rm = TRUE))
+      c <- max(c(0,episodios$comparar_nt$frec_mes_max),na.rm = TRUE)
       cm <- unique(episodios$comparar_nt$cm)
       
-      costo_medio_datos <- 
+      episodios$costo_medio_datos <- 
         data.frame("x" = 1:(c+100),
                    "a" = a, 
                    "b" = b,
@@ -469,7 +478,7 @@ seguimiento_server <- function(id, opciones, cache) {
     
     output$costos_medios <- renderPlotly({
       if (nrow(episodios$comparar_nt) > 0) {
-        costo_medio_datos %>% 
+        episodios$costo_medio_datos %>% 
           plot_ly(
           x = ~x,
           y = ~y,
