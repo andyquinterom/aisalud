@@ -117,6 +117,11 @@ seguimiento_ui <- function(id) {
             title = "Costo medio efectivo",
             tags$hr(),
             tags$br(),
+            tags$p("Esta función permite analizar el costo medio efectivo para
+              agrupadores con limites de ejecución. Si existen agrupadores con
+              estas características se generará un gráfico con los datos
+              correspondientes."
+            ),
             conditionalPanel(
               condition = 
                 '$("#limites_exist").attr("class") == "limites_exist"',
@@ -173,18 +178,6 @@ seguimiento_server <- function(id, opciones, cache) {
         )
     }) %>%
       bindEvent(opciones$notas_tecnicas)
-    
-    observe({
-      updateSelectizeInput(
-        inputId = "nt_costo_medio",
-        choices = opciones$notas_tecnicas[
-          which(nt == episodios$nt_selected & 
-                  (!is.na(frec_mes_max) | !is.na(frec_mes_min)))
-          ]$agrupador
-      )
-      
-    }) %>%
-    bindEvent(episodios$nt_selected,opciones$notas_tecnicas)
 
     observe({
       episodios$nt_selected <- input$nota_tecnica
@@ -289,6 +282,18 @@ seguimiento_server <- function(id, opciones, cache) {
       }
     }) %>%
       bindEvent(input$exe)
+
+    observe({
+      if (nrow(episodios$nt_current) > 0) {
+        updateSelectizeInput(
+          inputId = "nt_costo_medio",
+          choices = episodios$nt_current %>%
+            filter(!is.na(frec_mes_max) | !is.na(frec_mes_min)) %>%
+            pull(agrupador)
+        )
+      }
+    }) %>%
+      bindEvent(episodios$nt_current)
 
     # Se espera a que se generen las descripciones por frecuencia o valor
     # para empezar a hacer la comparación con la nota técnica
@@ -455,38 +460,62 @@ seguimiento_server <- function(id, opciones, cache) {
     })
     
     observe({
-      if(nrow(episodios$comparar_nt)>0){
-        episodios$costo_medio_datos <-
-          episodios$comparar_nt %>% 
+      if(nrow(episodios$comparar_nt) > 0) {
+        datos_agrupador <- episodios$nt_current %>% 
           ungroup() %>% 
-          filter(agrupador == input$nt_costo_medio) %>% 
-          distinct(agrupador,frec_mes_min,frec_mes,frec_mes_max,cm) %>% 
-          rename("a" = "frec_mes_min", "b" = "frec_mes", "c" = "frec_mes_max") %>% 
-          slice(rep(row_number(),(c+100))) %>% 
-          mutate(x = row_number(),
-                 y = case_when(
-                   x >= 1 & x <= a ~ (((b*cm)-(cm*(a-x)))/x),
-                   x >= a & x <= c ~ ((b*cm)/x),
-                   x >= c          ~ (((b*cm)+(cm*(x-c)))/x)
-                   )
-                 ) %>% select(x,y)
+          filter(agrupador == input$nt_costo_medio) %>%
+          mutate(
+            frec_mes_min = ifelse(
+              is.na(frec_mes_min),
+              yes = 0,
+              no = frec_mes_min
+            ),
+            frec_mes_max = ifelse(
+              is.na(frec_mes_max),
+              yes = Inf,
+              no = frec_mes_max
+            )
+          )
+
+        if (nrow(datos_agrupador) > 0) {
+          a <- datos_agrupador$frec_mes_min
+          b <- datos_agrupador$frec_mes
+          c <- datos_agrupador$frec_mes_max
+          cm <- datos_agrupador$cm
+          episodios$costo_medio_datos <- tibble(
+            x = 2 * ifelse(
+              test = c == Inf,
+              yes = b,
+              no = c
+            ) %>%
+              seq_len()
+          ) %>%
+            mutate(
+              y = case_when(
+                x >= 1 & x <= a ~ (((b * cm) - (cm * (a - x))) / x),
+                x >= a & x <= c ~ ((b * cm) / x),
+                x >= c          ~ ((( b * cm) + (cm * (x - c))) / x)
+              ),
+              y = round(y, digits = 0)
+            )
+        }
       }
     })
     
     output$costos_medios <- renderPlotly({
-      if (nrow(episodios$comparar_nt) > 0) {
+      if (nrow(episodios$costo_medio_datos) > 0) {
         episodios$costo_medio_datos %>% 
           plot_ly(
-          x = ~x,
-          y = ~y,
-          name = "Costo medio",
-          type = "scatter",
-          mode = "lines"
-        )  %>% 
+            x = ~x,
+            y = ~y,
+            name = "Costo medio",
+            type = "scatter",
+            mode = "lines"
+          ) %>% 
           layout(
             legend = list(x = 0.1, y = 0.9),
             xaxis = list(title = "Frecuencia"),
-            yaxis = list(title = "Costo",
+            yaxis = list(title = "Costo medio efectivo",
                          tickformat = ",.2f")
           ) %>%
           config(locale = "es")
