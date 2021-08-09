@@ -184,7 +184,7 @@ seguimiento_server <- function(id, opciones, cache) {
       )
       
     }) %>%
-    bindEvent(episodios$nt_selected)
+    bindEvent(episodios$nt_selected,opciones$notas_tecnicas)
 
     observe({
       episodios$nt_selected <- input$nota_tecnica
@@ -453,26 +453,23 @@ seguimiento_server <- function(id, opciones, cache) {
           tagList()
       }
     })
-
+    
     observe({
       if(nrow(episodios$comparar_nt)>0){
-      a <- max(c(0,episodios$comparar_nt$frec_mes_min),na.rm = TRUE)
-      b <- unique(episodios$comparar_nt$frec_mes)
-      c <- max(c(0,episodios$comparar_nt$frec_mes_max),na.rm = TRUE)
-      cm <- unique(episodios$comparar_nt$cm)
-      
-      episodios$costo_medio_datos <- 
-        data.frame("x" = 1:(c+100),
-                   "a" = a, 
-                   "b" = b,
-                   "c" = c,
-                   "cm" = cm) %>% 
-        mutate("y" = case_when(
-          x >= 1 & x <= a ~ (((b*cm)-(cm*(a-x)))/x),
-          x >= a & x <= c ~ ((b*cm)/x),
-          x >= c          ~ (((b*cm)+(cm*(x-c)))/x)
-          )
-        ) %>% select(x,y)
+        episodios$costo_medio_datos <-
+          episodios$comparar_nt %>% 
+          ungroup() %>% 
+          filter(agrupador == input$nt_costo_medio) %>% 
+          distinct(agrupador,frec_mes_min,frec_mes,frec_mes_max,cm) %>% 
+          rename("a" = "frec_mes_min", "b" = "frec_mes", "c" = "frec_mes_max") %>% 
+          slice(rep(row_number(),(c+100))) %>% 
+          mutate(x = row_number(),
+                 y = case_when(
+                   x >= 1 & x <= a ~ (((b*cm)-(cm*(a-x)))/x),
+                   x >= a & x <= c ~ ((b*cm)/x),
+                   x >= c          ~ (((b*cm)+(cm*(x-c)))/x)
+                   )
+                 ) %>% select(x,y)
       }
     })
     
