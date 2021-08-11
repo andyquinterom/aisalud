@@ -18,55 +18,91 @@ outliers_ui <- function(id) {
 
   tagList(
     fluidRow(
-      box(
-        width = 3,
-        radioButtons(
-          inputId = ns("outliers_modo"),
-          label = "Método de cálculo:",
-          choiceNames = c("Percentil", "Rango intercuartil"),
-          choiceValues = c("percentil", "iqr")
-        ),
-        uiOutput(ns("outliers_modo_opciones")),
-        numericInput(
-          inputId = ns("outliers_frecuencia"),
-          label = "Frecuencia mínima:",
-          min = 0,
-          step = 1,
-          value = 0),
-        actionButton(
-          inputId = ns("outliers_exe"),
-          label = "Ejecutar",
-          width = "100%"),
-        tags$br(),
-        tags$br(),
-        actionButton(
-          inputId = ns("outliers_excluir"),
-          label = "Excluir pacientes seleccionados",
-          width = "100%"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("outliers_descargar_csv"),
-          label = "CSV",
-          style = "width:100%;"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("outliers_descargar_xlsx"),
-          label = "Excel",
-          style = "width:100%;")),
+      uiOutput(ns("identificacion_check")),
+      box(width = 3,
+        tabsetPanel(
+          tabPanel(title = "outliers",
+            radioButtons(
+              inputId = ns("outliers_modo"),
+              label = "Método de cálculo:",
+              choiceNames = c("Percentil", "Rango intercuartil"),
+              choiceValues = c("percentil", "iqr")
+            ),
+            uiOutput(ns("outliers_modo_opciones")),
+            numericInput(
+              inputId = ns("outliers_frecuencia"),
+              label = "Frecuencia mínima:",
+              min = 0,
+              step = 1,
+              value = 0),
+            actionButton(
+              inputId = ns("outliers_exe"),
+              label = "Ejecutar",
+              width = "100%"),
+            tags$br(),
+            tags$br(),
+            actionButton(
+              inputId = ns("outliers_excluir"),
+              label = "Excluir pacientes seleccionados",
+              width = "100%"),
+            tags$br(),
+            tags$br(),
+            downloadButton(
+              outputId = ns("outliers_descargar_csv"),
+              label = "CSV",
+              style = "width:100%;"),
+            tags$br(),
+            tags$br(),
+            downloadButton(
+              outputId = ns("outliers_descargar_xlsx"),
+              label = "Excel",
+              style = "width:100%;")
+            ),
+          tabPanel(title = "Identificación pacientes",
+                   tags$br(),
+                   radioButtons(
+                     inputId = ns("identificacion_pacientes"),
+                     label = "Agrupador:",
+                     choiceNames = c("Prestación", "Diagnóstico"),
+                     choiceValues = c("descrip_prest", "descrip_dx")
+                   ),
+                   selectizeInput(
+                     inputId = ns("episodios_jerarquia_nivel_1"),
+                     label = "Episodios:",
+                     choices = NULL,
+                     multiple = TRUE),
+                   actionButton(
+                     inputId = ns("identificacion_exe"),
+                     label = "Ejecutar",
+                     width = "100%"),
+                   )
+      )),
       box(
         width = 9,
-        tags$h2(textOutput(ns("outliers_titulo")), class = "titulo_center"),
-        tags$br(),
+        conditionalPanel(
+          condition = '$("#outlier_change").attr("class") == "outlier_on"',
+          tags$h2(textOutput(ns("outliers_titulo")), class = "titulo_center"),
+          tags$br(),
           div(
             DT::dataTableOutput(ns("outliers_tabla")) %>%
               withSpinner(),
-              style = "font-size:90%"
+            style = "font-size:90%"
+            )
+        ),
+        conditionalPanel(
+          condition = 
+            '$("#outlier_change").attr("class") == "outlier_off"',
+          tags$h2("Identificacion de clientes"),
+          tags$br(),
+          div(
+            DT::dataTableOutput(ns("identificacion_tabla")) %>%
+              withSpinner(),
+            style = "font-size:90%"
           )
+        )
+        )
       )
     )
-  )
 }
 
 outliers_server <- function(id, opciones, cache) {
@@ -76,8 +112,73 @@ outliers_server <- function(id, opciones, cache) {
 
       ns <- NS(id)
 
-      outliers <- reactiveValues(tabla = data.table())
+      outliers <- reactiveValues(tabla = data.table(),
+                                 outlier_activity = TRUE)
 
+      observe({
+        if (opciones$datos_cargados) {
+        updateSelectizeInput(
+          inputId = "episodios_jerarquia_nivel_1",
+          choices = opciones$tabla %>% 
+            pull_distinct(col = input$identificacion_pacientes),
+          server = TRUE
+            )
+        }
+      })
+      
+      observeEvent(input$outliers_exe,{
+        print("input$outliers_exe")
+        print(input$outliers_exe)
+        outliers$outlier_activity <- TRUE
+      })
+      
+      observeEvent(input$identificacion_exe,{
+        print("input$identificacion_exe")
+        print(input$identificacion_exe)
+        outliers$outlier_activity <- FALSE
+      })
+      
+      output$identificacion_check <- renderUI({
+        tags$div(
+          id = "outlier_change",
+          class = ifelse(
+            test = outliers$outlier_activity,
+            yes = "outlier_on",
+            no = "outlier_off"
+          )
+        )
+      })
+      
+      output$limit_check <- renderUI({
+        tags$div(
+          id = "limites_exist",
+          class = ifelse(
+            test = episodios$limites,
+            yes = "limites_exist",
+            no = "limites_non"
+          )
+        )
+      })
+      
+      observe({
+        jeraquia <- input$episodios_jerarquia_nivel_1
+        opciones$identificacion <- opciones$tabla %>% 
+                filter(!!rlang::sym(input$identificacion_pacientes) %in% 
+                         jeraquia) %>% 
+                select(nro_identificacion,
+                       !!rlang::sym(input$identificacion_pacientes)) %>% 
+                distinct() %>% 
+                collect()
+      }) %>% bindEvent(input$identificacion_exe)
+      
+      output$identificacion_tabla <- DT::renderDataTable({
+        if (nrow(opciones$identificacion) > 0) {
+          DT::datatable(
+            opciones$identificacion
+          )
+        }
+      })
+      
       observe({
         output$outliers_modo_opciones <- renderUI({
           if (input$outliers_modo == "percentil") {
