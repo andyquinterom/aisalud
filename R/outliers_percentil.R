@@ -26,11 +26,11 @@
 #' @return tabla con outliers
 #' @examples
 #' outliers_percentil(
-  #' data = iris,
-  #' columna = "Species",
-  #' columna_valor = "Sepal.Length",
-  #' percentil = .5,
-  #' frecuencia = 1)
+#' data = iris,
+#' columna = "Species",
+#' columna_valor = "Sepal.Length",
+#' percentil = .5,
+#' frecuencia = 1)
 
 
 
@@ -52,7 +52,9 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
     summarise(valor_calculos = sum(valor_calculos, na.rm = TRUE)) %>%
     select(valor_calculos) %>%
     collect() %>%
-    transmute(percentil = quantile(valor_calculos, probs = percentil)) %>%
+    transmute(
+      percentil = quantile(valor_calculos, probs = percentil, na.rm = TRUE)
+    ) %>%
     distinct() %>%
     collect() %>%
     unlist() %>%
@@ -66,7 +68,7 @@ outliers_percentil <- function(data, columna, columna_valor, percentil,
                 yes = sum(cantidad, na.rm = TRUE),
                 no = n())) %>%
     mutate(porcentaje = paste0(
-      round(100*valor_calculos/valor_total, digits = 2),
+      round(100 * valor_calculos / valor_total, digits = 2),
       "%")) %>%
     filter(frec >= frecuencia) %>%
     filter(valor_calculos >= valor_maximo) %>%

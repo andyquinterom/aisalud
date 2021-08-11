@@ -56,8 +56,10 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
     select(valor_calculos) %>%
     collect() %>%
     transmute(
-      lower = quantile(valor_calculos, 0.25) - multiplicativo*IQR(valor_calculos),
-      upper = quantile(valor_calculos, 0.75) + multiplicativo*IQR(valor_calculos)
+      lower = quantile(valor_calculos, 0.25, na.rm = TRUE) -
+        multiplicativo * IQR(valor_calculos, na.rm = TRUE),
+      upper = quantile(valor_calculos, 0.75, na.rm = TRUE) +
+        multiplicativo * IQR(valor_calculos, na.rm = TRUE)
     ) %>%
     distinct() %>%
     collect()
@@ -73,7 +75,7 @@ outliers_iqr <- function(data, columna, columna_valor, multiplicativo,
                 yes = sum(cantidad, na.rm = TRUE),
                 no = n())) %>%
     mutate(porcentaje = paste0(
-      round(100*valor_calculos/valor_total, digits = 2),
+      round(100 * valor_calculos / valor_total, digits = 2),
       "%")) %>%
     filter(frec >= frecuencia) %>%
     filter(valor_calculos >= upper | valor_calculos <= lower) %>%
