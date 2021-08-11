@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v21.08.3 (2021-08-11)
+
+### Mejoras
+
+- feat: Análisis de costos medios para contratos con límites (2021-08-10)
+
+- feat: Agrega indicadores a nota técnica y simplifica tablas (2021-08-04)
+
+### Correcciones
+
+- fix: Corrige error en outliers con valores NA (2021-08-11)
+
+- fix: Corrige creación de perfiles en nota técnica (2021-08-04)
+
 ## v21.08.2 (2021-08-02)
 
 ### Correcciones
