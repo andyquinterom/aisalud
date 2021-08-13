@@ -58,25 +58,31 @@ outliers_ui <- function(id) {
               label = "Excel",
               style = "width:100%;")
             ),
-          tabPanel(title = "Identificación pacientes",
-                   tags$br(),
-                   radioButtons(
-                     inputId = ns("identificacion_pacientes"),
-                     label = "Agrupador:",
-                     choiceNames = c("Prestación", "Diagnóstico"),
-                     choiceValues = c("descrip_prest", "descrip_dx")
-                   ),
-                   selectizeInput(
-                     inputId = ns("episodios_jerarquia_nivel_1"),
-                     label = "Episodios:",
-                     choices = NULL,
-                     multiple = TRUE),
-                   actionButton(
-                     inputId = ns("identificacion_exe"),
-                     label = "Ejecutar",
-                     width = "100%"),
-                   )
-      )),
+          tabPanel(
+            title = "Identificación pacientes",
+            tags$br(),
+            radioButtons(
+              inputId = ns("identificacion_pacientes"),
+              label = "Agrupador:",
+              choiceNames = c("Prestación", "Diagnóstico"),
+              choiceValues = c("descrip_prest", "descrip_dx")
+            ),
+            selectizeInput(
+              inputId = ns("episodios_jerarquia_nivel_1"),
+              label = "Episodios:",
+              choices = NULL,
+              multiple = TRUE),
+            actionButton(
+              inputId = ns("identificacion_exe"),
+              label = "Ejecutar",
+              width = "100%"),
+            actionButton(
+              inputId = ns("identificacion_excluir"),
+              label = "Excluir pacientes seleccionados",
+              width = "100%"),
+            )
+          )
+        ),
       box(
         width = 9,
         conditionalPanel(
@@ -127,14 +133,10 @@ outliers_server <- function(id, opciones, cache) {
       })
       
       observeEvent(input$outliers_exe,{
-        print("input$outliers_exe")
-        print(input$outliers_exe)
         outliers$outlier_activity <- TRUE
       })
       
       observeEvent(input$identificacion_exe,{
-        print("input$identificacion_exe")
-        print(input$identificacion_exe)
         outliers$outlier_activity <- FALSE
       })
       
@@ -162,13 +164,13 @@ outliers_server <- function(id, opciones, cache) {
       
       observe({
         jeraquia <- input$episodios_jerarquia_nivel_1
-        opciones$identificacion <- opciones$tabla %>% 
-                filter(!!rlang::sym(input$identificacion_pacientes) %in% 
-                         jeraquia) %>% 
-                select(nro_identificacion,
-                       !!rlang::sym(input$identificacion_pacientes)) %>% 
-                distinct() %>% 
-                collect()
+        opciones$identificacion <- 
+          identificar_episodios(
+            data = opciones$tabla,
+            agrupador = input$identificacion_pacientes,
+            columna_suma = "nro_identificacion",
+            jerarquia = jeraquia
+          ) %>% collect()
       }) %>% bindEvent(input$identificacion_exe)
       
       output$identificacion_tabla <- DT::renderDataTable({
@@ -176,6 +178,33 @@ outliers_server <- function(id, opciones, cache) {
           DT::datatable(
             opciones$identificacion
           )
+        }
+      })
+      
+      identificacion_excluir_count <- counter()
+      observeEvent(input$identificacion_excluir, {
+        if (opciones$datos_cargados) {
+          if (length(input$identificacion_tabla_rows_selected) > 0) {
+            opciones$identificacion_excluir <- 
+              opciones$identificacion %>% 
+              mutate(fila = row_number()) %>% 
+              filter(fila %in% input$identificacion_tabla_rows_selected) %>% 
+              select(nro_identificacion)
+                                      
+            opciones$identificacion_excluir_exe <- identificacion_excluir_count()
+            showNotification(
+              ui = "Clientes añadidos a la lista. Por favor aplicar filtros.",
+              duration = 10
+            )
+            
+          } else {
+            sendSweetAlert(
+              session = session,
+              title = "Error",
+              text = "Por favor seleccionar al menos un cliente a excluir.",
+              type = "error"
+            )
+          }
         }
       })
       

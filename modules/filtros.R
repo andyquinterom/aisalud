@@ -35,7 +35,8 @@ filtros_ui <- function(id) {
       tags$div(
         class = "filtros_char",
           filtro_discreto_ui_insert(ns = ns, n = 6),
-          filtros_pacientes_ui_fila(ns)
+          filtros_pacientes_ui_fila(ns),
+          filtros_identificacion_ui_fila(ns)
         ),
       filtro_numerico_ui_insert(ns = ns, n = 3),
       actionButton(ns("aplicar_filtros"), "Aplicar")
@@ -208,15 +209,34 @@ filtros_server <- function(id, opciones, cache) {
         if (!is.null(input$filtros_paciente_valor)) {
           n_filtros_char <- n_filtros_char + 1
           valores_filtro <- input$filtros_paciente_valor
-          if (input$filtro_paciente_incluir) {
-            opciones$tabla <<- opciones$tabla %>%
-              filter(nro_identificacion %in% valores_filtro)
-          } else {
-            opciones$tabla <<- opciones$tabla %>%
-              filter(!(nro_identificacion %in% valores_filtro))
+          if(input$filtro_paciente_picker == "Pacientes"){
+            if (input$filtro_paciente_incluir) {
+              opciones$tabla <<- opciones$tabla %>%
+                filter(nro_identificacion %in% valores_filtro)
+            } else {
+              opciones$tabla <<- opciones$tabla %>%
+                filter(!(nro_identificacion %in% valores_filtro))
+            }
+          }
+          if(input$filtro_identificacion_picker == "Identificaciones"){ 
+            print("entra")
+            if (input$filtro_identificacion_incluir) {
+              print("actualiza")
+              print(opciones$identificacion_excluir)
+              opciones$tabla <<- opciones$tabla %>%
+                inner_join(opciones$identificacion_excluir)
+            } else {
+              opciones$tabla <<- opciones$tabla %>%
+                anti_join(opciones$identificacion_excluir)
+            }
           }
         }
 
+        output$filtros_identificacion_valor <- renderText({
+          paste("Número de identificaciones seleccionados:",
+                nrow(opciones$identificacion_excluir))
+        })
+        
         lapply(
           X = (1:n_char)[inputs_filtros_char],
           FUN = function(i) {
@@ -404,7 +424,7 @@ filtros_pacientes_ui_fila <- function(ns) {
     column(
       width = 3,
       pickerInput(
-        inputId = ns("filtro_paciente"),
+        inputId = ns("filtro_paciente_picker"),
         label = NULL,
         choices = "Pacientes",
         selected = "Pacientes",
@@ -436,6 +456,42 @@ filtros_pacientes_ui_fila <- function(ns) {
         selected = NULL,
         multiple = TRUE
       )
+      )
     )
-  )
 }
+
+filtros_identificacion_ui_fila <- function(ns) {
+  fluidRow(
+    column(
+      width = 3,
+      pickerInput(
+        inputId = ns("filtro_identificacion_picker"),
+        label = NULL,
+        choices = "Identificaciones",
+        selected = "Identificaciones",
+        multiple = FALSE
+      )),
+    column(
+      width = 2,
+      actionButton(
+        inputId = ns("filtro_identificacion_vaciar"),
+        label = "Vaciar",
+        width = "100%"
+      )
+    ),
+    column(
+      width = 2,
+      shinyWidgets::switchInput(
+        inputId = ns("filtro_identificacion_incluir"),
+        onLabel = "Incluir",
+        offLabel = "Excluir",
+        value = FALSE
+      )
+    ),
+    column(
+      width = 5,
+      textOutput(ns("filtros_identificacion_valor"))
+      )
+    )
+}
+
