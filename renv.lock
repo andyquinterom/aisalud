@@ -540,11 +540,11 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
+      "RemoteUsername": "proyais",
       "RemoteRepo": "listviewer",
-      "RemoteUsername": "FundacionAIS",
       "RemoteRef": "ais9.5.1",
       "RemoteSha": "0e19e3c6e77b3c26bf4bebad91571e97e9646b7d",
-      "Hash": "1f4e7fbbb6e21014a76ba76a08fa2c71"
+      "Hash": "5948347f1120db32f4f1eec2d60c6665"
     },
     "lubridate": {
       "Package": "lubridate",
@@ -837,11 +837,11 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "FundacionAIS",
+      "RemoteUsername": "proyais",
       "RemoteRepo": "shinyCache",
       "RemoteRef": "v0.1.0",
       "RemoteSha": "f4432236a7bcf9a6506b76bd60f7d8719a3aae4a",
-      "Hash": "d368e620eef4203a505ce83526d80256"
+      "Hash": "4ea44384bde8bd880617078f4953ee9e"
     },
     "shinyWidgets": {
       "Package": "shinyWidgets",
