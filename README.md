@@ -19,7 +19,7 @@ istituciones de salud.
 
 Para correr la aplicación localmente se debe clonar el repositorio. En un
 terminal con git instalado se debe hacer 
-`git clone https://github.com/FundacionAIS/aisalud`.
+`git clone https://github.com/proyais/aisalud`.
 
 Dentro del directorio aisalud se debe crear un nuevo archivo llamado `.Renviron`
 con los credenciales de la base de datos.
@@ -71,7 +71,7 @@ Finalmente se ejecuta el comando `shiny::runApp()` para correr la aplicación.
 ## Docker
 
 Para correr la aplicación en Docker visita el repositorio
-[aisalud_docker](https://github.com/FundacionAIS/aisalud_docker).
+[aisalud_docker](https://github.com/proyais/aisalud_docker).
 
 # Contribuir 
 
