@@ -222,8 +222,10 @@ filtros_server <- function(id, opciones, cache) {
             if (!DBI::dbExistsTable(conn,opciones$nombre_temporal)) {
               tipo <- conn %>% 
                 dbGetQuery(
-                  paste0("SELECT column_name,data_type from information_schema.columns 
-                         where table_name = '",opciones$tabla_nombre,
+                  paste0("SELECT column_name,data_type 
+                         from information_schema.columns 
+                         where table_name = '",
+                         opciones$tabla_nombre,
                          "' and column_name = '",input$filtro_eventos_cat,"'")
                 ) %>%
                 mutate(data_type = case_when(data_type == "text"~"char",
@@ -382,6 +384,7 @@ filtros_server <- function(id, opciones, cache) {
         if (!is.null(input$filtros_outliers_valor)) {
           n_filtros_char <- n_filtros_char + 1
           valores_filtro <- input$filtros_outliers_valor
+          
           if (input$filtro_outliers_incluir) {
             opciones$tabla <<- opciones$tabla %>%
               filter(nro_identificacion %in% valores_filtro)
@@ -391,7 +394,6 @@ filtros_server <- function(id, opciones, cache) {
           }
         }
         
-        ###########
         if (!is.null(input$filtro_eventos_valor)) {
           n_filtros_char <- n_filtros_char + 1
           valores_eventos_filtro <- input$filtro_eventos_valor
@@ -413,11 +415,6 @@ filtros_server <- function(id, opciones, cache) {
               )
           }
         }
-
-        output$filtros_eventos_valor <- renderText({
-          paste("Número de identificaciones seleccionados:",
-                nrow(opciones$identificacion_excluir))
-        })
         
         lapply(
           X = (1:filtros$n_char)[inputs_filtros_char],
