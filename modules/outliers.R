@@ -57,11 +57,9 @@ outliers_ui <- function(id) {
       box(width = 9,
         tags$h2(textOutput(ns("outliers_titulo")), class = "titulo_center"),
         tags$br(),
-        # div(
-          DT::dataTableOutput(ns("outliers_tabla")) %>%
-            withSpinner(),
-          style = "font-size:90%"
-        # )
+        DT::dataTableOutput(ns("outliers_tabla")) %>%
+          withSpinner(),
+        style = "font-size:90%"
       )
     )
   )
@@ -75,7 +73,7 @@ outliers_server <- function(id, opciones, cache) {
       ns <- NS(id)
 
       outliers <- reactiveValues(tabla = data.table())
-      
+
       observe({
         output$outliers_modo_opciones <- renderUI({
           if (input$outliers_modo == "percentil") {

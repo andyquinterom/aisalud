@@ -43,8 +43,7 @@ filtros_ui <- function(id) {
         class = "filtros_char",
         filtro_discreto_ui_insert(ns = ns, n = 1),
       ),
-      filtros_outliers_ui_fila(ns),
-      filtros_eventos_ui_fila(ns),
+
       tags$hr(),
        actionGroupButtons(
         inputIds = ns(c("filtros_num_add", "filtros_num_rm")),
@@ -55,6 +54,9 @@ filtros_ui <- function(id) {
         class = "filtros_num",
         filtro_numerico_ui_insert(ns = ns, n = 1),
       ),
+      tags$hr(),
+      filtros_outliers_ui_fila(ns),
+      filtros_eventos_ui_fila(ns),
       actionButton(ns("aplicar_filtros"), "Aplicar")
     )
   )
@@ -180,79 +182,40 @@ filtros_server <- function(id, opciones, cache) {
         if (opciones$datos_cargados) {
           updateSelectizeInput(
             inputId = "filtro_eventos_cat",
-            choices = c("Ninguno",opciones$colnames),
+            choices = c("Ninguno", opciones$colnames),
             server = TRUE
           )
         }
       })
-      
+
       observe({
         if (opciones$datos_cargados) {
-          if (!input$filtro_eventos_cat %in% c("","Ninguno")){
+          if (opciones$datos_cargados) {
             updateSelectizeInput(
+              session = session,
               inputId = "filtro_eventos_valor",
-              choices = opciones$tabla_original %>% 
-                pull_distinct(input$filtro_eventos_cat),
-              server = TRUE
+              server = TRUE,
+              choices = {
+                columna_seleccionada <- input$filtro_eventos_cat
+                if (columna_seleccionada %notin% c("Ninguno", "")) {
+                  cache_call(
+                    fn = pull_distinct,
+                    cache = cache,
+                    cache_params = list(col = columna_seleccionada),
+                    non_cache_params = list(data = opciones$tabla_original),
+                    cache_depends = opciones$tabla_nombre,
+                    prefix = "items-filtros"
+                  )
+                } else {
+                  "Ninguno"
+                }
+              }
             )
           }
         }
-      }) 
-      
-      observe({
-        if (opciones$datos_cargados) {
-          if (!input$filtro_eventos_valor %in% c("","Ninguno")){
-            seleccionado  <- input$filtro_eventos_valor
-            opciones$temporal <- opciones$tabla_original %>% 
-              filter(!!rlang::sym(input$filtro_eventos_cat) == 
-                       seleccionado) 
-            opciones$nombre_temporal <- 
-              digest::digest(
-                paste0(
-                  opciones$tabla_nombre, 
-                  opciones$fecha_rango[1],
-                  opciones$fecha_rango[2],
-                  input$filtro_eventos_id,
-                  input$filtro_eventos_cat,
-                  seleccionado),
-              algo = "xxhash32")  %>% 
-              {if (str_starts(.,"[0-9]")) str_replace(.,"^[0-9]","a") 
-                else . }
-            
-            if (!DBI::dbExistsTable(conn,opciones$nombre_temporal)) {
-              tipo <- conn %>% 
-                dbGetQuery(
-                  paste0("SELECT column_name,data_type 
-                         from information_schema.columns 
-                         where table_name = '",
-                         opciones$tabla_nombre,
-                         "' and column_name = '",input$filtro_eventos_cat,"'")
-                ) %>%
-                mutate(data_type = case_when(data_type == "text"~"char",
-                                             TRUE ~ data_type)) %>%
-                pull(data_type)
-              
-              conn %>%
-                DBI::dbSendQuery(
-                  paste("CREATE TEMP TABLE", 
-                        opciones$nombre_temporal,
-                        "( ",
-                        input$filtro_eventos_cat,
-                        tipo, ")"
-                  )
-                )
-              
-              conn %>% 
-                RPostgres::dbWriteTable(
-                  name = opciones$nombre_temporal,
-                  value = opciones$temporal %>% collect(),
-                  overwrite = TRUE)
-            }
-          }
-        }
-      }) %>% bindEvent(input$filtro_eventos_valor,
-                       input$filtro_eventos_id)
-      
+      }) %>%
+        bindEvent(input$filtro_eventos_cat)
+
       observe({
         pacientes_excluir <- unique(opciones$pacientes_excluir)
         updateSelectizeInput(
@@ -263,9 +226,9 @@ filtros_server <- function(id, opciones, cache) {
           server = TRUE
         )
       }) %>%
-      bindEvent(opciones$pacientes_excluir_exe)
+        bindEvent(opciones$pacientes_excluir_exe)
 
-      observeEvent(input$filtros_outliers_valor,{
+      observeEvent(input$filtros_outliers_valor, {
         if (!all(opciones$pacientes_excluir %in%
                  input$filtros_outliers_valor)) {
           opciones$pacientes_excluir <- input$filtros_outliers_valor
@@ -378,13 +341,12 @@ filtros_server <- function(id, opciones, cache) {
             }
           )
         )
-        
+
         n_filtros_char <- sum(inputs_filtros_char)
 
         if (!is.null(input$filtros_outliers_valor)) {
           n_filtros_char <- n_filtros_char + 1
           valores_filtro <- input$filtros_outliers_valor
-          
           if (input$filtro_outliers_incluir) {
             opciones$tabla <<- opciones$tabla %>%
               filter(nro_identificacion %in% valores_filtro)
@@ -393,29 +355,7 @@ filtros_server <- function(id, opciones, cache) {
               filter(!(nro_identificacion %in% valores_filtro))
           }
         }
-        
-        if (!is.null(input$filtro_eventos_valor)) {
-          n_filtros_char <- n_filtros_char + 1
-          valores_eventos_filtro <- input$filtro_eventos_valor
-          if (input$filtro_eventos_incluir & 
-              input$filtro_eventos_valor != "Ninguno") {
-            opciones$tabla <<- opciones$tabla %>%
-              inner_join(
-                conn %>% 
-                  tbl(opciones$nombre_temporal)
-              )
-          } 
-          
-          if (!input$filtro_eventos_incluir & 
-              input$filtro_eventos_valor != "Ninguno"){
-            opciones$tabla <<- opciones$tabla %>%
-              anti_join(
-                conn %>% 
-                  tbl(opciones$nombre_temporal)
-              )
-          }
-        }
-        
+
         lapply(
           X = (1:filtros$n_char)[inputs_filtros_char],
           FUN = function(i) {
@@ -462,12 +402,82 @@ filtros_server <- function(id, opciones, cache) {
           }
         )
 
+        evento_id_select <- input$filtro_eventos_id
+        if (evento_id_select == "") evento_id_select <- "nro_identificacion"
+
+        evento_val_select <- input$filtro_eventos_valor
+        evento_cat_select <- input$filtro_eventos_cat
+        if (!is.null(evento_val_select) &&
+          evento_cat_select %notin% c("", "Ninguno")) {
+
+            nombre_temporal <-
+              paste0(
+                "temporal_",
+                digest::digest(
+                  list(
+                    sql_render(opciones$tabla_original),
+                    evento_id_select,
+                    evento_val_select,
+                    evento_cat_select
+                  ),
+                  algo = "xxhash32",
+                  seed = 1
+                )
+              )
+
+            tabla_exists <- DBI::dbExistsTable(conn, nombre_temporal)
+
+            if (tabla_exists) tabla_eventos <- tbl(conn, nombre_temporal)
+            if (!tabla_exists) {
+              query <- paste0(
+                'SELECT *
+                INTO TEMPORARY TABLE #tabla#
+                FROM ( ',
+                dbplyr::sql_render(
+                  opciones$tabla_original %>%
+                    select(
+                      !!!rlang::syms(
+                        unique(c(evento_cat_select, evento_id_select))
+                      )
+                    ) %>%
+                    filter(
+                      !!rlang::sym(evento_cat_select) %in% evento_val_select
+                    ) %>%
+                    distinct(!!rlang::sym(evento_id_select))
+                  ),
+                " ) AS alias") %>%
+            str_replace_all(
+              pattern = "#tabla#",
+              replacement = dbQuoteIdentifier(conn, x = nombre_temporal)
+            )
+
+          dbExecute(conn, query)
+
+          tabla_eventos <- tbl(conn, nombre_temporal)
+
+        }
+
+        if (input$filtro_eventos_incluir) {
+          opciones$tabla <<- opciones$tabla %>%
+            inner_join(tabla_eventos)
+        }
+
+        if (!input$filtro_eventos_incluir) {
+          opciones$tabla <<- opciones$tabla %>%
+            anti_join(tabla_eventos)
+        }
+
+        n_filtros_char <- n_filtros_char + 1
+
+      }
+
         n_filtros_total <- n_filtros_char + n_filtros_num
 
         showNotification(
           ui = paste("Se aplicaron", n_filtros_total, "filtros."),
           duration = 4
         )
+
       })
   })
 }
@@ -677,7 +687,7 @@ filtros_eventos_ui_fila <- function(ns) {
         inputId = ns("filtro_eventos_incluir"),
         onLabel = "Incluir",
         offLabel = "Excluir",
-        value = FALSE
+        value = TRUE
       )
     ),
     column(
@@ -685,7 +695,8 @@ filtros_eventos_ui_fila <- function(ns) {
       selectizeInput(
         inputId = ns("filtro_eventos_valor"),
         label = NULL,
-        choices = c("Ninguno")
+        choices = c("Ninguno"),
+        multiple = TRUE
       )
     )
   )
