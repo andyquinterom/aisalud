@@ -15,55 +15,51 @@
 
 outliers_ui <- function(id) {
   ns <- NS(id)
-
   tagList(
     fluidRow(
-      box(
-        width = 3,
-        radioButtons(
-          inputId = ns("outliers_modo"),
-          label = "Método de cálculo:",
-          choiceNames = c("Percentil", "Rango intercuartil"),
-          choiceValues = c("percentil", "iqr")
-        ),
-        uiOutput(ns("outliers_modo_opciones")),
-        numericInput(
-          inputId = ns("outliers_frecuencia"),
-          label = "Frecuencia mínima:",
-          min = 0,
-          step = 1,
-          value = 0),
-        actionButton(
-          inputId = ns("outliers_exe"),
-          label = "Ejecutar",
-          width = "100%"),
-        tags$br(),
-        tags$br(),
-        actionButton(
-          inputId = ns("outliers_excluir"),
-          label = "Excluir pacientes seleccionados",
-          width = "100%"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("outliers_descargar_csv"),
-          label = "CSV",
-          style = "width:100%;"),
-        tags$br(),
-        tags$br(),
-        downloadButton(
-          outputId = ns("outliers_descargar_xlsx"),
-          label = "Excel",
-          style = "width:100%;")),
-      box(
-        width = 9,
+      box(width = 3,
+          radioButtons(
+            inputId = ns("outliers_modo"),
+            label = "Método de cálculo:",
+            choiceNames = c("Percentil", "Rango intercuartil"),
+            choiceValues = c("percentil", "iqr")
+            ),
+          uiOutput(ns("outliers_modo_opciones")),
+          numericInput(
+            inputId = ns("outliers_frecuencia"),
+            label = "Frecuencia mínima:",
+            min = 0,
+            step = 1,
+            value = 0),
+          actionButton(
+            inputId = ns("outliers_exe"),
+            label = "Ejecutar",
+            width = "100%"),
+          tags$br(),
+          tags$br(),
+          actionButton(
+            inputId = ns("outliers_excluir"),
+            label = "Excluir pacientes seleccionados",
+            width = "100%"),
+          tags$br(),
+          tags$br(),
+          downloadButton(
+            outputId = ns("outliers_descargar_csv"),
+            label = "CSV",
+            style = "width:100%;"),
+          tags$br(),
+          tags$br(),
+          downloadButton(
+            outputId = ns("outliers_descargar_xlsx"),
+            label = "Excel",
+            style = "width:100%;")
+          ),
+      box(width = 9,
         tags$h2(textOutput(ns("outliers_titulo")), class = "titulo_center"),
         tags$br(),
-          div(
-            DT::dataTableOutput(ns("outliers_tabla")) %>%
-              withSpinner(),
-              style = "font-size:90%"
-          )
+        DT::dataTableOutput(ns("outliers_tabla")) %>%
+          withSpinner(),
+        style = "font-size:90%"
       )
     )
   )
