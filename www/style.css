@@ -22,7 +22,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(0, 148, 217); 
+  background: rgb(0, 153, 204); 
   border-radius: 10px;
 }
 
@@ -152,11 +152,11 @@ div.escenarios_inline_div td {
 }
 
 .main-header .navbar {
-  background-color: rgb(0, 148, 217) !important;
+  background-color: rgb(0, 153, 204) !important;
 }
 
 .skin-blue-light .main-header .logo {
-  background-color: rgb(0, 148, 217) !important;
+  background-color: rgb(0, 153, 204) !important;
 }
 
 .main-header .logo {
@@ -204,6 +204,6 @@ div.dataTables_scrollBody {
 }
 
 .jsoneditor-menu {
-  background-color: rgb(0, 148, 217) !important;
-  border-color: rgb(0, 148, 217) !important;
+  background-color: rgb(0, 153, 204) !important;
+  border-color: rgb(0, 153, 204) !important;
 }
