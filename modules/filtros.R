@@ -123,7 +123,7 @@ filtros_server <- function(id, opciones, cache) {
             ui = filtro_numerico_ui_fila(
               ns = ns,
               position = filtros$n_num + 1,
-              choices = c("Ninguno", opciones$colnames)
+              choices = c("Ninguno", opciones$colnames_num)
             )
           )
           filtros$n_num <- filtros$n_num + 1
