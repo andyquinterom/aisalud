@@ -15,14 +15,15 @@
 
 filtros_ui <- function(id) {
   ns <- NS(id)
-
+  
   tagList(
     tags$div(
       class = "filtros",
       fluidRow(
         column(
           width = 5,
-          tags$h3("Variables")
+          tags$h3("Variables"),
+          tags$h4("Filtros discretos")
         ),
         column(
           width = 2
@@ -43,9 +44,10 @@ filtros_ui <- function(id) {
         class = "filtros_char",
         filtro_discreto_ui_insert(ns = ns, n = 1),
       ),
-
       tags$hr(),
-       actionGroupButtons(
+      tags$h4("Rangos numéricos"),
+      tags$h5("Variables cuantitativas"),
+      actionGroupButtons(
         inputIds = ns(c("filtros_num_add", "filtros_num_rm")),
         labels = c("+", "-"),
         size = "sm"
@@ -55,6 +57,7 @@ filtros_ui <- function(id) {
         filtro_numerico_ui_insert(ns = ns, n = 1),
       ),
       tags$hr(),
+      tags$h4("Eventos y pacientes"),
       filtros_outliers_ui_fila(ns),
       filtros_eventos_ui_fila(ns),
       actionButton(ns("aplicar_filtros"), "Aplicar")
@@ -67,18 +70,18 @@ filtros_server <- function(id, opciones, cache) {
   moduleServer(
     id = id,
     module = function(input, output, session) {
-
+      
       aplicar_count <- counter()
       # cantidad de filtros numericos
       # cantidad de filtros de variables caracteres
-
+      
       filtros <- reactiveValues(
         n_char = 1,
         n_num = 1,
         selected_char = lapply(1:20, function(x) "Ninguno"),
         selected_num = lapply(1:20, function(x) "Ninguno")
       )
-
+      
       observe({
         if (filtros$n_char < 20) {
           insertUI(
@@ -99,7 +102,7 @@ filtros_server <- function(id, opciones, cache) {
         }
       }) %>%
         bindEvent(input$filtros_char_add)
-
+      
       observe({
         if (filtros$n_char > 1) {
           removeUI(
@@ -114,7 +117,7 @@ filtros_server <- function(id, opciones, cache) {
         }
       }) %>%
         bindEvent(input$filtros_char_rm)
-
+      
       observe({
         if (filtros$n_num < 20) {
           insertUI(
@@ -135,7 +138,7 @@ filtros_server <- function(id, opciones, cache) {
         }
       }) %>%
         bindEvent(input$filtros_num_add)
-
+      
       observe({
         if (filtros$n_num > 1) {
           removeUI(
@@ -150,8 +153,8 @@ filtros_server <- function(id, opciones, cache) {
         }
       }) %>%
         bindEvent(input$filtros_num_rm)
-
-
+      
+      
       observe({
         lapply(
           X = 1:filtros$n_char,
@@ -177,7 +180,7 @@ filtros_server <- function(id, opciones, cache) {
         )
       }) %>%
         bindEvent(opciones$colnames)
-
+      
       observe({
         if (opciones$datos_cargados) {
           updateSelectizeInput(
@@ -187,7 +190,7 @@ filtros_server <- function(id, opciones, cache) {
           )
         }
       })
-
+      
       observe({
         if (opciones$datos_cargados) {
           if (opciones$datos_cargados) {
@@ -215,7 +218,7 @@ filtros_server <- function(id, opciones, cache) {
         }
       }) %>%
         bindEvent(input$filtro_eventos_cat)
-
+      
       observe({
         pacientes_excluir <- unique(opciones$pacientes_excluir)
         updateSelectizeInput(
@@ -227,14 +230,14 @@ filtros_server <- function(id, opciones, cache) {
         )
       }) %>%
         bindEvent(opciones$pacientes_excluir_exe)
-
+      
       observeEvent(input$filtros_outliers_valor, {
         if (!all(opciones$pacientes_excluir %in%
                  input$filtros_outliers_valor)) {
           opciones$pacientes_excluir <- input$filtros_outliers_valor
         }
       })
-
+      
       observeEvent(input$filtro_outliers_vaciar, {
         opciones$pacientes_excluir <- NULL
         updateSelectizeInput(
@@ -245,7 +248,7 @@ filtros_server <- function(id, opciones, cache) {
           server = TRUE
         )
       })
-
+      
       lapply(
         X = 1:20,
         FUN = function(i) {
@@ -277,7 +280,7 @@ filtros_server <- function(id, opciones, cache) {
           })
         }
       )
-
+      
       lapply(
         X = 1:20,
         FUN = function(i) {
@@ -321,12 +324,12 @@ filtros_server <- function(id, opciones, cache) {
           })
         }
       )
-
+      
       # Se observa el botón aplicar_filtros y la opcion global
       aplicar_filtros <- reactive({
         list(input$aplicar_filtros, opciones$aplicar_filtros)
       })
-
+      
       observeEvent(aplicar_filtros(), {
         opciones$tabla <- opciones$tabla_original
         # Variable global que cambia cada vez que se aplican los filtros
@@ -341,9 +344,9 @@ filtros_server <- function(id, opciones, cache) {
             }
           )
         )
-
+        
         n_filtros_char <- sum(inputs_filtros_char)
-
+        
         if (!is.null(input$filtros_outliers_valor)) {
           n_filtros_char <- n_filtros_char + 1
           valores_filtro <- input$filtros_outliers_valor
@@ -355,7 +358,7 @@ filtros_server <- function(id, opciones, cache) {
               filter(!(nro_identificacion %in% valores_filtro))
           }
         }
-
+        
         lapply(
           X = (1:filtros$n_char)[inputs_filtros_char],
           FUN = function(i) {
@@ -370,7 +373,7 @@ filtros_server <- function(id, opciones, cache) {
             }
           }
         )
-
+        
         inputs_filtros_num <- unlist(
           lapply(
             X = 1:filtros$n_num,
@@ -380,9 +383,9 @@ filtros_server <- function(id, opciones, cache) {
             }
           )
         )
-
+        
         n_filtros_num <- sum(inputs_filtros_num)
-
+        
         lapply(
           X = (1:filtros$n_num)[inputs_filtros_num],
           FUN = function(i) {
@@ -401,85 +404,85 @@ filtros_server <- function(id, opciones, cache) {
             }
           }
         )
-
+        
         evento_id_select <- input$filtro_eventos_id
         if (evento_id_select == "") evento_id_select <- "nro_identificacion"
-
+        
         evento_val_select <- input$filtro_eventos_valor
         evento_cat_select <- input$filtro_eventos_cat
         if (!is.null(evento_val_select) &&
-          evento_cat_select %notin% c("", "Ninguno")) {
-
-            nombre_temporal <-
-              paste0(
-                "temporal_",
-                digest::digest(
-                  list(
-                    sql_render(opciones$tabla_original),
-                    evento_id_select,
-                    evento_val_select,
-                    evento_cat_select
-                  ),
-                  algo = "xxhash32",
-                  seed = 1
-                )
+            evento_cat_select %notin% c("", "Ninguno")) {
+          
+          nombre_temporal <-
+            paste0(
+              "temporal_",
+              digest::digest(
+                list(
+                  sql_render(opciones$tabla_original),
+                  evento_id_select,
+                  evento_val_select,
+                  evento_cat_select
+                ),
+                algo = "xxhash32",
+                seed = 1
               )
-
-            tabla_exists <- DBI::dbExistsTable(conn, nombre_temporal)
-
-            if (tabla_exists) tabla_eventos <- tbl(conn, nombre_temporal)
-            if (!tabla_exists) {
-              query <- paste0(
-                'SELECT *
+            )
+          
+          tabla_exists <- DBI::dbExistsTable(conn, nombre_temporal)
+          
+          if (tabla_exists) tabla_eventos <- tbl(conn, nombre_temporal)
+          if (!tabla_exists) {
+            query <- paste0(
+              'SELECT *
                 INTO TEMPORARY TABLE #tabla#
                 FROM ( ',
-                dbplyr::sql_render(
-                  opciones$tabla_original %>%
-                    select(
-                      !!!rlang::syms(
-                        unique(c(evento_cat_select, evento_id_select))
-                      )
-                    ) %>%
-                    filter(
-                      !!rlang::sym(evento_cat_select) %in% evento_val_select
-                    ) %>%
-                    distinct(!!rlang::sym(evento_id_select))
-                  ),
-                " ) AS alias") %>%
-            str_replace_all(
-              pattern = "#tabla#",
-              replacement = dbQuoteIdentifier(conn, x = nombre_temporal)
-            )
-
-          dbExecute(conn, query)
-
-          tabla_eventos <- tbl(conn, nombre_temporal)
-
+              dbplyr::sql_render(
+                opciones$tabla_original %>%
+                  select(
+                    !!!rlang::syms(
+                      unique(c(evento_cat_select, evento_id_select))
+                    )
+                  ) %>%
+                  filter(
+                    !!rlang::sym(evento_cat_select) %in% evento_val_select
+                  ) %>%
+                  distinct(!!rlang::sym(evento_id_select))
+              ),
+              " ) AS alias") %>%
+              str_replace_all(
+                pattern = "#tabla#",
+                replacement = dbQuoteIdentifier(conn, x = nombre_temporal)
+              )
+            
+            dbExecute(conn, query)
+            
+            tabla_eventos <- tbl(conn, nombre_temporal)
+            
+          }
+          
+          if (input$filtro_eventos_incluir) {
+            opciones$tabla <<- opciones$tabla %>%
+              inner_join(tabla_eventos)
+          }
+          
+          if (!input$filtro_eventos_incluir) {
+            opciones$tabla <<- opciones$tabla %>%
+              anti_join(tabla_eventos)
+          }
+          
+          n_filtros_char <- n_filtros_char + 1
+          
         }
-
-        if (input$filtro_eventos_incluir) {
-          opciones$tabla <<- opciones$tabla %>%
-            inner_join(tabla_eventos)
-        }
-
-        if (!input$filtro_eventos_incluir) {
-          opciones$tabla <<- opciones$tabla %>%
-            anti_join(tabla_eventos)
-        }
-
-        n_filtros_char <- n_filtros_char + 1
-
-      }
-
+        
         n_filtros_total <- n_filtros_char + n_filtros_num
-
+        
         showNotification(
           ui = paste("Se aplicaron", n_filtros_total, "filtros."),
           duration = 4
         )
-
+        
       })
-  })
+    })
 }
 
 
@@ -493,7 +496,7 @@ addPreserveSearch <- function(x) {
 }
 
 filtro_discreto_ui_fila <- function(ns, position = 1, choices = "Ninguno",
-  selected = "Ninguno") {
+                                    selected = "Ninguno") {
   tags$div(
     id = paste0("filtro_char_", position),
     fluidRow(
@@ -531,21 +534,21 @@ filtro_discreto_ui_fila <- function(ns, position = 1, choices = "Ninguno",
 }
 
 filtro_discreto_ui_insert <- function(ns, n) {
-
+  
   filtros_filas <- list()
-
+  
   for (i in 1:n) {
     filtros_filas[[i]] <- filtro_discreto_ui_fila(
       ns = ns,
       position = i)
   }
-
+  
   return(filtros_filas)
-
+  
 }
 
 filtro_numerico_ui_fila <- function(ns, position = 1, selected = "Ninguno",
-  choices = "Ninguno") {
+                                    choices = "Ninguno") {
   tags$div(
     id = paste0("filtro_num_", position),
     fluidRow(
@@ -588,9 +591,9 @@ filtro_numerico_ui_fila <- function(ns, position = 1, selected = "Ninguno",
 }
 
 filtro_numerico_ui_insert <- function(ns, n) {
-
+  
   filtros_filas <- list()
-
+  
   filtros_filas[[1]] <-  fluidRow(
     column(width = 7),
     column(
@@ -605,16 +608,16 @@ filtro_numerico_ui_insert <- function(ns, n) {
       )
     )
   )
-
-
+  
+  
   for (i in 1:n + 1) {
     filtros_filas[[i]] <- filtro_numerico_ui_fila(
       ns = ns,
       position = i - 1)
   }
-
+  
   return(filtros_filas)
-
+  
 }
 
 filtros_outliers_ui_fila <- function(ns) {
@@ -654,8 +657,8 @@ filtros_outliers_ui_fila <- function(ns) {
         selected = NULL,
         multiple = TRUE
       )
-      )
     )
+  )
 }
 filtros_eventos_ui_fila <- function(ns) {
   fluidRow(

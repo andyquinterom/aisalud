@@ -11,38 +11,46 @@ opciones adicionales.
 
 ## Filtros
 
-Los filtros se componen de tres columnas:
+Los filtros se componen de tres secciones (ver más detalle abajo) y tres 
+columnas (explicadas a continuación):
 
 1. Variables: la selección de las variables a filtrar en el conjunto de datos.
 2. Estado: Si el estado del filtro es de inclusión o exclusión.
 3. Valores: Los valores seleccionados de la variable.
 
+En las dos primeras secciones existen dos botones con un (+) y un (-), sirven 
+para adicionar o eliminar filtros. 
+NOTA: La aplicación permite adicionar hasta 20 filtros.
+
 Para aplicar filtros se debe hacer clic en el botón **Aplicar** una vez se
 tengan seleccionados todos los parámetros deseados.
 
-### Variables cualitativas
+### Filtros discretos
 
-Para hacer un filtro se debe identificar si es una variable cuantitativa o
-cualitativa. Si es cualitativa, esta debe seleccionarse en las filas con
-opción de inclusión o exclusión. Una vez seleccionada, se podrán buscar y
-seleccionar los valores a excluir en la casilla de la misma fila en la columna
-valores. Si el estado del filtro está en **Incluir** solo se tomarán en cuenta
-registros que incluyan los valores seleccionados. Si el estado del filtro está
-en **Excluir** solo se tomarán en cuenta registros que no incluyan los valores
-seleccionados.
+Para hacer un filtro se debe identificar la columna a filtrar. Una vez 
+seleccionada, se podrán buscar y seleccionar los valores en la casilla de la 
+misma fila en la columna valores. Por último, si el estado del filtro está en
+**Incluir** solo se tomarán en cuenta registros que incluyan los valores 
+seleccionados. Si el estado del filtro está en **Excluir** solo se tomarán 
+en cuenta registros que no incluyan los valores seleccionados.
 
-### Variables cuantitativas
+### Rangos numéricos
 
-Para filtrar variables cuantitativas, estas deben seleccionarse en las filas
-que incluyan las sub-columnas **Mínimo** y **Máximo**. Al seleccionar una
-variable, se cargarán los valores mínimos y máximos de esta variable. Solo se
-tomarán en cuenta registros con valores dentro de este rango.
+Con el fin de brindar rápidez en los filtros de variables cuantitativas, se 
+debe digitar en las sub-columnas el valor **Mínimo** y **Máximo** a filtrar. 
+Solo se tomarán en cuenta registros con valores dentro de este rango.
 
-### Pacientes
+## Eventos y pacientes
+### Outliers
+Registros seleccionados en el modulo __outliers__, los registros serán 
+visualizados cuando en el modulo outliers se presione el botón "excluir 
+pacientes seleccionados". De igual forma que las anteriores secciones, los 
+registros pueden ser incluidos o excluidos.
 
-La fila con la preselección **Pacientes** se comporta de igual manera a los
-filtros de variables cualitativas, pero solo se puede alimentar de datos al
-excluir pacientes con la funcionalidad de outliers.
+### Pacientes / Facturas
+Filtro para conocer pacientes o facturas que __contengan__ la selección realizada.
+Se diferencia de la primera sección ya que la primera sección filtra exactamente
+la selección realizada. 
 
 ## Opciones adicionales
 
@@ -55,4 +63,3 @@ parámetros de la aplicación.
 3. **Prestaciones por cantidad**: En caso de que las frecuencias deban
 calcularse sumando la variable cantidad y no contando registros, esta opción
 cambiará el método de cálculo.
-
