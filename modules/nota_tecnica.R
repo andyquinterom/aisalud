@@ -286,34 +286,34 @@ nota_tecnica_server <- function(id, opciones, cache) {
             inputId = "conf_agrupador",
             choices = nota_tecnica$agrupadores
           )
-          nota_tecnica$nota_tecnica <- esquema_nota_tecnica(
-            timeseries = nota_tecnica$timeseries,
-            agrupador = episodios$agrupador,
-            perfil = opciones$perfil_selected,
-            poblacion = input$poblacion
-          )
-        }
-      }) %>%
-        bindEvent(episodios$descriptiva)
+            nota_tecnica$nota_tecnica <- esquema_nota_tecnica(
+              timeseries = nota_tecnica$timeseries,
+              agrupador = episodios$agrupador,
+              perfil = opciones$perfil_selected,
+              poblacion = input$poblacion
+            )
+          }
+        }) %>%
+          bindEvent(episodios$descriptiva)
 
-      observe({
-        if (nrow(nota_tecnica$timeseries) > 0) {
-          nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
-            parse_nt() %>%
-            left_join(
-              x = nota_tecnica$timeseries %>%
-                ungroup() %>%
-                select(!!!rlang::syms(episodios$agrupador), unidad_conteo) %>%
-                distinct() %>%
-                rename(agrupador = episodios$agrupador),
-              by = "agrupador") %>%
-            relocate(unidad_conteo, agrupador)
-        }
-      }) %>%
-        bindEvent(nota_tecnica$nota_tecnica)
+        observe({
+          if (nrow(nota_tecnica$timeseries) > 0) {
+            nota_tecnica$parsed <- nota_tecnica$nota_tecnica %>%
+              parse_nt() %>%
+              left_join(
+                x = nota_tecnica$timeseries %>%
+                  ungroup() %>%
+                  select(!!!rlang::syms(episodios$agrupador), unidad_conteo) %>%
+                  distinct() %>%
+                  rename(agrupador = episodios$agrupador),
+                by = "agrupador") %>%
+              relocate(unidad_conteo, agrupador)
+          }
+        }) %>%
+          bindEvent(nota_tecnica$nota_tecnica)
 
-      observe({
-        if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
+        observe({
+          if (!is.null(nota_tecnica$nota_tecnica$nota_tecnica$poblacion)) {
           nota_tecnica$nota_tecnica$nota_tecnica$poblacion <-
             input$poblacion
         }
@@ -361,7 +361,7 @@ nota_tecnica_server <- function(id, opciones, cache) {
       # para el agrupador seleccionado
       observe({
         conf_agrupador <- input$conf_agrupador
-        if (nrow(nota_tecnica$timeseries) > 0 && !is.null(conf_agrupador)) {
+        if (nrow(nota_tecnica$timeseries) > 0) {
           nota_tecnica$timeseries_selected <- nota_tecnica$timeseries %>%
             filter(!!rlang::sym(episodios$agrupador) == conf_agrupador)
           nota_tecnica$agrupadores_temp <-
@@ -553,21 +553,23 @@ nota_tecnica_server <- function(id, opciones, cache) {
       # y reacciona cambiando las variables en la nota técnica y utilizando
       # el proxy de plotly para actualizar el gráfico.
       observe({
-        frecuencias_ajuste <- round(input$frecuencias_ajuste, digits = 3)
-        nota_tecnica$agrupadores_temp[[
-            input$conf_agrupador]][["n"]] <- frecuencias_ajuste
-        n_value <- frecuencias_ajuste %>%
-          rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
-        plotlyProxy("frecuencias_plot", session) %>%
-          # Quite el trace numero 4
-          plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>%
-          plotlyProxyInvoke("addTraces", list(list(
-            y = n_value,
-            x = nota_tecnica$timeseries_selected$mes_anio_date,
-            mode = "lines",
-            type = "scatter",
-            line = list(color = "rgb(205, 12, 24)", dash = "dash"),
-            name = "Ajuste analista")))
+        if (input$conf_agrupador != "") {
+          frecuencias_ajuste <- round(input$frecuencias_ajuste, digits = 3)
+          nota_tecnica$agrupadores_temp[[
+              input$conf_agrupador]][["n"]] <- frecuencias_ajuste
+          n_value <- frecuencias_ajuste %>%
+            rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
+          plotlyProxy("frecuencias_plot", session) %>%
+            # Quite el trace numero 4
+            plotlyProxyInvoke("deleteTraces", list(as.integer(2))) %>%
+            plotlyProxyInvoke("addTraces", list(list(
+              y = n_value,
+              x = nota_tecnica$timeseries_selected$mes_anio_date,
+              mode = "lines",
+              type = "scatter",
+              line = list(color = "rgb(205, 12, 24)", dash = "dash"),
+              name = "Ajuste analista")))
+        }
       }) %>%
         bindEvent(input$frecuencias_ajuste)
 
@@ -575,26 +577,28 @@ nota_tecnica_server <- function(id, opciones, cache) {
       # y reacciona cambiando las variables en la nota técnica y utilizando
       # el proxy de plotly para actualizar el gráfico.
       observe({
-        nota_tecnica$agrupadores_temp[[
-            input$conf_agrupador]][["percentil"]] <-
-              input$costo_medio_ajuste / 100
-        quantile_value <- quantile(nota_tecnica$timeseries_selected$Media,
-          input$costo_medio_ajuste / 100) %>%
-          as.numeric() %>%
-          round(digits = 0) %>%
-          rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
-        nota_tecnica$agrupadores_temp[[
-            input$conf_agrupador]][["cm"]] <- quantile_value[1]
-        plotlyProxy("costo_medio_plot", session) %>%
-          # Quite el trace numero 4
-          plotlyProxyInvoke("deleteTraces", list(as.integer(4))) %>%
-          plotlyProxyInvoke("addTraces", list(list(
-            y = quantile_value,
-            x = nota_tecnica$timeseries_selected$mes_anio_date,
-            mode = "lines",
-            type = "scatter",
-            line = list(color = "rgb(205, 12, 24)", dash = "dash"),
-            name = "Ajuste analista")))
+        if (input$conf_agrupador != "") {
+          nota_tecnica$agrupadores_temp[[
+              input$conf_agrupador]][["percentil"]] <-
+                input$costo_medio_ajuste / 100
+          quantile_value <- quantile(nota_tecnica$timeseries_selected$Media,
+            input$costo_medio_ajuste / 100) %>%
+            as.numeric() %>%
+            round(digits = 0) %>%
+            rep(length(nota_tecnica$timeseries_selected$mes_anio_date))
+          nota_tecnica$agrupadores_temp[[
+              input$conf_agrupador]][["cm"]] <- quantile_value[1]
+          plotlyProxy("costo_medio_plot", session) %>%
+            # Quite el trace numero 4
+            plotlyProxyInvoke("deleteTraces", list(as.integer(4))) %>%
+            plotlyProxyInvoke("addTraces", list(list(
+              y = quantile_value,
+              x = nota_tecnica$timeseries_selected$mes_anio_date,
+              mode = "lines",
+              type = "scatter",
+              line = list(color = "rgb(205, 12, 24)", dash = "dash"),
+              name = "Ajuste analista")))
+        }
       }) %>%
         bindEvent(input$costo_medio_ajuste)
 
