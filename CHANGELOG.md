@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v21.9.1 (2021-08-28)
+
+### Mejoras 
+
+- feat: Identificación de pacientes y mejoras a filtros (2021-08-20)
+
+- feat: Análisis de costos medios para contratos con límites (2021-08-10)
+
+- feat: Agrega indicadores a nota técnica y simplifica tablas (2021-08-04)
+
+- feat: Adiciona unidad de conteo a módulo notas técnicas (2021-07-26)
+
+- feat: Compara techos y pisos de una nota técnica (2021-07-23)
+
+### Correcciones
+
+- fix: Evita crash de la aplicación al buscar en notas técnicas (2021-08-28)
+
+- fix: Muestra variables cuantitativas al agregar filas (2021-08-23)
+
 ## v21.08.3 (2021-08-11)
 
 ### Mejoras
