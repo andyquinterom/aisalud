@@ -19,6 +19,17 @@ shinyUI(
   tagList(
     tags$head(
       tags$script(type = "text/javascript", src = "code.js"),
+      tags$script(
+        type = "text/javascript",
+        src = "https://www.googletagmanager.com/gtag/js?id=UA-211315255-1"
+      ),
+      tags$script(
+        type = "text/javascript",
+        "window.dataLayer = window.dataLayer || [];
+        function gtag() {dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-211315255-1');"
+      ),
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
       tags$link(
         rel = "stylesheet",
